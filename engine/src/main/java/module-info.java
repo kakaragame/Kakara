@@ -1,2 +1,4 @@
-module $MODULE_NAME$ {
+module kakara.engine {
+    requires org.lwjgl;
+    requires java.base;
 }

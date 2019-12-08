@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.objects.GameObject;
+import org.kakara.engine.objects.MeshObject;
 import org.kakara.engine.utils.Utils;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class Renderer {
         window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    public void render(Window window, List<GameObject> gameItems){
+    public void render(Window window, List<GameObject> gameObjects){
         clear();
 
         if(window.isResized()){
@@ -53,16 +54,16 @@ public class Renderer {
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
-        for(GameObject gameItem : gameItems) {
+        for(GameObject gameObject : gameObjects) {
             // Set world matrix for this item
             Matrix4f worldMatrix =
                     transformation.getWorldMatrix(
-                            gameItem.getPosition(),
-                            gameItem.getRotation(),
-                            gameItem.getScale());
+                            gameObject.getPosition(),
+                            gameObject.getRotation(),
+                            gameObject.getScale());
             shaderProgram.setUniform("worldMatrix", worldMatrix);
             // Render the mes for this game item
-            gameItem.getMesh().render();
+            gameObject.render();
         }
 
 //        glBindVertexArray(mesh.getVaoId());

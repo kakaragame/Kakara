@@ -2,6 +2,7 @@ package org.kakara.engine;
 
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.objects.GameObject;
+import org.kakara.engine.objects.MeshObject;
 import org.kakara.engine.objects.ObjectHandler;
 import org.kakara.engine.render.Renderer;
 import org.kakara.engine.utils.Time;
@@ -103,13 +104,12 @@ public class GameEngine implements Runnable{
 
     protected void render(){
         renderer.render(window, objectHandler.getObjectList());
-        System.out.println(objectHandler.getObjectList());
         window.update();
     }
     protected void cleanup(){
         renderer.cleanup();
         for(GameObject gameObject : objectHandler.getObjectList()){
-            gameObject.getMesh().cleanUp();
+            gameObject.cleanup();
         }
     }
 

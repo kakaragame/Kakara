@@ -143,6 +143,7 @@
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
@@ -171,6 +172,8 @@
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-opengl</artifactId>
+            <scope>compile</scope>
+
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
@@ -203,6 +206,8 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-glfw</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+            <scope>compile</scope>
+
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>

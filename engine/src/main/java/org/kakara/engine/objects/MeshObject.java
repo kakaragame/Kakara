@@ -47,7 +47,6 @@ public class MeshObject implements GameObject {
     public Vector3f getRotation(){
         return rotation;
     }
-
     public Mesh getMesh(){
         return mesh;
     }
@@ -59,6 +58,6 @@ public class MeshObject implements GameObject {
 
     @Override
     public void cleanup() {
-        getMesh().cleanUp();
+        getMesh().cleanup();
     }
 }

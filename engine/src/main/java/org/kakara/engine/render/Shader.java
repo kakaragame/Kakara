@@ -88,6 +88,10 @@ public class Shader {
         }
     }
 
+    public void setUniform(String uniformName, int value){
+        glUniform1i(uniforms.get(uniformName), value);
+    }
+
     public void bind() {
         glUseProgram(programId);
     }

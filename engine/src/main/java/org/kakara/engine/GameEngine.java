@@ -48,11 +48,12 @@ public class GameEngine implements Runnable{
         window.init();
         try {
             renderer.init(window);
+            time.init();
+            game.start(this);
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        time.init();
-        game.start(this);
+
     }
 
     protected void gameLoop(){

@@ -1,7 +1,11 @@
 package org.kakara.engine;
 
 import org.kakara.engine.gui.Window;
+import org.kakara.engine.objects.GameObject;
+import org.kakara.engine.objects.ObjectHandler;
+import org.kakara.engine.render.Renderer;
 import org.kakara.engine.utils.Time;
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * Handles the primary function of the game.
@@ -13,9 +17,16 @@ public class GameEngine implements Runnable{
     private final Window window;
     private final Time time;
 
-    public GameEngine(String windowTitle, int width, int height, boolean vSync){
+    private final IGame game;
+    private final Renderer renderer;
+    private final ObjectHandler objectHandler;
+
+    public GameEngine(String windowTitle, int width, int height, boolean vSync, IGame game){
         this.window = new Window(windowTitle, width, height, true, vSync);
         time = new Time();
+        this.game = game;
+        this.renderer = new Renderer();
+        this.objectHandler = new ObjectHandler();
     }
 
     /**
@@ -23,14 +34,24 @@ public class GameEngine implements Runnable{
      */
     @Override
     public void run() {
-        init();
-        gameLoop();
+        try{
+            init();
+            gameLoop();
+        }finally{
+            cleanup();
+        }
 
     }
 
     protected void init(){
         window.init();
+        try {
+            renderer.init(window);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
         time.init();
+        game.start(this);
     }
 
     protected void gameLoop(){
@@ -71,17 +92,28 @@ public class GameEngine implements Runnable{
     }
 
     protected void input(){
+        if(window.isKeyPressed(GLFW_KEY_UP)){
 
+        }
     }
 
     protected void update(float interval){
-
+        game.update();
     }
 
     protected void render(){
+        renderer.render(window, objectHandler.getObjectList());
+        System.out.println(objectHandler.getObjectList());
         window.update();
     }
     protected void cleanup(){
+        renderer.cleanup();
+        for(GameObject gameObject : objectHandler.getObjectList()){
+            gameObject.getMesh().cleanUp();
+        }
+    }
 
+    public ObjectHandler getObjectHandler(){
+        return  objectHandler;
     }
 }

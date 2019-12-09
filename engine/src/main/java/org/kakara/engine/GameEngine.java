@@ -1,6 +1,7 @@
 package org.kakara.engine;
 
 import org.kakara.engine.gui.Window;
+import org.kakara.engine.input.Mouse;
 import org.kakara.engine.objects.GameObject;
 import org.kakara.engine.objects.MeshObject;
 import org.kakara.engine.objects.ObjectHandler;
@@ -21,6 +22,8 @@ public class GameEngine implements Runnable{
     private final IGame game;
     private final Renderer renderer;
     private final ObjectHandler objectHandler;
+    private final Camera camera;
+    private final Mouse mouse;
 
     public GameEngine(String windowTitle, int width, int height, boolean vSync, IGame game){
         this.window = new Window(windowTitle, width, height, true, vSync);
@@ -28,6 +31,8 @@ public class GameEngine implements Runnable{
         this.game = game;
         this.renderer = new Renderer();
         this.objectHandler = new ObjectHandler();
+        this.camera = new Camera();
+        this.mouse = new Mouse();
     }
 
     /**
@@ -50,6 +55,7 @@ public class GameEngine implements Runnable{
             renderer.init(window);
             time.init();
             game.start(this);
+            mouse.init(window);
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -104,7 +110,7 @@ public class GameEngine implements Runnable{
     }
 
     protected void render(){
-        renderer.render(window, objectHandler.getObjectList());
+        renderer.render(window, objectHandler.getObjectList(), this.camera);
         window.update();
     }
     protected void cleanup(){
@@ -117,4 +123,7 @@ public class GameEngine implements Runnable{
     public ObjectHandler getObjectHandler(){
         return  objectHandler;
     }
+    public Camera getCamera(){return camera;}
+    public Window getWindow(){return window;}
+    public Mouse getMouse(){return mouse;}
 }

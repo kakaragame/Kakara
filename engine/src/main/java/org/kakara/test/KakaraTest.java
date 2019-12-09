@@ -5,6 +5,7 @@ import org.kakara.engine.IGame;
 import org.kakara.engine.objects.MeshObject;
 import org.kakara.engine.render.Mesh;
 import org.kakara.engine.render.Texture;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class KakaraTest implements IGame {
 
@@ -115,6 +116,14 @@ public class KakaraTest implements IGame {
         obj.setPosition(0, 0, -5);
         this.obj = obj;
         gInst.getObjectHandler().addObject(obj);
+
+        for(int x = 0; x > -5; x--){
+            for(int z = 0; z > -5; z--){
+                MeshObject obj2 = new MeshObject(mesh);
+                obj2.setPosition(x, 0, z);
+                gInst.getObjectHandler().addObject(obj2);
+            }
+        }
     }
 
     @Override
@@ -128,5 +137,26 @@ public class KakaraTest implements IGame {
         if ( rotationx > 360 ) rotationx = 0;
         if ( rotationy > 360 ) rotationy = 0;
         obj.setRotation(rotationx, rotationy, rotationz);
+
+        if(gInst.getWindow().isKeyPressed(GLFW_KEY_W)){
+            gInst.getCamera().movePosition(0, 0, -1);
+        }
+        if(gInst.getWindow().isKeyPressed(GLFW_KEY_S)){
+            gInst.getCamera().movePosition(0, 0, 1);
+        }
+        if(gInst.getWindow().isKeyPressed(GLFW_KEY_A)){
+            gInst.getCamera().movePosition(-1, 0, 0);
+        }
+        if(gInst.getWindow().isKeyPressed(GLFW_KEY_D)){
+            gInst.getCamera().movePosition(1, 0, 0);
+        }
+        if(gInst.getWindow().isKeyPressed(GLFW_KEY_UP)){
+            gInst.getCamera().movePosition(0, 1, 0);
+        }
+        if(gInst.getWindow().isKeyPressed(GLFW_KEY_DOWN)){
+            gInst.getCamera().movePosition(0, -1, 0);
+        }
+        // Gimmicky camera movements.
+        gInst.getCamera().setRotation(-(float) (gInst.getMouse().getPosition().y - gInst.getWindow().getHeight()/2) * 0.3f, (float) gInst.getMouse().getPosition().x * 0.5f, 0);
     }
 }

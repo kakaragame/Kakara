@@ -12,11 +12,13 @@ public class Mesh {
     private final int idxVboId;
     private final int colorVboId;
     private final int vertexCount;
+    private final Texture texture;
 
-    public Mesh(float[] positions, float[] colors, int[] indices){
+    public Mesh(float[] positions, float[] textCoords, int[] indices, Texture texture){
         FloatBuffer posBuffer = null;
         IntBuffer indicesBuffer = null;
         FloatBuffer colorBuffer = null;
+        this.texture = texture;
         try{
             vertexCount = indices.length;
 
@@ -37,12 +39,12 @@ public class Mesh {
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 
             colorVboId = glGenBuffers();
-            colorBuffer = MemoryUtil.memAllocFloat(colors.length);
-            colorBuffer.put(colors).flip();
+            colorBuffer = MemoryUtil.memAllocFloat(textCoords.length);
+            colorBuffer.put(textCoords).flip();
             glBindBuffer(GL_ARRAY_BUFFER, colorVboId);
             glBufferData(GL_ARRAY_BUFFER, colorBuffer, GL_STATIC_DRAW);
             MemoryUtil.memFree(colorBuffer);
-            glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
@@ -65,6 +67,10 @@ public class Mesh {
     }
 
     public void render(){
+        // Activate first texture unit
+        glActiveTexture(GL_TEXTURE0);
+        // Bind the texture
+        glBindTexture(GL_TEXTURE_2D, texture.getId());
         // Draw the mesh
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
@@ -78,7 +84,7 @@ public class Mesh {
         glBindVertexArray(0);
     }
 
-    public void cleanUp(){
+    public void cleanup(){
         glDisableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glDeleteBuffers(posVboId);
@@ -88,4 +94,6 @@ public class Mesh {
         glBindVertexArray(0);
         glDeleteVertexArrays(vaoId);
     }
+
+
 }

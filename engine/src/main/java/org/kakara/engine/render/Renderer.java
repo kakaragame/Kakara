@@ -4,6 +4,8 @@ import org.joml.Matrix4f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+
+import org.kakara.engine.Camera;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.objects.GameObject;
 import org.kakara.engine.utils.Utils;
@@ -37,12 +39,12 @@ public class Renderer {
         float aspectRatio = (float) window.getWidth() / window.getHeight();
         projectionMatrix = new Matrix4f().perspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
         shaderProgram.createUniform("projectionMatrix");
-        shaderProgram.createUniform("worldMatrix");
+        shaderProgram.createUniform("modelViewMatrix");
+        shaderProgram.createUniform("texture_sampler");
 
-        window.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    public void render(Window window, List<GameObject> gameItems){
+    public void render(Window window, List<GameObject> gameObjects, Camera camera){
         clear();
 
         if(window.isResized()){
@@ -52,17 +54,15 @@ public class Renderer {
         shaderProgram.bind();
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        shaderProgram.setUniform("texture_sampler", 0);
 
-        for(GameObject gameItem : gameItems) {
+        for(GameObject gameObject : gameObjects) {
             // Set world matrix for this item
-            Matrix4f worldMatrix =
-                    transformation.getWorldMatrix(
-                            gameItem.getPosition(),
-                            gameItem.getRotation(),
-                            gameItem.getScale());
-            shaderProgram.setUniform("worldMatrix", worldMatrix);
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameObject, viewMatrix);
+            shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
             // Render the mes for this game item
-            gameItem.getMesh().render();
+            gameObject.render();
         }
 
 //        glBindVertexArray(mesh.getVaoId());

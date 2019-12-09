@@ -16,7 +16,7 @@ public class MeshObject implements GameObject {
     private UUID id;
 
 
-    public MeshObject(Mesh mesh){
+    public MeshObject(Mesh mesh) {
         this.mesh = mesh;
         position = new Vector3f(0, 0, 0);
         scale = 1;
@@ -26,48 +26,52 @@ public class MeshObject implements GameObject {
 
     /**
      * Set the position of the MeshObject
+     *
      * @param x
      * @param y
      * @param z
      */
-    public void setPosition(float x, float y, float z){
+    public void setPosition(float x, float y, float z) {
         this.position.x = x;
         this.position.y = y;
         this.position.z = z;
     }
 
-    public Vector3f getPosition(){
+    public Vector3f getPosition() {
         return position;
     }
 
     /**
      * Set the scale of the MeshObject
+     *
      * @param scale
      */
-    public void setScale(float scale){
+    public void setScale(float scale) {
         this.scale = scale;
     }
 
-    public float getScale(){
+    public float getScale() {
         return scale;
     }
 
     /**
      * Set the rotation of the MeshObject.
+     *
      * @param x
      * @param y
      * @param z
      */
-    public void setRotation(float x, float y, float z){
+    public void setRotation(float x, float y, float z) {
         this.rotation.x = x;
         this.rotation.y = y;
         this.rotation.z = z;
     }
 
-    public Vector3f getRotation(){
+    public Vector3f getRotation() {
         return rotation;
     }
-    public Mesh getMesh(){
+
+    public Mesh getMesh() {
         return mesh;
     }
 
@@ -78,11 +82,11 @@ public class MeshObject implements GameObject {
 
     @Override
     public void cleanup() {
-        getMesh().cleanup();
+        getMesh().cleanUp();
     }
 
     @Override
-    public UUID getId(){
+    public UUID getId() {
         return id;
     }
 }

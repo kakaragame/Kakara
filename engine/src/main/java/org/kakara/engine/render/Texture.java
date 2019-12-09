@@ -16,8 +16,13 @@ public class Texture {
 
     private final int id;
 
-    public Texture(String fileName) throws Exception {
-        this(loadTexture(fileName));
+    /**
+     * Load a texture
+     * @param inputStream the inputStream for the file.
+     * @throws Exception
+     */
+    public Texture(InputStream inputStream) throws Exception {
+        this(loadTexture(inputStream));
     }
 
     public Texture(int id) {
@@ -32,7 +37,7 @@ public class Texture {
         return id;
     }
 
-    private static int loadTexture(String fileName) throws Exception {
+    private static int loadTexture(InputStream inputStream) throws Exception {
         int width;
         int height;
         ByteBuffer buf;
@@ -42,7 +47,7 @@ public class Texture {
             IntBuffer h = stack.mallocInt(1);
             IntBuffer channels = stack.mallocInt(1);
 
-            InputStream imageFile = Texture.class.getResourceAsStream(fileName);
+            InputStream imageFile = inputStream;
             System.out.println(imageFile);
             byte[] imageData = imageFile.readAllBytes();
             ByteBuffer imageBuffer = BufferUtils.createByteBuffer(imageData.length);
@@ -51,7 +56,7 @@ public class Texture {
 
             buf = stbi_load_from_memory(imageBuffer, w, h, channels, 4);
             if (buf == null) {
-                throw new Exception("Image file [" + fileName  + "] not loaded: " + stbi_failure_reason());
+                throw new Exception("Image file could not loaded: " + stbi_failure_reason());
             }
 
             /* Get width and height of image */

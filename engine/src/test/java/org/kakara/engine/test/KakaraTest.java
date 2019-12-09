@@ -1,7 +1,13 @@
 package org.kakara.engine.test;
 
 import org.kakara.engine.GameEngine;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.IGame;
+import org.kakara.engine.events.EventHandler;
+import org.kakara.engine.events.event.OnKeyPressEvent;
+import org.kakara.engine.events.event.OnMouseClickEvent;
+import org.kakara.engine.input.KeyInput;
+import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.objects.MeshObject;
 import org.kakara.engine.render.Mesh;
 import org.kakara.engine.render.Texture;
@@ -10,11 +16,12 @@ import static org.lwjgl.glfw.GLFW.*;
 public class KakaraTest implements IGame {
 
     private MeshObject obj;
-    private GameEngine gInst;
+    private GameHandler gInst;
+    private boolean isCursorShowing;
 
     @Override
-    public void start(GameEngine eng) throws Exception {
-        gInst = eng;
+    public void start(GameHandler handler) throws Exception {
+        gInst = handler;
         float[] positions = new float[] {
                 // V0
                 -0.5f, 0.5f, 0.5f,
@@ -110,20 +117,25 @@ public class KakaraTest implements IGame {
                 // Back face
                 4, 6, 7, 5, 4, 7,};
 
-        Texture txt = new Texture("/grassblock.png");
+        Texture txt = new Texture(Texture.class.getResourceAsStream("/grassblock.png"));
         Mesh mesh = new Mesh(positions, textCoords, indices, txt);
         MeshObject obj = new MeshObject(mesh);
         obj.setPosition(0, 0, -5);
         this.obj = obj;
         gInst.getObjectHandler().addObject(obj);
 
-        for(int x = 0; x > -5; x--){
-            for(int z = 0; z > -5; z--){
+        for(int x = 4; x > -5; x--){
+            for(int z = 4; z > -5; z--){
                 MeshObject obj2 = new MeshObject(mesh);
                 obj2.setPosition(x, 0, z);
                 gInst.getObjectHandler().addObject(obj2);
             }
         }
+
+        gInst.getEventManager().registerHandler(this);
+        glfwSetInputMode(gInst.getWindow().getWindowHandler(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        isCursorShowing = false;
+        gInst.getCamera().setPosition(0, 5, 0);
     }
 
     @Override
@@ -138,25 +150,49 @@ public class KakaraTest implements IGame {
         if ( rotationy > 360 ) rotationy = 0;
         obj.setRotation(rotationx, rotationy, rotationz);
 
-        if(gInst.getWindow().isKeyPressed(GLFW_KEY_W)){
+        KeyInput ki = gInst.getKeyInput();
+
+        if(ki.isKeyPressed(GLFW_KEY_W)){
             gInst.getCamera().movePosition(0, 0, -1);
         }
-        if(gInst.getWindow().isKeyPressed(GLFW_KEY_S)){
+        if(ki.isKeyPressed(GLFW_KEY_S)){
             gInst.getCamera().movePosition(0, 0, 1);
         }
-        if(gInst.getWindow().isKeyPressed(GLFW_KEY_A)){
+        if(ki.isKeyPressed(GLFW_KEY_A)){
             gInst.getCamera().movePosition(-1, 0, 0);
         }
-        if(gInst.getWindow().isKeyPressed(GLFW_KEY_D)){
+        if(ki.isKeyPressed(GLFW_KEY_D)){
             gInst.getCamera().movePosition(1, 0, 0);
         }
-        if(gInst.getWindow().isKeyPressed(GLFW_KEY_UP)){
+        if(ki.isKeyPressed(GLFW_KEY_SPACE)){
             gInst.getCamera().movePosition(0, 1, 0);
         }
-        if(gInst.getWindow().isKeyPressed(GLFW_KEY_DOWN)){
+        if(ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)){
             gInst.getCamera().movePosition(0, -1, 0);
         }
+
+        MouseInput mi = gInst.getMouseInput();
         // Gimmicky camera movements.
-        gInst.getCamera().setRotation(-(float) (gInst.getMouse().getPosition().y - gInst.getWindow().getHeight()/2) * 0.3f, (float) gInst.getMouse().getPosition().x * 0.5f, 0);
+//        System.out.println(mi.getDeltaPosition());
+        gInst.getCamera().moveRotation((float)(mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
+//        gInst.getCamera().setRotation(-(float) (mi.getPosition().y - gInst.getWindow().getHeight()/2) * 0.3f, (float) mi.getPosition().x * 0.5f, 0);
+    }
+
+    @EventHandler
+    public void onMouseClick(OnMouseClickEvent evt){
+        System.out.println("clicked1");
+    }
+
+    @EventHandler
+    public void onKeyEvent(OnKeyPressEvent evt){
+        if(evt.isKeyPressed(GLFW_KEY_TAB)){
+            if(isCursorShowing){
+                glfwSetInputMode(gInst.getWindow().getWindowHandler(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                isCursorShowing = false;
+            }else{
+                glfwSetInputMode(gInst.getWindow().getWindowHandler(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                isCursorShowing = true;
+            }
+        }
     }
 }

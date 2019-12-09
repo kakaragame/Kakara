@@ -1,0 +1,121 @@
+package org.kakara.engine.input;
+
+import org.joml.Vector2d;
+import org.kakara.engine.GameHandler;
+import org.kakara.engine.events.event.OnMouseClickEvent;
+import org.kakara.engine.gui.Window;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.DoubleBuffer;
+
+import static org.lwjgl.glfw.GLFW.*;
+
+/**
+ * Handles mouse inputs.
+ */
+public class MouseInput {
+    private final Vector2d previousPos;
+    private final Vector2d currentPos;
+    private boolean inWindow = false;
+    private boolean leftButtonPressed = false;
+    private boolean rightButtonPressed = false;
+
+    private GameHandler handler;
+
+    public MouseInput(GameHandler handler){
+        previousPos = new Vector2d(-1, -1);
+        currentPos = new Vector2d(0, 0);
+        this.handler = handler;
+    }
+
+    public void init(Window window){
+        glfwSetCursorPosCallback(window.getWindowHandler(), (windowHandle, xpos, ypos) -> {
+//            previousPos.x = currentPos.x;
+//            previousPos.y = currentPos.y;
+//            currentPos.x = xpos;
+//            currentPos.y = ypos;
+        });
+        glfwSetCursorEnterCallback(window.getWindowHandler(), (windowHandle, entered) -> {
+            inWindow = entered;
+        });
+        glfwSetMouseButtonCallback(window.getWindowHandler(), (windowHandle, button, action, mode) -> {
+            leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
+            rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
+            if(action != GLFW_PRESS) return;
+            MouseClickType mct;
+            switch (button){
+                case GLFW_MOUSE_BUTTON_1:
+                    mct = MouseClickType.LEFT_CLICK;
+                    break;
+                case GLFW_MOUSE_BUTTON_2:
+                    mct = MouseClickType.RIGHT_CLICK;
+                    break;
+                case GLFW_MOUSE_BUTTON_3:
+                    mct = MouseClickType.MIDDLE_CLICK;
+                    break;
+                default:
+                    mct = MouseClickType.OTHER;
+                    break;
+            }
+            handler.getEventManager().fireHandler(new OnMouseClickEvent(this.getPosition(), mct));
+        });
+    }
+
+    public void update(){
+        previousPos.x = currentPos.x;
+        previousPos.y = currentPos.y;
+        double curX;
+        double curY;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            DoubleBuffer x = stack.callocDouble(1);
+            DoubleBuffer y = stack.callocDouble(1);
+            glfwGetCursorPos(handler.getWindow().getWindowHandler(), x, y);
+            curX = x.get(0);
+            curY = y.get(0);
+        }
+        currentPos.x = curX;
+        currentPos.y = curY;
+    }
+
+    /**
+     * If the left button is currently pressed.
+     * @return If the left button is currently pressed.
+     */
+    public boolean isLeftButtonPressed(){
+        return leftButtonPressed;
+    }
+
+    /**
+     * If the right button is pressed.
+     * @return If the right button is currently pressed.
+     */
+    public boolean isRightButtonPressed(){
+        return rightButtonPressed;
+    }
+
+    /**
+     * If the cursor is in the window.
+     * @return if the cursor is in the window.
+     */
+    public boolean inWindow(){
+        return this.inWindow;
+    }
+
+    /**
+     * Get the position of the mouse.
+     * @return The position of the mouse.
+     */
+    public Vector2d getPosition(){
+        return currentPos;
+    }
+
+    /**
+     * Get the change in position.
+     * @return The change in position.
+     */
+    public Vector2d getDeltaPosition(){
+        return new Vector2d(currentPos.x - previousPos.x, currentPos.y - previousPos.y);
+//        return currentPos.min(previousPos);
+    }
+}

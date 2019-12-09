@@ -3,6 +3,8 @@ package org.kakara.engine.objects;
 import org.joml.Vector3f;
 import org.kakara.engine.render.Mesh;
 
+import java.util.UUID;
+
 /**
  * The main game object.
  */
@@ -11,6 +13,7 @@ public class MeshObject implements GameObject {
     private final Vector3f position;
     private float scale;
     private final Vector3f rotation;
+    private UUID id;
 
 
     public MeshObject(Mesh mesh){
@@ -18,8 +21,15 @@ public class MeshObject implements GameObject {
         position = new Vector3f(0, 0, 0);
         scale = 1;
         rotation = new Vector3f(0, 0, 0);
+        id = UUID.randomUUID();
     }
 
+    /**
+     * Set the position of the MeshObject
+     * @param x
+     * @param y
+     * @param z
+     */
     public void setPosition(float x, float y, float z){
         this.position.x = x;
         this.position.y = y;
@@ -30,6 +40,10 @@ public class MeshObject implements GameObject {
         return position;
     }
 
+    /**
+     * Set the scale of the MeshObject
+     * @param scale
+     */
     public void setScale(float scale){
         this.scale = scale;
     }
@@ -38,6 +52,12 @@ public class MeshObject implements GameObject {
         return scale;
     }
 
+    /**
+     * Set the rotation of the MeshObject.
+     * @param x
+     * @param y
+     * @param z
+     */
     public void setRotation(float x, float y, float z){
         this.rotation.x = x;
         this.rotation.y = y;
@@ -59,5 +79,10 @@ public class MeshObject implements GameObject {
     @Override
     public void cleanup() {
         getMesh().cleanup();
+    }
+
+    @Override
+    public UUID getId(){
+        return id;
     }
 }

@@ -1,10 +1,7 @@
 package org.kakara.engine;
 
 import org.kakara.engine.gui.Window;
-import org.kakara.engine.input.Mouse;
 import org.kakara.engine.objects.GameObject;
-import org.kakara.engine.objects.MeshObject;
-import org.kakara.engine.objects.ObjectHandler;
 import org.kakara.engine.render.Renderer;
 import org.kakara.engine.utils.Time;
 import static org.lwjgl.glfw.GLFW.*;
@@ -21,18 +18,15 @@ public class GameEngine implements Runnable{
 
     private final IGame game;
     private final Renderer renderer;
-    private final ObjectHandler objectHandler;
-    private final Camera camera;
-    private final Mouse mouse;
+    private final GameHandler gameHandler;
 
     public GameEngine(String windowTitle, int width, int height, boolean vSync, IGame game){
         this.window = new Window(windowTitle, width, height, true, vSync);
         time = new Time();
         this.game = game;
         this.renderer = new Renderer();
-        this.objectHandler = new ObjectHandler();
-        this.camera = new Camera();
-        this.mouse = new Mouse();
+        this.gameHandler = new GameHandler(this);
+
     }
 
     /**
@@ -54,8 +48,8 @@ public class GameEngine implements Runnable{
         try {
             renderer.init(window);
             time.init();
-            game.start(this);
-            mouse.init(window);
+            game.start(gameHandler);
+            gameHandler.init();
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -106,24 +100,21 @@ public class GameEngine implements Runnable{
     }
 
     protected void update(float interval){
+        gameHandler.update();
         game.update();
     }
 
     protected void render(){
-        renderer.render(window, objectHandler.getObjectList(), this.camera);
+        renderer.render(window, gameHandler.getObjectHandler().getObjectList(), gameHandler.getCamera());
         window.update();
     }
     protected void cleanup(){
         renderer.cleanup();
-        for(GameObject gameObject : objectHandler.getObjectList()){
+        for(GameObject gameObject : gameHandler.getObjectHandler().getObjectList()){
             gameObject.cleanup();
         }
     }
 
-    public ObjectHandler getObjectHandler(){
-        return  objectHandler;
-    }
-    public Camera getCamera(){return camera;}
     public Window getWindow(){return window;}
-    public Mouse getMouse(){return mouse;}
+    public GameHandler getGameHandler(){return gameHandler;}
 }

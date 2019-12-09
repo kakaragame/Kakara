@@ -1,4 +1,4 @@
-package org.kakara.test;
+package org.kakara.engine.test;
 
 import org.kakara.engine.GameEngine;
 

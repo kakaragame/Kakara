@@ -2,13 +2,15 @@ package org.kakara.engine.models;
 
 import java.io.File;
 import java.nio.IntBuffer;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joml.Vector4f;
-import org.kakara.engine.render.Material;
-import org.kakara.engine.render.Mesh;
-import org.kakara.engine.render.Texture;
+import org.kakara.engine.GameEngine;
+import org.kakara.engine.item.Material;
+import org.kakara.engine.item.Mesh;
+import org.kakara.engine.item.Texture;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIColor4D;
@@ -22,16 +24,28 @@ import org.lwjgl.assimp.Assimp;
 
 import static org.lwjgl.assimp.Assimp.*;
 
-public class ModelLoader {
+/**
+ * A model loader for static Models
+ */
+public class StaticModelLoader {
+    public static Mesh[] load(File modelFile, File texturesDir) throws Exception {
+        return load(modelFile.toPath(), texturesDir.toPath());
+    }
 
-    public static Mesh[] load(File resourceStream, String texturesDir) throws Exception {
+    public static Mesh[] load(Path modelPath, Path texturesDir) throws Exception {
+        return load(modelPath.toAbsolutePath().toString(), texturesDir.toAbsolutePath().toString());
+    }
+
+
+    public static Mesh[] load(String resourceStream, String texturesDir) throws Exception {
         return load(resourceStream, texturesDir,
                 aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
                         | aiProcess_FixInfacingNormals);
     }
 
-    public static Mesh[] load(File resourceStream, String texturesDir, int flags) throws Exception {
-        AIScene aiScene = aiImportFile(resourceStream.toPath().toAbsolutePath().toString(), flags);
+    public static Mesh[] load(String resourceStream, String texturesDir, int flags) throws Exception {
+        GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resourceStream, texturesDir));
+        AIScene aiScene = aiImportFile(resourceStream, flags);
 
         if (aiScene == null) {
 //            throw new Exception("Error loading model");
@@ -72,6 +86,7 @@ public class ModelLoader {
 
     protected static void processMaterial(AIMaterial aiMaterial, List<Material> materials,
                                           String texturesDir) throws Exception {
+        String separator = texturesDir.startsWith("/") ? "/" : File.pathSeparator;
         AIColor4D colour = AIColor4D.create();
 
         AIString path = AIString.calloc();
@@ -81,8 +96,9 @@ public class ModelLoader {
         Texture texture = null;
         if (textPath != null && textPath.length() > 0) {
             TextureCache textCache = TextureCache.getInstance();
-            String textureFile = texturesDir + "/" + textPath;
-            textureFile = textureFile.replace("//", "/");
+            String textureFile = texturesDir + separator + textPath;
+            textureFile = textureFile.replace("//", separator);
+            GameEngine.LOGGER.debug(String.format("Getting Texture from %s", textureFile));
             texture = textCache.getTexture(textureFile);
         }
 

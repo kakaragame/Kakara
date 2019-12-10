@@ -1,4 +1,4 @@
-package org.kakara.engine.render;
+package org.kakara.engine.item;
 
 import org.joml.Vector4f;
 

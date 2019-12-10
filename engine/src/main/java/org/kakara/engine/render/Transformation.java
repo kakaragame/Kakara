@@ -1,9 +1,10 @@
 package org.kakara.engine.render;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.kakara.engine.Camera;
-import org.kakara.engine.objects.GameObject;
+import org.kakara.engine.item.GameItem;
 
 public class Transformation {
     private final Matrix4f projectionMatrix;
@@ -26,8 +27,8 @@ public class Transformation {
         return projectionMatrix;
     }
 
-    public Matrix4f getModelViewMatrix(GameObject gameItem, Matrix4f viewMatrix) {
-        Vector3f rotation = gameItem.getRotation();
+    public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {
+        Quaternionf rotation = gameItem.getRotation();
         modelViewMatrix.identity().translate(gameItem.getPosition()).
                 rotateX((float)Math.toRadians(-rotation.x)).
                 rotateY((float)Math.toRadians(-rotation.y)).

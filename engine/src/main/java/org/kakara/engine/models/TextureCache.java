@@ -1,6 +1,6 @@
 package org.kakara.engine.models;
 
-import org.kakara.engine.render.Texture;
+import org.kakara.engine.item.Texture;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,5 @@
-package org.kakara.engine.render;
+package org.kakara.engine.item;
 
-import org.kakara.engine.objects.GameObject;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;

@@ -1,21 +1,21 @@
-package org.kakara.engine.objects;
+package org.kakara.engine.item;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ObjectHandler {
-    private List<GameObject> objects;
+public class ItemHandler {
+    private List<GameItem> objects;
 
-    public ObjectHandler(){
+    public ItemHandler(){
         objects = new ArrayList<>();
     }
 
-    public void addObject(GameObject obj){
+    public void addObject(GameItem obj){
         this.objects.add(obj);
     }
 
-    public List<GameObject> getObjectList(){
+    public List<GameItem> getObjectList(){
         return this.objects;
     }
 
@@ -24,8 +24,8 @@ public class ObjectHandler {
      * @param id The id
      * @return Returns the gameobject. (Returns null if none found).
      */
-    public GameObject getObjectWithId(UUID id){
-        for(GameObject obj : objects){
+    public GameItem getObjectWithId(UUID id){
+        for(GameItem obj : objects){
             if(obj.getId() == id) return obj;
         }
         return null;

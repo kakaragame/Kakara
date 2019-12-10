@@ -4,14 +4,14 @@ import org.kakara.engine.events.EventManager;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
-import org.kakara.engine.objects.ObjectHandler;
+import org.kakara.engine.item.ItemHandler;
 
 /**
  * Handles the game information.
  */
 public class GameHandler {
 
-    private ObjectHandler objectHandler;
+    private ItemHandler itemHandler;
     private Camera camera;
     private MouseInput mouseInput;
     private KeyInput keyInput;
@@ -20,7 +20,7 @@ public class GameHandler {
     private GameEngine gameEngine;
     public GameHandler(GameEngine gameEngine){
         this.gameEngine = gameEngine;
-        this.objectHandler = new ObjectHandler();
+        this.itemHandler = new ItemHandler();
         this.camera = new Camera();
         this.mouseInput = new MouseInput(this);
         this.keyInput = new KeyInput(gameEngine);
@@ -46,8 +46,8 @@ public class GameHandler {
      * Get the object handler.
      * @return The object handler.
      */
-    public ObjectHandler getObjectHandler(){
-        return objectHandler;
+    public ItemHandler getItemHandler(){
+        return itemHandler;
     }
 
     /**

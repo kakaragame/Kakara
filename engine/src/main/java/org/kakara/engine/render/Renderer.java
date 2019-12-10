@@ -7,7 +7,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 
 import org.kakara.engine.Camera;
 import org.kakara.engine.gui.Window;
-import org.kakara.engine.objects.GameObject;
+import org.kakara.engine.item.GameItem;
 import org.kakara.engine.utils.Utils;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class Renderer {
 
     }
 
-    public void render(Window window, List<GameObject> gameObjects, Camera camera){
+    public void render(Window window, List<GameItem> gameObjects, Camera camera){
         clear();
 
         if(window.isResized()){
@@ -57,7 +57,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         shaderProgram.setUniform("texture_sampler", 0);
 
-        for(GameObject gameObject : gameObjects) {
+        for(GameItem gameObject : gameObjects) {
             // Set world matrix for this item
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameObject, viewMatrix);
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);

@@ -1,41 +1,33 @@
 package org.kakara.engine.test;
 
-import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.IGame;
+import org.kakara.engine.Game;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.OnKeyPressEvent;
 import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
-import org.kakara.engine.models.ModelLoader;
-import org.kakara.engine.objects.GameObject;
-import org.kakara.engine.objects.MeshObject;
-import org.kakara.engine.objects.MultiMeshObject;
-import org.kakara.engine.render.Material;
-import org.kakara.engine.render.Mesh;
-import org.kakara.engine.render.Texture;
-import org.kakara.engine.utils.Utils;
+import org.kakara.engine.models.StaticModelLoader;
+import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.Mesh;
 
 import java.io.File;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class KakaraTest implements IGame {
+public class KakaraTest implements Game {
 
     private GameHandler gInst;
     private boolean isCursorShowing;
-
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
-        File f = new File(Main.class.getResource("/player/steve.obj").getPath());
-        Mesh[] houseMesh = ModelLoader.load(f, "/player");
+        Mesh[] houseMesh = StaticModelLoader.load(Main.class.getResource("/player/steve.obj").getPath(), Main.class.getResource("/player/").getPath());
         System.out.println("houseMesh = " + houseMesh.length);
-        GameObject object = new MultiMeshObject(houseMesh);
+        GameItem object = new GameItem(houseMesh);
         object.setPosition(0,5,0);
 
-        gInst.getObjectHandler().addObject(object);
+        gInst.getItemHandler().addObject(object);
         gInst.getEventManager().registerHandler(this);
         glfwSetInputMode(gInst.getWindow().getWindowHandler(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         isCursorShowing = false;

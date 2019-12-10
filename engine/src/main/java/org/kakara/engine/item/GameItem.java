@@ -1,12 +1,11 @@
-package org.kakara.engine.objects;
+package org.kakara.engine.item;
 
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.kakara.engine.render.Mesh;
 
 import java.util.UUID;
 
-public class MultiMeshObject implements GameObject {
+public class GameItem {
 
     private boolean selected;
 
@@ -25,7 +24,7 @@ public class MultiMeshObject implements GameObject {
     private boolean insideFrustum;
     private UUID uuid = UUID.randomUUID();
 
-    public MultiMeshObject() {
+    public GameItem() {
         selected = false;
         position = new Vector3f(0, 0, 0);
         scale = 1;
@@ -35,12 +34,12 @@ public class MultiMeshObject implements GameObject {
         disableFrustumCulling = false;
     }
 
-    public MultiMeshObject(Mesh mesh) {
+    public GameItem(Mesh mesh) {
         this();
         this.meshes = new Mesh[]{mesh};
     }
 
-    public MultiMeshObject(Mesh[] meshes) {
+    public GameItem(Mesh[] meshes) {
         this();
         this.meshes = meshes;
     }
@@ -63,11 +62,6 @@ public class MultiMeshObject implements GameObject {
         this.position.z = z;
     }
 
-    @Override
-    public void setRotation(float x, float y, float z) {
-
-    }
-
     public float getScale() {
         return scale;
     }
@@ -76,13 +70,12 @@ public class MultiMeshObject implements GameObject {
         this.scale = scale;
     }
 
-    @Override
     public UUID getId() {
         return uuid;
     }
 
-    public Vector3f getRotation() {
-        return new Vector3f(rotation.x, rotation.y, rotation.z);
+    public Quaternionf getRotation() {
+        return rotation;
     }
 
     public final void setRotation(Quaternionf q) {
@@ -105,7 +98,6 @@ public class MultiMeshObject implements GameObject {
         this.meshes = new Mesh[]{mesh};
     }
 
-    @Override
     public void render() {
         for (Mesh mesh : meshes) {
             mesh.render();

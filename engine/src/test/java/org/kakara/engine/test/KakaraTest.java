@@ -15,6 +15,9 @@ import org.kakara.engine.objects.MultiMeshObject;
 import org.kakara.engine.render.Material;
 import org.kakara.engine.render.Mesh;
 import org.kakara.engine.render.Texture;
+import org.kakara.engine.utils.Utils;
+
+import java.io.File;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -26,8 +29,8 @@ public class KakaraTest implements IGame {
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
-
-        Mesh[] houseMesh = ModelLoader.load("/home/wherkamp/IdeaProjects/kakara/Kakara/engine/src/test/resources/player/steve.obj", "/player");
+        File f = new File(Main.class.getResource("/player/steve.obj").getPath());
+        Mesh[] houseMesh = ModelLoader.load(f, "/player");
         System.out.println("houseMesh = " + houseMesh.length);
         GameObject object = new MultiMeshObject(houseMesh);
         object.setPosition(0,5,0);

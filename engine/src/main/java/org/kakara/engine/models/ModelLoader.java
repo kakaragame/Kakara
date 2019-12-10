@@ -1,16 +1,6 @@
 package org.kakara.engine.models;
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_AMBIENT;
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_DIFFUSE;
-import static org.lwjgl.assimp.Assimp.AI_MATKEY_COLOR_SPECULAR;
-import static org.lwjgl.assimp.Assimp.aiGetMaterialColor;
-import static org.lwjgl.assimp.Assimp.aiImportFile;
-import static org.lwjgl.assimp.Assimp.aiProcess_FixInfacingNormals;
-import static org.lwjgl.assimp.Assimp.aiProcess_GenSmoothNormals;
-import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
-import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
-import static org.lwjgl.assimp.Assimp.aiTextureType_DIFFUSE;
-import static org.lwjgl.assimp.Assimp.aiTextureType_NONE;
 
+import java.io.File;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,18 +19,23 @@ import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.AIString;
 import org.lwjgl.assimp.AIVector3D;
 import org.lwjgl.assimp.Assimp;
+
+import static org.lwjgl.assimp.Assimp.*;
+
 public class ModelLoader {
 
-    public static Mesh[] load(String resourcePath, String texturesDir) throws Exception {
-        return load(resourcePath, texturesDir,
+    public static Mesh[] load(File resourceStream, String texturesDir) throws Exception {
+        return load(resourceStream, texturesDir,
                 aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
                         | aiProcess_FixInfacingNormals);
     }
 
-    public static Mesh[] load(String resourcePath, String texturesDir, int flags) throws Exception {
-        AIScene aiScene = aiImportFile(resourcePath, flags);
+    public static Mesh[] load(File resourceStream, String texturesDir, int flags) throws Exception {
+        AIScene aiScene = aiImportFile(resourceStream.toPath().toAbsolutePath().toString(), flags);
+
         if (aiScene == null) {
-            throw new Exception("Error loading model");
+//            throw new Exception("Error loading model");
+            throw new Exception(aiGetErrorString());
         }
 
         int numMaterials = aiScene.mNumMaterials();

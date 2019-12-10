@@ -29,9 +29,17 @@ import static org.lwjgl.assimp.Assimp.*;
  */
 public class StaticModelLoader {
     public static Mesh[] load(File modelFile, File texturesDir) throws Exception {
-        return load(modelFile.toPath(), texturesDir.toPath());
+        return load(modelFile.getPath(), texturesDir.getPath());
     }
 
+    /**
+     *
+     * @param modelPath
+     * @param texturesDir
+     * @return
+     * @deprecated Using this will cause incompatibilities against different operating systems!
+     * @throws Exception
+     */
     public static Mesh[] load(Path modelPath, Path texturesDir) throws Exception {
         return load(modelPath.toAbsolutePath().toString(), texturesDir.toAbsolutePath().toString());
     }
@@ -86,7 +94,8 @@ public class StaticModelLoader {
 
     protected static void processMaterial(AIMaterial aiMaterial, List<Material> materials,
                                           String texturesDir) throws Exception {
-        String separator = texturesDir.startsWith("/") ? "/" : File.pathSeparator;
+        // File.separator. File.pathSeparator is for the PATH variable.
+        String separator = texturesDir.startsWith("/") ? "/" : File.separator;
         AIColor4D colour = AIColor4D.create();
 
         AIString path = AIString.calloc();

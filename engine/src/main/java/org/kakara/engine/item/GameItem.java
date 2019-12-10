@@ -134,4 +134,23 @@ public class GameItem {
     public void setDisableFrustumCulling(boolean disableFrustumCulling) {
         this.disableFrustumCulling = disableFrustumCulling;
     }
+
+    /**
+     * A safe way to clone a gameobject.
+     * @param exact If you want it to be an exact copy.
+     * @return The clone of the gameobject.
+     */
+    public GameItem clone(boolean exact){
+        GameItem clone = new GameItem(this.meshes);
+        if(exact){
+            clone.setPosition(this.position.x, this.position.y, this.position.z);
+            clone.setDisableFrustumCulling(this.disableFrustumCulling);
+            clone.setInsideFrustum(this.insideFrustum);
+            clone.setRotation(this.rotation);
+            clone.setSelected(this.selected);
+            clone.setScale(this.scale);
+            clone.setTextPos(this.textPos);
+        }
+        return clone;
+    }
 }

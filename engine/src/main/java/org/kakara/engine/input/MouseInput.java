@@ -30,11 +30,20 @@ public class MouseInput {
     }
 
     public void init(Window window){
+        // Sets the default currentPosition so it doesn't throw off the mouse.
+        double curX;
+        double curY;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            DoubleBuffer x = stack.callocDouble(1);
+            DoubleBuffer y = stack.callocDouble(1);
+            glfwGetCursorPos(handler.getWindow().getWindowHandler(), x, y);
+            curX = x.get(0);
+            curY = y.get(0);
+        }
+        currentPos.x = curX;
+        currentPos.y = curY;
         glfwSetCursorPosCallback(window.getWindowHandler(), (windowHandle, xpos, ypos) -> {
-//            previousPos.x = currentPos.x;
-//            previousPos.y = currentPos.y;
-//            currentPos.x = xpos;
-//            currentPos.y = ypos;
+
         });
         glfwSetCursorEnterCallback(window.getWindowHandler(), (windowHandle, entered) -> {
             inWindow = entered;
@@ -118,4 +127,17 @@ public class MouseInput {
         return new Vector2d(currentPos.x - previousPos.x, currentPos.y - previousPos.y);
 //        return currentPos.min(previousPos);
     }
+
+    /**
+     * Set the current cursor position.
+     * @param x The x position.
+     * @param y The y position.
+     */
+   public void setCursorPosition(double x, double y){
+        glfwSetCursorPos(handler.getWindow().getWindowHandler(), x, y);
+        this.currentPos.x = x;
+        this.currentPos.y = y;
+        this.previousPos.x = x;
+        this.previousPos.y = y;
+   }
 }

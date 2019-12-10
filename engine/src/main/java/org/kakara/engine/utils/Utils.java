@@ -1,6 +1,9 @@
 package org.kakara.engine.utils;
 
+import org.kakara.engine.item.Texture;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,6 +102,20 @@ public class Utils {
         buffer.flip();
         newBuffer.put(buffer);
         return newBuffer;
+    }
+
+    /**
+     * Convert an inputstream into a texture.
+     * @param io The input stream.
+     * @return The texture.
+     * @throws IOException
+     */
+    public static Texture inputStreamToTexture(InputStream io) throws IOException {
+        byte[] ioBytes = io.readAllBytes();
+        ByteBuffer bb = MemoryUtil.memAlloc(ioBytes.length);
+        bb.put(ioBytes);
+        bb.flip();
+        return new Texture(bb);
     }
 
 }

@@ -23,6 +23,8 @@ public class Window {
     private boolean vSync;
     private boolean resizable;
 
+    private boolean cursor;
+
     private long window;
 
     public Window(String title, int width, int height, boolean resizable, boolean vSync){
@@ -32,6 +34,7 @@ public class Window {
         this.vSync =  vSync;
         this.resized = false;
         this.resizable = resizable;
+        cursor = true;
     }
 
     /**
@@ -170,6 +173,23 @@ public class Window {
      */
     public void setvSync(boolean vSync){
         this.vSync = vSync;
+    }
+
+    /**
+     * If the cursor is disabled. (Might be moved)
+     * @param cursor If the cursor is enabled.
+     */
+    public void setCursorVisibility(boolean cursor) {
+        this.cursor = cursor;
+        glfwSetInputMode(window, GLFW_CURSOR, cursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
+
+    /**
+     * If the cursor is currently enabled.
+     * @return If it is enabled.
+     */
+    public boolean isCursorVisable(){
+        return cursor;
     }
 
     /**

@@ -10,6 +10,7 @@ import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.Mesh;
+import org.kakara.engine.utils.Utils;
 
 import java.io.File;
 
@@ -22,7 +23,7 @@ public class KakaraTest implements Game {
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
-        Mesh[] houseMesh = StaticModelLoader.load(Main.class.getResource("/player/steve.obj").getPath(), Main.class.getResource("/player/").getPath());
+        Mesh[] houseMesh = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
         System.out.println("houseMesh = " + houseMesh.length);
         GameItem object = new GameItem(houseMesh);
         object.setPosition(0,5,0);

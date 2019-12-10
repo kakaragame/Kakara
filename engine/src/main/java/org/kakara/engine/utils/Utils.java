@@ -2,8 +2,11 @@ package org.kakara.engine.utils;
 
 import org.lwjgl.BufferUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -24,6 +27,16 @@ public class Utils {
             result = scanner.useDelimiter("\\A").next();
         }
         return result;
+    }
+
+    /**
+     * Convert a resource into a File.
+     * @param url The resource
+     * @return The file
+     * @throws URISyntaxException
+     */
+    public static File getFileFromResource(URL url) throws URISyntaxException {
+        return new File(url.toURI());
     }
 
     public static int[] listIntToArray(List<Integer> list) {

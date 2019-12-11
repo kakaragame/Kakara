@@ -77,6 +77,8 @@ public class GameEngine implements Runnable {
                 accumulator -= interval;
             }
 
+            collide();
+
             render();
 
             if (!window.isvSync()) {
@@ -98,9 +100,6 @@ public class GameEngine implements Runnable {
     }
 
     protected void input() {
-        if (window.isKeyPressed(GLFW_KEY_UP)) {
-
-        }
     }
 
     protected void update(float interval) {
@@ -117,6 +116,12 @@ public class GameEngine implements Runnable {
         renderer.cleanup();
         for (GameItem gameObject : gameHandler.getItemHandler().getObjectList()) {
             gameObject.cleanup();
+        }
+    }
+
+    protected void collide(){
+        for(GameItem gi : gameHandler.getCollisionManager().getCollidngItems()){
+            gi.getCollider().update();
         }
     }
 

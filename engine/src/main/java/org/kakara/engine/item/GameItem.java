@@ -2,6 +2,9 @@ package org.kakara.engine.item;
 
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.kakara.engine.GameHandler;
+import org.kakara.engine.collision.Collider;
+import org.kakara.engine.collision.CollisionManager;
 
 import java.util.UUID;
 
@@ -23,6 +26,7 @@ public class GameItem {
 
     private boolean insideFrustum;
     private UUID uuid = UUID.randomUUID();
+    private Collider collider;
 
     public GameItem() {
         selected = false;
@@ -62,6 +66,12 @@ public class GameItem {
         this.position.z = z;
     }
 
+    public void translateBy(float x, float y, float z){
+        this.position.x += x;
+        this.position.y += y;
+        this.position.z += z;
+    }
+
     public float getScale() {
         return scale;
     }
@@ -96,6 +106,20 @@ public class GameItem {
 
     public void setMesh(Mesh mesh) {
         this.meshes = new Mesh[]{mesh};
+    }
+
+    public void setCollider(Collider collider){
+        this.collider = collider;
+        collider.onRegister(this);
+    }
+
+    public void removeCollider(){
+        this.collider = null;
+        GameHandler.getInstance().getCollisionManager().removeCollidingItem(this);
+    }
+
+    public Collider getCollider(){
+        return this.collider;
     }
 
     public void render() {

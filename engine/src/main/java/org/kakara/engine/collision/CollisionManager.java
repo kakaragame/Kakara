@@ -29,14 +29,51 @@ public class CollisionManager {
 
     /**
      * Detect collision between two items.
-     * @param item1 The first game item.
-     * @param item2 The second game item.
+     * @param item The first game item.
+     * @param other The second game item.
      * @return If they are colliding.
      */
-    public boolean isColliding(GameItem item1, GameItem item2){
-        boolean xCollision = item1.getPosition().x + item1.getScale() >= item2.getPosition().x && item2.getPosition().x + item2.getScale() >= item1.getPosition().x;
-        boolean yCollision = item1.getPosition().y + item1.getScale() >= item2.getPosition().y && item2.getPosition().y + item2.getScale() >= item1.getPosition().y;
-        boolean zCollision = item1.getPosition().z + item1.getScale() >= item2.getPosition().z && item2.getPosition().z + item2.getScale() >= item1.getPosition().z;
+    public boolean isColliding(GameItem item, GameItem other){
+        boolean xCollision;
+        boolean yCollision;
+        boolean zCollision;
+        if(item.getCollider() instanceof BoxCollider && other.getCollider() instanceof ObjectBoxCollider){
+            xCollision = (item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x) + (item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint2().x) >= other.getPosition().x && other.getPosition().x + other.getScale()
+                    >= item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x;
+            yCollision = (item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y) + (item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint2().y) >= other.getPosition().y && other.getPosition().y + other.getScale()
+                    >= item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y;
+            zCollision = (item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z) + (item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint2().z) >= other.getPosition().z && other.getPosition().z + other.getScale()
+                    >= item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z;
+        }
+        else if(item.getCollider() instanceof BoxCollider && other.getCollider() instanceof BoxCollider){
+            xCollision = (item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x) + (item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint2().x) >= (other.getPosition().x + ((BoxCollider) other.getCollider()).getRelativePoint1().x)
+                    && (other.getPosition().x + ((BoxCollider) other.getCollider()).getRelativePoint1().x) + (other.getPosition().x + ((BoxCollider) other.getCollider()).getRelativePoint2().x)
+                    >= item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x;
+            yCollision = (item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y) + (item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint2().y) >= (other.getPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y)
+                    && (other.getPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y) + (other.getPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint2().y)
+                    >= item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y;
+            zCollision = (item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z) + (item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint2().z) >= (other.getPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint1().z)
+                    && (other.getPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint1().z) + (other.getPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint2().z)
+                    >= item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z;
+        }
+        else if(item.getCollider() instanceof  ObjectBoxCollider && other.getCollider() instanceof ObjectBoxCollider){
+            xCollision = item.getPosition().x + item.getScale() >= other.getPosition().x && other.getPosition().x + other.getScale() >= item.getPosition().x;
+            yCollision = item.getPosition().y + item.getScale() >= other.getPosition().y && other.getPosition().y + other.getScale() >= item.getPosition().y;
+            zCollision = item.getPosition().z + item.getScale() >= other.getPosition().z && other.getPosition().z + other.getScale() >= item.getPosition().z;
+        }
+        else if(item.getCollider() instanceof ObjectBoxCollider && other.getCollider() instanceof BoxCollider){
+            GameItem itemCopy = other;
+            GameItem otherCopy = item;
+            xCollision = (itemCopy.getPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x) + (itemCopy.getPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint2().x) >= otherCopy.getPosition().x && otherCopy.getPosition().x + otherCopy.getScale()
+                    >= itemCopy.getPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x;
+            yCollision = (itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y) + (itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint2().y) >= otherCopy.getPosition().y && otherCopy.getPosition().y + otherCopy.getScale()
+                    >= itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y;
+            zCollision = (itemCopy.getPosition().z + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().z) + (itemCopy.getPosition().z + ((BoxCollider) itemCopy.getCollider()).getRelativePoint2().z) >= otherCopy.getPosition().z && otherCopy.getPosition().z + otherCopy.getScale()
+                    >= itemCopy.getPosition().z + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().z;
+        }
+        else{
+            return false;
+        }
         return xCollision && yCollision && zCollision;
     }
 }

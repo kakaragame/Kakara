@@ -1,8 +1,8 @@
 package org.kakara.engine.test;
 
-import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
+import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.OnKeyPressEvent;
@@ -11,11 +11,11 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Texture;
+import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.Mesh;
 import org.kakara.engine.utils.Utils;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +35,11 @@ public class KakaraTest implements Game {
         Mesh[] houseMesh = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
         System.out.println("houseMesh = " + houseMesh.length);
         GameItem object = new GameItem(houseMesh);
-        object.setPosition(0,0.3f,0);
+        object.setPosition(0,3f,0);
         object.setScale(0.3f);
+        object.setCollider(new BoxCollider(new Vector3(2, 2, 2), new Vector3(-2, -2, -2), true));
+        ((BoxCollider) object.getCollider()).setUseGravity(true);
+        ((BoxCollider) object.getCollider()).setTrigger(true);
         float[] positions = new float[] {
                 // V0
                 -0.5f, 0.5f, 0.5f,
@@ -204,7 +207,7 @@ public class KakaraTest implements Game {
             System.exit(1);
         }
 
-        Vector3f currentPos = gi2.getPosition();
+        Vector3 currentPos = gi2.getPosition();
         if(ki.isKeyPressed(GLFW_KEY_UP)){
             gi2.setPosition(currentPos.x + 0.01f, currentPos.y, currentPos.z);
         }
@@ -230,7 +233,7 @@ public class KakaraTest implements Game {
 
     public void input(){
         KeyInput ki = gInst.getKeyInput();
-        Vector3f currentPos = gi2.getPosition();
+        Vector3 currentPos = gi2.getPosition();
         if(ki.isKeyPressed(GLFW_KEY_UP)){
             gi2.setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
         }

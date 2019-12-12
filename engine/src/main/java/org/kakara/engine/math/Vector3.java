@@ -18,6 +18,10 @@ public class Vector3 {
         this(vec.x, vec.y, vec.z);
     }
 
+    /**
+     * Clone the vector
+     * @return The cloned vector.
+     */
     public Vector3 clone(){
         return new Vector3(x, y, z);
     }
@@ -37,6 +41,10 @@ public class Vector3 {
         return new Vector3(this.x + x, this.y + y, this.z + z);
     }
 
+    /**
+     * Convert the vector to the JOML version.
+     * @return
+     */
     public Vector3f toJoml(){
         return new Vector3f(this.x, this.y, this.z);
     }

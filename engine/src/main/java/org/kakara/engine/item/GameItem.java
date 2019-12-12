@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.Collider;
 import org.kakara.engine.collision.CollisionManager;
+import org.kakara.engine.math.Vector3;
 
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public class GameItem {
 
     private Mesh[] meshes;
 
-    private final Vector3f position;
+    private final Vector3 position;
 
     private float scale;
 
@@ -30,7 +31,7 @@ public class GameItem {
 
     public GameItem() {
         selected = false;
-        position = new Vector3f(0, 0, 0);
+        position = new Vector3(0, 0, 0);
         scale = 1;
         rotation = new Quaternionf();
         textPos = 0;
@@ -48,8 +49,8 @@ public class GameItem {
         this.meshes = meshes;
     }
 
-    public Vector3f getPosition() {
-        return position;
+    public Vector3 getPosition() {
+        return position.clone();
     }
 
     public int getTextPos() {
@@ -60,16 +61,28 @@ public class GameItem {
         return selected;
     }
 
-    public final void setPosition(float x, float y, float z) {
+    public void setPosition(float x, float y, float z) {
         this.position.x = x;
         this.position.y = y;
         this.position.z = z;
+    }
+
+    public void setPosition(Vector3 position){
+        this.position.x = position.x;
+        this.position.y = position.y;
+        this.position.z = position.z;
     }
 
     public void translateBy(float x, float y, float z){
         this.position.x += x;
         this.position.y += y;
         this.position.z += z;
+    }
+
+    public void translateBy(Vector3 position){
+        this.position.x = position.x;
+        this.position.y = position.y;
+        this.position.z = position.z;
     }
 
     public float getScale() {

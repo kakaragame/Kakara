@@ -4,6 +4,8 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.math.Vector3;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class BoxCollider implements Collider {
 
     boolean useGravity;
@@ -12,6 +14,7 @@ public class BoxCollider implements Collider {
 
     private Vector3 point1;
     private Vector3 point2;
+    private Vector3 offset;
     private boolean relative;
 
     private Vector3 lastPosition;
@@ -26,6 +29,7 @@ public class BoxCollider implements Collider {
         this.point1 = point1;
         this.point2 = point2;
         this.relative = true;
+        this.offset = new Vector3(0, 0, 0);
     }
 
     public BoxCollider(Vector3 point1, Vector3 point2, boolean relative){
@@ -36,6 +40,7 @@ public class BoxCollider implements Collider {
         this.point1 = point1;
         this.point2 = point2;
         this.relative = relative;
+        this.offset = new Vector3(0, 0, 0);
     }
 
     public BoxCollider(Vector3 point1, Vector3 point2){
@@ -46,18 +51,21 @@ public class BoxCollider implements Collider {
         this.point1 = point1;
         this.point2 = point2;
         this.relative = true;
+        this.offset = new Vector3(0, 0, 0);
     }
 
     public boolean usesGravity(){
         return useGravity;
     }
 
-    public void setUseGravity(boolean value){
+    public Collider setUseGravity(boolean value){
         this.useGravity = value;
+        return this;
     }
 
-    public void setTrigger(boolean value){
+    public Collider setTrigger(boolean value){
         this.isTrigger = value;
+        return this;
     }
 
     public float getGravity(){
@@ -84,16 +92,24 @@ public class BoxCollider implements Collider {
         return point1;
     }
 
+    public void setOffset(Vector3 offset){
+        this.offset = offset;
+    }
+
+    public Vector3 getOffset(){
+        return offset;
+    }
+
     public Vector3 getRelativePoint1(){
         if(!relative)
-            return point1.subtract(item.getPosition());
-        return point1;
+            return point1.add(offset).subtract(item.getPosition());
+        return point1.add(offset);
     }
 
     public Vector3 getAbsolutePoint1(){
         if(relative)
-            return point1.add(item.getPosition());
-        return point1;
+            return point1.add(offset).add(item.getPosition());
+        return point1.add(offset);
     }
 
     public void setPoint1(Vector3 point1){
@@ -106,14 +122,14 @@ public class BoxCollider implements Collider {
 
     public Vector3 getRelativePoint2(){
         if(!relative)
-            return point2.subtract(item.getPosition());
-        return point2;
+            return point2.add(offset).subtract(item.getPosition());
+        return point2.add(offset);
     }
 
     public Vector3 getAbsolutePoint2(){
         if(relative)
-            return point2.add(item.getPosition());
-        return point2;
+            return point2.add(offset).add(item.getPosition());
+        return point2.add(offset);
     }
 
     public void setPoint2(Vector3 point2){

@@ -1,6 +1,5 @@
 package org.kakara.engine.collision;
 
-import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.math.Vector3;
@@ -33,12 +32,14 @@ public class ObjectBoxCollider implements Collider {
         return useGravity;
     }
 
-    public void setUseGravity(boolean value){
+    public Collider setUseGravity(boolean value){
         this.useGravity = value;
+        return this;
     }
 
-    public void setTrigger(boolean value){
+    public Collider setTrigger(boolean value){
         this.isTrigger = value;
+        return this;
     }
 
     public float getGravity(){

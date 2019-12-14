@@ -9,6 +9,8 @@ import org.kakara.engine.math.Vector3;
 
 import java.util.UUID;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class GameItem {
 
     private boolean selected;
@@ -61,36 +63,41 @@ public class GameItem {
         return selected;
     }
 
-    public void setPosition(float x, float y, float z) {
+    public GameItem setPosition(float x, float y, float z) {
         this.position.x = x;
         this.position.y = y;
         this.position.z = z;
+        return this;
     }
 
-    public void setPosition(Vector3 position){
+    public GameItem setPosition(Vector3 position){
         this.position.x = position.x;
         this.position.y = position.y;
         this.position.z = position.z;
+        return this;
     }
 
-    public void translateBy(float x, float y, float z){
+    public GameItem translateBy(float x, float y, float z){
         this.position.x += x;
         this.position.y += y;
         this.position.z += z;
+        return this;
     }
 
-    public void translateBy(Vector3 position){
+    public GameItem translateBy(Vector3 position){
         this.position.x = position.x;
         this.position.y = position.y;
         this.position.z = position.z;
+        return this;
     }
 
     public float getScale() {
         return scale;
     }
 
-    public final void setScale(float scale) {
+    public final GameItem setScale(float scale) {
         this.scale = scale;
+        return this;
     }
 
     public UUID getId() {
@@ -101,8 +108,9 @@ public class GameItem {
         return rotation;
     }
 
-    public final void setRotation(Quaternionf q) {
+    public final GameItem setRotation(Quaternionf q) {
         this.rotation.set(q);
+        return this;
     }
 
     public Mesh getMesh() {
@@ -121,9 +129,10 @@ public class GameItem {
         this.meshes = new Mesh[]{mesh};
     }
 
-    public void setCollider(Collider collider){
+    public GameItem setCollider(Collider collider){
         this.collider = collider;
         collider.onRegister(this);
+        return this;
     }
 
     public void removeCollider(){

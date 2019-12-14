@@ -34,12 +34,13 @@ public class KakaraTest implements Game {
         gInst = handler;
         Mesh[] houseMesh = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
         System.out.println("houseMesh = " + houseMesh.length);
+
+        // Steve Creation
         GameItem object = new GameItem(houseMesh);
-        object.setPosition(0,3f,0);
-        object.setScale(0.3f);
-        object.setCollider(new BoxCollider(new Vector3(2, 2, 2), new Vector3(-2, -2, -2), true));
-        ((BoxCollider) object.getCollider()).setUseGravity(true);
-        ((BoxCollider) object.getCollider()).setTrigger(true);
+        object.setPosition(1,2f,1).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.getCollider().setUseGravity(true).setTrigger(false);
+        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+
         float[] positions = new float[] {
                 // V0
                 -0.5f, 0.5f, 0.5f,
@@ -153,11 +154,11 @@ public class KakaraTest implements Game {
         }
 
         GameItem gi1 = new GameItem(mesh);
-        gi1.setPosition(0, 3, 0);
+        gi1.setPosition(4, 3, 4);
         gi1.setCollider(new ObjectBoxCollider(true, false));
         gInst.getItemHandler().addObject(gi1);
         GameItem gi2 = new GameItem(mesh);
-        gi2.setPosition(0, 1f, 2);
+        gi2.setPosition(0, 3f, 4);
         gi2.setCollider(new ObjectBoxCollider());
         gInst.getItemHandler().addObject(gi2);
 
@@ -209,10 +210,10 @@ public class KakaraTest implements Game {
 
         Vector3 currentPos = gi2.getPosition();
         if(ki.isKeyPressed(GLFW_KEY_UP)){
-            gi2.setPosition(currentPos.x + 0.01f, currentPos.y, currentPos.z);
+            gi2.setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
         }
         if(ki.isKeyPressed(GLFW_KEY_DOWN)){
-            gi2.setPosition(currentPos.x - 0.01f, currentPos.y, currentPos.z);
+            gi2.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
         }
         if(ki.isKeyPressed(GLFW_KEY_LEFT)){
             gi2.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);

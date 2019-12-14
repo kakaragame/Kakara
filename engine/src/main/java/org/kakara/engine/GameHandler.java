@@ -1,5 +1,6 @@
 package org.kakara.engine;
 
+import org.kakara.engine.collision.CollisionManager;
 import org.kakara.engine.events.EventManager;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.input.KeyInput;
@@ -16,7 +17,9 @@ public class GameHandler {
     private MouseInput mouseInput;
     private KeyInput keyInput;
     private EventManager eventManager;
+    private CollisionManager collisionManager;
 
+    private static GameHandler gameHandler;
     private GameEngine gameEngine;
     public GameHandler(GameEngine gameEngine){
         this.gameEngine = gameEngine;
@@ -25,6 +28,9 @@ public class GameHandler {
         this.mouseInput = new MouseInput(this);
         this.keyInput = new KeyInput(gameEngine);
         this.eventManager = new EventManager();
+        this.collisionManager = new CollisionManager(this);
+
+        GameHandler.gameHandler = this;
     }
 
     /**
@@ -88,6 +94,14 @@ public class GameHandler {
      */
     public EventManager getEventManager(){
         return eventManager;
+    }
+
+    public CollisionManager getCollisionManager(){
+        return collisionManager;
+    }
+
+    public static GameHandler getInstance(){
+        return gameHandler;
     }
 
 

@@ -29,7 +29,7 @@ public class Transformation {
 
     public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {
         Quaternionf rotation = gameItem.getRotation();
-        modelViewMatrix.identity().translate(gameItem.getPosition()).
+        modelViewMatrix.identity().translate(gameItem.getPosition().toJoml()).
                 rotateX((float)Math.toRadians(-rotation.x)).
                 rotateY((float)Math.toRadians(-rotation.y)).
                 rotateZ((float)Math.toRadians(-rotation.z)).
@@ -39,8 +39,8 @@ public class Transformation {
     }
 
     public Matrix4f getViewMatrix(Camera camera) {
-        Vector3f cameraPos = camera.getPosition();
-        Vector3f rotation = camera.getRotation();
+        Vector3f cameraPos = camera.getPosition().toJoml();
+        Vector3f rotation = camera.getRotation().toJoml();
 
         viewMatrix.identity();
         // First do the rotation so camera rotates over its position

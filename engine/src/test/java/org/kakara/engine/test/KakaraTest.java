@@ -2,6 +2,8 @@ package org.kakara.engine.test;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
+import org.kakara.engine.collision.BoxCollider;
+import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.OnKeyPressEvent;
 import org.kakara.engine.events.event.OnMouseClickEvent;
@@ -9,11 +11,11 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Texture;
+import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.Mesh;
 import org.kakara.engine.utils.Utils;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,15 +27,20 @@ import static org.lwjgl.glfw.GLFW.*;
 public class KakaraTest implements Game {
 
     private GameHandler gInst;
+    private GameItem gi2;
 
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
         Mesh[] houseMesh = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
         System.out.println("houseMesh = " + houseMesh.length);
+
+        // Steve Creation
         GameItem object = new GameItem(houseMesh);
-        object.setPosition(0,0.3f,0);
-        object.setScale(0.3f);
+        object.setPosition(1,2f,1).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.getCollider().setUseGravity(true).setTrigger(false);
+        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+
         float[] positions = new float[] {
                 // V0
                 -0.5f, 0.5f, 0.5f,
@@ -141,9 +148,21 @@ public class KakaraTest implements Game {
             for(int z = 5; z > -6; z--){
                 GameItem gis = gi.clone(false);
                 gis.setPosition(x, 0, z);
+                gis.setCollider(new ObjectBoxCollider(false, true));
                 gInst.getItemHandler().addObject(gis);
             }
         }
+
+        GameItem gi1 = new GameItem(mesh);
+        gi1.setPosition(4, 3, 4);
+        gi1.setCollider(new ObjectBoxCollider(true, false));
+        gInst.getItemHandler().addObject(gi1);
+        GameItem gi2 = new GameItem(mesh);
+        gi2.setPosition(0, 3f, 4);
+        gi2.setCollider(new ObjectBoxCollider());
+        gInst.getItemHandler().addObject(gi2);
+
+        System.out.println(gInst.getCollisionManager().isColliding(gi1, gi2));
 
 
 
@@ -155,7 +174,12 @@ public class KakaraTest implements Game {
         // Sets the default camera position and rotation.
         gInst.getCamera().setPosition(5, 5, 0);
         gInst.getCamera().setRotation(45, 270, 0);
+
+        this.gi2 = gi2;
+        this.gi1 = gi1;
     }
+
+    private GameItem gi1;
 
     @Override
     public void update() {
@@ -184,8 +208,51 @@ public class KakaraTest implements Game {
             System.exit(1);
         }
 
+        Vector3 currentPos = gi2.getPosition();
+        if(ki.isKeyPressed(GLFW_KEY_UP)){
+            gi2.setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_DOWN)){
+            gi2.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_LEFT)){
+            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_RIGHT)){
+            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_N)){
+            gi2.setPosition(currentPos.x, currentPos.y + 0.1f, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_M)){
+            gi2.setPosition(currentPos.x, currentPos.y - 0.1f, currentPos.z);
+        }
+
         MouseInput mi = gInst.getMouseInput();
         gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
+    }
+
+    public void input(){
+        KeyInput ki = gInst.getKeyInput();
+        Vector3 currentPos = gi2.getPosition();
+        if(ki.isKeyPressed(GLFW_KEY_UP)){
+            gi2.setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_DOWN)){
+            gi2.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_LEFT)){
+            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_RIGHT)){
+            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_N)){
+            gi2.setPosition(currentPos.x, currentPos.y + 0.1f, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_M)){
+            gi2.setPosition(currentPos.x, currentPos.y - 0.1f, currentPos.z);
+        }
     }
 
     @EventHandler

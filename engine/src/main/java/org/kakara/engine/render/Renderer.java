@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 
 import org.kakara.engine.Camera;
+import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.utils.Utils;
@@ -63,6 +64,9 @@ public class Renderer {
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
             // Render the mes for this game item
             gameObject.render();
+            if(gameObject.getCollider() instanceof BoxCollider){
+                ((BoxCollider) gameObject.getCollider()).render();
+            }
         }
 
         shaderProgram.unbind();

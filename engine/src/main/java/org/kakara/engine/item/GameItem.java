@@ -17,7 +17,7 @@ public class GameItem {
 
     private Mesh[] meshes;
 
-    private final Vector3 position;
+    private final Vector3f position;
 
     private float scale;
 
@@ -33,7 +33,7 @@ public class GameItem {
 
     public GameItem() {
         selected = false;
-        position = new Vector3(0, 0, 0);
+        position = new Vector3f(0, 0, 0);
         scale = 1;
         rotation = new Quaternionf();
         textPos = 0;
@@ -52,7 +52,7 @@ public class GameItem {
     }
 
     public Vector3 getPosition() {
-        return position.clone();
+        return new Vector3(position);
     }
 
     public int getTextPos() {
@@ -85,9 +85,9 @@ public class GameItem {
     }
 
     public GameItem translateBy(Vector3 position){
-        this.position.x = position.x;
-        this.position.y = position.y;
-        this.position.z = position.z;
+        this.position.x += position.x;
+        this.position.y += position.y;
+        this.position.z += position.z;
         return this;
     }
 
@@ -198,5 +198,9 @@ public class GameItem {
             clone.setTextPos(this.textPos);
         }
         return clone;
+    }
+
+    public UUID getUuid(){
+        return this.uuid;
     }
 }

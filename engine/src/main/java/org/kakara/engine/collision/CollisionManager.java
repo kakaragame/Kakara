@@ -76,4 +76,31 @@ public class CollisionManager {
         }
         return xCollision && yCollision && zCollision;
     }
+
+    public boolean isCollidingBottom(GameItem item1, GameItem item2){
+        if(!isColliding(item1, item2)) return false;
+        boolean yCollision;
+        if(item1.getCollider() instanceof BoxCollider && item2.getCollider() instanceof ObjectBoxCollider){
+            yCollision = (item1.getPosition().y + ((BoxCollider) item1.getCollider()).getRelativePoint1().y) + (((BoxCollider) item1.getCollider()).getRelativePoint2().y) >= item2.getPosition().y && item2.getPosition().y + item2.getScale()
+                    >= item1.getPosition().y + ((BoxCollider) item1.getCollider()).getRelativePoint1().y;
+        }
+        else if(item1.getCollider() instanceof BoxCollider && item2.getCollider() instanceof BoxCollider){
+            yCollision = (item1.getPosition().y + ((BoxCollider) item1.getCollider()).getRelativePoint1().y) + (((BoxCollider) item1.getCollider()).getRelativePoint2().y) >= (item2.getPosition().y + ((BoxCollider) item2.getCollider()).getRelativePoint1().y)
+                    && (item2.getPosition().y + ((BoxCollider) item2.getCollider()).getRelativePoint1().y) + ( ((BoxCollider) item2.getCollider()).getRelativePoint2().y)
+                    >= item1.getPosition().y + ((BoxCollider) item1.getCollider()).getRelativePoint1().y;
+        }
+        else if(item1.getCollider() instanceof  ObjectBoxCollider && item2.getCollider() instanceof ObjectBoxCollider){
+            yCollision = item1.getPosition().y + item1.getScale() >= item2.getPosition().y && item2.getPosition().y + item2.getScale() >= item1.getPosition().y;
+        }
+        else if(item2.getCollider() instanceof ObjectBoxCollider && item2.getCollider() instanceof BoxCollider){
+            GameItem itemCopy = item2;
+            GameItem otherCopy = item2;
+            yCollision = (itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().y) >= otherCopy.getPosition().y && otherCopy.getPosition().y + otherCopy.getScale()
+                    >= itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y;
+        }
+        else{
+            return false;
+        }
+        return yCollision;
+    }
 }

@@ -1,6 +1,7 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.item.GameItem;
+import org.kakara.engine.math.Vector3;
 
 public interface Collider {
 
@@ -15,5 +16,10 @@ public interface Collider {
 
     boolean usesGravity();
     Collider setUseGravity(boolean value);
+
+    Vector3 getRelativePoint1();
+    Vector3 getAbsolutePoint1();
+    Vector3 getRelativePoint2();
+    Vector3 getAbsolutePoint2();
 
 }

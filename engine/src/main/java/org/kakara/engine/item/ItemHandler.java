@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.UUID;
 
 public class ItemHandler {
-    private List<GameItem> objects;
+    private List<GameItem> items;
 
     public ItemHandler(){
-        objects = new ArrayList<>();
+        items = new ArrayList<>();
     }
 
-    public void addObject(GameItem obj){
-        this.objects.add(obj);
+    public void addItem(GameItem obj){
+        this.items.add(obj);
     }
 
-    public List<GameItem> getObjectList(){
-        return this.objects;
+    public List<GameItem> getItemList(){
+        return this.items;
     }
 
     /**
@@ -24,8 +24,8 @@ public class ItemHandler {
      * @param id The id
      * @return Returns the gameobject. (Returns null if none found).
      */
-    public GameItem getObjectWithId(UUID id){
-        for(GameItem obj : objects){
+    public GameItem getItemWithId(UUID id){
+        for(GameItem obj : items){
             if(obj.getId() == id) return obj;
         }
         return null;

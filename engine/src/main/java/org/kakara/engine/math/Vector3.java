@@ -48,4 +48,12 @@ public class Vector3 {
     public Vector3f toJoml(){
         return new Vector3f(this.x, this.y, this.z);
     }
+
+    public String toString(){
+        return "{" + this.x + ", " + this.y + ", " + this.z + "}";
+    }
+
+    public boolean greaterThan(Vector3 other){
+        return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2)) > Math.sqrt(Math.pow(other.x, 2) + Math.pow(other.y, 2) + Math.pow(other.z, 2));
+    }
 }

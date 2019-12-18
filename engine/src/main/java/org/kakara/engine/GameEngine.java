@@ -77,8 +77,6 @@ public class GameEngine implements Runnable {
                 accumulator -= interval;
             }
 
-            collide();
-
             render();
 
             if (!window.isvSync()) {
@@ -105,16 +103,17 @@ public class GameEngine implements Runnable {
     protected void update(float interval) {
         gameHandler.update();
         game.update();
+        collide();
     }
 
     protected void render() {
-        renderer.render(window, gameHandler.getItemHandler().getObjectList(), gameHandler.getCamera());
+        renderer.render(window, gameHandler.getItemHandler().getItemList(), gameHandler.getCamera());
         window.update();
     }
 
     protected void cleanup() {
         renderer.cleanup();
-        for (GameItem gameObject : gameHandler.getItemHandler().getObjectList()) {
+        for (GameItem gameObject : gameHandler.getItemHandler().getItemList()) {
             gameObject.cleanup();
         }
     }

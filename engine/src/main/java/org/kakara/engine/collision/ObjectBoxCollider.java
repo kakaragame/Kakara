@@ -37,6 +37,26 @@ public class ObjectBoxCollider implements Collider {
         return this;
     }
 
+    @Override
+    public Vector3 getRelativePoint1() {
+        return new Vector3(0, 0, 0);
+    }
+
+    @Override
+    public Vector3 getAbsolutePoint1() {
+        return item.getPosition();
+    }
+
+    @Override
+    public Vector3 getRelativePoint2() {
+        return new Vector3(item.getScale(), item.getScale(), item.getScale());
+    }
+
+    @Override
+    public Vector3 getAbsolutePoint2() {
+        return item.getPosition().add(item.getScale(), item.getScale(), item.getScale());
+    }
+
     public Collider setTrigger(boolean value){
         this.isTrigger = value;
         return this;
@@ -70,9 +90,10 @@ public class ObjectBoxCollider implements Collider {
 
             }
         }
-
+//        if(item.getCollider() instanceof ObjectBoxCollider)
+//            System.out.println("Collider Class: " + item.getPosition() + "    " + item.getUuid());
         if(useGravity){
-            item.translateBy(0, -gravity, 0);
+            item.setPosition(item.getPosition().x, item.getPosition().y-gravity, item.getPosition().z);
         }
     }
 

@@ -68,6 +68,7 @@ public class GameEngine implements Runnable {
         boolean running = true;
         while (running && !window.windowShouldClose()) {
             elapsedTime = time.getElapsedTime();
+            Time.deltaTime = elapsedTime;
             accumulator += elapsedTime;
 
             input();
@@ -76,8 +77,6 @@ public class GameEngine implements Runnable {
                 update(interval);
                 accumulator -= interval;
             }
-
-            collide();
 
             render();
 
@@ -105,16 +104,17 @@ public class GameEngine implements Runnable {
     protected void update(float interval) {
         gameHandler.update();
         game.update();
+        collide();
     }
 
     protected void render() {
-        renderer.render(window, gameHandler.getItemHandler().getObjectList(), gameHandler.getCamera());
+        renderer.render(window, gameHandler.getItemHandler().getItemList(), gameHandler.getCamera());
         window.update();
     }
 
     protected void cleanup() {
         renderer.cleanup();
-        for (GameItem gameObject : gameHandler.getItemHandler().getObjectList()) {
+        for (GameItem gameObject : gameHandler.getItemHandler().getItemList()) {
             gameObject.cleanup();
         }
     }

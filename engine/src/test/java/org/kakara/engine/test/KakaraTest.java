@@ -28,6 +28,7 @@ public class KakaraTest implements Game {
 
     private GameHandler gInst;
     private GameItem gi2;
+    private GameItem player;
 
     @Override
     public void start(GameHandler handler) throws Exception {
@@ -37,9 +38,11 @@ public class KakaraTest implements Game {
 
         // Steve Creation
         GameItem object = new GameItem(houseMesh);
-        object.setPosition(1,2f,1).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.setPosition(4,100f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
         object.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+        System.out.println(object.getUuid());
+        this.player = object;
 
         float[] positions = new float[] {
                 // V0
@@ -140,7 +143,7 @@ public class KakaraTest implements Game {
         Texture grass = Utils.inputStreamToTexture(io);
         mesh.setMaterial(new Material(grass));
         GameItem gi = new GameItem(mesh);
-        gInst.getItemHandler().addObject(gi);
+        gInst.getItemHandler().addItem(gi);
         gi.setPosition(0, 0, -5);
 
 
@@ -149,24 +152,24 @@ public class KakaraTest implements Game {
                 GameItem gis = gi.clone(false);
                 gis.setPosition(x, 0, z);
                 gis.setCollider(new ObjectBoxCollider(false, true));
-                gInst.getItemHandler().addObject(gis);
+                gInst.getItemHandler().addItem(gis);
             }
         }
 
         GameItem gi1 = new GameItem(mesh);
-        gi1.setPosition(4, 3, 4);
+        gi1.setPosition(-4, 3, -4);
         gi1.setCollider(new ObjectBoxCollider(true, false));
-        gInst.getItemHandler().addObject(gi1);
+        gInst.getItemHandler().addItem(gi1);
         GameItem gi2 = new GameItem(mesh);
-        gi2.setPosition(0, 3f, 4);
+        gi2.setPosition(2, 3f, -5);
         gi2.setCollider(new ObjectBoxCollider());
-        gInst.getItemHandler().addObject(gi2);
+        gInst.getItemHandler().addItem(gi2);
 
         System.out.println(gInst.getCollisionManager().isColliding(gi1, gi2));
 
 
 
-        gInst.getItemHandler().addObject(object);
+        gInst.getItemHandler().addItem(object);
         gInst.getEventManager().registerHandler(this);
         // Added engine API for the cursor GLFW method.
         gInst.getWindow().setCursorVisibility(false);
@@ -208,24 +211,26 @@ public class KakaraTest implements Game {
             System.exit(1);
         }
 
-        Vector3 currentPos = gi2.getPosition();
+        Vector3 currentPos = player.getPosition();
+//        System.out.println("Test Class: " + currentPos + "  " + player.getUuid());
         if(ki.isKeyPressed(GLFW_KEY_UP)){
-            gi2.setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
+//            player.setPosition(currentPos.x + 4.1f, currentPos.y, currentPos.z);
+            player.translateBy(0.1f, 0, 0);
         }
         if(ki.isKeyPressed(GLFW_KEY_DOWN)){
-            gi2.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
+            player.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
         }
         if(ki.isKeyPressed(GLFW_KEY_LEFT)){
-            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
+            player.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
         }
         if(ki.isKeyPressed(GLFW_KEY_RIGHT)){
-            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
+            player.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
         }
         if(ki.isKeyPressed(GLFW_KEY_N)){
-            gi2.setPosition(currentPos.x, currentPos.y + 0.1f, currentPos.z);
+            gi2.translateBy(0, 0.1f, 0);
         }
         if(ki.isKeyPressed(GLFW_KEY_M)){
-            gi2.setPosition(currentPos.x, currentPos.y - 0.1f, currentPos.z);
+            gi2.translateBy(0, -0.1f, 0);
         }
 
         MouseInput mi = gInst.getMouseInput();

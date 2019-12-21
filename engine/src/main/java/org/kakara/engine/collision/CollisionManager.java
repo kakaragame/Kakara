@@ -6,6 +6,10 @@ import org.kakara.engine.item.GameItem;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used to handle colliding objects.
+ * (This class prevents the calculation of collision for non-colliding game items.)
+ */
 public class CollisionManager {
 
     private GameHandler handler;

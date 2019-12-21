@@ -207,9 +207,7 @@ public class BoxCollider implements Collider {
         }
         // If gravity is enabled move it by the gravitational velocity.
         if(useGravity){
-            System.out.println(isInAir);
-            if(getGravityVelocity() > gravity)
-                item.translateBy(0, -getGravityVelocity(), 0);
+            item.translateBy(0, -getGravityVelocity(), 0);
         }
 
         boolean found = false;
@@ -231,12 +229,11 @@ public class BoxCollider implements Collider {
             point1.z = 0;
             point2.x = 0;
             point2.z = 0;
-            float gVel = getGravityVelocity() < 0.001 ? gravity : getGravityVelocity();
-            if(KMath.distance(point1, point2) <= gVel){
+            if(KMath.distance(point1, point2) <= getGravityVelocity()){
                 isInAir = false;
                 found = true;
                 // Undo last gravitational action.
-                item.translateBy(0, gravity, 0);
+                item.translateBy(0, getGravityVelocity(), 0);
             }
         }
         // If no collision actions are done then it is in the air.

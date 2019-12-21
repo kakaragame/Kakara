@@ -38,10 +38,9 @@ public class KakaraTest implements Game {
 
         // Steve Creation
         GameItem object = new GameItem(houseMesh);
-        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.setPosition(4,100f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
         object.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
-        ((BoxCollider) object.getCollider()).setDebug(true);
         System.out.println(object.getUuid());
         this.player = object;
 
@@ -168,11 +167,6 @@ public class KakaraTest implements Game {
 
         System.out.println(gInst.getCollisionManager().isColliding(gi1, gi2));
 
-        GameItem gi4 = new GameItem(mesh);
-        gi4.setPosition(player.getPosition());
-        gInst.getItemHandler().addItem(gi4);
-        this.gi4 = gi4;
-
 
 
         gInst.getItemHandler().addItem(object);
@@ -189,7 +183,6 @@ public class KakaraTest implements Game {
     }
 
     private GameItem gi1;
-    private GameItem gi4;
 
     @Override
     public void update() {
@@ -234,14 +227,11 @@ public class KakaraTest implements Game {
             player.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
         }
         if(ki.isKeyPressed(GLFW_KEY_N)){
-            System.out.println("test");
             gi2.translateBy(0, 0.1f, 0);
         }
         if(ki.isKeyPressed(GLFW_KEY_M)){
             gi2.translateBy(0, -0.1f, 0);
         }
-
-        gi4.setPosition(player.getPosition());
 
         MouseInput mi = gInst.getMouseInput();
         gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);

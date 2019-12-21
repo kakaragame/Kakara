@@ -5,6 +5,7 @@ import org.kakara.engine.item.GameItem;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.render.DebugRender;
+import org.kakara.engine.utils.Time;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -28,7 +29,6 @@ public class BoxCollider implements Collider {
 
     private boolean useGravity;
     private boolean isTrigger;
-    // TODO Update to use acceleration.
     private float gravity;
 
     private Vector3 point1;
@@ -37,13 +37,14 @@ public class BoxCollider implements Collider {
     private boolean relative;
 
     private boolean isInAir = false;
+    private float timeInAir;
 
     private Vector3 lastPosition;
     private Vector3 deltaPosition;
     private GameItem item;
     private GameHandler handler;
 
-    public BoxCollider(Vector3 point1, Vector3 point2, boolean useGravity, boolean isTrigger){
+    public BoxCollider(Vector3 point1, Vector3 point2, boolean useGravity, boolean isTrigger, boolean relative){
         this.useGravity = useGravity;
         this.isTrigger = isTrigger;
         this.handler = GameHandler.getInstance();
@@ -52,28 +53,13 @@ public class BoxCollider implements Collider {
         this.point2 = point2;
         this.relative = true;
         this.offset = new Vector3(0, 0, 0);
+        timeInAir = 0;
     }
-
     public BoxCollider(Vector3 point1, Vector3 point2, boolean relative){
-        this.useGravity = false;
-        this.isTrigger = false;
-        this.handler = GameHandler.getInstance();
-        gravity = 0.07f;
-        this.point1 = point1;
-        this.point2 = point2;
-        this.relative = relative;
-        this.offset = new Vector3(0, 0, 0);
+        this(point1, point2,false, false, relative);
     }
-
     public BoxCollider(Vector3 point1, Vector3 point2){
-        this.useGravity = false;
-        this.isTrigger = false;
-        this.handler = GameHandler.getInstance();
-        gravity = 0.07f;
-        this.point1 = point1;
-        this.point2 = point2;
-        this.relative = true;
-        this.offset = new Vector3(0, 0, 0);
+        this(point1, point2, false, false, true);
     }
 
     public boolean usesGravity(){
@@ -92,6 +78,11 @@ public class BoxCollider implements Collider {
 
     public float getGravity(){
         return gravity;
+    }
+
+    public float getGravityVelocity(){
+        if(timeInAir < 1f) return getGravity();
+        return getGravity() * timeInAir;
     }
 
     public void setGravity(float gravity){
@@ -215,21 +206,20 @@ public class BoxCollider implements Collider {
             }
         }
         // If gravity is enabled move it by the gravitational velocity.
-        // TODO Change this to acceleration
         if(useGravity){
-            item.translateBy(0, -gravity, 0);
+            System.out.println(isInAir);
+            if(getGravityVelocity() > gravity)
+                item.translateBy(0, -getGravityVelocity(), 0);
         }
 
         boolean found = false;
         // Handle collision for gravity.
-//        System.out.println("========================================================");
         for(GameItem gi : cm.getCollidngItems()){
             // Prevent object from colliding with itself.
             if(gi == item) continue;
             // If the object is not colliding, then prevent further calculations.
             if(!cm.isColliding(gi, item)) continue;
             // Check to see if it is possible for the object to collide. If not stop calculations.
-//            System.out.println(KMath.distance(gi.getPosition(), item.getPosition()) > 20);
             if(KMath.distance(gi.getPosition(), item.getPosition()) > 20) continue;
             //The bottom collision point of this object.
             Vector3 point1 = KMath.distance(this.getAbsolutePoint1(), item.getPosition()) > KMath.distance(this.getAbsolutePoint2(), item.getPosition()) ? item.getCollider().getAbsolutePoint2() : item.getCollider().getAbsolutePoint1();
@@ -241,7 +231,8 @@ public class BoxCollider implements Collider {
             point1.z = 0;
             point2.x = 0;
             point2.z = 0;
-            if(KMath.distance(point1, point2) <= gravity){
+            float gVel = getGravityVelocity() < 0.001 ? gravity : getGravityVelocity();
+            if(KMath.distance(point1, point2) <= gVel){
                 isInAir = false;
                 found = true;
                 // Undo last gravitational action.
@@ -251,6 +242,11 @@ public class BoxCollider implements Collider {
         // If no collision actions are done then it is in the air.
         if(!found)
             isInAir = true;
+
+        if(isInAir)
+            timeInAir += Time.deltaTime;
+        else
+            timeInAir = 0;
     }
 
     @Override

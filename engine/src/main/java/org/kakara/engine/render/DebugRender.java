@@ -9,6 +9,12 @@ import static org.lwjgl.opengl.GL11.glVertex3d;
  * NOT TO BE USED IN PRODUCTION BUILD. REMOVE BEFORE COMPILATION.
  */
 public class DebugRender {
+    /**
+     * Returns all of the points
+     * @param point1
+     * @param point2
+     * @return
+     */
     public static float[] getPositions(Vector3 point1, Vector3 point2){
         float[] positions = {
 
@@ -57,6 +63,10 @@ public class DebugRender {
         return positions;
     }
 
+    /**
+     * Gets all of the indices.
+     * @return
+     */
     public static int[] getIndices(){
         int[] indices = new int[]{
                 // Front face

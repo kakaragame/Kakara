@@ -5,7 +5,15 @@ import org.kakara.engine.math.Vector3;
 
 public interface Collider {
 
+    /**
+     * Every frame update.
+     */
     void update();
+
+    /**
+     * When the collider is added to a game item.
+     * @param item
+     */
     void onRegister(GameItem item);
 
     /**
@@ -31,11 +39,17 @@ public interface Collider {
     void setGravity(float value);
 
     /**
-     * Get the velocity for gravity.
+     * Get the acceleration for gravity.
      * <p>Will be acceleration in next update.</p>
-     * @return The velocity.
+     * @return The acceleration.
      */
     float getGravity();
+
+    /**
+     * Get the velocity for gravity at a given time.
+     * @return The velocity.
+     */
+    float getGravityVelocity();
 
     /**
      * If gravity is enabled on the object.

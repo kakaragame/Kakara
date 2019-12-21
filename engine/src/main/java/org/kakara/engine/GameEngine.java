@@ -68,6 +68,7 @@ public class GameEngine implements Runnable {
         boolean running = true;
         while (running && !window.windowShouldClose()) {
             elapsedTime = time.getElapsedTime();
+            Time.deltaTime = elapsedTime;
             accumulator += elapsedTime;
 
             input();

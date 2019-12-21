@@ -38,7 +38,7 @@ public class KakaraTest implements Game {
 
         // Steve Creation
         GameItem object = new GameItem(houseMesh);
-        object.setPosition(1,2f,1).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
         object.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
         ((BoxCollider) object.getCollider()).setDebug(true);
@@ -158,15 +158,20 @@ public class KakaraTest implements Game {
         }
 
         GameItem gi1 = new GameItem(mesh);
-        gi1.setPosition(4, 3, 4);
+        gi1.setPosition(-4, 3, -4);
         gi1.setCollider(new ObjectBoxCollider(true, false));
         gInst.getItemHandler().addItem(gi1);
         GameItem gi2 = new GameItem(mesh);
-        gi2.setPosition(0, 3f, 4);
+        gi2.setPosition(2, 3f, -5);
         gi2.setCollider(new ObjectBoxCollider());
         gInst.getItemHandler().addItem(gi2);
 
         System.out.println(gInst.getCollisionManager().isColliding(gi1, gi2));
+
+        GameItem gi4 = new GameItem(mesh);
+        gi4.setPosition(player.getPosition());
+        gInst.getItemHandler().addItem(gi4);
+        this.gi4 = gi4;
 
 
 
@@ -184,6 +189,7 @@ public class KakaraTest implements Game {
     }
 
     private GameItem gi1;
+    private GameItem gi4;
 
     @Override
     public void update() {
@@ -228,11 +234,14 @@ public class KakaraTest implements Game {
             player.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
         }
         if(ki.isKeyPressed(GLFW_KEY_N)){
-            gi2.setPosition(currentPos.x, currentPos.y + 0.1f, currentPos.z);
+            System.out.println("test");
+            gi2.translateBy(0, 0.1f, 0);
         }
         if(ki.isKeyPressed(GLFW_KEY_M)){
-            gi2.setPosition(currentPos.x, currentPos.y - 0.1f, currentPos.z);
+            gi2.translateBy(0, -0.1f, 0);
         }
+
+        gi4.setPosition(player.getPosition());
 
         MouseInput mi = gInst.getMouseInput();
         gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);

@@ -4,6 +4,8 @@ public class Time {
 
     private double lastLoopTime;
 
+    public static float deltaTime;
+
     public void init(){
         lastLoopTime = getTime();
     }

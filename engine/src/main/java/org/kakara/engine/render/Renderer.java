@@ -64,7 +64,14 @@ public class Renderer {
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
             // Render the mes for this game item
             gameObject.render();
+            /*
+                Below is the code for the debug mode for the box collider.
+             */
             if(gameObject.getCollider() instanceof BoxCollider){
+                Matrix4f colliderViewMatrix = new Matrix4f().identity().scale(0.3f).translate(gameObject.getCollider().getAbsolutePoint1().subtract(1, 1, 1).divide(1-gameObject.getScale()).toJoml());
+                Matrix4f viewCurr = new Matrix4f(viewMatrix);
+                Matrix4f curColliderMatrix = viewCurr.mul(colliderViewMatrix);
+                shaderProgram.setUniform("modelViewMatrix", curColliderMatrix);
                 ((BoxCollider) gameObject.getCollider()).render();
             }
         }

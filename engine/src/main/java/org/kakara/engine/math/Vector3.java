@@ -41,6 +41,14 @@ public class Vector3 {
         return new Vector3(this.x + x, this.y + y, this.z + z);
     }
 
+    public Vector3 multiply(float v){
+        return new Vector3(this.x * v, this.y * v, this.z * v);
+    }
+
+    public Vector3 divide(float v){
+        return new Vector3(this.x / v, this.y / v, this.z / v);
+    }
+
     /**
      * Convert the vector to the JOML version.
      * @return

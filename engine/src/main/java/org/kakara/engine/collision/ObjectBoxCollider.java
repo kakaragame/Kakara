@@ -2,8 +2,13 @@ package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
+import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 
+/**
+ * Handles collision for primative types. For objects using the model loader
+ * @see BoxCollider
+ */
 public class ObjectBoxCollider implements Collider {
 
     boolean useGravity;
@@ -14,6 +19,7 @@ public class ObjectBoxCollider implements Collider {
     private Vector3 deltaPosition;
     private GameItem item;
     private GameHandler handler;
+
     public ObjectBoxCollider(boolean useGravity, boolean isTrigger){
         this.useGravity = useGravity;
         this.isTrigger = isTrigger;
@@ -90,10 +96,33 @@ public class ObjectBoxCollider implements Collider {
 
             }
         }
-//        if(item.getCollider() instanceof ObjectBoxCollider)
-//            System.out.println("Collider Class: " + item.getPosition() + "    " + item.getUuid());
+        // If gravity is enabled move it by the gravitational velocity.
+        // TODO Change this to acceleration
         if(useGravity){
-            item.setPosition(item.getPosition().x, item.getPosition().y-gravity, item.getPosition().z);
+            item.translateBy(0, -gravity, 0);
+        }
+        // Handle collision for gravity.
+        for(GameItem gi : cm.getCollidngItems()){
+            // Prevent object from colliding with itself.
+            if(gi == item) continue;
+            // If the object is not colliding, then prevent further calculations.
+            if(!cm.isColliding(gi, item)) continue;
+            // Check to see if it is possible for the object to collide. If not stop calculations.
+            if(KMath.distance(gi.getPosition(), item.getPosition()) > 20) continue;
+            //The bottom collision point of this object.
+            Vector3 point1 = KMath.distance(this.getAbsolutePoint1(), item.getPosition()) > KMath.distance(this.getAbsolutePoint2(), item.getPosition()) ? item.getCollider().getAbsolutePoint2() : item.getCollider().getAbsolutePoint1();
+            // The top collision point of the colliding object.
+            Vector3 point2 = KMath.distance(gi.getCollider().getAbsolutePoint1(), gi.getPosition()) < KMath.distance(gi.getCollider().getAbsolutePoint2(), gi.getPosition()) ? gi.getCollider().getAbsolutePoint2() : gi.getCollider().getAbsolutePoint1();
+            // Negate x and z.
+            point1.x = 0;
+            point1.z = 0;
+            point2.x = 0;
+            point2.z = 0;
+            // Calculate if the distance is close enough.
+            if(KMath.distance(point1, point2) <= gravity){
+                // Undo last gravitational action.
+                item.translateBy(0, gravity, 0);
+            }
         }
     }
 

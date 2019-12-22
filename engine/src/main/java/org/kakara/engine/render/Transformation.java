@@ -29,11 +29,14 @@ public class Transformation {
 
     public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {
         Quaternionf rotation = gameItem.getRotation();
-        modelViewMatrix.identity().translate(gameItem.getPosition().toJoml()).
-                rotateX((float)Math.toRadians(-rotation.x)).
-                rotateY((float)Math.toRadians(-rotation.y)).
-                rotateZ((float)Math.toRadians(-rotation.z)).
-                scale(gameItem.getScale());
+//        modelViewMatrix.identity().translate(gameItem.getPosition().toJoml()).
+//                rotateX((float)Math.toRadians(-rotation.x)).
+//                rotateY((float)Math.toRadians(-rotation.y)).
+//                rotateZ((float)Math.toRadians(-rotation.z)).
+//                scale(gameItem.getScale());
+        // I think this will work for a bit.
+        modelViewMatrix.translationRotateScale(gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, gameItem.getScale(),
+                gameItem.getScale(), gameItem.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
     }

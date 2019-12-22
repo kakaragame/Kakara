@@ -1,5 +1,6 @@
 package org.kakara.engine.test;
 
+import org.joml.Quaternionf;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
 import org.kakara.engine.collision.BoxCollider;
@@ -11,16 +12,14 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Texture;
+import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.Mesh;
 import org.kakara.engine.utils.Utils;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -38,11 +37,22 @@ public class KakaraTest implements Game {
 
         // Steve Creation
         GameItem object = new GameItem(houseMesh);
-        object.setPosition(4,100f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
         object.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
-        System.out.println(object.getUuid());
+        System.out.println("Player Game Item UUID: " + object.getUUID());
         this.player = object;
+
+        Mesh[] tree = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/tree/tree.obj")), Utils.getFileFromResource(Main.class.getResource("/tree/")));
+        GameItem treeObject = new GameItem(tree);
+        treeObject.setPosition(1,0.7f,1);
+        treeObject.setScale(0.05f);
+        // Set the rotation of the tree using only quaternions
+        treeObject.setRotationAboutAxis((float) Math.toRadians(-90), new Vector3(1, 0, 0));
+        /* If you want to use eular angles then do the following:
+        treeObject.setRotation(KMath.eularToQuaternion(new Vector3((float) Math.toRadians(-90), 0, 0))); */
+        gInst.getItemHandler().addItem(treeObject);
+
 
         float[] positions = new float[] {
                 // V0

@@ -1,5 +1,8 @@
 package org.kakara.engine.math;
 
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -54,5 +57,30 @@ public class KMath {
     public static float truncate(float input, int places){
         BigDecimal bd = new BigDecimal(input).setScale(places, RoundingMode.DOWN).stripTrailingZeros();
         return bd.floatValue();
+    }
+
+    /**
+     * Convert Eular to Quaternion
+     * <p>It is suggested to use Quaternions instead of Eulars in general.</p>
+     * @param rotation The vector3 rotation.
+     * @return The quaternion.
+     */
+    public static Quaternionf eularToQuaternion(Vector3 rotation){
+        double qx = Math.sin(rotation.z/2) * Math.cos(rotation.y/2) * Math.cos(rotation.x/2) - Math.cos(rotation.z/2) * Math.sin(rotation.y/2) * Math.sin(rotation.x/2);
+        double qy = Math.cos(rotation.z/2) * Math.sin(rotation.y/2) * Math.cos(rotation.x/2) + Math.sin(rotation.z/2) * Math.cos(rotation.y/2) * Math.sin(rotation.x/2);
+        double qz = Math.cos(rotation.z/2) * Math.cos(rotation.y/2) * Math.sin(rotation.x/2) - Math.sin(rotation.z/2) * Math.sin(rotation.y/2) * Math.cos(rotation.x/2);
+        double qw = Math.cos(rotation.z/2) * Math.cos(rotation.y/2) * Math.cos(rotation.x/2) + Math.sin(rotation.z/2) * Math.sin(rotation.y/2) * Math.sin(rotation.x/2);
+        return new Quaternionf((float)qz, (float)qy, (float)qx, (float)qw);
+    }
+
+    /**
+     * Convert Quaternions to Eular angles.
+     * @param q The Quaternion
+     * @return The Vector3 Eular angles.
+     */
+    public static Vector3 quaternionToEular(Quaternionf q){
+        Vector3f eular = new Vector3f();
+        q.getEulerAnglesXYZ(eular);
+        return new Vector3(eular);
     }
 }

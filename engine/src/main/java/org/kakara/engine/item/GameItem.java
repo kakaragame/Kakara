@@ -4,12 +4,9 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.Collider;
-import org.kakara.engine.collision.CollisionManager;
 import org.kakara.engine.math.Vector3;
 
 import java.util.UUID;
-
-import static org.lwjgl.opengl.GL11.*;
 
 public class GameItem {
 
@@ -28,7 +25,7 @@ public class GameItem {
     private boolean disableFrustumCulling;
 
     private boolean insideFrustum;
-    private UUID uuid = UUID.randomUUID();
+    private final UUID uuid;
     private Collider collider;
 
     public GameItem() {
@@ -39,6 +36,7 @@ public class GameItem {
         textPos = 0;
         insideFrustum = true;
         disableFrustumCulling = false;
+        uuid = UUID.randomUUID();
     }
 
     public GameItem(Mesh mesh) {
@@ -51,6 +49,10 @@ public class GameItem {
         this.meshes = meshes;
     }
 
+    /**
+     * Get the current position.
+     * @return The current position.
+     */
     public Vector3 getPosition() {
         return new Vector3(position);
     }
@@ -63,6 +65,13 @@ public class GameItem {
         return selected;
     }
 
+    /**
+     * Set the position of the game item.
+     * @param x x value
+     * @param y y value
+     * @param z z value
+     * @return The instance of the game item.
+     */
     public GameItem setPosition(float x, float y, float z) {
         this.position.x = x;
         this.position.y = y;
@@ -70,6 +79,11 @@ public class GameItem {
         return this;
     }
 
+    /**
+     * Set the position of the item
+     * @param position The position in vector form
+     * @return The instance of the Game Item.
+     */
     public GameItem setPosition(Vector3 position){
         this.position.x = position.x;
         this.position.y = position.y;
@@ -77,6 +91,13 @@ public class GameItem {
         return this;
     }
 
+    /**
+     * Change the position of the game item by x, y, and z values.
+     * @param x Change in x
+     * @param y Change in y
+     * @param z Change in z
+     * @return The instance of the game item.
+     */
     public GameItem translateBy(float x, float y, float z){
         this.position.x += x;
         this.position.y += y;
@@ -84,6 +105,11 @@ public class GameItem {
         return this;
     }
 
+    /**
+     * Change the position of the game item by a vector.
+     * @param position The vector to change by.
+     * @return The instance of the game item.
+     */
     public GameItem translateBy(Vector3 position){
         this.position.x += position.x;
         this.position.y += position.y;
@@ -91,15 +117,29 @@ public class GameItem {
         return this;
     }
 
+    /**
+     * Get the scale of the item.
+     * @return The scale
+     */
     public float getScale() {
         return scale;
     }
 
+    /**
+     * Set the scale of the Game Item
+     * @param scale The scale value
+     * @return The instance of the game item.
+     */
     public final GameItem setScale(float scale) {
         this.scale = scale;
         return this;
     }
 
+    /**
+     * Get the ID of the game item.
+     * <p>This method is the same as getUUID()</p>
+     * @return The ID.
+     */
     public UUID getId() {
         return uuid;
     }
@@ -108,8 +148,35 @@ public class GameItem {
         return rotation;
     }
 
+    /**
+     * Set the rotation of the Object
+     * @param q The quaternion
+     * @return The instance of the game item.
+     */
     public final GameItem setRotation(Quaternionf q) {
         this.rotation.set(q);
+        return this;
+    }
+
+    /**
+     * Change the rotation by the angle on the axis.
+     * @param angle The angle to change by. (In radians)
+     * @param axis The vector of the axis (without magnitude)
+     * @return The instance of the game item.
+     */
+    public GameItem rotateAboutAxis(float angle, Vector3 axis){
+        this.rotation.rotateAxis(angle, axis.toJoml());
+        return this;
+    }
+
+    /**
+     * Set the rotation to the angle on the axis.
+     * @param angle The angle to set to. (In Radians).
+     * @param axis The vector of the axis (without magnitude)
+     * @return The instance of the game item.
+     */
+    public GameItem setRotationAboutAxis(float angle, Vector3 axis){
+        this.rotation.rotationAxis(angle, axis.toJoml());
         return this;
     }
 
@@ -129,17 +196,29 @@ public class GameItem {
         this.meshes = new Mesh[]{mesh};
     }
 
+    /**
+     * Set the collider for a game item
+     * @param collider The instance of the collider.
+     * @return The instance of the game item.
+     */
     public GameItem setCollider(Collider collider){
         this.collider = collider;
         collider.onRegister(this);
         return this;
     }
 
+    /**
+     * Remove the currently active collider.
+     */
     public void removeCollider(){
         this.collider = null;
         GameHandler.getInstance().getCollisionManager().removeCollidingItem(this);
     }
 
+    /**
+     * Get the currently active collider
+     * @return The collider. (Null if none applied)
+     */
     public Collider getCollider(){
         return this.collider;
     }
@@ -200,7 +279,11 @@ public class GameItem {
         return clone;
     }
 
-    public UUID getUuid(){
+    /**
+     * Get the UUID of the game item.
+     * @return The id.
+     */
+    public UUID getUUID(){
         return this.uuid;
     }
 }

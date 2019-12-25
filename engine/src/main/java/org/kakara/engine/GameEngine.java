@@ -107,26 +107,30 @@ public class GameEngine implements Runnable {
         collide();
     }
 
-    protected void render() {
-        renderer.render(window, gameHandler.getItemHandler().getItemList(), gameHandler.getCamera());
+    public void render() {
+        gameHandler.getSceneManager().renderCurrentScene();
         window.update();
     }
 
     protected void cleanup() {
         renderer.cleanup();
-        for (GameItem gameObject : gameHandler.getItemHandler().getItemList()) {
+        for (GameItem gameObject : gameHandler.getSceneManager().getCurrentScene().getItemHandler().getItemList()) {
             gameObject.cleanup();
         }
     }
 
-    protected void collide(){
-        for(GameItem gi : gameHandler.getCollisionManager().getCollidngItems()){
+    protected void collide() {
+        for (GameItem gi : gameHandler.getCollisionManager().getCollidngItems()) {
             gi.getCollider().update();
         }
     }
 
     public Window getWindow() {
         return window;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
     }
 
     public GameHandler getGameHandler() {

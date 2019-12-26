@@ -1,19 +1,12 @@
 package org.kakara.engine.scene;
 
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.ItemHandler;
 
-public class SimpleGameScene implements Scene {
+public abstract class AbstractScene implements Scene {
     private ItemHandler itemHandler = new ItemHandler();
-    private boolean mouseStatus = true;
-
-
-    @Override
-    public void render(GameHandler handler) {
-        handler.getWindow().setCursorVisibility(mouseStatus);
-
-        handler.getGameEngine().getRenderer().render(handler.getWindow(), itemHandler.getItemList(), handler.getCamera());
-    }
+    private boolean mouseStatus;
 
     @Override
     public void setMouseStatus(boolean status) {
@@ -30,8 +23,9 @@ public class SimpleGameScene implements Scene {
         return itemHandler;
     }
 
-    @Override
-    public void unload() {
-//TODO i am not sure if I plan to actually have this
+    public void addItem(GameItem gameItem) {
+        itemHandler.addItem(gameItem);
     }
+
+
 }

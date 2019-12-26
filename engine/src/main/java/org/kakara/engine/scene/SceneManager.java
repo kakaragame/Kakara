@@ -11,7 +11,6 @@ public class SceneManager {
     }
 
     public void setScene(Scene scene) {
-        scene.unload();
         currentScene = scene;
     }
 

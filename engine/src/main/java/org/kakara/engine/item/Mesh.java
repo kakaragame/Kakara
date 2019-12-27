@@ -38,7 +38,11 @@ public class Mesh {
         try {
             calculateBoundingRadius(positions);
 
-            vertexCount = indices.length;
+            if(indices != null)
+                vertexCount = indices.length;
+            else{
+                vertexCount = positions.length/3;
+            }
             vboIdList = new ArrayList();
 
             vaoId = glGenVertexArrays();
@@ -90,12 +94,14 @@ public class Mesh {
             glVertexAttribPointer(4, 4, GL_FLOAT, false, 0, 0);
 
             // Index VBO
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            indicesBuffer = MemoryUtil.memAllocInt(indices.length);
-            indicesBuffer.put(indices).flip();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+            if(indices != null) {
+                vboId = glGenBuffers();
+                vboIdList.add(vboId);
+                indicesBuffer = MemoryUtil.memAllocInt(indices.length);
+                indicesBuffer.put(indices).flip();
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+            }
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);

@@ -20,8 +20,8 @@ public class PointLight {
         this.linear = 0.09f;
         this.quadratic = 0.032f;
 
-        this.ambient = new Vector3f(0.05f, 0.05f, 0.05f);
-        this.diffuse = new Vector3f(0.8f, 0.8f, 0.8f);
-        this.specular = new Vector3f(1.0f, 1.0f, 1.0f);
+        this.ambient = new Vector3f(1.0f * 0.1f, 0.6f * 0.1f, 0.0f);
+        this.diffuse = new Vector3f(1.0f, 0.6f, 0.0f);
+        this.specular = new Vector3f(1.0f, 0.6f, 0.0f);
     }
 }

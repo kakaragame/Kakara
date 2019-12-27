@@ -5,6 +5,7 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
+import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.OnKeyPressEvent;
 import org.kakara.engine.events.event.OnMouseClickEvent;
@@ -32,26 +33,29 @@ public class KakaraTest implements Game {
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
-        Mesh[] houseMesh = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
-        System.out.println("houseMesh = " + houseMesh.length);
+        System.out.println(Utils.removeFile(Main.class.getResource("/player/steve.obj").toExternalForm()));
+//        Mesh[] houseMesh = StaticModelLoader.load(Utils.removeFile(Main.class.getResource("/player/steve.obj").toExternalForm()), Utils.removeFile(Main.class.getResource("/player/").toExternalForm()));
+//        System.out.println("houseMesh = " + houseMesh.length);
+//
+//        // Steve Creation
+//        GameItem object = new GameItem(houseMesh);
+//        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+//        object.getCollider().setUseGravity(true).setTrigger(false);
+//        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+//        System.out.println("Player Game Item UUID: " + object.getUUID());
+//        this.player = object;
+//
+//        Mesh[] tree = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/tree/tree.obj")), Utils.getFileFromResource(Main.class.getResource("/tree/")));
+//        GameItem treeObject = new GameItem(tree);
+//        treeObject.setPosition(1,0.7f,1);
+//        treeObject.setScale(0.05f);
+//        // Set the rotation of the tree using only quaternions
+//        treeObject.setRotationAboutAxis((float) Math.toRadians(-90), new Vector3(1, 0, 0));
+//        /* If you want to use eular angles then do the following:
+//        treeObject.setRotation(KMath.eularToQuaternion(new Vector3((float) Math.toRadians(-90), 0, 0))); */
+//        gInst.getItemHandler().addItem(treeObject);
 
-        // Steve Creation
-        GameItem object = new GameItem(houseMesh);
-        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
-        object.getCollider().setUseGravity(true).setTrigger(false);
-        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
-        System.out.println("Player Game Item UUID: " + object.getUUID());
-        this.player = object;
-
-        Mesh[] tree = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/tree/tree.obj")), Utils.getFileFromResource(Main.class.getResource("/tree/")));
-        GameItem treeObject = new GameItem(tree);
-        treeObject.setPosition(1,0.7f,1);
-        treeObject.setScale(0.05f);
-        // Set the rotation of the tree using only quaternions
-        treeObject.setRotationAboutAxis((float) Math.toRadians(-90), new Vector3(1, 0, 0));
-        /* If you want to use eular angles then do the following:
-        treeObject.setRotation(KMath.eularToQuaternion(new Vector3((float) Math.toRadians(-90), 0, 0))); */
-        gInst.getItemHandler().addItem(treeObject);
+        player = new GameItem();
 
 
         float[] positions = new float[] {
@@ -104,6 +108,56 @@ public class KakaraTest implements Game {
                 // V19: V2 repeated
                 0.5f, -0.5f, 0.5f,
         };
+        float[] normals = new float[]{
+                // V0
+                -1.0f, 0f, 0f,
+                // V1
+                -1.0f, 0f, 0f,
+                // V2
+                0f, 0f, 1,
+                // V3
+                0, 0, 1,
+                // V4
+                0, 1, 0,
+                // V5
+                0, 1, 0,
+                // V6
+                0, -1, 0,
+                // V7
+                0, -1, 0,
+
+                // For text coords in top face
+                // V8: V4 repeated
+                0, 1, 0,
+                // V9: V5 repeated
+                0, 1, 0,
+                // V10: V0 repeated
+                -1.0f, 0f, 0f,
+                // V11: V3 repeated
+                0, 0, 1,
+
+                // For text coords in right face
+                // V12: V3 repeated
+                0, 0, 1,
+                // V13: V2 repeated
+                0f, 0f, 1,
+
+                // For text coords in left face
+                // V14: V0 repeated
+                -1.0f, 0f, 0f,
+                // V15: V1 repeated
+                -1.0f, 0f, 0f,
+
+                // For text coords in bottom face
+                // V16: V6 repeated
+                0, -1, 0,
+                // V17: V7 repeated
+                0, -1, 0,
+                // V18: V1 repeated
+                -1.0f, 0f, 0f,
+                // V19: V2 repeated
+                0f, 0f, 1,
+        };
         float[] textCoords = new float[]{
                 0.0f, 0.0f,
                 0.0f, 0.5f,
@@ -148,7 +202,7 @@ public class KakaraTest implements Game {
                 16, 18, 19, 17, 16, 19,
                 // Back face
                 4, 6, 7, 5, 4, 7};
-        Mesh mesh = new Mesh(positions, textCoords, new float[0], indices);
+        Mesh mesh = new Mesh(positions, textCoords, normals, indices);
         InputStream io = Texture.class.getResourceAsStream("/grassblock.png");
         Texture grass = Utils.inputStreamToTexture(io);
         mesh.setMaterial(new Material(grass));
@@ -179,7 +233,7 @@ public class KakaraTest implements Game {
 
 
 
-        gInst.getItemHandler().addItem(object);
+//        gInst.getItemHandler().addItem(object);
         gInst.getEventManager().registerHandler(this);
         // Added engine API for the cursor GLFW method.
         gInst.getWindow().setCursorVisibility(false);

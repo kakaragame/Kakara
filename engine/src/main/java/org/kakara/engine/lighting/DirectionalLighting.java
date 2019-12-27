@@ -10,9 +10,9 @@ public class DirectionalLighting {
     public Vector3f specular;
 
     public DirectionalLighting(){
-        this.direction = new Vector3f(-0.2f, -1.0f, -0.3f);
-        this.ambient = new Vector3f(0.05f, 0.05f, 0.05f);
-        this.diffuse = new Vector3f(0.4f, 0.4f, 0.4f);
+        this.direction = new Vector3f(0, -1.0f, 0);
+        this.ambient = new Vector3f(0.3f, 0.24f, 0.14f);
+        this.diffuse = new Vector3f(0.7f, 0.42f, 0.26f);
         this.specular = new Vector3f(0.5f, 0.5f, 0.5f);
     }
 }

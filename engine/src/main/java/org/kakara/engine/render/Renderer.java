@@ -44,7 +44,7 @@ public class Renderer {
         projectionMatrix = new Matrix4f().perspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
         shaderProgram.createUniform("projectionMatrix");
         shaderProgram.createUniform("modelViewMatrix");
-        shaderProgram.createUniform("texture_sampler");
+//        shaderProgram.createUniform("texture_sampler");
 
         /*
          * Setup uniforms for lighting
@@ -76,7 +76,7 @@ public class Renderer {
 
 
 
-        shaderProgram.setUniform("texture_sampler", 0);
+//        shaderProgram.setUniform("texture_sampler", 0);
 
         for(GameItem gameObject : gameObjects) {
             // Set world matrix for this item

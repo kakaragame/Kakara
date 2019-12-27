@@ -1,15 +1,12 @@
 package org.kakara.engine.item;
 
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class Material {
-    public static final Vector4f DEFAULT_COLOUR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+    public static final Vector3f DEFAULT_COLOUR = new Vector3f(1.0f, 1.0f, 1.0f);
 
-    private Vector4f ambientColour;
-
-    private Vector4f diffuseColour;
-
-    private Vector4f specularColour;
+    private Vector3f ambient, diffuse, specular;
 
     private float shininess;
 
@@ -20,15 +17,15 @@ public class Material {
     private Texture normalMap;
 
     public Material() {
-        this.ambientColour = DEFAULT_COLOUR;
-        this.diffuseColour = DEFAULT_COLOUR;
-        this.specularColour = DEFAULT_COLOUR;
+        this.ambient = DEFAULT_COLOUR;
+        this.diffuse = DEFAULT_COLOUR;
+        this.specular = DEFAULT_COLOUR;
         this.texture = null;
         this.reflectance = 0;
     }
 
-    public Material(Vector4f colour, float reflectance) {
-        this(colour, colour, colour, null, reflectance);
+    public Material(Vector3f color, float reflectance) {
+        this(color, color, color, null, reflectance);
     }
 
     public Material(Texture texture) {
@@ -39,40 +36,40 @@ public class Material {
         this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, reflectance);
     }
 
-    public Material(Vector4f ambientColour, Vector4f diffuseColour, Vector4f specularColour, float reflectance) {
-        this(ambientColour, diffuseColour, specularColour, null, reflectance);
+    public Material(Vector3f ambient, Vector3f diffuse, Vector3f specular, float reflectance) {
+        this(ambient, diffuse, specular, null, reflectance);
     }
 
-    public Material(Vector4f ambientColour, Vector4f diffuseColour, Vector4f specularColour, Texture texture, float reflectance) {
-        this.ambientColour = ambientColour;
-        this.diffuseColour = diffuseColour;
-        this.specularColour = specularColour;
+    public Material(Vector3f ambient, Vector3f diffuse, Vector3f specular, Texture texture, float reflectance) {
+        this.ambient = ambient;
+        this.diffuse = diffuse;
+        this.specular = specular;
         this.texture = texture;
         this.reflectance = reflectance;
     }
 
-    public Vector4f getAmbientColour() {
-        return ambientColour;
+    public Vector3f getAmbient() {
+        return ambient;
     }
 
-    public void setAmbientColour(Vector4f ambientColour) {
-        this.ambientColour = ambientColour;
+    public void setAmbient(Vector3f ambientColour) {
+        this.ambient = ambient;
     }
 
-    public Vector4f getDiffuseColour() {
-        return diffuseColour;
+    public Vector3f getDiffuse() {
+        return diffuse;
     }
 
-    public void setDiffuseColour(Vector4f diffuseColour) {
-        this.diffuseColour = diffuseColour;
+    public void setDiffuse(Vector3f diffuse) {
+        this.diffuse = diffuse;
     }
 
-    public Vector4f getSpecularColour() {
-        return specularColour;
+    public Vector3f getSpecular() {
+        return specular;
     }
 
-    public void setSpecularColour(Vector4f specularColour) {
-        this.specularColour = specularColour;
+    public void setSpecular(Vector3f specularColour) {
+        this.specular = specular;
     }
 
     public float getReflectance() {

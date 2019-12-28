@@ -6,6 +6,7 @@ import org.kakara.engine.gui.Window;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.ItemHandler;
+import org.kakara.engine.lighting.LightHandler;
 
 /**
  * Handles the game information.
@@ -18,6 +19,7 @@ public class GameHandler {
     private KeyInput keyInput;
     private EventManager eventManager;
     private CollisionManager collisionManager;
+    private LightHandler lightHandler;
 
     private static GameHandler gameHandler;
     private GameEngine gameEngine;
@@ -29,6 +31,7 @@ public class GameHandler {
         this.keyInput = new KeyInput(gameEngine);
         this.eventManager = new EventManager();
         this.collisionManager = new CollisionManager(this);
+        this.lightHandler = new LightHandler();
 
         GameHandler.gameHandler = this;
     }
@@ -98,6 +101,10 @@ public class GameHandler {
 
     public CollisionManager getCollisionManager(){
         return collisionManager;
+    }
+
+    public LightHandler getLightHandler(){
+        return lightHandler;
     }
 
     public static GameHandler getInstance(){

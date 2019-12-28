@@ -1,6 +1,7 @@
 package org.kakara.engine.test;
 
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
 import org.kakara.engine.collision.BoxCollider;
@@ -13,6 +14,7 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Texture;
+import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
@@ -30,180 +32,37 @@ public class KakaraTest implements Game {
     private GameItem gi2;
     private GameItem player;
 
+    private PointLight light;
+    private GameItem lightIndication;
+
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
         System.out.println(Utils.removeFile(Main.class.getResource("/player/steve.obj").toExternalForm()));
-//        Mesh[] houseMesh = StaticModelLoader.load(Utils.removeFile(Main.class.getResource("/player/steve.obj").toExternalForm()), Utils.removeFile(Main.class.getResource("/player/").toExternalForm()));
-//        System.out.println("houseMesh = " + houseMesh.length);
-//
-//        // Steve Creation
-//        GameItem object = new GameItem(houseMesh);
-//        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
-//        object.getCollider().setUseGravity(true).setTrigger(false);
-//        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
-//        System.out.println("Player Game Item UUID: " + object.getUUID());
-//        this.player = object;
-//
-//        Mesh[] tree = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/tree/tree.obj")), Utils.getFileFromResource(Main.class.getResource("/tree/")));
-//        GameItem treeObject = new GameItem(tree);
-//        treeObject.setPosition(1,0.7f,1);
-//        treeObject.setScale(0.05f);
-//        // Set the rotation of the tree using only quaternions
-//        treeObject.setRotationAboutAxis((float) Math.toRadians(-90), new Vector3(1, 0, 0));
-//        /* If you want to use eular angles then do the following:
-//        treeObject.setRotation(KMath.eularToQuaternion(new Vector3((float) Math.toRadians(-90), 0, 0))); */
-//        gInst.getItemHandler().addItem(treeObject);
+        Mesh[] houseMesh = StaticModelLoader.load(Utils.removeFile(Main.class.getResource("/player/steve.obj").toExternalForm()), Utils.removeFile(Main.class.getResource("/player/").toExternalForm()));
+        System.out.println("houseMesh = " + houseMesh.length);
 
-        player = new GameItem();
+        // Steve Creation
+        GameItem object = new GameItem(houseMesh);
+        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.getCollider().setUseGravity(true).setTrigger(false);
+        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+        System.out.println("Player Game Item UUID: " + object.getUUID());
+        this.player = object;
 
+        Mesh[] tree = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/tree/tree.obj")), Utils.getFileFromResource(Main.class.getResource("/tree/")));
+        GameItem treeObject = new GameItem(tree);
+        treeObject.setPosition(1,0.7f,1);
+        treeObject.setScale(0.05f);
+        // Set the rotation of the tree using only quaternions
+        treeObject.setRotationAboutAxis((float) Math.toRadians(-90), new Vector3(1, 0, 0));
+        /* If you want to use eular angles then do the following:
+        treeObject.setRotation(KMath.eularToQuaternion(new Vector3((float) Math.toRadians(-90), 0, 0))); */
+        gInst.getItemHandler().addItem(treeObject);
 
-        float[] positions = new float[] {
-                // V0
-                -0.5f, 0.5f, 0.5f,
-                // V1
-                -0.5f, -0.5f, 0.5f,
-                // V2
-                0.5f, -0.5f, 0.5f,
-                // V3
-                0.5f, 0.5f, 0.5f,
-                // V4
-                -0.5f, 0.5f, -0.5f,
-                // V5
-                0.5f, 0.5f, -0.5f,
-                // V6
-                -0.5f, -0.5f, -0.5f,
-                // V7
-                0.5f, -0.5f, -0.5f,
-
-                // For text coords in top face
-                // V8: V4 repeated
-                -0.5f, 0.5f, -0.5f,
-                // V9: V5 repeated
-                0.5f, 0.5f, -0.5f,
-                // V10: V0 repeated
-                -0.5f, 0.5f, 0.5f,
-                // V11: V3 repeated
-                0.5f, 0.5f, 0.5f,
-
-                // For text coords in right face
-                // V12: V3 repeated
-                0.5f, 0.5f, 0.5f,
-                // V13: V2 repeated
-                0.5f, -0.5f, 0.5f,
-
-                // For text coords in left face
-                // V14: V0 repeated
-                -0.5f, 0.5f, 0.5f,
-                // V15: V1 repeated
-                -0.5f, -0.5f, 0.5f,
-
-                // For text coords in bottom face
-                // V16: V6 repeated
-                -0.5f, -0.5f, -0.5f,
-                // V17: V7 repeated
-                0.5f, -0.5f, -0.5f,
-                // V18: V1 repeated
-                -0.5f, -0.5f, 0.5f,
-                // V19: V2 repeated
-                0.5f, -0.5f, 0.5f,
-        };
-        float[] normals = new float[]{
-                // V0
-                -1.0f, 0f, 0f,
-                // V1
-                -1.0f, 0f, 0f,
-                // V2
-                0f, 0f, 1,
-                // V3
-                0, 0, 1,
-                // V4
-                0, 1, 0,
-                // V5
-                0, 1, 0,
-                // V6
-                0, -1, 0,
-                // V7
-                0, -1, 0,
-
-                // For text coords in top face
-                // V8: V4 repeated
-                0, 1, 0,
-                // V9: V5 repeated
-                0, 1, 0,
-                // V10: V0 repeated
-                -1.0f, 0f, 0f,
-                // V11: V3 repeated
-                0, 0, 1,
-
-                // For text coords in right face
-                // V12: V3 repeated
-                0, 0, 1,
-                // V13: V2 repeated
-                0f, 0f, 1,
-
-                // For text coords in left face
-                // V14: V0 repeated
-                -1.0f, 0f, 0f,
-                // V15: V1 repeated
-                -1.0f, 0f, 0f,
-
-                // For text coords in bottom face
-                // V16: V6 repeated
-                0, -1, 0,
-                // V17: V7 repeated
-                0, -1, 0,
-                // V18: V1 repeated
-                -1.0f, 0f, 0f,
-                // V19: V2 repeated
-                0f, 0f, 1,
-        };
-        float[] textCoords = new float[]{
-                0.0f, 0.0f,
-                0.0f, 0.5f,
-                0.5f, 0.5f,
-                0.5f, 0.0f,
-
-                0.0f, 0.0f,
-                0.5f, 0.0f,
-                0.0f, 0.5f,
-                0.5f, 0.5f,
-
-                // For text coords in top face
-                0.0f, 0.5f,
-                0.5f, 0.5f,
-                0.0f, 1.0f,
-                0.5f, 1.0f,
-
-                // For text coords in right face
-                0.0f, 0.0f,
-                0.0f, 0.5f,
-
-                // For text coords in left face
-                0.5f, 0.0f,
-                0.5f, 0.5f,
-
-                // For text coords in bottom face
-                0.5f, 0.0f,
-                1.0f, 0.0f,
-                0.5f, 0.5f,
-                1.0f, 0.5f,
-        };
-        int[] indices = new int[]{
-                // Front face
-                0, 1, 3, 3, 1, 2,
-                // Top Face
-                8, 10, 11, 9, 8, 11,
-                // Right face
-                12, 13, 7, 5, 12, 7,
-                // Left face
-                14, 15, 6, 4, 14, 6,
-                // Bottom face
-                16, 18, 19, 17, 16, 19,
-                // Back face
-                4, 6, 7, 5, 4, 7};
-        Mesh mesh = new Mesh(positions, textCoords, normals, indices);
-        InputStream io = Texture.class.getResourceAsStream("/grassblock.png");
+//        player = new GameItem();
+        Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
+        InputStream io = Texture.class.getResourceAsStream("/example_texture.png");
         Texture grass = Utils.inputStreamToTexture(io);
         mesh.setMaterial(new Material(grass));
         GameItem gi = new GameItem(mesh);
@@ -233,7 +92,7 @@ public class KakaraTest implements Game {
 
 
 
-//        gInst.getItemHandler().addItem(object);
+        gInst.getItemHandler().addItem(object);
         gInst.getEventManager().registerHandler(this);
         // Added engine API for the cursor GLFW method.
         gInst.getWindow().setCursorVisibility(false);
@@ -244,6 +103,13 @@ public class KakaraTest implements Game {
 
         this.gi2 = gi2;
         this.gi1 = gi1;
+
+        light = new PointLight(new Vector3f(0, 2, 0));
+        lightIndication = new GameItem(mesh).setScale(0.3f).setPosition(0, 2, 0);
+        gInst.getLightHandler().addPointLight(light);
+        gInst.getItemHandler().addItem(lightIndication);
+
+        gInst.getLightHandler().getDirectionalLight().direction = new Vector3f(0, 1, 0);
     }
 
     private GameItem gi1;
@@ -296,6 +162,20 @@ public class KakaraTest implements Game {
         if(ki.isKeyPressed(GLFW_KEY_M)){
             gi2.translateBy(0, -0.1f, 0);
         }
+
+        if(ki.isKeyPressed(GLFW_KEY_I)){
+            lightIndication.translateBy(0, 0, 1);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_K)){
+            lightIndication.translateBy(0, 0, -1);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_J)){
+            lightIndication.translateBy(-1, 0, 0);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_L)){
+            lightIndication.translateBy(1, 0, 0);
+        }
+        light.position = lightIndication.getPosition().toJoml();
 
         MouseInput mi = gInst.getMouseInput();
         gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);

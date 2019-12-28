@@ -7,10 +7,12 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 
 import org.joml.Vector3f;
 import org.kakara.engine.Camera;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.lighting.DirectionalLighting;
+import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.utils.Utils;
 
@@ -70,8 +72,9 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
         // Set Lighting Uniforms
-        shaderProgram.setUniform("dirLight", new DirectionalLighting());
-        shaderProgram.setUniform("pointLights[0]", new PointLight(new Vector3f(0, 2, 0)));
+        LightHandler lh = GameHandler.getInstance().getLightHandler();
+        shaderProgram.setUniform("dirLight", lh.getDirectionalLight());
+        shaderProgram.setUniform("pointLights[0]", lh.getPointLight(0));
         shaderProgram.setUniform("viewPos", camera.getPosition().toJoml());
 
 

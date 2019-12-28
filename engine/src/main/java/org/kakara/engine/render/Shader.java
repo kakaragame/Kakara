@@ -142,7 +142,7 @@ public class Shader {
     public void setUniform(String uniformName, Material material){
 //        setUniform(uniformName + ".ambient", material.getAmbient());
         setUniform(uniformName + ".diffuse", 0);
-        setUniform(uniformName + ".specular", 0);
+        setUniform(uniformName + ".specular", 1);
 //        setUniform(uniformName + ".hasTexture", material.getTexture() == null ? 0 : 1);
         setUniform(uniformName + ".reflectance", 32f);
     }

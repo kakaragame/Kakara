@@ -2,12 +2,11 @@ package org.kakara.engine;
 
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.render.Renderer;
 import org.kakara.engine.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * Handles the primary function of the game.
@@ -120,7 +119,7 @@ public class GameEngine implements Runnable {
     }
 
     protected void collide(){
-        for(GameItem gi : gameHandler.getCollisionManager().getCollidngItems()){
+        for(MeshGameItem gi : gameHandler.getCollisionManager().getCollidngItems()){
             gi.getCollider().update();
         }
     }

@@ -1,17 +1,15 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.render.DebugRender;
 import org.kakara.engine.utils.Time;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.text.DecimalFormat;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -41,7 +39,7 @@ public class BoxCollider implements Collider {
 
     private Vector3 lastPosition;
     private Vector3 deltaPosition;
-    private GameItem item;
+    private MeshGameItem item;
     private GameHandler handler;
 
     public BoxCollider(Vector3 point1, Vector3 point2, boolean useGravity, boolean isTrigger, boolean relative){
@@ -192,7 +190,7 @@ public class BoxCollider implements Collider {
 
         CollisionManager cm = handler.getCollisionManager();
         //Loop through the colliding item list.
-        for(GameItem gi : cm.getCollidngItems()){
+        for(MeshGameItem gi : cm.getCollidngItems()){
             // Prevent collision with itself.
             if(gi == item) continue;
             // If the objects are colliding. (Gravity will never cause this).
@@ -212,7 +210,7 @@ public class BoxCollider implements Collider {
 
         boolean found = false;
         // Handle collision for gravity.
-        for(GameItem gi : cm.getCollidngItems()){
+        for(MeshGameItem gi : cm.getCollidngItems()){
             // Prevent object from colliding with itself.
             if(gi == item) continue;
             // If the object is not colliding, then prevent further calculations.
@@ -247,7 +245,7 @@ public class BoxCollider implements Collider {
     }
 
     @Override
-    public void onRegister(GameItem item) {
+    public void onRegister(MeshGameItem item) {
         this.item = item;
         lastPosition = new Vector3(0, 0, 0);
         deltaPosition = new Vector3(0, 0, 0);

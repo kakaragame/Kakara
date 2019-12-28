@@ -1,6 +1,6 @@
 package org.kakara.engine.collision;
 
-import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.Vector3;
 
 public interface Collider {
@@ -14,7 +14,7 @@ public interface Collider {
      * When the collider is added to a game item.
      * @param item
      */
-    void onRegister(GameItem item);
+    void onRegister(MeshGameItem item);
 
     /**
      * Set if the collider is a trigger.

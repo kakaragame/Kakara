@@ -5,6 +5,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.kakara.engine.Camera;
 import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.MeshGameItem;
 
 public class Transformation {
     private final Matrix4f projectionMatrix;
@@ -27,16 +28,16 @@ public class Transformation {
         return projectionMatrix;
     }
 
-    public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {
-        Quaternionf rotation = gameItem.getRotation();
+    public Matrix4f getModelViewMatrix(GameItem meshGameItem, Matrix4f viewMatrix) {
+        Quaternionf rotation = meshGameItem.getRotation();
 //        modelViewMatrix.identity().translate(gameItem.getPosition().toJoml()).
 //                rotateX((float)Math.toRadians(-rotation.x)).
 //                rotateY((float)Math.toRadians(-rotation.y)).
 //                rotateZ((float)Math.toRadians(-rotation.z)).
 //                scale(gameItem.getScale());
         // I think this will work for a bit.
-        modelViewMatrix.translationRotateScale(gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, gameItem.getScale(),
-                gameItem.getScale(), gameItem.getScale());
+        modelViewMatrix.translationRotateScale(meshGameItem.getPosition().x, meshGameItem.getPosition().y, meshGameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, meshGameItem.getScale(),
+                meshGameItem.getScale(), meshGameItem.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
     }

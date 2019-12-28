@@ -8,7 +8,9 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import org.kakara.engine.Camera;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.gui.Window;
+import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.utils.Utils;
 
 import java.util.List;
@@ -45,10 +47,10 @@ public class Renderer {
 
     }
 
-    public void render(Window window, List<GameItem> gameObjects, Camera camera){
+    public void render(Window window, List<GameItem> gameObjects, Camera camera) {
         clear();
 
-        if(window.isResized()){
+        if (window.isResized()) {
             glViewport(0, 0, window.getWidth(), window.getHeight());
             window.setResized(false);
         }
@@ -58,7 +60,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         shaderProgram.setUniform("texture_sampler", 0);
 
-        for(GameItem gameObject : gameObjects) {
+        for (GameItem gameObject : gameObjects) {
             // Set world matrix for this item
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameObject, viewMatrix);
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
@@ -67,12 +69,14 @@ public class Renderer {
             /*
                 Below is the code for the debug mode for the box collider.
              */
-            if(gameObject.getCollider() instanceof BoxCollider){
-                Matrix4f colliderViewMatrix = new Matrix4f().identity().scale(0.3f).translate(gameObject.getCollider().getAbsolutePoint1().subtract(1, 1, 1).divide(1-gameObject.getScale()).toJoml());
-                Matrix4f viewCurr = new Matrix4f(viewMatrix);
-                Matrix4f curColliderMatrix = viewCurr.mul(colliderViewMatrix);
-                shaderProgram.setUniform("modelViewMatrix", curColliderMatrix);
-                ((BoxCollider) gameObject.getCollider()).render();
+            if (gameObject instanceof Collidable) {
+                if (((Collidable) gameObject).getCollider() instanceof BoxCollider) {
+                    Matrix4f colliderViewMatrix = new Matrix4f().identity().scale(0.3f).translate(((Collidable) gameObject).getCollider().getAbsolutePoint1().subtract(1, 1, 1).divide(1 - gameObject.getScale()).toJoml());
+                    Matrix4f viewCurr = new Matrix4f(viewMatrix);
+                    Matrix4f curColliderMatrix = viewCurr.mul(colliderViewMatrix);
+                    shaderProgram.setUniform("modelViewMatrix", curColliderMatrix);
+                    ((BoxCollider) ((Collidable) gameObject).getCollider()).render();
+                }
             }
         }
 

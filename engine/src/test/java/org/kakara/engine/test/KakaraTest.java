@@ -1,6 +1,5 @@
 package org.kakara.engine.test;
 
-import org.joml.Quaternionf;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
 import org.kakara.engine.collision.BoxCollider;
@@ -10,13 +9,9 @@ import org.kakara.engine.events.event.OnKeyPressEvent;
 import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
-import org.kakara.engine.item.Material;
-import org.kakara.engine.item.Texture;
-import org.kakara.engine.math.KMath;
+import org.kakara.engine.item.*;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
-import org.kakara.engine.item.GameItem;
-import org.kakara.engine.item.Mesh;
 import org.kakara.engine.utils.Utils;
 
 import java.io.InputStream;
@@ -26,8 +21,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class KakaraTest implements Game {
 
     private GameHandler gInst;
-    private GameItem gi2;
-    private GameItem player;
+    private MeshGameItem gi2;
+    private MeshGameItem player;
 
     @Override
     public void start(GameHandler handler) throws Exception {
@@ -36,7 +31,7 @@ public class KakaraTest implements Game {
         System.out.println("houseMesh = " + houseMesh.length);
 
         // Steve Creation
-        GameItem object = new GameItem(houseMesh);
+        MeshGameItem object = new MeshGameItem(houseMesh);
         object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
         object.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
@@ -44,7 +39,7 @@ public class KakaraTest implements Game {
         this.player = object;
 
         Mesh[] tree = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/tree/tree.obj")), Utils.getFileFromResource(Main.class.getResource("/tree/")));
-        GameItem treeObject = new GameItem(tree);
+        MeshGameItem treeObject = new MeshGameItem(tree);
         treeObject.setPosition(1,0.7f,1);
         treeObject.setScale(0.05f);
         // Set the rotation of the tree using only quaternions
@@ -152,25 +147,25 @@ public class KakaraTest implements Game {
         InputStream io = Texture.class.getResourceAsStream("/grassblock.png");
         Texture grass = Utils.inputStreamToTexture(io);
         mesh.setMaterial(new Material(grass));
-        GameItem gi = new GameItem(mesh);
+        MeshGameItem gi = new MeshGameItem(mesh);
         gInst.getItemHandler().addItem(gi);
         gi.setPosition(0, 0, -5);
 
 
         for(int x = 5; x > -6; x--){
             for(int z = 5; z > -6; z--){
-                GameItem gis = gi.clone(false);
+                MeshGameItem gis = gi.clone(false);
                 gis.setPosition(x, 0, z);
                 gis.setCollider(new ObjectBoxCollider(false, true));
                 gInst.getItemHandler().addItem(gis);
             }
         }
 
-        GameItem gi1 = new GameItem(mesh);
+        MeshGameItem gi1 = new MeshGameItem(mesh);
         gi1.setPosition(-4, 3, -4);
         gi1.setCollider(new ObjectBoxCollider(true, false));
         gInst.getItemHandler().addItem(gi1);
-        GameItem gi2 = new GameItem(mesh);
+        MeshGameItem gi2 = new MeshGameItem(mesh);
         gi2.setPosition(2, 3f, -5);
         gi2.setCollider(new ObjectBoxCollider());
         gInst.getItemHandler().addItem(gi2);
@@ -192,7 +187,7 @@ public class KakaraTest implements Game {
         this.gi1 = gi1;
     }
 
-    private GameItem gi1;
+    private MeshGameItem gi1;
 
     @Override
     public void update() {

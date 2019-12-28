@@ -1,7 +1,7 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.MeshGameItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,21 +13,21 @@ import java.util.List;
 public class CollisionManager {
 
     private GameHandler handler;
-    private List<GameItem> collidingItems = new ArrayList<>();
+    private List<MeshGameItem> collidingItems = new ArrayList<>();
 
     public CollisionManager(GameHandler handler){
         this.handler = handler;
     }
 
-    public void addCollidingItem(GameItem item){
+    public void addCollidingItem(MeshGameItem item){
         collidingItems.add(item);
     }
 
-    public void removeCollidingItem(GameItem item){
+    public void removeCollidingItem(MeshGameItem item){
         collidingItems.remove(item);
     }
 
-    public List<GameItem> getCollidngItems(){
+    public List<MeshGameItem> getCollidngItems(){
         return collidingItems;
     }
 
@@ -37,7 +37,7 @@ public class CollisionManager {
      * @param other The second game item.
      * @return If they are colliding.
      */
-    public boolean isColliding(GameItem item, GameItem other){
+    public boolean isColliding(MeshGameItem item, MeshGameItem other){
         boolean xCollision;
         boolean yCollision;
         boolean zCollision;
@@ -66,8 +66,8 @@ public class CollisionManager {
             zCollision = item.getPosition().z + item.getScale() >= other.getPosition().z && other.getPosition().z + other.getScale() >= item.getPosition().z;
         }
         else if(item.getCollider() instanceof ObjectBoxCollider && other.getCollider() instanceof BoxCollider){
-            GameItem itemCopy = other;
-            GameItem otherCopy = item;
+            MeshGameItem itemCopy = other;
+            MeshGameItem otherCopy = item;
             xCollision = (itemCopy.getPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().x) >= otherCopy.getPosition().x && otherCopy.getPosition().x + otherCopy.getScale()
                     >= itemCopy.getPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x;
             yCollision = (itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().y) >= otherCopy.getPosition().y && otherCopy.getPosition().y + otherCopy.getScale()

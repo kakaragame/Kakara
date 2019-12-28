@@ -26,15 +26,16 @@ public class KakaraTest implements Game {
 
     private GameHandler gInst;
 
-    private GameItem player;
+    private MainGameScene gameScene;
+
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
 
         gInst.getEventManager().registerHandler(this);
         // Added engine API for the cursor GLFW method.
-
-        gInst.getSceneManager().setScene(new MainGameScene());
+        gameScene = new MainGameScene();
+        gInst.getSceneManager().setScene(gameScene);
 
 
         // Sets the default camera position and rotation.
@@ -67,12 +68,29 @@ public class KakaraTest implements Game {
         if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
             gInst.getCamera().movePosition(0, -1, 0);
         }
+
         if (ki.isKeyPressed(GLFW_KEY_ESCAPE)) {
             System.exit(1);
         }
-
-
-
+        Vector3 currentPos = gameScene.getPlayer().getPosition();
+        if(ki.isKeyPressed(GLFW_KEY_UP)){
+            gameScene.getPlayer().setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_DOWN)){
+            gameScene.getPlayer().setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_LEFT)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_RIGHT)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_N)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y + 0.1f, currentPos.z);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_M)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y - 0.1f, currentPos.z);
+        }
 
         MouseInput mi = gInst.getMouseInput();
         gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
@@ -91,5 +109,27 @@ public class KakaraTest implements Game {
             gInst.getWindow().setCursorVisibility(!gInst.getWindow().isCursorVisable());
             gInst.getMouseInput().setCursorPosition(gInst.getWindow().getWidth() / 2, gInst.getWindow().getHeight() / 2);
         }
+
+
+        Vector3 currentPos = gameScene.getPlayer().getPosition();
+        if(evt.isKeyPressed(GLFW_KEY_UP)){
+            gameScene.getPlayer().setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
+        }
+        if(evt.isKeyPressed(GLFW_KEY_DOWN)){
+            gameScene.getPlayer().setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
+        }
+        if(evt.isKeyPressed(GLFW_KEY_LEFT)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
+        }
+        if(evt.isKeyPressed(GLFW_KEY_RIGHT)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
+        }
+        if(evt.isKeyPressed(GLFW_KEY_N)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y + 0.1f, currentPos.z);
+        }
+        if(evt.isKeyPressed(GLFW_KEY_M)){
+            gameScene.getPlayer().setPosition(currentPos.x, currentPos.y - 0.1f, currentPos.z);
+        }
+
     }
 }

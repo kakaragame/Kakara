@@ -1,6 +1,7 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
@@ -98,7 +99,7 @@ public class ObjectBoxCollider implements Collider {
         this.lastPosition = item.getPosition();
 
         CollisionManager cm = handler.getCollisionManager();
-        for(MeshGameItem gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems()){
             if(gi == item) continue;
             if(cm.isColliding(gi, item)){
                 Vector3 currentPosition = item.getPosition().subtract(deltaPosition);
@@ -114,7 +115,7 @@ public class ObjectBoxCollider implements Collider {
 
         boolean found = false;
         // Handle collision for gravity.
-        for(MeshGameItem gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems()){
             // Prevent object from colliding with itself.
             if(gi == item) continue;
             // If the object is not colliding, then prevent further calculations.

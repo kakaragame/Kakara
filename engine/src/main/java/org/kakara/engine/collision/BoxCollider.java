@@ -1,6 +1,7 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
@@ -190,7 +191,7 @@ public class BoxCollider implements Collider {
 
         CollisionManager cm = handler.getCollisionManager();
         //Loop through the colliding item list.
-        for(MeshGameItem gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems()){
             // Prevent collision with itself.
             if(gi == item) continue;
             // If the objects are colliding. (Gravity will never cause this).
@@ -210,7 +211,7 @@ public class BoxCollider implements Collider {
 
         boolean found = false;
         // Handle collision for gravity.
-        for(MeshGameItem gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems()){
             // Prevent object from colliding with itself.
             if(gi == item) continue;
             // If the object is not colliding, then prevent further calculations.

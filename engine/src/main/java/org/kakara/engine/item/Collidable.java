@@ -5,7 +5,7 @@ import org.kakara.engine.collision.Collider;
 /**
  * GameItems that can collide with other GameItems.
  */
-public interface Collidable {
+public interface Collidable extends GameItem {
 
     /**
      * Set the collider for a game item

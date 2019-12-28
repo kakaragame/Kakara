@@ -9,7 +9,7 @@ public abstract class AbstractGameScene extends AbstractScene {
 
     //TODO Add SkyBox and Light
     @Override
-    public void render(GameHandler handler) {
+    public final void render(GameHandler handler) {
         handler.getWindow().setCursorVisibility(getMouseStatus());
         handler.getGameEngine().getRenderer().render(handler.getWindow(), getItemHandler().getItemList(), handler.getCamera());
     }

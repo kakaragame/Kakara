@@ -8,7 +8,7 @@ import org.kakara.engine.math.Vector3;
 
 import java.util.UUID;
 
-public class MeshGameItem implements GameItem, Collidable {
+public class MeshGameItem implements  Collidable {
 
     private boolean selected;
 

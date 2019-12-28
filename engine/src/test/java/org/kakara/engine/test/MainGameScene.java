@@ -1,5 +1,6 @@
 package org.kakara.engine.test;
 
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.item.*;
@@ -9,16 +10,18 @@ import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.utils.Utils;
 
 import java.io.InputStream;
-import java.net.URISyntaxException;
 
 public class MainGameScene extends AbstractGameScene {
     private GameItem player;
 
-    public MainGameScene() throws Exception {
-        setMouseStatus(false);
+    public MainGameScene(GameHandler gameHandler) throws Exception {
+        super(gameHandler);
+        setCurserStatus(false);
         Mesh[] mainPlayer = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
         MeshGameItem object = new MeshGameItem(mainPlayer);
-        object.setPosition(4, 100f, 4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
+        object.setPosition(4, 100f, 4);
+        object.setScale(0.3f);
+        object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
         object.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
         addItem(object);
@@ -36,7 +39,7 @@ public class MainGameScene extends AbstractGameScene {
 
         for (int x = 5; x > -6; x--) {
             for (int z = 5; z > -6; z--) {
-                MeshGameItem gis = gi.clone(false);
+                MeshGameItem gis = (MeshGameItem) gi.clone(false);
                 gis.setPosition(x, 0, z);
                 gis.setCollider(new ObjectBoxCollider(false, true));
                 getItemHandler().addItem(gis);

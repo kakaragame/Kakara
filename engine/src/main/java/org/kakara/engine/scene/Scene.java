@@ -7,11 +7,11 @@ import org.kakara.engine.render.Renderer;
 public interface Scene {
 
 
-    void render(GameHandler handler);
+    void render( );
 
-    void setMouseStatus(boolean status);
+    void setCurserStatus(boolean status);
 
-    boolean getMouseStatus();
+    boolean getCurserStatus();
 
     ItemHandler getItemHandler();
 

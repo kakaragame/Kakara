@@ -14,9 +14,6 @@ public interface GameItem {
      */
      Vector3 getPosition();
 
-     int getTextPos();
-
-     boolean isSelected();
 
     /**
      * Set the position of the game item.
@@ -26,7 +23,7 @@ public interface GameItem {
      * @param z z value
      * @return The instance of the game item.
      */
-     MeshGameItem setPosition(float x, float y, float z);
+     GameItem setPosition(float x, float y, float z);
 
     /**
      * Set the position of the item
@@ -34,7 +31,7 @@ public interface GameItem {
      * @param position The position in vector form
      * @return The instance of the Game Item.
      */
-     MeshGameItem setPosition(Vector3 position);
+    GameItem setPosition(Vector3 position);
 
     /**
      * Change the position of the game item by x, y, and z values.
@@ -110,17 +107,7 @@ public interface GameItem {
 
     void cleanup();
 
-    void setSelected(boolean selected);
 
-    void setTextPos(int textPos);
-
-    boolean isInsideFrustum();
-
-    void setInsideFrustum(boolean insideFrustum);
-
-    boolean isDisableFrustumCulling();
-
-    void setDisableFrustumCulling(boolean disableFrustumCulling);
 
     /**
      * A safe way to clone a gameobject.
@@ -130,10 +117,5 @@ public interface GameItem {
      */
     GameItem clone(boolean exact);
 
-    /**
-     * Get the UUID of the game item.
-     *
-     * @return The id.
-     */
-    UUID getUUID();
+
 }

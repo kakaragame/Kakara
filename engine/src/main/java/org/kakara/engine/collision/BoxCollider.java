@@ -40,7 +40,7 @@ public class BoxCollider implements Collider {
 
     private Vector3 lastPosition;
     private Vector3 deltaPosition;
-    private MeshGameItem item;
+    private Collidable item;
     private GameHandler handler;
 
     public BoxCollider(Vector3 point1, Vector3 point2, boolean useGravity, boolean isTrigger, boolean relative){
@@ -246,7 +246,7 @@ public class BoxCollider implements Collider {
     }
 
     @Override
-    public void onRegister(MeshGameItem item) {
+    public void onRegister(Collidable item) {
         this.item = item;
         lastPosition = new Vector3(0, 0, 0);
         deltaPosition = new Vector3(0, 0, 0);

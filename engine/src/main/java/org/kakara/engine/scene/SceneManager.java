@@ -15,7 +15,7 @@ public class SceneManager {
     }
 
     public void renderCurrentScene() {
-        currentScene.render(handler);
+        currentScene.render();
     }
 
     public Scene getCurrentScene() {

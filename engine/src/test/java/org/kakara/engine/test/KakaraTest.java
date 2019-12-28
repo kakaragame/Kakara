@@ -34,7 +34,7 @@ public class KakaraTest implements Game {
 
         gInst.getEventManager().registerHandler(this);
         // Added engine API for the cursor GLFW method.
-        gameScene = new MainGameScene();
+        gameScene = new MainGameScene(handler);
         gInst.getSceneManager().setScene(gameScene);
 
 

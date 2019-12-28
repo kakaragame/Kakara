@@ -22,7 +22,7 @@ public class ObjectBoxCollider implements Collider {
 
     private Vector3 lastPosition;
     private Vector3 deltaPosition;
-    private MeshGameItem item;
+    private Collidable item;
     private GameHandler handler;
 
     public ObjectBoxCollider(boolean useGravity, boolean isTrigger, float gravity){
@@ -150,7 +150,7 @@ public class ObjectBoxCollider implements Collider {
     }
 
     @Override
-    public void onRegister(MeshGameItem item) {
+    public void onRegister(Collidable item) {
         this.item = item;
         lastPosition = new Vector3(0, 0, 0);
         deltaPosition = new Vector3(0, 0, 0);

@@ -8,45 +8,34 @@ import org.kakara.engine.math.Vector3;
 
 import java.util.UUID;
 
-public class MeshGameItem implements  Collidable {
-
-    private boolean selected;
+/**
+ * The most basic implementation of the GameItem.
+ * <p>
+ * This is a Collidable GameItem. That uses meshes to create an item
+ */
+public class MeshGameItem implements Collidable {
 
     private Mesh[] meshes;
-
-    private final Vector3f position;
-
     private float scale;
-
-    private final Quaternionf rotation;
-
-    private int textPos;
-
-    private boolean disableFrustumCulling;
-
-    private boolean insideFrustum;
+    private Quaternionf rotation;
+    private Vector3 position;
     private final UUID uuid;
     private Collider collider;
 
     public MeshGameItem() {
-        selected = false;
-        position = new Vector3f(0, 0, 0);
-        scale = 1;
-        rotation = new Quaternionf();
-        textPos = 0;
-        insideFrustum = true;
-        disableFrustumCulling = false;
-        uuid = UUID.randomUUID();
+        this(new Mesh[0]);
     }
 
     public MeshGameItem(Mesh mesh) {
-        this();
-        this.meshes = new Mesh[]{mesh};
+        this(new Mesh[]{mesh});
     }
 
     public MeshGameItem(Mesh[] meshes) {
-        this();
         this.meshes = meshes;
+        position = new Vector3(0, 0, 0);
+        scale = 1;
+        rotation = new Quaternionf();
+        uuid = UUID.randomUUID();
     }
 
     /**
@@ -55,16 +44,9 @@ public class MeshGameItem implements  Collidable {
      * @return The current position.
      */
     public Vector3 getPosition() {
-        return new Vector3(position);
+        return position;
     }
 
-    public int getTextPos() {
-        return textPos;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
 
     /**
      * Set the position of the game item.
@@ -74,7 +56,7 @@ public class MeshGameItem implements  Collidable {
      * @param z z value
      * @return The instance of the game item.
      */
-    public MeshGameItem setPosition(float x, float y, float z) {
+    public GameItem setPosition(float x, float y, float z) {
         this.position.x = x;
         this.position.y = y;
         this.position.z = z;
@@ -87,10 +69,8 @@ public class MeshGameItem implements  Collidable {
      * @param position The position in vector form
      * @return The instance of the Game Item.
      */
-    public MeshGameItem setPosition(Vector3 position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-        this.position.z = position.z;
+    public GameItem setPosition(Vector3 position) {
+        this.position = position;
         return this;
     }
 
@@ -102,7 +82,7 @@ public class MeshGameItem implements  Collidable {
      * @param z Change in z
      * @return The instance of the game item.
      */
-    public MeshGameItem translateBy(float x, float y, float z) {
+    public GameItem translateBy(float x, float y, float z) {
         this.position.x += x;
         this.position.y += y;
         this.position.z += z;
@@ -115,7 +95,7 @@ public class MeshGameItem implements  Collidable {
      * @param position The vector to change by.
      * @return The instance of the game item.
      */
-    public MeshGameItem translateBy(Vector3 position) {
+    public GameItem translateBy(Vector3 position) {
         this.position.x += position.x;
         this.position.y += position.y;
         this.position.z += position.z;
@@ -137,7 +117,7 @@ public class MeshGameItem implements  Collidable {
      * @param scale The scale value
      * @return The instance of the game item.
      */
-    public final MeshGameItem setScale(float scale) {
+    public final GameItem setScale(float scale) {
         this.scale = scale;
         return this;
     }
@@ -162,7 +142,7 @@ public class MeshGameItem implements  Collidable {
      * @param q The quaternion
      * @return The instance of the game item.
      */
-    public final MeshGameItem setRotation(Quaternionf q) {
+    public final GameItem setRotation(Quaternionf q) {
         this.rotation.set(q);
         return this;
     }
@@ -174,7 +154,7 @@ public class MeshGameItem implements  Collidable {
      * @param axis  The vector of the axis (without magnitude)
      * @return The instance of the game item.
      */
-    public MeshGameItem rotateAboutAxis(float angle, Vector3 axis) {
+    public GameItem rotateAboutAxis(float angle, Vector3 axis) {
         this.rotation.rotateAxis(angle, axis.toJoml());
         return this;
     }
@@ -186,7 +166,7 @@ public class MeshGameItem implements  Collidable {
      * @param axis  The vector of the axis (without magnitude)
      * @return The instance of the game item.
      */
-    public MeshGameItem setRotationAboutAxis(float angle, Vector3 axis) {
+    public GameItem setRotationAboutAxis(float angle, Vector3 axis) {
         this.rotation.rotationAxis(angle, axis.toJoml());
         return this;
     }
@@ -213,7 +193,7 @@ public class MeshGameItem implements  Collidable {
      * @param collider The instance of the collider.
      * @return The instance of the game item.
      */
-    public MeshGameItem setCollider(Collider collider) {
+    public GameItem setCollider(Collider collider) {
         this.collider = collider;
         collider.onRegister(this);
         return this;
@@ -249,29 +229,6 @@ public class MeshGameItem implements  Collidable {
         }
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    public void setTextPos(int textPos) {
-        this.textPos = textPos;
-    }
-
-    public boolean isInsideFrustum() {
-        return insideFrustum;
-    }
-
-    public void setInsideFrustum(boolean insideFrustum) {
-        this.insideFrustum = insideFrustum;
-    }
-
-    public boolean isDisableFrustumCulling() {
-        return disableFrustumCulling;
-    }
-
-    public void setDisableFrustumCulling(boolean disableFrustumCulling) {
-        this.disableFrustumCulling = disableFrustumCulling;
-    }
 
     /**
      * A safe way to clone a gameobject.
@@ -279,26 +236,15 @@ public class MeshGameItem implements  Collidable {
      * @param exact If you want it to be an exact copy.
      * @return The clone of the gameobject.
      */
-    public MeshGameItem clone(boolean exact) {
-        MeshGameItem clone = new MeshGameItem(this.meshes);
+    public GameItem clone(boolean exact) {
+        Collidable clone = new MeshGameItem(this.meshes);
         if (exact) {
             clone.setPosition(this.position.x, this.position.y, this.position.z);
-            clone.setDisableFrustumCulling(this.disableFrustumCulling);
-            clone.setInsideFrustum(this.insideFrustum);
             clone.setRotation(this.rotation);
-            clone.setSelected(this.selected);
             clone.setScale(this.scale);
-            clone.setTextPos(this.textPos);
         }
         return clone;
     }
 
-    /**
-     * Get the UUID of the game item.
-     *
-     * @return The id.
-     */
-    public UUID getUUID() {
-        return this.uuid;
-    }
+
 }

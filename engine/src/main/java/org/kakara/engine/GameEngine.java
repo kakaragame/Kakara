@@ -108,7 +108,7 @@ public class GameEngine implements Runnable {
         collide();
     }
 
-    public void render() {
+    protected void render() {
         gameHandler.getSceneManager().renderCurrentScene();
         window.update();
     }

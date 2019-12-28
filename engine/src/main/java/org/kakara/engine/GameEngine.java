@@ -2,11 +2,12 @@ package org.kakara.engine;
 
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.GameItem;
-import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.render.Renderer;
 import org.kakara.engine.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * Handles the primary function of the game.
@@ -106,26 +107,30 @@ public class GameEngine implements Runnable {
         collide();
     }
 
-    protected void render() {
-        renderer.render(window, gameHandler.getItemHandler().getItemList(), gameHandler.getCamera());
+    public void render() {
+        gameHandler.getSceneManager().renderCurrentScene();
         window.update();
     }
 
     protected void cleanup() {
         renderer.cleanup();
-        for (GameItem gameObject : gameHandler.getItemHandler().getItemList()) {
+        for (GameItem gameObject : gameHandler.getSceneManager().getCurrentScene().getItemHandler().getItemList()) {
             gameObject.cleanup();
         }
     }
 
-    protected void collide(){
-        for(MeshGameItem gi : gameHandler.getCollisionManager().getCollidngItems()){
+    protected void collide() {
+        for (GameItem gi : gameHandler.getCollisionManager().getCollidngItems()) {
             gi.getCollider().update();
         }
     }
 
     public Window getWindow() {
         return window;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
     }
 
     public GameHandler getGameHandler() {

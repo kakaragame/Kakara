@@ -14,6 +14,7 @@
     <version>1.0-SNAPSHOT</version>
     <properties>
         <lwjgl.version>3.2.3</lwjgl.version>
+        <swt.version>4.6.1</swt.version>
         <joml.version>1.9.19</joml.version>
         <pngdecoder.version>1.0</pngdecoder.version>
     </properties>
@@ -39,6 +40,20 @@
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.mavennatives</groupId>
+                <artifactId>maven-nativedependencies-plugin</artifactId>
+                <version>0.0.5</version>
+                <executions>
+                    <execution>
+                        <id>unpacknatives</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -127,6 +142,13 @@
             <properties>
                 <lwjgl.natives>natives-windows</lwjgl.natives>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.swt</groupId>
+                    <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+                    <version>4.3</version>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>lwjgl-natives-windows-x86</id>
@@ -225,6 +247,7 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-assimp</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
@@ -242,11 +265,13 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-nanovg</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-nuklear</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
@@ -257,6 +282,7 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-opengl</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
@@ -267,12 +293,14 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-stb</artifactId>
             <classifier>${lwjgl.natives}</classifier>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.joml</groupId>
             <artifactId>joml</artifactId>
             <version>${joml.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.l33tlabs.twl</groupId>
             <artifactId>pngdecoder</artifactId>

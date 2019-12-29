@@ -1,5 +1,6 @@
 package org.kakara.engine.item;
 
+import org.kakara.engine.render.Shader;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -153,7 +154,7 @@ public class Mesh {
         this.boundingRadius = boundingRadius;
     }
 
-    protected void initRender() {
+    protected void initRender(Shader shader) {
         Texture texture = material != null ? material.getTexture() : null;
         if (texture != null) {
             // Activate first texture bank
@@ -168,6 +169,8 @@ public class Mesh {
             // Bind the texture
             glBindTexture(GL_TEXTURE_2D, normalMap.getId());
         }
+
+
 
         // Draw the mesh
         glBindVertexArray(getVaoId());
@@ -190,8 +193,8 @@ public class Mesh {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public void render() {
-        initRender();
+    public void render(Shader shader) {
+        initRender(shader);
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 

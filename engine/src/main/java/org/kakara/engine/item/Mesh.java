@@ -176,6 +176,14 @@ public class Mesh {
             glBindTexture(GL_TEXTURE_2D, normalMap.getId());
         }
 
+        Texture specMap = material != null ? material.getSpecularMap() : null;
+        if (specMap != null) {
+            // Activate third texture bank
+            glActiveTexture(GL_TEXTURE2);
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, specMap.getId());
+        }
+
 
 
         // Draw the mesh

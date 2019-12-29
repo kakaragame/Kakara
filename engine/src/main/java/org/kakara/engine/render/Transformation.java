@@ -20,6 +20,15 @@ public class Transformation {
         viewMatrix = new Matrix4f();
     }
 
+    /**
+     * Get the project matrix
+     * @param fov
+     * @param width
+     * @param height
+     * @param zNear
+     * @param zFar
+     * @return
+     */
     public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
         float aspectRatio = width / height;
         projectionMatrix.identity();
@@ -27,20 +36,38 @@ public class Transformation {
         return projectionMatrix;
     }
 
+    /**
+     * Get the matrix for the model position, rotation, and scale.
+     * @param gameItem The game item to get the matrix for
+     * @return The matrix.
+     */
+    public Matrix4f getModelMatrix(GameItem gameItem){
+        Quaternionf rotation = gameItem.getRotation();
+        modelViewMatrix.translationRotateScale(gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, gameItem.getScale(),
+                gameItem.getScale(), gameItem.getScale());
+        return modelViewMatrix;
+    }
+
+    /**
+     * Get the model * view matrix.
+     * @deprecated This method is outdated. Use getModelMatrix and getViewMatrix instead.
+     * @param gameItem The game item.
+     * @param viewMatrix The view matrix
+     * @return The model * view matrix.
+     */
     public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {
         Quaternionf rotation = gameItem.getRotation();
-//        modelViewMatrix.identity().translate(gameItem.getPosition().toJoml()).
-//                rotateX((float)Math.toRadians(-rotation.x)).
-//                rotateY((float)Math.toRadians(-rotation.y)).
-//                rotateZ((float)Math.toRadians(-rotation.z)).
-//                scale(gameItem.getScale());
-        // I think this will work for a bit.
         modelViewMatrix.translationRotateScale(gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, gameItem.getScale(),
                 gameItem.getScale(), gameItem.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
     }
 
+    /**
+     * Get the view matrix for the camera.
+     * @param camera The camera.
+     * @return The view matrix.
+     */
     public Matrix4f getViewMatrix(Camera camera) {
         Vector3f cameraPos = camera.getPosition().toJoml();
         Vector3f rotation = camera.getRotation().toJoml();

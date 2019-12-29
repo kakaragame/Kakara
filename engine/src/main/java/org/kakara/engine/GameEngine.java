@@ -50,7 +50,7 @@ public class GameEngine implements Runnable {
     protected void init() {
         window.init();
         try {
-            renderer.init(window);
+            renderer.init();
             time.init();
             game.start(gameHandler);
             gameHandler.init();

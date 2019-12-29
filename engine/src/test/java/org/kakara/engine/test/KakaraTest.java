@@ -15,6 +15,7 @@ import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.lighting.PointLight;
+import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
@@ -107,9 +108,12 @@ public class KakaraTest implements Game {
         light = new PointLight(new Vector3f(0, 2, 0));
         lightIndication = new GameItem(mesh).setScale(0.3f).setPosition(0, 2, 0);
         gInst.getLightHandler().addPointLight(light);
+        gInst.getLightHandler().addPointLight(new PointLight().setPosition(0, 3, 0).setDiffuse(0.1f, 0, 0).setSpecular(0.5f, 0, 0));
+        gInst.getLightHandler().addPointLight(new PointLight().setPosition(3, 3, 3).setDiffuse(0f, 0.3f, 0).setSpecular(0, 0, 0.7f));
+        gInst.getLightHandler().addSpotLight(new SpotLight(gInst.getCamera().getPosition(), new Vector3(0, 0, 1)));
         gInst.getItemHandler().addItem(lightIndication);
-
-        gInst.getLightHandler().getDirectionalLight().direction = new Vector3f(0, 1, 0);
+        // Allows you to see the light.
+        gInst.getLightHandler().getDirectionalLight().setDirection(0, 1, 0);
     }
 
     private GameItem gi1;
@@ -175,7 +179,8 @@ public class KakaraTest implements Game {
         if(ki.isKeyPressed(GLFW_KEY_L)){
             lightIndication.translateBy(1, 0, 0);
         }
-        light.position = lightIndication.getPosition().toJoml();
+        light.setPosition(lightIndication.getPosition());
+        gInst.getLightHandler().getSpotLight(0).setPosition(gInst.getCamera().getPosition());
 
         MouseInput mi = gInst.getMouseInput();
         gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);

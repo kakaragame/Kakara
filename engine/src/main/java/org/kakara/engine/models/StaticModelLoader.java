@@ -170,7 +170,7 @@ public class StaticModelLoader {
             specular = new Vector3f(colour.r(), colour.g(), colour.b());
         }
 
-        Material material = new Material(ambient, diffuse, specular, 1.0f);
+        Material material = new Material(specular, 1.0f);
         material.setTexture(texture);
         materials.add(material);
     }

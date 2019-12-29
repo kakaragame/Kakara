@@ -70,7 +70,7 @@ public class Renderer {
         shaderProgram.setUniform("viewMatrix", viewMatrix);
 
         // Set Lighting Uniforms
-        LightHandler lh = GameHandler.getInstance().getLightHandler();
+        LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
         shaderProgram.setUniform("dirLight", lh.getDirectionalLight());
         shaderProgram.setPointLightUniform("pointLights", lh.getDisplayPointLights());
         shaderProgram.setSpotLightUniform("spotLights", lh.getDisplaySpotLights());

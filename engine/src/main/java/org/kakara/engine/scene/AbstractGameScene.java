@@ -10,11 +10,13 @@ public abstract class AbstractGameScene extends AbstractScene {
         super(gameHandler);
     }
 
-    //TODO Add SkyBox and Light
+    //TODO Add SkyBox
     @Override
     public final void render( ) {
         gameHandler.getGameEngine().getRenderer().render(gameHandler.getWindow(), getItemHandler().getItemList(), gameHandler.getCamera());
     }
+
+
 
 
     @Override

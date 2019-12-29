@@ -104,6 +104,7 @@ public class GameEngine implements Runnable {
 
     protected void update(float interval) {
         gameHandler.update();
+        gameHandler.getSceneManager().getCurrentScene().update();
         game.update();
         collide();
     }

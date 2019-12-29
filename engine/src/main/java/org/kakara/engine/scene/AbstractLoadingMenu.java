@@ -13,6 +13,11 @@ public class AbstractLoadingMenu extends AbstractScene {
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     public void unload() {
 
     }

@@ -36,44 +36,9 @@ public class KakaraTest implements Game {
         gInst.getSceneManager().setScene(gameScene);
     }
 
-    private GameItem gi1;
 
     @Override
     public void update() {
-
-        KeyInput ki = gInst.getKeyInput();
-
-        if (ki.isKeyPressed(GLFW_KEY_W)) {
-            gInst.getCamera().movePosition(0, 0, -1);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_S)) {
-            gInst.getCamera().movePosition(0, 0, 1);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_A)) {
-            gInst.getCamera().movePosition(-1, 0, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_D)) {
-            gInst.getCamera().movePosition(1, 0, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
-            gInst.getCamera().movePosition(0, 1, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-            gInst.getCamera().movePosition(0, -1, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_ESCAPE)) {
-            System.exit(1);
-        }
-
-
-        gInst.getLightHandler().getSpotLight(0).setPosition(gInst.getCamera().getPosition());
-
-        MouseInput mi = gInst.getMouseInput();
-        gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
-    }
-
-    public void input() {
-        KeyInput ki = gInst.getKeyInput();
 
     }
 

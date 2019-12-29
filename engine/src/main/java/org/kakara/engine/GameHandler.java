@@ -7,6 +7,7 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.ItemHandler;
 import org.kakara.engine.lighting.LightHandler;
+import org.kakara.engine.scene.SceneManager;
 
 /**
  * Handles the game information.
@@ -20,10 +21,12 @@ public class GameHandler {
     private EventManager eventManager;
     private CollisionManager collisionManager;
     private LightHandler lightHandler;
+    private SceneManager sceneManager;
 
     private static GameHandler gameHandler;
     private GameEngine gameEngine;
-    public GameHandler(GameEngine gameEngine){
+
+    public GameHandler(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         this.itemHandler = new ItemHandler();
         this.camera = new Camera();
@@ -32,14 +35,14 @@ public class GameHandler {
         this.eventManager = new EventManager();
         this.collisionManager = new CollisionManager(this);
         this.lightHandler = new LightHandler();
-
+        this.sceneManager = new SceneManager(this);
         GameHandler.gameHandler = this;
     }
 
     /**
      * Handles the initialization of this class.
      */
-    protected void init(){
+    protected void init() {
         mouseInput.init(gameEngine.getWindow());
         keyInput.init();
     }
@@ -47,72 +50,82 @@ public class GameHandler {
     /**
      * Updates anything needed
      */
-    protected void update(){
+    protected void update() {
         mouseInput.update();
     }
 
     /**
      * Get the object handler.
+     *
      * @return The object handler.
      */
-    public ItemHandler getItemHandler(){
+    public ItemHandler getItemHandler() {
         return itemHandler;
     }
 
     /**
      * Get the main camera.
+     *
      * @return The main camera
      */
-    public Camera getCamera(){
+    public Camera getCamera() {
         return camera;
     }
 
     /**
      * Get the mouse inputs
+     *
      * @return The mouse inputs.
      */
-    public MouseInput getMouseInput(){
+    public MouseInput getMouseInput() {
         return mouseInput;
     }
 
     /**
      * Get the key inputs.
+     *
      * @return The key inputs.
      */
-    public KeyInput getKeyInput(){
+    public KeyInput getKeyInput() {
         return keyInput;
     }
 
     /**
      * Get the current window.
+     *
      * @return The current window.
      */
-    public Window getWindow(){
+    public Window getWindow() {
         return gameEngine.getWindow();
     }
 
     /**
      * Get the EventManager
+     *
      * @return The EventManager
      */
-    public EventManager getEventManager(){
+    public EventManager getEventManager() {
         return eventManager;
     }
 
-    public CollisionManager getCollisionManager(){
+    public CollisionManager getCollisionManager() {
         return collisionManager;
     }
 
-    public LightHandler getLightHandler(){
+    public LightHandler getLightHandler() {
         return lightHandler;
     }
 
-    public static GameHandler getInstance(){
+    public static GameHandler getInstance() {
         return gameHandler;
     }
 
 
+    public SceneManager getSceneManager() {
+        return sceneManager;
+    }
 
-
-
+    public GameEngine getGameEngine() {
+        return gameEngine;
+    }
 }

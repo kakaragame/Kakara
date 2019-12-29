@@ -2,6 +2,7 @@ package org.kakara.engine.scene;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
+import org.kakara.engine.lighting.PointLight;
 
 public abstract class AbstractGameScene extends AbstractScene {
 

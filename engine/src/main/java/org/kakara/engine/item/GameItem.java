@@ -2,6 +2,7 @@ package org.kakara.engine.item;
 
 import org.joml.Quaternionf;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.render.Shader;
 
 import java.util.UUID;
 
@@ -103,7 +104,7 @@ public interface GameItem {
     GameItem setRotationAboutAxis(float angle, Vector3 axis);
 
 
-    void render();
+    void render(Shader shader);
 
     void cleanup();
 

@@ -12,15 +12,12 @@ import org.kakara.engine.events.event.OnKeyPressEvent;
 import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
-import org.kakara.engine.item.Material;
-import org.kakara.engine.item.Texture;
+import org.kakara.engine.item.*;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
-import org.kakara.engine.item.GameItem;
-import org.kakara.engine.item.Mesh;
 import org.kakara.engine.utils.Utils;
 
 import java.io.InputStream;
@@ -30,90 +27,13 @@ import static org.lwjgl.glfw.GLFW.*;
 public class KakaraTest implements Game {
 
     private GameHandler gInst;
-    private GameItem gi2;
-    private GameItem player;
-
-    private PointLight light;
-    private GameItem lightIndication;
+    private MainGameScene gameScene;
 
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
-        System.out.println(Utils.removeFile(Main.class.getResource("/player/steve.obj").toExternalForm()));
-        Mesh[] houseMesh = StaticModelLoader.load(Utils.removeFile(Main.class.getResource("/player/steve.obj").toExternalForm()), Utils.removeFile(Main.class.getResource("/player/").toExternalForm()));
-        System.out.println("houseMesh = " + houseMesh.length);
-
-        // Steve Creation
-        GameItem object = new GameItem(houseMesh);
-        object.setPosition(4,4f,4).setScale(0.3f).setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
-        object.getCollider().setUseGravity(true).setTrigger(false);
-        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
-        System.out.println("Player Game Item UUID: " + object.getUUID());
-        this.player = object;
-
-        Mesh[] tree = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/tree/tree.obj")), Utils.getFileFromResource(Main.class.getResource("/tree/")));
-        GameItem treeObject = new GameItem(tree);
-        treeObject.setPosition(1,0.7f,1);
-        treeObject.setScale(0.05f);
-        // Set the rotation of the tree using only quaternions
-        treeObject.setRotationAboutAxis((float) Math.toRadians(-90), new Vector3(1, 0, 0));
-        /* If you want to use eular angles then do the following:
-        treeObject.setRotation(KMath.eularToQuaternion(new Vector3((float) Math.toRadians(-90), 0, 0))); */
-        gInst.getItemHandler().addItem(treeObject);
-
-//        player = new GameItem();
-        Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
-        InputStream io = Texture.class.getResourceAsStream("/example_texture.png");
-        Texture grass = Utils.inputStreamToTexture(io);
-        mesh.setMaterial(new Material(grass));
-        GameItem gi = new GameItem(mesh);
-        gInst.getItemHandler().addItem(gi);
-        gi.setPosition(0, 0, -5);
-
-
-        for(int x = 5; x > -6; x--){
-            for(int z = 5; z > -6; z--){
-                GameItem gis = gi.clone(false);
-                gis.setPosition(x, 0, z);
-                gis.setCollider(new ObjectBoxCollider(false, true));
-                gInst.getItemHandler().addItem(gis);
-            }
-        }
-
-        GameItem gi1 = new GameItem(mesh);
-        gi1.setPosition(-4, 3, -4);
-        gi1.setCollider(new ObjectBoxCollider(true, false));
-        gInst.getItemHandler().addItem(gi1);
-        GameItem gi2 = new GameItem(mesh);
-        gi2.setPosition(2, 3f, -5);
-        gi2.setCollider(new ObjectBoxCollider());
-        gInst.getItemHandler().addItem(gi2);
-
-        System.out.println(gInst.getCollisionManager().isColliding(gi1, gi2));
-
-
-
-        gInst.getItemHandler().addItem(object);
-        gInst.getEventManager().registerHandler(this);
-        // Added engine API for the cursor GLFW method.
-        gInst.getWindow().setCursorVisibility(false);
-
-        // Sets the default camera position and rotation.
-        gInst.getCamera().setPosition(5, 5, 0);
-        gInst.getCamera().setRotation(45, 270, 0);
-
-        this.gi2 = gi2;
-        this.gi1 = gi1;
-
-        light = new PointLight(new Vector3f(0, 2, 0));
-        lightIndication = new GameItem(mesh).setScale(0.3f).setPosition(0, 2, 0);
-        gInst.getLightHandler().addPointLight(light);
-        gInst.getLightHandler().addPointLight(new PointLight().setPosition(0, 3, 0).setDiffuse(0.1f, 0, 0).setSpecular(0.5f, 0, 0));
-        gInst.getLightHandler().addPointLight(new PointLight().setPosition(3, 3, 3).setDiffuse(0f, 0.3f, 0).setSpecular(0, 0, 0.7f));
-        gInst.getLightHandler().addSpotLight(new SpotLight(gInst.getCamera().getPosition(), new Vector3(0, 0, 1)));
-        gInst.getItemHandler().addItem(lightIndication);
-        // Allows you to see the light.
-        gInst.getLightHandler().getDirectionalLight().setDirection(0, 1, 0);
+        gameScene = new MainGameScene(handler);
+        gInst.getSceneManager().setScene(gameScene);
     }
 
     private GameItem gi1;
@@ -145,68 +65,16 @@ public class KakaraTest implements Game {
             System.exit(1);
         }
 
-        Vector3 currentPos = player.getPosition();
-//        System.out.println("Test Class: " + currentPos + "  " + player.getUuid());
-        if(ki.isKeyPressed(GLFW_KEY_UP)){
-//            player.setPosition(currentPos.x + 4.1f, currentPos.y, currentPos.z);
-            player.translateBy(0.1f, 0, 0);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_DOWN)){
-            player.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_LEFT)){
-            player.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_RIGHT)){
-            player.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_N)){
-            gi2.translateBy(0, 0.1f, 0);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_M)){
-            gi2.translateBy(0, -0.1f, 0);
-        }
 
-        if(ki.isKeyPressed(GLFW_KEY_I)){
-            lightIndication.translateBy(0, 0, 1);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_K)){
-            lightIndication.translateBy(0, 0, -1);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_J)){
-            lightIndication.translateBy(-1, 0, 0);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_L)){
-            lightIndication.translateBy(1, 0, 0);
-        }
-        light.setPosition(lightIndication.getPosition());
         gInst.getLightHandler().getSpotLight(0).setPosition(gInst.getCamera().getPosition());
 
         MouseInput mi = gInst.getMouseInput();
         gInst.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
     }
 
-    public void input(){
+    public void input() {
         KeyInput ki = gInst.getKeyInput();
-        Vector3 currentPos = gi2.getPosition();
-        if(ki.isKeyPressed(GLFW_KEY_UP)){
-            gi2.setPosition(currentPos.x + 0.1f, currentPos.y, currentPos.z);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_DOWN)){
-            gi2.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_LEFT)){
-            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_RIGHT)){
-            gi2.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_N)){
-            gi2.setPosition(currentPos.x, currentPos.y + 0.1f, currentPos.z);
-        }
-        if(ki.isKeyPressed(GLFW_KEY_M)){
-            gi2.setPosition(currentPos.x, currentPos.y - 0.1f, currentPos.z);
-        }
+
     }
 
     @EventHandler
@@ -219,7 +87,7 @@ public class KakaraTest implements Game {
         if (evt.isKeyPressed(GLFW_KEY_TAB)) {
             //Engine API replaced GLFW methods.
             gInst.getWindow().setCursorVisibility(!gInst.getWindow().isCursorVisable());
-            gInst.getMouseInput().setCursorPosition(gInst.getWindow().getWidth()/2, gInst.getWindow().getHeight()/2);
+            gInst.getMouseInput().setCursorPosition(gInst.getWindow().getWidth() / 2, gInst.getWindow().getHeight() / 2);
         }
     }
 }

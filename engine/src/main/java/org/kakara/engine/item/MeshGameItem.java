@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.Collider;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.render.Shader;
 
 import java.util.UUID;
 
@@ -216,9 +217,9 @@ public class MeshGameItem implements Collidable {
         return this.collider;
     }
 
-    public void render() {
+    public void render(Shader shader) {
         for (Mesh mesh : meshes) {
-            mesh.render();
+            mesh.render(shader);
         }
     }
 

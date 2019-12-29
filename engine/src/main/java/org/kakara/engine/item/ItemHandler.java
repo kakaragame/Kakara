@@ -7,26 +7,27 @@ import java.util.UUID;
 public class ItemHandler {
     private List<GameItem> items;
 
-    public ItemHandler(){
+    public ItemHandler() {
         items = new ArrayList<>();
     }
 
-    public void addItem(GameItem obj){
+    public void addItem(GameItem obj) {
         this.items.add(obj);
     }
 
-    public List<GameItem> getItemList(){
+    public List<GameItem> getItemList() {
         return this.items;
     }
 
     /**
      * Get gameobjects with a certain id.
+     *
      * @param id The id
      * @return Returns the gameobject. (Returns null if none found).
      */
-    public GameItem getItemWithId(UUID id){
-        for(GameItem obj : items){
-            if(obj.getId() == id) return obj;
+    public GameItem getItemWithId(UUID id) {
+        for (GameItem obj : items) {
+            if (obj.getId() == id) return obj;
         }
         return null;
     }

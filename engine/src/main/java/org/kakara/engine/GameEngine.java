@@ -1,6 +1,7 @@
 package org.kakara.engine;
 
 import org.kakara.engine.gui.Window;
+import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.render.Renderer;
 import org.kakara.engine.utils.Time;
@@ -50,7 +51,7 @@ public class GameEngine implements Runnable {
     protected void init() {
         window.init();
         try {
-            renderer.init(window);
+            renderer.init();
             time.init();
             game.start(gameHandler);
             gameHandler.init();
@@ -103,30 +104,35 @@ public class GameEngine implements Runnable {
 
     protected void update(float interval) {
         gameHandler.update();
+        gameHandler.getSceneManager().getCurrentScene().update();
         game.update();
         collide();
     }
 
     protected void render() {
-        renderer.render(window, gameHandler.getItemHandler().getItemList(), gameHandler.getCamera());
+        gameHandler.getSceneManager().renderCurrentScene();
         window.update();
     }
 
     protected void cleanup() {
         renderer.cleanup();
-        for (GameItem gameObject : gameHandler.getItemHandler().getItemList()) {
+        for (GameItem gameObject : gameHandler.getSceneManager().getCurrentScene().getItemHandler().getItemList()) {
             gameObject.cleanup();
         }
     }
 
-    protected void collide(){
-        for(GameItem gi : gameHandler.getCollisionManager().getCollidngItems()){
+    protected void collide() {
+        for (Collidable gi : gameHandler.getCollisionManager().getCollidngItems()) {
             gi.getCollider().update();
         }
     }
 
     public Window getWindow() {
         return window;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
     }
 
     public GameHandler getGameHandler() {

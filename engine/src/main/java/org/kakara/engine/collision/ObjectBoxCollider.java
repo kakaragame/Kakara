@@ -1,7 +1,8 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.GameItem;
+import org.kakara.engine.item.Collidable;
+import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.utils.Time;
@@ -21,7 +22,7 @@ public class ObjectBoxCollider implements Collider {
 
     private Vector3 lastPosition;
     private Vector3 deltaPosition;
-    private GameItem item;
+    private Collidable item;
     private GameHandler handler;
 
     public ObjectBoxCollider(boolean useGravity, boolean isTrigger, float gravity){
@@ -98,7 +99,7 @@ public class ObjectBoxCollider implements Collider {
         this.lastPosition = item.getPosition();
 
         CollisionManager cm = handler.getCollisionManager();
-        for(GameItem gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems()){
             if(gi == item) continue;
             if(cm.isColliding(gi, item)){
                 Vector3 currentPosition = item.getPosition().subtract(deltaPosition);
@@ -114,7 +115,7 @@ public class ObjectBoxCollider implements Collider {
 
         boolean found = false;
         // Handle collision for gravity.
-        for(GameItem gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems()){
             // Prevent object from colliding with itself.
             if(gi == item) continue;
             // If the object is not colliding, then prevent further calculations.
@@ -149,7 +150,7 @@ public class ObjectBoxCollider implements Collider {
     }
 
     @Override
-    public void onRegister(GameItem item) {
+    public void onRegister(Collidable item) {
         this.item = item;
         lastPosition = new Vector3(0, 0, 0);
         deltaPosition = new Vector3(0, 0, 0);

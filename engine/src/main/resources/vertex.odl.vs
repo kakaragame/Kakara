@@ -9,14 +9,13 @@ out vec3 vecNormal;
 out vec3 vecPos;
 
 uniform mat4 projectionMatrix;
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
+uniform mat4 modelViewMatrix;
 
 void main()
 {
-    vec4 fragPos = modelMatrix * vec4(position, 1.0);
-    gl_Position = projectionMatrix * viewMatrix * fragPos;
+    vec4 vPos = modelViewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * vPos;
     outTexCoord = texCoord;
-    vecNormal = normalize(modelMatrix * vec4(vertexNormal, 0.0)).xyz;
-    vecPos = fragPos.xyz;
+    vecNormal = normalize(modelViewMatrix * vec4(vertexNormal, 0.0)).xyz;
+    vecPos = vPos.xyz;
 }

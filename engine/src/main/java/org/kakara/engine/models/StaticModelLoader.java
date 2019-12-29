@@ -1,11 +1,14 @@
 package org.kakara.engine.models;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.item.Material;
@@ -80,6 +83,41 @@ public class StaticModelLoader {
         return meshes;
     }
 
+    // idk what I am doing.
+    public static Mesh[] load(InputStream inputStream, File texturesDi) throws Exception {
+        GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", inputStream, texturesDi));
+        byte[] imageByte = inputStream.readAllBytes();
+        ByteBuffer bb = ByteBuffer.wrap(imageByte);
+        AIScene aiScene = aiImportFile(bb, aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+                | aiProcess_FixInfacingNormals);
+
+        String texturesDir = texturesDi.toPath().toAbsolutePath().toString();
+
+        if (aiScene == null) {
+//            throw new Exception("Error loading model");
+            throw new Exception(aiGetErrorString());
+        }
+
+        int numMaterials = aiScene.mNumMaterials();
+        PointerBuffer aiMaterials = aiScene.mMaterials();
+        List<Material> materials = new ArrayList<>();
+        for (int i = 0; i < numMaterials; i++) {
+            AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
+            processMaterial(aiMaterial, materials, texturesDir);
+        }
+
+        int numMeshes = aiScene.mNumMeshes();
+        PointerBuffer aiMeshes = aiScene.mMeshes();
+        Mesh[] meshes = new Mesh[numMeshes];
+        for (int i = 0; i < numMeshes; i++) {
+            AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+            Mesh mesh = processMesh(aiMesh, materials);
+            meshes[i] = mesh;
+        }
+
+        return meshes;
+    }
+
     protected static void processIndices(AIMesh aiMesh, List<Integer> indices) {
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer aiFaces = aiMesh.mFaces();
@@ -111,28 +149,28 @@ public class StaticModelLoader {
             texture = textCache.getTexture(textureFile);
         }
 
-        Vector4f ambient = Material.DEFAULT_COLOUR;
+        Vector3f ambient = Material.DEFAULT_COLOUR;
         int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0,
                 colour);
         if (result == 0) {
-            ambient = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
+            ambient = new Vector3f(colour.r(), colour.g(), colour.b());
         }
 
-        Vector4f diffuse = Material.DEFAULT_COLOUR;
+        Vector3f diffuse = Material.DEFAULT_COLOUR;
         result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0,
                 colour);
         if (result == 0) {
-            diffuse = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
+            diffuse = new Vector3f(colour.r(), colour.g(), colour.b());
         }
 
-        Vector4f specular = Material.DEFAULT_COLOUR;
+        Vector3f specular = Material.DEFAULT_COLOUR;
         result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0,
                 colour);
         if (result == 0) {
-            specular = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
+            specular = new Vector3f(colour.r(), colour.g(), colour.b());
         }
 
-        Material material = new Material(ambient, diffuse, specular, 1.0f);
+        Material material = new Material(specular, 1.0f);
         material.setTexture(texture);
         materials.add(material);
     }

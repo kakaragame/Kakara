@@ -42,6 +42,15 @@ public class Utils {
         return new File(url.toURI());
     }
 
+    /**
+     * Such a hacky thing. We need to fix this.
+     * @param url
+     * @return
+     */
+    public static String removeFile(String url){
+        return url.replace("file:/", "").replace("jar:", "");
+    }
+
     public static int[] listIntToArray(List<Integer> list) {
         int[] result = list.stream().mapToInt((Integer v) -> v).toArray();
         return result;

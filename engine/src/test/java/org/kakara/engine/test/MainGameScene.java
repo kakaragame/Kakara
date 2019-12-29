@@ -28,6 +28,7 @@ public class MainGameScene extends AbstractGameScene {
     public MainGameScene(GameHandler gameHandler) throws Exception {
         super(gameHandler);
         setCurserStatus(false);
+        gameHandler.getCamera().setPosition(0, 3, 0);
         Mesh[] mainPlayer = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
         MeshGameItem object = new MeshGameItem(mainPlayer);
         object.setPosition(4, 100f, 4);

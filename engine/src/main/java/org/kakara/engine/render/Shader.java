@@ -121,6 +121,7 @@ public class Shader {
 //        createUniform(uniformName + ".ambient");
         createUniform(uniformName + ".diffuse");
         createUniform(uniformName + ".specular");
+        createUniform(uniformName + ".overlayTexture");
         createUniform(uniformName + ".specularColor");
         createUniform(uniformName + ".hasSpecularText");
         createUniform(uniformName + ".reflectance");
@@ -174,6 +175,7 @@ public class Shader {
     public void setUniform(String uniformName, Material material){
         setUniform(uniformName + ".diffuse", 0);
         setUniform(uniformName + ".specular", 2);
+        setUniform(uniformName + ".overlayTexture", 3);
         setUniform(uniformName + ".specularColor", material.getSpecularColor());
         setUniform(uniformName + ".hasSpecularText", material.getSpecularMap() == null ? 0 : 1);
         setUniform(uniformName + ".reflectance", material.getShininess());

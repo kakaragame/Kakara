@@ -184,6 +184,14 @@ public class Mesh {
             glBindTexture(GL_TEXTURE_2D, specMap.getId());
         }
 
+        Texture ovText = material != null ? material.getOverlayTexture() : null;
+        if (ovText != null) {
+            // Activate third texture bank
+            glActiveTexture(GL_TEXTURE3);
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, ovText.getId());
+        }
+
 
 
         // Draw the mesh

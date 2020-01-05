@@ -45,7 +45,10 @@ public class MainGameScene extends AbstractGameScene {
         InputStream io = Texture.class.getResourceAsStream("/example_texture.png");
         Texture grass = Utils.inputStreamToTexture(io);
         Material mt = new Material(grass);
-        mt.setOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/oa.png")));
+
+        mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/oa.png")));
+        mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/ovly2.png")));
+
         mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
         addItem(gi);
@@ -101,6 +104,9 @@ public class MainGameScene extends AbstractGameScene {
         }
         if (ki.isKeyPressed(GLFW_KEY_ESCAPE)) {
             System.exit(1);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_TAB)){
+            this.setCurserStatus(!this.getCurserStatus());
         }
 
         Vector3 currentPos = player.getPosition();

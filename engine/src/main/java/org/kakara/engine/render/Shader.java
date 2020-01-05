@@ -118,10 +118,11 @@ public class Shader {
     }
 
     public void createMaterialUniform(String uniformName) throws Exception {
-//        createUniform(uniformName + ".ambient");
         createUniform(uniformName + ".diffuse");
         createUniform(uniformName + ".specular");
-        createUniform(uniformName + ".overlayTexture");
+        for(int i = 0; i < 5; i++)
+            createUniform(uniformName + ".overlayTextures[" + i + "]");
+        createUniform(uniformName + ".numberOfOverlays");
         createUniform(uniformName + ".specularColor");
         createUniform(uniformName + ".hasSpecularText");
         createUniform(uniformName + ".reflectance");
@@ -175,7 +176,12 @@ public class Shader {
     public void setUniform(String uniformName, Material material){
         setUniform(uniformName + ".diffuse", 0);
         setUniform(uniformName + ".specular", 2);
-        setUniform(uniformName + ".overlayTexture", 3);
+        setUniform(uniformName + ".overlayTextures[0]", 3);
+        setUniform(uniformName + ".overlayTextures[1]", 4);
+        setUniform(uniformName + ".overlayTextures[2]", 5);
+        setUniform(uniformName + ".overlayTextures[3]", 6);
+        setUniform(uniformName + ".overlayTextures[4]", 7);
+        setUniform(uniformName + ".numberOfOverlays", material.getOverlayTextures().size());
         setUniform(uniformName + ".specularColor", material.getSpecularColor());
         setUniform(uniformName + ".hasSpecularText", material.getSpecularMap() == null ? 0 : 1);
         setUniform(uniformName + ".reflectance", material.getShininess());

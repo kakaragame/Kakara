@@ -1,9 +1,9 @@
 package org.kakara.engine.item;
-
-import org.joml.Matrix4f;
+;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
-import org.kakara.engine.math.Vector3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Material {
     public static final Vector3f DEFAULT_COLOUR = new Vector3f(1.0f, 1.0f, 1.0f);
@@ -12,13 +12,15 @@ public class Material {
     private Texture specularMap;
     private float shininess;
     private Texture texture;
-    private Texture overlayTexture;
     private Texture normalMap;
+
+    private List<Texture> overlayTextures;
 
     public Material() {
         this.specularColor = DEFAULT_COLOUR;
         this.texture = null;
         this.shininess = 32f;
+        this.overlayTextures = new ArrayList<>();
     }
 
     public Material(Vector3f specularColor, float shininess) {
@@ -41,12 +43,14 @@ public class Material {
         this.specularColor = specularColor;
         this.texture = texture;
         this.shininess = shininess;
+        this.overlayTextures = new ArrayList<>();
     }
 
     public Material(Texture specularMap, Texture texture, float shininess){
         this.specularMap = specularMap;
         this.texture = texture;
         this.shininess = shininess;
+        this.overlayTextures = new ArrayList<>();
     }
 
     public void setSpecularColor(Vector3f specularColor){
@@ -85,12 +89,33 @@ public class Material {
         this.texture = texture;
     }
 
-    public void setOverlayTexture(Texture overlayTexture){
-        this.overlayTexture = overlayTexture;
+    /**
+     * Set the list of overlay textures.
+     * <p>A maximum of 5 textures are allowed.</p>
+     * @param overlayTextures The list
+     * @throws Exception If the list exceeds 5 overlay textures.
+     */
+    public void setOverlayTextures(List<Texture> overlayTextures) throws Exception{
+        if(overlayTextures.size() >= 5)
+            throw new Exception("A maximum of 5 overlay textures only.");
+        this.overlayTextures = overlayTextures;
     }
 
-    public Texture getOverlayTexture(){
-        return overlayTexture;
+    /**
+     * Add a texture to the list of overlay textures
+     * @param overlayTexture The texture
+     * @return True if successful, false if not. (Max limit of 5 overlay textures).
+     */
+    public boolean addOverlayTexture(Texture overlayTexture){
+        if(overlayTextures.size() >= 5){
+            return false;
+        }
+        overlayTextures.add(overlayTexture);
+        return true;
+    }
+
+    public List<Texture> getOverlayTextures(){
+        return overlayTextures;
     }
 
 

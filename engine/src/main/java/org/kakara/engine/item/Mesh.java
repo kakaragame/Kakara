@@ -160,7 +160,7 @@ public class Mesh {
         this.boundingRadius = boundingRadius;
     }
 
-    protected void initRender(Shader shader) {
+    protected void initRender() {
         Texture texture = material != null ? material.getTexture() : null;
         if (texture != null) {
             // Activate first texture bank
@@ -184,14 +184,16 @@ public class Mesh {
             glBindTexture(GL_TEXTURE_2D, specMap.getId());
         }
 
-        Texture ovText = material != null ? material.getOverlayTexture() : null;
-        if (ovText != null) {
-            // Activate third texture bank
-            glActiveTexture(GL_TEXTURE3);
-            // Bind the texture
-            glBindTexture(GL_TEXTURE_2D, ovText.getId());
+        int[] textures = {GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7};
+        for(int i = 0; i < material.getOverlayTextures().size(); i++){
+            Texture ovText = material != null ? material.getOverlayTextures().get(i) : null;
+            if (ovText != null) {
+                // Activate i texture bank
+                glActiveTexture(textures[i]);
+                // Bind the texture
+                glBindTexture(GL_TEXTURE_2D, ovText.getId());
+            }
         }
-
 
 
         // Draw the mesh
@@ -215,8 +217,8 @@ public class Mesh {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public void render(Shader shader) {
-        initRender(shader);
+    public void render() {
+        initRender();
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
@@ -237,6 +239,10 @@ public class Mesh {
         Texture texture = material.getTexture();
         if (texture != null) {
             texture.cleanup();
+        }
+
+        for(int i = 0; i < material.getOverlayTextures().size(); i++){
+            material.getOverlayTextures().get(i).cleanup();
         }
 
         // Delete the VAO

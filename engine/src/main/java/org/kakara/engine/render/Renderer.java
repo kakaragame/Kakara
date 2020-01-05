@@ -85,7 +85,7 @@ public class Renderer {
 
             }
             // Render the meshes for this game item
-            gameObject.render(shaderProgram);
+            gameObject.render();
             /*
                 Below is the code for the debug mode for the box collider.
              */

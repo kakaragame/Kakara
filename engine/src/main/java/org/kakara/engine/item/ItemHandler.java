@@ -15,6 +15,10 @@ public class ItemHandler {
         this.items.add(obj);
     }
 
+    /**
+     * <p>Looping through this is extremely performance heavy!</p>
+     * @return The list of gameitems
+     */
     public List<GameItem> getItemList() {
         return this.items;
     }

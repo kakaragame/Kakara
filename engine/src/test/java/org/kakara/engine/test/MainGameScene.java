@@ -29,7 +29,8 @@ public class MainGameScene extends AbstractGameScene {
         super(gameHandler);
         setCurserStatus(false);
         gameHandler.getCamera().setPosition(0, 3, 0);
-        Mesh[] mainPlayer = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")), Utils.getFileFromResource(Main.class.getResource("/player/")));
+        Mesh[] mainPlayer = StaticModelLoader.load(Utils.getFileFromResource(Main.class.getResource("/player/steve.obj")),
+                Utils.getFileFromResource(Main.class.getResource("/player/")));
         MeshGameItem object = new MeshGameItem(mainPlayer);
         object.setPosition(4, 100f, 4);
         object.setScale(0.3f);
@@ -43,7 +44,12 @@ public class MainGameScene extends AbstractGameScene {
         Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
         InputStream io = Texture.class.getResourceAsStream("/example_texture.png");
         Texture grass = Utils.inputStreamToTexture(io);
-        mesh.setMaterial(new Material(grass));
+        Material mt = new Material(grass);
+
+        mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/oa.png")));
+        mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/ovly2.png")));
+
+        mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
         addItem(gi);
         gi.setPosition(0, 0, -5);
@@ -98,6 +104,9 @@ public class MainGameScene extends AbstractGameScene {
         }
         if (ki.isKeyPressed(GLFW_KEY_ESCAPE)) {
             System.exit(1);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_TAB)){
+            this.setCurserStatus(!this.getCurserStatus());
         }
 
         Vector3 currentPos = player.getPosition();

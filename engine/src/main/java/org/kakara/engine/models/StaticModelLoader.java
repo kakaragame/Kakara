@@ -1,6 +1,7 @@
 package org.kakara.engine.models;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -16,16 +17,12 @@ import org.kakara.engine.item.Mesh;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AIColor4D;
-import org.lwjgl.assimp.AIFace;
-import org.lwjgl.assimp.AIMaterial;
-import org.lwjgl.assimp.AIMesh;
-import org.lwjgl.assimp.AIScene;
-import org.lwjgl.assimp.AIString;
-import org.lwjgl.assimp.AIVector3D;
-import org.lwjgl.assimp.Assimp;
+import org.lwjgl.assimp.*;
+import org.lwjgl.system.MemoryUtil;
 
+import static org.kakara.engine.utils.Utils.ioResourceToByteBuffer;
 import static org.lwjgl.assimp.Assimp.*;
+import static org.lwjgl.system.MemoryUtil.*;
 
 /**
  * A model loader for static Models
@@ -57,41 +54,6 @@ public class StaticModelLoader {
     public static Mesh[] load(String resourceStream, String texturesDir, int flags) throws Exception {
         GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resourceStream, texturesDir));
         AIScene aiScene = aiImportFile(resourceStream, flags);
-
-        if (aiScene == null) {
-//            throw new Exception("Error loading model");
-            throw new Exception(aiGetErrorString());
-        }
-
-        int numMaterials = aiScene.mNumMaterials();
-        PointerBuffer aiMaterials = aiScene.mMaterials();
-        List<Material> materials = new ArrayList<>();
-        for (int i = 0; i < numMaterials; i++) {
-            AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            processMaterial(aiMaterial, materials, texturesDir);
-        }
-
-        int numMeshes = aiScene.mNumMeshes();
-        PointerBuffer aiMeshes = aiScene.mMeshes();
-        Mesh[] meshes = new Mesh[numMeshes];
-        for (int i = 0; i < numMeshes; i++) {
-            AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-            Mesh mesh = processMesh(aiMesh, materials);
-            meshes[i] = mesh;
-        }
-
-        return meshes;
-    }
-
-    // idk what I am doing.
-    public static Mesh[] load(InputStream inputStream, File texturesDi) throws Exception {
-        GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", inputStream, texturesDi));
-        byte[] imageByte = inputStream.readAllBytes();
-        ByteBuffer bb = ByteBuffer.wrap(imageByte);
-        AIScene aiScene = aiImportFile(bb, aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-                | aiProcess_FixInfacingNormals);
-
-        String texturesDir = texturesDi.toPath().toAbsolutePath().toString();
 
         if (aiScene == null) {
 //            throw new Exception("Error loading model");

@@ -217,9 +217,9 @@ public class MeshGameItem implements Collidable {
         return this.collider;
     }
 
-    public void render(Shader shader) {
+    public void render() {
         for (Mesh mesh : meshes) {
-            mesh.render(shader);
+            mesh.render();
         }
     }
 

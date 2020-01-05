@@ -104,7 +104,7 @@ public interface GameItem {
     GameItem setRotationAboutAxis(float angle, Vector3 axis);
 
 
-    void render(Shader shader);
+    void render();
 
     void cleanup();
 

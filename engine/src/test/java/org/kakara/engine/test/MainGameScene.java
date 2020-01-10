@@ -103,45 +103,48 @@ public class MainGameScene extends AbstractGameScene {
             handler.getCamera().movePosition(0, -1, 0);
         }
         if (ki.isKeyPressed(GLFW_KEY_ESCAPE)) {
+            gameHandler.getSoundManager().cleanup();
+
             System.exit(1);
         }
-        if(ki.isKeyPressed(GLFW_KEY_TAB)){
+        if (ki.isKeyPressed(GLFW_KEY_TAB)) {
             this.setCurserStatus(!this.getCurserStatus());
         }
 
         Vector3 currentPos = player.getPosition();
-        if(ki.isKeyPressed(GLFW_KEY_UP)){
+        if (ki.isKeyPressed(GLFW_KEY_UP)) {
             player.translateBy(0.1f, 0, 0);
         }
-        if(ki.isKeyPressed(GLFW_KEY_DOWN)){
+        if (ki.isKeyPressed(GLFW_KEY_DOWN)) {
             player.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
         }
-        if(ki.isKeyPressed(GLFW_KEY_LEFT)){
+        if (ki.isKeyPressed(GLFW_KEY_LEFT)) {
             player.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
         }
-        if(ki.isKeyPressed(GLFW_KEY_RIGHT)){
+        if (ki.isKeyPressed(GLFW_KEY_RIGHT)) {
             player.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
         }
 
-        if(ki.isKeyPressed(GLFW_KEY_I)){
+        if (ki.isKeyPressed(GLFW_KEY_I)) {
             lightIndication.translateBy(0, 0, 1);
         }
-        if(ki.isKeyPressed(GLFW_KEY_K)){
+        if (ki.isKeyPressed(GLFW_KEY_K)) {
             lightIndication.translateBy(0, 0, -1);
         }
-        if(ki.isKeyPressed(GLFW_KEY_J)){
+        if (ki.isKeyPressed(GLFW_KEY_J)) {
             lightIndication.translateBy(-1, 0, 0);
         }
-        if(ki.isKeyPressed(GLFW_KEY_L)){
+        if (ki.isKeyPressed(GLFW_KEY_L)) {
             lightIndication.translateBy(1, 0, 0);
         }
 
         light.setPosition(lightIndication.getPosition());
 
-
         getLightHandler().getSpotLight(0).setPosition(handler.getCamera().getPosition());
 
         MouseInput mi = handler.getMouseInput();
         handler.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
+        if (handler.getSoundManager().getListener() != null)
+            handler.getSoundManager().getListener().setPosition(gameHandler.getCamera().getPosition());
     }
 }

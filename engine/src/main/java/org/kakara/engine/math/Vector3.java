@@ -18,6 +18,10 @@ public class Vector3 {
         this(vec.x, vec.y, vec.z);
     }
 
+    public Vector3() {
+
+    }
+
     /**
      * Clone the vector
      * @return The cloned vector.

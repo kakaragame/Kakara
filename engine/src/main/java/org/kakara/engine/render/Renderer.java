@@ -114,4 +114,8 @@ public class Renderer {
             shaderProgram.cleanup();
         }
     }
+
+    public Transformation getTransformation() {
+        return transformation;
+    }
 }

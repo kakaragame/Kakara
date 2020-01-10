@@ -5,6 +5,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.kakara.engine.Camera;
 import org.kakara.engine.item.GameItem;
+import org.kakara.engine.math.Vector3;
 
 public class Transformation {
     private final Matrix4f projectionMatrix;
@@ -22,6 +23,7 @@ public class Transformation {
 
     /**
      * Get the project matrix
+     *
      * @param fov
      * @param width
      * @param height
@@ -38,10 +40,11 @@ public class Transformation {
 
     /**
      * Get the matrix for the model position, rotation, and scale.
+     *
      * @param gameItem The game item to get the matrix for
      * @return The matrix.
      */
-    public Matrix4f getModelMatrix(GameItem gameItem){
+    public Matrix4f getModelMatrix(GameItem gameItem) {
         Quaternionf rotation = gameItem.getRotation();
         modelViewMatrix.translationRotateScale(gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, gameItem.getScale(),
                 gameItem.getScale(), gameItem.getScale());
@@ -50,10 +53,11 @@ public class Transformation {
 
     /**
      * Get the model * view matrix.
-     * @deprecated This method is outdated. Use getModelMatrix and getViewMatrix instead.
-     * @param gameItem The game item.
+     *
+     * @param gameItem   The game item.
      * @param viewMatrix The view matrix
      * @return The model * view matrix.
+     * @deprecated This method is outdated. Use getModelMatrix and getViewMatrix instead.
      */
     public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {
         Quaternionf rotation = gameItem.getRotation();
@@ -65,6 +69,7 @@ public class Transformation {
 
     /**
      * Get the view matrix for the camera.
+     *
      * @param camera The camera.
      * @return The view matrix.
      */
@@ -74,10 +79,12 @@ public class Transformation {
 
         viewMatrix.identity();
         // First do the rotation so camera rotates over its position
-        viewMatrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
-                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
+        viewMatrix.rotate((float) Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
+                .rotate((float) Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
         // Then do the translation
         viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
         return viewMatrix;
     }
+
+
 }

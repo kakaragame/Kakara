@@ -10,9 +10,8 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>server</artifactId>
+    <artifactId>game</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
@@ -30,24 +29,18 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>false</addClasspath>
-                            <mainClass>org.kakara.server.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
             </plugin>
 
         </plugins>
     </build>
+
     <dependencies>
         <dependency>
             <groupId>org.kakara</groupId>
-            <artifactId>game</artifactId>
+            <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
 </project>

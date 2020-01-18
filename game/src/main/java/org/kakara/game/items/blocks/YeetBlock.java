@@ -1,4 +1,4 @@
-package org.kakara.client.items.blocks;
+package org.kakara.game.items.blocks;
 
 import org.kakara.core.annotations.Hardness;
 import org.kakara.core.annotations.Id;

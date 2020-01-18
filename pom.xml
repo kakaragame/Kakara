@@ -12,6 +12,7 @@
         <module>engine</module>
         <module>client</module>
         <module>server</module>
+        <module>game</module>
     </modules>
 
 

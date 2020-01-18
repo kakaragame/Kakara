@@ -1,4 +1,4 @@
-package org.kakara.client.items;
+package org.kakara.game.items;
 
 import org.kakara.core.annotations.Id;
 import org.kakara.core.annotations.Name;

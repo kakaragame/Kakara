@@ -15,6 +15,8 @@ import org.kakara.engine.GameEngine;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Mesh;
 import org.kakara.engine.item.Texture;
+import org.kakara.engine.resources.Resource;
+import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -28,33 +30,15 @@ import static org.lwjgl.system.MemoryUtil.*;
  * A model loader for static Models
  */
 public class StaticModelLoader {
-    public static Mesh[] load(File modelFile, File texturesDir) throws Exception {
-        return load(modelFile.getPath(), texturesDir.getPath());
+    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager) throws Exception {
+        return load(resource, texturesDir, resourceManager, aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+                | aiProcess_FixInfacingNormals);
     }
 
-    /**
-     *
-     * @param modelPath
-     * @param texturesDir
-     * @return
-     * @deprecated Using this will cause incompatibilities against different operating systems!
-     * @throws Exception
-     */
-    public static Mesh[] load(Path modelPath, Path texturesDir) throws Exception {
-        return load(modelPath.toAbsolutePath().toString(), texturesDir.toAbsolutePath().toString());
-    }
+    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, int flags) throws Exception {
+        GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resource.toString(), texturesDir));
 
-
-    public static Mesh[] load(String resourceStream, String texturesDir) throws Exception {
-        return load(resourceStream, texturesDir,
-                aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-                        | aiProcess_FixInfacingNormals);
-    }
-
-    public static Mesh[] load(String resourceStream, String texturesDir, int flags) throws Exception {
-        GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resourceStream, texturesDir));
-        AIScene aiScene = aiImportFile(resourceStream, flags);
-
+        AIScene aiScene = aiImportFile(resource.toString(), flags);
         if (aiScene == null) {
 //            throw new Exception("Error loading model");
             throw new Exception(aiGetErrorString());
@@ -65,7 +49,7 @@ public class StaticModelLoader {
         List<Material> materials = new ArrayList<>();
         for (int i = 0; i < numMaterials; i++) {
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            processMaterial(aiMaterial, materials, texturesDir);
+            processMaterial(aiMaterial, materials, texturesDir, resourceManager);
         }
 
         int numMeshes = aiScene.mNumMeshes();
@@ -93,9 +77,9 @@ public class StaticModelLoader {
     }
 
     protected static void processMaterial(AIMaterial aiMaterial, List<Material> materials,
-                                          String texturesDir) throws Exception {
+                                          String texturesDir, ResourceManager resourceManager) throws Exception {
         // File.separator. File.pathSeparator is for the PATH variable.
-        String separator = texturesDir.startsWith("/") ? "/" : File.separator;
+        String separator = "/";
         AIColor4D colour = AIColor4D.create();
 
         AIString path = AIString.calloc();
@@ -104,7 +88,7 @@ public class StaticModelLoader {
         String textPath = path.dataString();
         Texture texture = null;
         if (textPath != null && textPath.length() > 0) {
-            TextureCache textCache = TextureCache.getInstance();
+            TextureCache textCache = TextureCache.getInstance(resourceManager);
             String textureFile = texturesDir + separator + textPath;
             textureFile = textureFile.replace("//", separator);
             GameEngine.LOGGER.debug(String.format("Getting Texture from %s", textureFile));

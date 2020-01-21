@@ -127,4 +127,7 @@ public class Utils {
         return new Texture(bb);
     }
 
+    public static File getCurrentDirectory() {
+        return null;
+    }
 }

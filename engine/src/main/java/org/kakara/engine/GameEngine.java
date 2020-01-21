@@ -4,6 +4,7 @@ import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.render.Renderer;
+import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +25,12 @@ public class GameEngine implements Runnable {
     private final Game game;
     private final Renderer renderer;
     private final GameHandler gameHandler;
-
     public GameEngine(String windowTitle, int width, int height, boolean vSync, Game game) {
         this.window = new Window(windowTitle, width, height, true, vSync);
         time = new Time();
         this.game = game;
         this.renderer = new Renderer();
         this.gameHandler = new GameHandler(this);
-
     }
 
     /**
@@ -138,4 +137,6 @@ public class GameEngine implements Runnable {
     public GameHandler getGameHandler() {
         return gameHandler;
     }
+
+
 }

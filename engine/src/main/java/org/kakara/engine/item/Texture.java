@@ -10,6 +10,7 @@ import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
 
+import org.kakara.engine.resources.Resource;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.system.MemoryStack;
 
@@ -56,6 +57,10 @@ public class Texture {
 
     public Texture(String fileName) throws Exception {
         this(Utils.ioResourceToByteBuffer(fileName, 1024));
+    }
+
+    public Texture(Resource resource) {
+        this(resource.getByteBuffer());
     }
 
     public Texture(ByteBuffer imageData) {

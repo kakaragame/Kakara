@@ -7,6 +7,7 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.ItemHandler;
 import org.kakara.engine.lighting.LightHandler;
+import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.SceneManager;
 import org.kakara.engine.sound.SoundManager;
 
@@ -26,6 +27,7 @@ public class GameHandler {
     private SoundManager soundManager;
     private static GameHandler gameHandler;
     private GameEngine gameEngine;
+    private ResourceManager resourceManager;
 
     public GameHandler(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
@@ -39,6 +41,7 @@ public class GameHandler {
         this.sceneManager = new SceneManager(this);
         soundManager = new SoundManager();
         GameHandler.gameHandler = this;
+        resourceManager = new ResourceManager();
     }
 
     /**
@@ -134,5 +137,10 @@ public class GameHandler {
 
     public SoundManager getSoundManager() {
         return soundManager;
+    }
+
+
+    public ResourceManager getResourceManager() {
+        return resourceManager;
     }
 }

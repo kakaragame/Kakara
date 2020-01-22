@@ -5,6 +5,8 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.openal.AL10.*;
 
+import org.kakara.engine.resources.JarResource;
+import org.kakara.engine.resources.Resource;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.stb.STBVorbisInfo;
 
@@ -22,10 +24,11 @@ public class SoundBuffer {
 
     private ShortBuffer pcm = null;
 
-    public SoundBuffer(String file) throws Exception {
+    public SoundBuffer(Resource file) throws Exception {
         this.bufferId = alGenBuffers();
         try (STBVorbisInfo info = STBVorbisInfo.malloc()) {
             ShortBuffer pcm = readVorbis(file, info);
+
 
             // Copy to buffer
             alBufferData(bufferId, info.channels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, info.sample_rate());
@@ -43,11 +46,17 @@ public class SoundBuffer {
         }
     }
 
-    private ShortBuffer readVorbis(String resource, STBVorbisInfo info) throws Exception {
+    private ShortBuffer readVorbis(Resource resource, STBVorbisInfo info) throws Exception {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            ByteBuffer vorbis = Utils.ioResourceToByteBuffer(resource, 32768);
+            long decoder;
             IntBuffer error = stack.mallocInt(1);
-            long decoder = stb_vorbis_open_memory(vorbis, error, null);
+
+            if (resource instanceof JarResource) {
+                ByteBuffer vorbis = resource.getByteBuffer();
+                decoder = stb_vorbis_open_memory(vorbis, error, null);
+            } else {
+                decoder = stb_vorbis_open_filename(resource.getPath(), error, null);
+            }
             if (decoder == NULL) {
                 throw new RuntimeException("Failed to open Ogg Vorbis file. Error: " + error.get(0));
             }

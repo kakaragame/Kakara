@@ -15,6 +15,8 @@ import org.kakara.engine.GameEngine;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Mesh;
 import org.kakara.engine.item.Texture;
+import org.kakara.engine.resources.FileResource;
+import org.kakara.engine.resources.JarResource;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.utils.Utils;
@@ -38,7 +40,60 @@ public class StaticModelLoader {
     public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, int flags) throws Exception {
         GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resource.toString(), texturesDir));
 
-        AIScene aiScene = aiImportFile(resource.toString(), flags);
+        AIScene aiScene = null;
+        if (resource instanceof FileResource) {
+            aiScene = aiImportFile(resource.getPath(), flags);
+        } else if (resource instanceof JarResource) {
+            AIFileIO fileIo = AIFileIO.create();
+            AIFileOpenProcI fileOpenProc = new AIFileOpenProc() {
+                public long invoke(long pFileIO, long fileName, long openMode) {
+                    AIFile aiFile = AIFile.create();
+                    final ByteBuffer data;
+                    String fileNameUtf8 = memUTF8(fileName);
+                    try {
+                        data = ioResourceToByteBuffer(fileNameUtf8, 8192);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Could not open file: " + fileNameUtf8);
+                    }
+                    AIFileReadProcI fileReadProc = new AIFileReadProc() {
+                        public long invoke(long pFile, long pBuffer, long size, long count) {
+                            long max = Math.min(data.remaining(), size * count);
+                            memCopy(memAddress(data) + data.position(), pBuffer, max);
+                            return max;
+                        }
+                    };
+                    AIFileSeekI fileSeekProc = new AIFileSeek() {
+                        public int invoke(long pFile, long offset, int origin) {
+                            if (origin == Assimp.aiOrigin_CUR) {
+                                data.position(data.position() + (int) offset);
+                            } else if (origin == Assimp.aiOrigin_SET) {
+                                data.position((int) offset);
+                            } else if (origin == Assimp.aiOrigin_END) {
+                                data.position(data.limit() + (int) offset);
+                            }
+                            return 0;
+                        }
+                    };
+                    AIFileTellProcI fileTellProc = new AIFileTellProc() {
+                        public long invoke(long pFile) {
+                            return data.limit();
+                        }
+                    };
+                    aiFile.ReadProc(fileReadProc);
+                    aiFile.SeekProc(fileSeekProc);
+                    aiFile.FileSizeProc(fileTellProc);
+                    return aiFile.address();
+                }
+            };
+            AIFileCloseProcI fileCloseProc = new AIFileCloseProc() {
+                public void invoke(long pFileIO, long pFile) {
+                    /* Nothing to do */
+                }
+            };
+            fileIo.set(fileOpenProc, fileCloseProc, NULL);
+            aiScene = aiImportFileEx(resource.getPath(), flags,  fileIo);
+        }
+        //I feel like this is gonna be a problem
         if (aiScene == null) {
 //            throw new Exception("Error loading model");
             throw new Exception(aiGetErrorString());

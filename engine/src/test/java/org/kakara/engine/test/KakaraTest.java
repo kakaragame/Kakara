@@ -31,7 +31,7 @@ public class KakaraTest implements Game {
         gInst.getSoundManager().setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
         gInst.getSoundManager().setListener(new SoundListener());
 
-        SoundBuffer buffBack = new SoundBuffer("/sounds/background.ogg");
+        SoundBuffer buffBack = new SoundBuffer(handler.getResourceManager().getResource("sounds/background.ogg"));
         gInst.getSoundManager().addSoundBuffer(buffBack);
         SoundSource sourceBack = new SoundSource(true, true);
         sourceBack.setBuffer(buffBack.getBufferId());

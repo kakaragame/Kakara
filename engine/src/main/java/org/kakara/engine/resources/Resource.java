@@ -12,6 +12,8 @@ public interface Resource {
 
     URL getURL();
 
+    String getPath();
+
     byte[] getByteArray();
 
     ByteBuffer getByteBuffer();

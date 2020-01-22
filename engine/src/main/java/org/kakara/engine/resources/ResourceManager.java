@@ -3,7 +3,6 @@ package org.kakara.engine.resources;
 import org.kakara.engine.utils.Utils;
 
 import java.io.File;
-import java.net.MalformedURLException;
 
 public class ResourceManager {
     private String internalLocation;
@@ -26,13 +25,15 @@ public class ResourceManager {
      */
     public Resource getResource(String resourcePath) throws Exception {
         File externalResource = new File(externalLocation, resourcePath.replace("/", File.separator));
+        System.out.println(externalResource.getAbsolutePath());
         if (externalResource.exists()) {
 
-            return new LocalResource(externalResource.toURI().toURL());
+            return new FileResource(externalResource.toURI().toURL());
         } else {
-            String internalResource = internalLocation + resourcePath;
-            System.out.println(internalResource);
-            return new LocalResource(ResourceManager.class.getResource(internalResource));
+            String location = internalLocation + resourcePath;
+            location = location.replace("//", "/");
+            System.out.println(location);
+            return new JarResource(location);
         }
     }
 

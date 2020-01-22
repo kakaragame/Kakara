@@ -128,6 +128,11 @@ public class Utils {
     }
 
     public static File getCurrentDirectory() {
-        return null;
+        File file = new File(".");
+        try {
+            return file.getCanonicalFile();
+        } catch (IOException e) {
+            return file.getAbsoluteFile();
+        }
     }
 }

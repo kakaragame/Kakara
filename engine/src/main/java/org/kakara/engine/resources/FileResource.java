@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
-public class LocalResource implements Resource {
+public class FileResource implements Resource {
     private URL url;
 
-    public LocalResource(URL url) {
+    public FileResource(URL url) {
         this.url = url;
     }
 
@@ -28,7 +28,7 @@ public class LocalResource implements Resource {
 
     public byte[] getByteArray() {
         try {
-            return IOUtils.toByteArray(getInputStream());
+            return getInputStream().readAllBytes();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,16 +37,16 @@ public class LocalResource implements Resource {
 
     @Override
     public ByteBuffer getByteBuffer() {
-        try {
-            return Utils.ioResourceToByteBuffer(url.getPath(), getByteArray().length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return ByteBuffer.wrap(getByteArray());
     }
 
     public URL getURL() {
         return url;
+    }
+
+    @Override
+    public String getPath() {
+        return url.getPath();
     }
 
     @Override

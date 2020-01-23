@@ -6,15 +6,23 @@ import org.kakara.engine.item.ItemHandler;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
+import org.kakara.engine.ui.HUD;
+import org.kakara.engine.ui.HUDItem;
 
 public abstract class AbstractScene implements Scene {
     private ItemHandler itemHandler = new ItemHandler();
     private LightHandler lightHandler = new LightHandler();
+    protected HUD hud = new HUD();
     private boolean mouseStatus;
     protected GameHandler gameHandler;
 
     protected AbstractScene(GameHandler gameHandler) {
         this.gameHandler = gameHandler;
+        try{
+            hud.init(gameHandler.getWindow());
+        }catch(Exception ex){
+
+        }
     }
 
     @Override
@@ -52,6 +60,10 @@ public abstract class AbstractScene implements Scene {
 
     public void add(SpotLight spotLight){
         lightHandler.addSpotLight(spotLight);
+    }
+
+    public void add(HUDItem hudItem){
+        hud.addItem(hudItem);
     }
 
 

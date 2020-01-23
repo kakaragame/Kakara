@@ -10,9 +10,11 @@ import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
+import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.ui.items.Rectangle;
 import org.kakara.engine.utils.Utils;
 
 import java.io.InputStream;
@@ -73,6 +75,11 @@ public class MainGameScene extends AbstractGameScene {
         this.add(lightIndication);
         // Allows you to see the light.
         this.getLightHandler().getDirectionalLight().setDirection(0, 1, 0);
+
+
+        Rectangle rect = new Rectangle(new Vector2(50, 50), new Vector2(100, 100));
+        add(rect);
+
         this.handler = gameHandler;
     }
 

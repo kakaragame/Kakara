@@ -224,7 +224,6 @@
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-opengl</artifactId>
             <scope>compile</scope>
-
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>

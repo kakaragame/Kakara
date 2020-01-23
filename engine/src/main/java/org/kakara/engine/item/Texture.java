@@ -10,6 +10,9 @@ import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
 
+import org.kakara.engine.resources.FileResource;
+import org.kakara.engine.resources.JarResource;
+import org.kakara.engine.resources.Resource;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.system.MemoryStack;
 
@@ -58,6 +61,44 @@ public class Texture {
         this(Utils.ioResourceToByteBuffer(fileName, 1024));
     }
 
+    public Texture(Resource resource) {
+
+
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            IntBuffer avChannels = stack.mallocInt(1);
+
+            // Decode texture image into a byte buffer
+
+            ByteBuffer decodedImage;
+            if(resource instanceof JarResource) {
+                decodedImage = stbi_load_from_memory(resource.getByteBuffer(), w, h, avChannels, 4);
+            }else{
+                decodedImage = stbi_load(resource.getPath(), w, h, avChannels, 4);
+
+            }
+            this.width = w.get();
+            this.height = h.get();
+
+            // Create a new OpenGL texture
+            this.id = glGenTextures();
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, this.id);
+
+            // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            // Upload the texture data
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, decodedImage);
+            // Generate Mip Map
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+
+    }
+
     public Texture(ByteBuffer imageData) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer w = stack.mallocInt(1);
@@ -65,6 +106,7 @@ public class Texture {
             IntBuffer avChannels = stack.mallocInt(1);
 
             // Decode texture image into a byte buffer
+
             ByteBuffer decodedImage = stbi_load_from_memory(imageData, w, h, avChannels, 4);
 
             this.width = w.get();

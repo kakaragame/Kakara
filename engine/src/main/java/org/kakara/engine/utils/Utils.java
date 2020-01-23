@@ -127,4 +127,12 @@ public class Utils {
         return new Texture(bb);
     }
 
+    public static File getCurrentDirectory() {
+        File file = new File(".");
+        try {
+            return file.getCanonicalFile();
+        } catch (IOException e) {
+            return file.getAbsoluteFile();
+        }
+    }
 }

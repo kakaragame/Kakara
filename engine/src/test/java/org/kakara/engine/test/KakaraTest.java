@@ -28,15 +28,15 @@ public class KakaraTest implements Game {
             e.printStackTrace();
         }
 
-        gInst.getSoundManager().setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
-        gInst.getSoundManager().setListener(new SoundListener());
-
-        SoundBuffer buffBack = new SoundBuffer(handler.getResourceManager().getResource("sounds/background.ogg"));
-        gInst.getSoundManager().addSoundBuffer(buffBack);
-        SoundSource sourceBack = new SoundSource(true, true);
-        sourceBack.setBuffer(buffBack.getBufferId());
-        gInst.getSoundManager().addSoundSource("MUSIC", sourceBack);
-        gInst.getSoundManager().playSoundSource("MUSIC");
+//        gInst.getSoundManager().setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
+//        gInst.getSoundManager().setListener(new SoundListener());
+//
+//        SoundBuffer buffBack = new SoundBuffer(handler.getResourceManager().getResource("sounds/background.ogg"));
+//        gInst.getSoundManager().addSoundBuffer(buffBack);
+//        SoundSource sourceBack = new SoundSource(true, true);
+//        sourceBack.setBuffer(buffBack.getBufferId());
+//        gInst.getSoundManager().addSoundSource("MUSIC", sourceBack);
+//        gInst.getSoundManager().playSoundSource("MUSIC");
     }
 
 

@@ -13,9 +13,10 @@ public class Main {
         options.addOption(AUTH_KEY);
         options.addOption(AUTH_SERVER);
         CommandLineParser parser = new DefaultParser();
-        CommandLine parse = parser.parse(options, args);
+        CommandLine parse = null;
+        //parse = parser.parse(options, args);
         //TODO load the AUTH IMPL from the jar via a ServiceLoader/ClassLoader
 
-
+        new KakaraGame(parse);
     }
 }

@@ -1,8 +1,11 @@
 package org.kakara.game.items;
 
+import org.kakara.core.charm.Charm;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.game.MetaData;
+
+import java.util.Map;
 
 public class GameItemStack implements ItemStack {
     private int count;
@@ -33,5 +36,15 @@ public class GameItemStack implements ItemStack {
     @Override
     public void setCount(int count) {
 this.count = count;
+    }
+
+    @Override
+    public Map<Charm, Byte> getCharms() {
+        return null;
+    }
+
+    @Override
+    public void addCharm(Charm charm, Byte level) {
+
     }
 }

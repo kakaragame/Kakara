@@ -1,6 +1,7 @@
 package org.kakara.client;
 
 import org.kakara.core.GameInstance;
+import org.kakara.core.GameType;
 import org.kakara.core.game.CustomStackable;
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.game.Item;
@@ -22,5 +23,10 @@ public class Client implements GameInstance {
         ItemStack stack = null;
         //TODO create GameItemStack
         return stack;
+    }
+
+    @Override
+    public GameType getType() {
+        return GameType.CLIENT;
     }
 }

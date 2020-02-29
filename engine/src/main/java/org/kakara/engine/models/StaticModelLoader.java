@@ -45,53 +45,10 @@ public class StaticModelLoader {
             aiScene = aiImportFile(resource.getPath(), flags);
         } else if (resource instanceof JarResource) {
             AIFileIO fileIo = AIFileIO.create();
-            AIFileOpenProcI fileOpenProc = new AIFileOpenProc() {
-                public long invoke(long pFileIO, long fileName, long openMode) {
-                    AIFile aiFile = AIFile.create();
-                    final ByteBuffer data;
-                    String fileNameUtf8 = memUTF8(fileName);
-                    try {
-                        data = ioResourceToByteBuffer(fileNameUtf8, 8192);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Could not open file: " + fileNameUtf8);
-                    }
-                    AIFileReadProcI fileReadProc = new AIFileReadProc() {
-                        public long invoke(long pFile, long pBuffer, long size, long count) {
-                            long max = Math.min(data.remaining(), size * count);
-                            memCopy(memAddress(data) + data.position(), pBuffer, max);
-                            return max;
-                        }
-                    };
-                    AIFileSeekI fileSeekProc = new AIFileSeek() {
-                        public int invoke(long pFile, long offset, int origin) {
-                            if (origin == Assimp.aiOrigin_CUR) {
-                                data.position(data.position() + (int) offset);
-                            } else if (origin == Assimp.aiOrigin_SET) {
-                                data.position((int) offset);
-                            } else if (origin == Assimp.aiOrigin_END) {
-                                data.position(data.limit() + (int) offset);
-                            }
-                            return 0;
-                        }
-                    };
-                    AIFileTellProcI fileTellProc = new AIFileTellProc() {
-                        public long invoke(long pFile) {
-                            return data.limit();
-                        }
-                    };
-                    aiFile.ReadProc(fileReadProc);
-                    aiFile.SeekProc(fileSeekProc);
-                    aiFile.FileSizeProc(fileTellProc);
-                    return aiFile.address();
-                }
-            };
-            AIFileCloseProcI fileCloseProc = new AIFileCloseProc() {
-                public void invoke(long pFileIO, long pFile) {
-                    /* Nothing to do */
-                }
-            };
+            AIFileOpenProcI fileOpenProc = new SimpleAIFileOpenProc();
+            AIFileCloseProcI fileCloseProc = new SimpleAIFileCloseProc();
             fileIo.set(fileOpenProc, fileCloseProc, NULL);
-            aiScene = aiImportFileEx(resource.getPath(), flags,  fileIo);
+            aiScene = aiImportFileEx(resource.getPath(), flags, fileIo);
         }
         //I feel like this is gonna be a problem
         if (aiScene == null) {

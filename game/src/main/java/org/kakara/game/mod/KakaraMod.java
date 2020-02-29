@@ -2,6 +2,7 @@ package org.kakara.game.mod;
 
 import org.kakara.core.KakaraCore;
 import org.kakara.core.mod.Mod;
+import org.kakara.core.mod.ModRules;
 import org.kakara.core.mod.ModType;
 
 public class KakaraMod implements Mod {
@@ -28,6 +29,11 @@ public class KakaraMod implements Mod {
     @Override
     public ModType getModType() {
         return ModType.REGULAR;
+    }
+
+    @Override
+    public ModRules getModRules() {
+        return null;
     }
 
     @Override

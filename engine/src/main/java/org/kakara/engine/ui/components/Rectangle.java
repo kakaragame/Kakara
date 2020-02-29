@@ -1,18 +1,21 @@
-package org.kakara.engine.ui.items;
+package org.kakara.engine.ui.components;
 
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.events.EventHandler;
+import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
-import org.kakara.engine.ui.HUDItem;
 import org.kakara.engine.ui.RGBA;
+import org.kakara.engine.ui.events.ActionType;
+import org.kakara.engine.ui.events.UActionEvent;
 import org.lwjgl.nanovg.NVGColor;
 
 import static org.lwjgl.nanovg.NanoVG.*;
-import static org.lwjgl.nanovg.NanoVG.nvgFill;
 
-public class Rectangle implements HUDItem {
-    private Vector2 position;
-    private Vector2 scale;
+/**
+ * Base Rectangle Component
+ */
+public class Rectangle extends GeneralComponent {
     private RGBA color;
     private NVGColor colorz;
 
@@ -31,35 +34,6 @@ public class Rectangle implements HUDItem {
         this(position, scale, new RGBA());
     }
 
-    public Rectangle setPosition(Vector2 position){
-        this.position = position;
-        return this;
-    }
-
-    public Rectangle setPosition(float x, float y) {
-        this.position.x = x;
-        this.position.y = y;
-        return this;
-    }
-
-    public Vector2 getPosition(){
-        return position;
-    }
-
-    public Rectangle setScale(Vector2 scale){
-        this.scale = scale;
-        return this;
-    }
-
-    public Rectangle setScale(float x, float y){
-        this.scale.x = x;
-        this.scale.y = y;
-        return this;
-    }
-
-    public Vector2 getScale(){
-        return this.scale;
-    }
 
     public Rectangle setColor(RGBA color){
         this.color = color;
@@ -70,16 +44,33 @@ public class Rectangle implements HUDItem {
         return color;
     }
 
+    @EventHandler
+    public void onClick(OnMouseClickEvent evt){
+        if(HUD.isColliding(getTruePosition(), scale, new Vector2(evt.getMousePosition()))){
+            for(UActionEvent uae : events){
+                uae.onActionEvent(ActionType.CLICK);
+            }
+        }
+    }
+
 
     @Override
     public void init(HUD hud, GameHandler handler) {
-
+        pollInit();
+        for(Component cc : components){
+            cc.init(hud, handler);
+        }
+        handler.getEventManager().registerHandler(this);
     }
 
     @Override
-    public void render(HUD hud, GameHandler handler) {
+    public void render(Vector2 relative, HUD hud, GameHandler handler) {
+        pollRender(relative, hud, handler);
+
+
+        Vector2 truePos = position.clone().add(relative);
         nvgBeginPath(hud.getVG());
-        nvgRect(hud.getVG(), this.position.x, this.position.y, this.scale.x, this.scale.y);
+        nvgRect(hud.getVG(), truePos.x, truePos.y, scale.x, scale.y);
         nvgRGBA((byte) color.r, (byte) color.g, (byte) color.b, (byte) color.aToNano(), colorz);
         nvgFillColor(hud.getVG(), colorz);
         nvgFill(hud.getVG());

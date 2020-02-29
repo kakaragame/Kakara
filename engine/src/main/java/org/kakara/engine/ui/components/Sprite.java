@@ -1,10 +1,14 @@
-package org.kakara.engine.ui.items;
+package org.kakara.engine.ui.components;
 
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.events.EventHandler;
+import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.HUDItem;
+import org.kakara.engine.ui.events.ActionType;
+import org.kakara.engine.ui.events.UActionEvent;
 import org.lwjgl.nanovg.NVGPaint;
 import org.lwjgl.nanovg.NanoVGGL3;
 
@@ -13,9 +17,7 @@ import static org.lwjgl.nanovg.NanoVG.*;
 /**
  * Display an image onto the HUD.
  */
-public class Sprite implements HUDItem {
-    private Vector2 position;
-    private Vector2 scale;
+public class Sprite extends GeneralComponent {
     private float rotation;
     private byte alpha;
     private int image;
@@ -23,7 +25,7 @@ public class Sprite implements HUDItem {
 
     private NVGPaint paint;
 
-    public Sprite (Texture texture, Vector2 position, Vector2 scale){
+    public Sprite(Texture texture, Vector2 position, Vector2 scale){
         paint = NVGPaint.create();
         this.alpha = (byte) 255;
         this.rotation = 0;
@@ -34,7 +36,21 @@ public class Sprite implements HUDItem {
 
     @Override
     public void init(HUD hud, GameHandler handler) {
-        this.image = NanoVGGL3.nvglCreateImageFromHandle(hud.getVG(), texture.getId(), texture.getWidth() ,texture.getHeight(), 0);
+        pollInit();
+        for(Component c : components){
+            c.init(hud, handler);
+        }
+        this.image = NanoVGGL3.nvglCreateImageFromHandle(hud.getVG(), texture.getId(), texture.getWidth(), texture.getHeight(), 0);
+        handler.getEventManager().registerHandler(this);
+    }
+
+    @EventHandler
+    public void onClick(OnMouseClickEvent evt){
+        if(HUD.isColliding(getTruePosition(), scale, new Vector2(evt.getMousePosition()))){
+            for(UActionEvent uae : events){
+                uae.onActionEvent(ActionType.CLICK);
+            }
+        }
     }
 
     public Sprite(Texture tex){
@@ -48,24 +64,6 @@ public class Sprite implements HUDItem {
         this.image = NanoVGGL3.nvglCreateImageFromHandle(
                 GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getVG(),
                 tex.getId(), texture.getWidth(),tex.getHeight(), 0);
-    }
-
-    public Sprite setPosition(Vector2 pos){
-        this.position = pos;
-        return this;
-    }
-
-    public Vector2 getPosition(){
-        return this.position;
-    }
-
-    public Sprite setScale(Vector2 scale){
-        this.scale = scale;
-        return this;
-    }
-
-    public Vector2 getScale(){
-        return this.scale;
     }
 
     public Sprite setAlpha(byte b){
@@ -87,10 +85,13 @@ public class Sprite implements HUDItem {
     }
 
     @Override
-    public void render(HUD hud, GameHandler handler) {
-        NVGPaint imagePaint = nvgImagePattern(hud.getVG(), position.x, position.y, scale.x, scale.y, rotation, image, 1.0f, NVGPaint.calloc());
+    public void render(Vector2 relative, HUD hud, GameHandler handler) {
+        pollRender(relative, hud, handler);
+
+        Vector2 truePos = position.clone().add(relative);
+        NVGPaint imagePaint = nvgImagePattern(hud.getVG(), truePos.x, truePos.y, scale.x, scale.y, rotation, image, 1.0f, NVGPaint.calloc());
         nvgBeginPath(hud.getVG());
-        nvgRect(hud.getVG(), position.x, position.y, position.x + scale.x, position.y + scale.y);
+        nvgRect(hud.getVG(), truePos.x, truePos.y, truePos.x + scale.x, truePos.y + scale.y);
         nvgFillPaint(hud.getVG(), imagePaint);
         nvgFill(hud.getVG());
         imagePaint.free();

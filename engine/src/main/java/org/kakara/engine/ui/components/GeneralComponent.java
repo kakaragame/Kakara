@@ -17,8 +17,12 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class GeneralComponent implements Component {
 
-    private List<UActionEvent> events;
-    private List<Component> components;
+    protected List<UActionEvent> events;
+    protected List<Component> components;
+
+    boolean init = false;
+
+    private Vector2 truePosition;
 
     public Vector2 position;
     public Vector2 scale;
@@ -28,14 +32,6 @@ public abstract class GeneralComponent implements Component {
         components = new ArrayList<>();
         position = new Vector2(0, 0);
         scale = new Vector2(0, 0);
-        glfwSetMouseButtonCallback(GameHandler.getInstance().getWindow().getWindowHandler(), (windowHandle, button, action, mode) -> {
-            if(action != GLFW_PRESS) return;
-            if(isColliding(position, scale, new Vector2(GameHandler.getInstance().getMouseInput().getCurrentPosition()))){
-                for(UActionEvent uae : events){
-                    uae.onActionEvent(ActionType.CLICK);
-                }
-            }
-        });
     }
 
     @Override
@@ -46,36 +42,75 @@ public abstract class GeneralComponent implements Component {
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler){
         for(Component c : components){
-            c.render(position, hud, handler);
-        }
-        Vector2 mouse = new Vector2(handler.getMouseInput().getPosition());
-
-//        System.out.println(position.clone().add(scale) + "  " + mouse);
-
-
-
-    }
-
-    @EventHandler
-    public void onMousePressEvent(OnMouseClickEvent evt){
-        System.out.println("test");
-        if(isColliding(position, scale, new Vector2(evt.getMousePosition()))){
-            for(UActionEvent uae : events){
-                uae.onActionEvent(ActionType.CLICK);
-            }
+            c.render(relative.add(position), hud, handler);
         }
     }
-
 
     @Override
     public void add(Component component){
         this.components.add(component);
+        if(init)
+            component.init(GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD(), GameHandler.getInstance());
     }
 
-    private boolean isColliding(Vector2 position, Vector2 scale, Vector2 mouse){
-        boolean overx = position.x < mouse.x && mouse.x < position.x + scale.x;
-        boolean overy = position.y < mouse.y && mouse.y < position.y + scale.y;
-        return overx && overy;
+    @Override
+    public void setPosition(float x, float y){
+        this.position.x = x;
+        this.position.y = y;
+    }
+
+    @Override
+    public void setPosition(Vector2 pos){
+        setPosition(pos.x, pos.y);
+    }
+
+    @Override
+    public Vector2 getPosition(){
+        return position.clone();
+    }
+
+    @Override
+    public void setScale(float x, float y){
+        this.scale.x = x;
+        this.scale.y = y;
+    }
+
+    @Override
+    public void setScale(Vector2 scale){
+        setScale(scale.x, scale.y);
+    }
+
+    @Override
+    public Vector2 getScale(){
+        return scale;
+    }
+
+    /**
+     * Tells the engine to update crucial information of the object for you.
+     * Not calling this means certain things, like events, won't work.
+     * Call this in the render method first.
+     * @param relative
+     * @param hud
+     * @param handler
+     */
+    public void pollRender(Vector2 relative, HUD hud, GameHandler handler){
+        this.truePosition = position.clone().add(relative);
+    }
+
+    /**
+     * Tells the engine that the object was inited.
+     * This allows the engine to handle a lot of the component hassle for you.
+     */
+    public void pollInit(){
+        init = true;
+    }
+
+    /**
+     * Get the true position of the object.
+     * @return
+     */
+    public Vector2 getTruePosition(){
+        return this.truePosition;
     }
 
 }

@@ -4,6 +4,7 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.ItemHandler;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.render.Renderer;
+import org.kakara.engine.ui.HUD;
 
 public interface Scene {
 
@@ -19,6 +20,8 @@ public interface Scene {
     ItemHandler getItemHandler();
 
     LightHandler getLightHandler();
+
+    HUD getHUD();
 
     void unload();
 }

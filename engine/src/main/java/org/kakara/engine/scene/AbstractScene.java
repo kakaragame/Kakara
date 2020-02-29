@@ -46,6 +46,11 @@ public abstract class AbstractScene implements Scene {
         return lightHandler;
     }
 
+    @Override
+    public HUD getHUD(){
+        return hud;
+    }
+
     public void addItem(GameItem gameItem) {
         itemHandler.addItem(gameItem);
     }

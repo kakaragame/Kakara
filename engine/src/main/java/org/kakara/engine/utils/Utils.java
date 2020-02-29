@@ -127,6 +127,20 @@ public class Utils {
         return new Texture(bb);
     }
 
+    /**
+     * Convert an inputstream into a bytebuffer.
+     * @param io The input stream.
+     * @return The byte buffer.
+     * @throws IOException
+     */
+    public static ByteBuffer inputStreamToByteBuffer(InputStream io) throws IOException {
+        byte[] ioBytes = io.readAllBytes();
+        ByteBuffer bb = MemoryUtil.memAlloc(ioBytes.length);
+        bb.put(ioBytes);
+        bb.flip();
+        return bb;
+    }
+
     public static File getCurrentDirectory() {
         File file = new File(".");
         try {

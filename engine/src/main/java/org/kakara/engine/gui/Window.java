@@ -118,6 +118,15 @@ public class Window {
     }
 
     /**
+     * If a mouse button is pressed
+     * @param mouseCode The mouse code
+     * @return If the mouse is currently pressed.
+     */
+    public boolean isMousePressed(int mouseCode){
+        return glfwGetMouseButton(window, mouseCode) == GLFW_PRESS;
+    }
+
+    /**
      * If the GLFW has been instructed to close.
      * @return If the window was told to close.
      */

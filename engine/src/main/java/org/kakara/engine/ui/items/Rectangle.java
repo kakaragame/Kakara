@@ -4,6 +4,7 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.HUDItem;
+import org.kakara.engine.ui.RGBA;
 import org.lwjgl.nanovg.NVGColor;
 
 import static org.lwjgl.nanovg.NanoVG.*;
@@ -12,14 +13,22 @@ import static org.lwjgl.nanovg.NanoVG.nvgFill;
 public class Rectangle implements HUDItem {
     private Vector2 position;
     private Vector2 scale;
+    private RGBA color;
+    private NVGColor colorz;
 
     public Rectangle(){
-        this(new Vector2(0, 0), new Vector2(0, 0));
+        this(new Vector2(0, 0), new Vector2(0, 0), new RGBA());
+    }
+
+    public Rectangle(Vector2 position, Vector2 scale, RGBA color){
+        this.position = position;
+        this.scale = scale;
+        this.color = color;
+        this.colorz = NVGColor.create();
     }
 
     public Rectangle(Vector2 position, Vector2 scale){
-        this.position = position;
-        this.scale = scale;
+        this(position, scale, new RGBA());
     }
 
     public Rectangle setPosition(Vector2 position){
@@ -52,20 +61,27 @@ public class Rectangle implements HUDItem {
         return this.scale;
     }
 
+    public Rectangle setColor(RGBA color){
+        this.color = color;
+        return this;
+    }
+
+    public RGBA getColor(){
+        return color;
+    }
+
+
+    @Override
+    public void init(HUD hud, GameHandler handler) {
+
+    }
+
     @Override
     public void render(HUD hud, GameHandler handler) {
         nvgBeginPath(hud.getVG());
         nvgRect(hud.getVG(), this.position.x, this.position.y, this.scale.x, this.scale.y);
-        nvgFillColor(hud.getVG(), rgba(0x23, 0xa1, 0xf1, 200, hud.getColor()));
+        nvgRGBA((byte) color.r, (byte) color.g, (byte) color.b, (byte) color.aToNano(), colorz);
+        nvgFillColor(hud.getVG(), colorz);
         nvgFill(hud.getVG());
-    }
-
-    private NVGColor rgba(int r, int g, int b, int a, NVGColor colour) {
-        colour.r(r / 255.0f);
-        colour.g(g / 255.0f);
-        colour.b(b / 255.0f);
-        colour.a(a / 255.0f);
-
-        return colour;
     }
 }

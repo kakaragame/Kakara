@@ -14,7 +14,13 @@ import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.ui.RGBA;
+import org.kakara.engine.ui.components.Button;
+import org.kakara.engine.ui.events.ActionType;
+import org.kakara.engine.ui.events.UActionEvent;
+import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.Rectangle;
+import org.kakara.engine.ui.items.Sprite;
 import org.kakara.engine.utils.Utils;
 
 import java.io.InputStream;
@@ -74,11 +80,32 @@ public class MainGameScene extends AbstractGameScene {
         this.add(new SpotLight(gameHandler.getCamera().getPosition(), new Vector3(0, 0, 1)));
         this.add(lightIndication);
         // Allows you to see the light.
-        this.getLightHandler().getDirectionalLight().setDirection(0, 1, 0);
+        this.getLightHandler().getDirectionalLight().setDirection(-1, -1, 0);
 
 
-        Rectangle rect = new Rectangle(new Vector2(50, 50), new Vector2(100, 100));
-        add(rect);
+//        Rectangle rect = new Rectangle(new Vector2(50, 50), new Vector2(100, 100));
+//        rect.setColor(new RGBA(0, 255, 0, 0.5f));
+//        add(rect);
+//        add(new Rectangle(new Vector2(200, 200), new Vector2(30, 30)));
+//
+//        add(new Sprite(grass, new Vector2(0, 0), new Vector2(grass.getWidth(), grass.getHeight())));
+
+        ComponentCanvas cc = new ComponentCanvas();
+//
+        Sprite sprite = new Sprite(grass, new Vector2(0, 0), new Vector2(grass.getWidth(), grass.getHeight()));
+        Button btn = new Button(sprite, new Vector2(0, 0), new Vector2(100, 100));
+        btn.addUActionEvent(new UActionEvent() {
+            @Override
+            public void onActionEvent(ActionType at) {
+                if(at == ActionType.CLICK){
+                    System.out.println("Works");
+                }
+            }
+        });
+        cc.add(btn);
+        add(cc);
+
+
 
         this.handler = gameHandler;
     }

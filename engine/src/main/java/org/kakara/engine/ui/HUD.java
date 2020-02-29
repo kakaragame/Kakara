@@ -1,5 +1,7 @@
 package org.kakara.engine.ui;
 
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.render.batch.BatchRenderDevice;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.gui.Window;
 import org.lwjgl.nanovg.NVGColor;
@@ -31,6 +33,9 @@ public class HUD {
         }
 
         color = NVGColor.create();
+        for(HUDItem it : hudItems){
+            it.init(this, GameHandler.getInstance());
+        }
     }
 
     public void render(Window window){
@@ -38,7 +43,6 @@ public class HUD {
         for(HUDItem it : hudItems){
             it.render(this, GameHandler.getInstance());
         }
-
         nvgEndFrame(vg);
         window.restoreState();
     }
@@ -52,6 +56,10 @@ public class HUD {
     }
 
     public void addItem(HUDItem item){
+        Long check = this.vg;
+        if(check != null){
+            item.init(this, GameHandler.getInstance());
+        }
         hudItems.add(item);
     }
 

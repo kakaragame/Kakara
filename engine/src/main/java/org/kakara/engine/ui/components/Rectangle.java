@@ -75,7 +75,7 @@ public class Rectangle extends GeneralComponent {
 //                scale.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
 
         nvgBeginPath(hud.getVG());
-        nvgRect(hud.getVG(), getTruePosition().x, getTruePosition().y, getScale().x, getScale().y);
+        nvgRect(hud.getVG(), getTruePosition().x, getTruePosition().y, getTrueScale().x, getTrueScale().y);
 
         nvgRGBA((byte) color.r, (byte) color.g, (byte) color.b, (byte) color.aToNano(), colorz);
         nvgFillColor(hud.getVG(), colorz);

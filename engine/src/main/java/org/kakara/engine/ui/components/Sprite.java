@@ -88,10 +88,10 @@ public class Sprite extends GeneralComponent {
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
         pollRender(relative, hud, handler);
 
-        Vector2 truePos = position.clone().add(relative);
-        NVGPaint imagePaint = nvgImagePattern(hud.getVG(), truePos.x, truePos.y, scale.x, scale.y, rotation, image, 1.0f, NVGPaint.calloc());
+//        Vector2 truePos = position.clone().add(relative);
+        NVGPaint imagePaint = nvgImagePattern(hud.getVG(), getTruePosition().x, getTruePosition().y, getTrueScale().x, getTrueScale().y, rotation, image, 1.0f, NVGPaint.calloc());
         nvgBeginPath(hud.getVG());
-        nvgRect(hud.getVG(), truePos.x, truePos.y, truePos.x + scale.x, truePos.y + scale.y);
+        nvgRect(hud.getVG(), getTruePosition().x, getTruePosition().y, getTruePosition().x + getTrueScale().x, getTruePosition().y + getTrueScale().y);
         nvgFillPaint(hud.getVG(), imagePaint);
         nvgFill(hud.getVG());
         imagePaint.free();

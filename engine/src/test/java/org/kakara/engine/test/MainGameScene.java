@@ -99,7 +99,7 @@ public class MainGameScene extends AbstractGameScene {
 
         Rectangle rect = new Rectangle();
         rect.setScale(50f, 50f);
-        rect.setPosition(200f, 50f);
+        rect.setPosition((float)gameHandler.getWindow().getWidth()/2 - pnl.position.x, (float)gameHandler.getWindow().getHeight()/2 - pnl.position.y);
         pnl.add(rect);
 
         rect.addUActionEvent(new UActionEvent() {

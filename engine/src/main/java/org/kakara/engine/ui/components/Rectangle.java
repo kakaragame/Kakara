@@ -68,9 +68,15 @@ public class Rectangle extends GeneralComponent {
         pollRender(relative, hud, handler);
 
 
-        Vector2 truePos = position.clone().add(relative);
+//        Vector2 truePos = position.clone().add(relative);
+//        truePos = new Vector2(truePos.x * ((float) handler.getWindow().getWidth()/ (float)handler.getWindow().initalWidth),
+//                truePos.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
+//        Vector2 trueScale = new Vector2(scale.x * ((float) handler.getWindow().getWidth()/ (float)handler.getWindow().initalWidth),
+//                scale.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
+
         nvgBeginPath(hud.getVG());
-        nvgRect(hud.getVG(), truePos.x, truePos.y, scale.x, scale.y);
+        nvgRect(hud.getVG(), getTruePosition().x, getTruePosition().y, getScale().x, getScale().y);
+
         nvgRGBA((byte) color.r, (byte) color.g, (byte) color.b, (byte) color.aToNano(), colorz);
         nvgFillColor(hud.getVG(), colorz);
         nvgFill(hud.getVG());

@@ -27,6 +27,9 @@ public class Window {
 
     private long window;
 
+    public final int initalWidth;
+    public final int initalHeight;
+
     public Window(String title, int width, int height, boolean resizable, boolean vSync){
         this.title = title;
         this.width = width;
@@ -36,6 +39,9 @@ public class Window {
         this.resizable = resizable;
         cursor = true;
         this.options = new WindowOptions();
+
+        this.initalWidth = width;
+        this.initalHeight = height;
     }
 
     /**

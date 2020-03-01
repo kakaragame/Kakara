@@ -23,6 +23,7 @@ public abstract class GeneralComponent implements Component {
     boolean init = false;
 
     private Vector2 truePosition;
+    private Vector2 trueScale;
 
     public Vector2 position;
     public Vector2 scale;
@@ -95,6 +96,10 @@ public abstract class GeneralComponent implements Component {
      */
     public void pollRender(Vector2 relative, HUD hud, GameHandler handler){
         this.truePosition = position.clone().add(relative);
+        this.truePosition =  new Vector2(truePosition.x * ((float) handler.getWindow().getWidth()/ (float)handler.getWindow().initalWidth),
+                truePosition.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
+        this.trueScale = new Vector2(scale.x * ((float) handler.getWindow().getWidth()/ (float)handler.getWindow().initalWidth),
+                scale.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
     }
 
     /**
@@ -111,6 +116,14 @@ public abstract class GeneralComponent implements Component {
      */
     public Vector2 getTruePosition(){
         return this.truePosition;
+    }
+
+    /**
+     * Get the true scale of an object.
+     * @return
+     */
+    public Vector2 getTrueScale(){
+        return this.trueScale;
     }
 
 }

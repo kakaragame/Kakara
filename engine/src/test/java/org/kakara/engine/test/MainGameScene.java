@@ -6,6 +6,7 @@ import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.input.KeyInput;
+import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
 import org.kakara.engine.lighting.PointLight;
@@ -14,14 +15,17 @@ import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.Rectangle;
 import org.kakara.engine.ui.components.Sprite;
-import org.kakara.engine.ui.events.ActionType;
-import org.kakara.engine.ui.events.UActionEvent;
+import org.kakara.engine.ui.events.HUDClickEvent;
+import org.kakara.engine.ui.events.HUDHoverEnterEvent;
+import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.utils.Utils;
 
+import java.awt.desktop.SystemSleepEvent;
 import java.io.InputStream;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -39,7 +43,7 @@ public class MainGameScene extends AbstractGameScene {
         var resourceManager = gameHandler.getResourceManager();
         Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player",resourceManager);
         MeshGameItem object = new MeshGameItem(mainPlayer);
-        object.setPosition(4, 100f, 4);
+        object.setPosition(4, 3f, 4);
         object.setScale(0.3f);
         object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1), true));
         object.getCollider().setUseGravity(true).setTrigger(false);
@@ -102,14 +106,27 @@ public class MainGameScene extends AbstractGameScene {
         rect.setPosition((float)gameHandler.getWindow().getWidth()/2 - pnl.position.x, (float)gameHandler.getWindow().getHeight()/2 - pnl.position.y);
         pnl.add(rect);
 
-        rect.addUActionEvent(new UActionEvent() {
+        rect.addUActionEvent(new HUDClickEvent() {
             @Override
-            public void onActionEvent(ActionType at) {
-                if(at == ActionType.CLICK){
-                    System.out.println("You click this rectangle!");
-                }
+            public void OnHUDClick(Vector2 location, MouseClickType clickType) {
+                System.out.println("test : " + clickType);
+                rect.setColor(new RGBA(0, 255, 0, 1));
             }
-        });
+        }, HUDClickEvent.class);
+
+        rect.addUActionEvent(new HUDHoverEnterEvent() {
+            @Override
+            public void OnHudHoverEnter(Vector2 location) {
+                rect.setColor(new RGBA(255, 0, 0, 1));
+            }
+        }, HUDHoverEnterEvent.class);
+
+        rect.addUActionEvent(new HUDHoverLeaveEvent() {
+            @Override
+            public void OnHudHoverLeave(Vector2 location) {
+                rect.setColor(new RGBA(255,255,255,1));
+            }
+        }, HUDHoverLeaveEvent.class);
 
         add(cc);
 

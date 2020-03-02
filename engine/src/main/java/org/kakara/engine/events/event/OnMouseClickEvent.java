@@ -9,6 +9,7 @@ public class OnMouseClickEvent {
 
     public OnMouseClickEvent(Vector2d position, MouseClickType mouseClickType){
         this.position = position;
+        this.mouseClickType = mouseClickType;
     }
 
     /**

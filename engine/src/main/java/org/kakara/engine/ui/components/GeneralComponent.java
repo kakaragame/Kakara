@@ -1,23 +1,20 @@
 package org.kakara.engine.ui.components;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.events.EventHandler;
-import org.kakara.engine.events.event.OnMouseClickEvent;
-import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
-import org.kakara.engine.ui.HUDItem;
-import org.kakara.engine.ui.events.ActionType;
 import org.kakara.engine.ui.events.UActionEvent;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import static org.lwjgl.glfw.GLFW.*;
+import java.util.Map;
 
 public abstract class GeneralComponent implements Component {
 
-    protected List<UActionEvent> events;
+    protected Map<UActionEvent, Class<? extends UActionEvent>> events;
     protected List<Component> components;
 
     boolean init = false;
@@ -29,15 +26,15 @@ public abstract class GeneralComponent implements Component {
     public Vector2 scale;
 
     public GeneralComponent(){
-        events = new ArrayList<>();
+        events = new HashMap<>();
         components = new ArrayList<>();
         position = new Vector2(0, 0);
         scale = new Vector2(0, 0);
     }
 
     @Override
-    public void addUActionEvent(UActionEvent uae){
-        events.add(uae);
+    public void addUActionEvent(UActionEvent uae, Class<? extends UActionEvent> clazz){
+        events.put(uae, clazz);
     }
 
     @Override
@@ -124,6 +121,24 @@ public abstract class GeneralComponent implements Component {
      */
     public Vector2 getTrueScale(){
         return this.trueScale;
+    }
+
+    /**
+     * Process and call events.
+     * @param clazz The type of event
+     * @param objs The parameters
+     */
+    public <T> void triggerEvent(Class<? extends UActionEvent> clazz, T... objs){
+        try{
+            for (Map.Entry<UActionEvent,Class<? extends UActionEvent>> event : events.entrySet()){
+                if(clazz != event.getValue()) continue;
+                if(event.getValue().getMethods().length > 1) continue;
+                event.getValue().getMethods()[0].invoke(event.getKey(), objs);
+            }
+        }
+        catch (InvocationTargetException | IllegalAccessException ex){
+            ex.printStackTrace();
+        }
     }
 
 }

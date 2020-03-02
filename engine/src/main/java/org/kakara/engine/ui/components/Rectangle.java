@@ -6,8 +6,9 @@ import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.RGBA;
-import org.kakara.engine.ui.events.ActionType;
-import org.kakara.engine.ui.events.UActionEvent;
+import org.kakara.engine.ui.events.HUDClickEvent;
+import org.kakara.engine.ui.events.HUDHoverEnterEvent;
+import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.lwjgl.nanovg.NVGColor;
 
 import static org.lwjgl.nanovg.NanoVG.*;
@@ -19,6 +20,8 @@ public class Rectangle extends GeneralComponent {
     private RGBA color;
     private NVGColor colorz;
 
+    private boolean isHovering;
+
     public Rectangle(){
         this(new Vector2(0, 0), new Vector2(0, 0), new RGBA());
     }
@@ -28,6 +31,7 @@ public class Rectangle extends GeneralComponent {
         this.scale = scale;
         this.color = color;
         this.colorz = NVGColor.create();
+        this.isHovering = false;
     }
 
     public Rectangle(Vector2 position, Vector2 scale){
@@ -46,10 +50,8 @@ public class Rectangle extends GeneralComponent {
 
     @EventHandler
     public void onClick(OnMouseClickEvent evt){
-        if(HUD.isColliding(getTruePosition(), scale, new Vector2(evt.getMousePosition()))){
-            for(UActionEvent uae : events){
-                uae.onActionEvent(ActionType.CLICK);
-            }
+        if(HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(evt.getMousePosition()))){
+            triggerEvent(HUDClickEvent.class, new Vector2(evt.getMousePosition()), evt.getMouseClickType());
         }
     }
 
@@ -67,12 +69,14 @@ public class Rectangle extends GeneralComponent {
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
         pollRender(relative, hud, handler);
 
-
-//        Vector2 truePos = position.clone().add(relative);
-//        truePos = new Vector2(truePos.x * ((float) handler.getWindow().getWidth()/ (float)handler.getWindow().initalWidth),
-//                truePos.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
-//        Vector2 trueScale = new Vector2(scale.x * ((float) handler.getWindow().getWidth()/ (float)handler.getWindow().initalWidth),
-//                scale.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
+        boolean isColliding = HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(handler.getMouseInput().getPosition()));
+        if(isColliding && !isHovering){
+            isHovering = true;
+            triggerEvent(HUDHoverEnterEvent.class, handler.getMouseInput().getCurrentPosition());
+        }else if(!isColliding && isHovering){
+            isHovering = false;
+            triggerEvent(HUDHoverLeaveEvent.class, handler.getMouseInput().getCurrentPosition());
+        }
 
         nvgBeginPath(hud.getVG());
         nvgRect(hud.getVG(), getTruePosition().x, getTruePosition().y, getTrueScale().x, getTrueScale().y);

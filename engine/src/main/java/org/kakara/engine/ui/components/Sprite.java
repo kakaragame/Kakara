@@ -6,9 +6,9 @@ import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
-import org.kakara.engine.ui.HUDItem;
-import org.kakara.engine.ui.events.ActionType;
-import org.kakara.engine.ui.events.UActionEvent;
+import org.kakara.engine.ui.events.HUDClickEvent;
+import org.kakara.engine.ui.events.HUDHoverEnterEvent;
+import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.lwjgl.nanovg.NVGPaint;
 import org.lwjgl.nanovg.NanoVGGL3;
 
@@ -25,6 +25,8 @@ public class Sprite extends GeneralComponent {
 
     private NVGPaint paint;
 
+    private boolean isHovering;
+
     public Sprite(Texture texture, Vector2 position, Vector2 scale){
         paint = NVGPaint.create();
         this.alpha = (byte) 255;
@@ -32,6 +34,8 @@ public class Sprite extends GeneralComponent {
         this.position = position;
         this.scale = scale;
         this.texture = texture;
+
+        isHovering = false;
     }
 
     @Override
@@ -47,9 +51,7 @@ public class Sprite extends GeneralComponent {
     @EventHandler
     public void onClick(OnMouseClickEvent evt){
         if(HUD.isColliding(getTruePosition(), scale, new Vector2(evt.getMousePosition()))){
-            for(UActionEvent uae : events){
-                uae.onActionEvent(ActionType.CLICK);
-            }
+            triggerEvent(HUDClickEvent.class, position, evt.getMouseClickType());
         }
     }
 
@@ -87,6 +89,15 @@ public class Sprite extends GeneralComponent {
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
         pollRender(relative, hud, handler);
+
+        boolean isColliding = HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(handler.getMouseInput().getPosition()));
+        if(isColliding && !isHovering){
+            isHovering = true;
+            triggerEvent(HUDHoverEnterEvent.class, handler.getMouseInput().getCurrentPosition());
+        }else if(!isColliding && isHovering){
+            isHovering = false;
+            triggerEvent(HUDHoverLeaveEvent.class, handler.getMouseInput().getCurrentPosition());
+        }
 
 //        Vector2 truePos = position.clone().add(relative);
         NVGPaint imagePaint = nvgImagePattern(hud.getVG(), getTruePosition().x, getTruePosition().y, getTrueScale().x, getTrueScale().y, rotation, image, 1.0f, NVGPaint.calloc());

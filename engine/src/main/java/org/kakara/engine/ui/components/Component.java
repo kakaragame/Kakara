@@ -16,5 +16,7 @@ public interface Component {
     void setScale(float x, float y);
     void setScale(Vector2 scale);
     Vector2 getScale();
+    void setVisible(boolean visible);
+    boolean isVisible();
 
 }

@@ -45,6 +45,7 @@ public class Sprite extends GeneralComponent {
             c.init(hud, handler);
         }
         this.image = NanoVGGL3.nvglCreateImageFromHandle(hud.getVG(), texture.getId(), texture.getWidth(), texture.getHeight(), 0);
+        System.out.println(texture.getWidth() + " : " + texture.getHeight());
         handler.getEventManager().registerHandler(this);
     }
 
@@ -89,7 +90,7 @@ public class Sprite extends GeneralComponent {
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
         pollRender(relative, hud, handler);
-
+        if(!isVisible()) return;
         boolean isColliding = HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(handler.getMouseInput().getPosition()));
         if(isColliding && !isHovering){
             isHovering = true;

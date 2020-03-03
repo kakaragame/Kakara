@@ -1,15 +1,11 @@
 package org.kakara.engine.ui;
 
-import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.render.batch.BatchRenderDevice;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.math.Vector2;
-import org.lwjgl.BufferUtils;
+import org.kakara.engine.ui.text.Font;
 import org.lwjgl.nanovg.NVGColor;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +13,6 @@ import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.opengl.GL11.glViewport;
 
 public class HUD {
 
@@ -26,9 +21,11 @@ public class HUD {
     private NVGColor color;
 
     private List<HUDItem> hudItems;
+    private List<Font> fonts;
 
     public HUD(){
         hudItems = new ArrayList<>();
+        fonts = new ArrayList<>();
     }
 
     public void init(Window window) throws Exception{
@@ -42,13 +39,12 @@ public class HUD {
         for(HUDItem it : hudItems){
             it.init(this, GameHandler.getInstance());
         }
+        for(Font ft : fonts){
+            ft.init(this);
+        }
     }
 
     public void render(Window window){
-//        IntBuffer fW = BufferUtils.createIntBuffer(1);
-//        IntBuffer fH = BufferUtils.createIntBuffer(1);
-//        glfwGetFramebufferSize(window.getWindowHandler(), fW, fH);
-//        glViewport(0, 0, fW.get(0), fH.get(0));
         nvgBeginFrame(vg, window.getWidth(), window.getHeight(), 1);
         for(HUDItem it : hudItems){
             it.render(this, GameHandler.getInstance());
@@ -71,6 +67,14 @@ public class HUD {
             item.init(this, GameHandler.getInstance());
         }
         hudItems.add(item);
+    }
+
+    public void addFont(Font font){
+        Long check = this.vg;
+        if(check != null){
+            font.init(this);
+        }
+        fonts.add(font);
     }
 
     private NVGColor rgba(int r, int g, int b, int a, NVGColor colour) {

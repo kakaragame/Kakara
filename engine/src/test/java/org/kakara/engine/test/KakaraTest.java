@@ -21,7 +21,9 @@ public class KakaraTest implements Game {
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
         gameScene = new MainGameScene(handler);
-        gInst.getSceneManager().setScene(gameScene);
+
+        TitleScreenScene tss = new TitleScreenScene(handler);
+        gInst.getSceneManager().setScene(tss);
         try {
          gInst.getSoundManager().init();
         } catch (Exception e) {

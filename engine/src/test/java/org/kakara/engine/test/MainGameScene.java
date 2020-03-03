@@ -15,17 +15,19 @@ import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.Rectangle;
 import org.kakara.engine.ui.components.Sprite;
+import org.kakara.engine.ui.components.Text;
 import org.kakara.engine.ui.events.HUDClickEvent;
 import org.kakara.engine.ui.events.HUDHoverEnterEvent;
 import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Utils;
 
-import java.awt.desktop.SystemSleepEvent;
 import java.io.InputStream;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -95,7 +97,7 @@ public class MainGameScene extends AbstractGameScene {
 
         Panel pnl = new Panel();
         Sprite sprite = new Sprite(grass, new Vector2(0, 0), new Vector2(grass.getWidth(), grass.getHeight()));
-        sprite.setScale(100f, 100f);
+        sprite.setScale(100, 100);
         pnl.add(sprite);
         pnl.setPosition(100, 100);
         cc.add(pnl);
@@ -128,6 +130,13 @@ public class MainGameScene extends AbstractGameScene {
             }
         }, HUDHoverLeaveEvent.class);
 
+        Font font = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"));
+        hud.addFont(font);
+
+        Text txt = new Text("This is a test!", font);
+        txt.setPosition(100, 50);
+        txt.setTextAlign(TextAlign.CENTER);
+        cc.add(txt);
         add(cc);
 
 

@@ -25,11 +25,16 @@ public abstract class GeneralComponent implements Component {
     public Vector2 position;
     public Vector2 scale;
 
+    private boolean isVisible;
+
     public GeneralComponent(){
         events = new HashMap<>();
         components = new ArrayList<>();
         position = new Vector2(0, 0);
         scale = new Vector2(0, 0);
+        truePosition = new Vector2(0, 0);
+        trueScale = new Vector2(0,0);
+        isVisible = true;
     }
 
     @Override
@@ -112,7 +117,7 @@ public abstract class GeneralComponent implements Component {
      * @return
      */
     public Vector2 getTruePosition(){
-        return this.truePosition;
+        return this.truePosition.clone();
     }
 
     /**
@@ -139,6 +144,16 @@ public abstract class GeneralComponent implements Component {
         catch (InvocationTargetException | IllegalAccessException ex){
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void setVisible(boolean visible){
+        this.isVisible = visible;
+    }
+
+    @Override
+    public boolean isVisible(){
+        return isVisible;
     }
 
 }

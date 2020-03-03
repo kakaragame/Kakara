@@ -1,5 +1,6 @@
 package org.kakara.engine.ui.components;
 
+import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.OnMouseClickEvent;
@@ -68,7 +69,7 @@ public class Rectangle extends GeneralComponent {
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
         pollRender(relative, hud, handler);
-
+        if(!isVisible()) return;
         boolean isColliding = HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(handler.getMouseInput().getPosition()));
         if(isColliding && !isHovering){
             isHovering = true;
@@ -84,5 +85,9 @@ public class Rectangle extends GeneralComponent {
         nvgRGBA((byte) color.r, (byte) color.g, (byte) color.b, (byte) color.aToNano(), colorz);
         nvgFillColor(hud.getVG(), colorz);
         nvgFill(hud.getVG());
+
+        for(Component cc: components){
+            cc.render(relative.clone().add(position), hud, handler);
+        }
     }
 }

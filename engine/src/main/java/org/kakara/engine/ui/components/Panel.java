@@ -30,6 +30,7 @@ public class Panel extends GeneralComponent {
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler){
         pollRender(relative, hud, handler);
+        if(!isVisible()) return;
         for(Component cc : components){
             cc.render(position.clone().add(relative.clone()), hud, handler);
         }

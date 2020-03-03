@@ -1,9 +1,12 @@
 package org.kakara.engine.events;
 
+import org.kakara.engine.GameEngine;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class EventManager {
@@ -25,20 +28,24 @@ public class EventManager {
      * @param eventInstance The instance of said event.
      */
     public void fireHandler(Object eventInstance){
-        for(Object obj : handlers){
-            List<Method> mtd = new ArrayList<Method>(Arrays.asList(obj.getClass().getDeclaredMethods()));
-            for(Method msd : mtd){
-                if(msd.getParameterCount() != 1) continue;
-                if(msd.isAnnotationPresent(EventHandler.class)){
-                    if(msd.getParameters()[0].getType() == eventInstance.getClass()){
-                        try {
-                            msd.invoke(obj, eventInstance);
-                        }catch(IllegalAccessException | InvocationTargetException ex){
-                            System.out.println("Error: Cannot fire event.");
+        try{
+            for(Object obj : handlers){
+                List<Method> mtd = new ArrayList<Method>(Arrays.asList(obj.getClass().getDeclaredMethods()));
+                for(Method msd : mtd){
+                    if(msd.getParameterCount() != 1) continue;
+                    if(msd.isAnnotationPresent(EventHandler.class)){
+                        if(msd.getParameters()[0].getType() == eventInstance.getClass()){
+                            try {
+                                msd.invoke(obj, eventInstance);
+                            }catch(IllegalAccessException | InvocationTargetException ex){
+                                GameEngine.LOGGER.error("Cannot fire event specified : " + eventInstance.getClass().getName());
+                            }
                         }
                     }
                 }
             }
+        }catch(ConcurrentModificationException cme){
+
         }
     }
 }

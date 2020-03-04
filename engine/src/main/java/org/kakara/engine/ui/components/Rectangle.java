@@ -1,6 +1,5 @@
 package org.kakara.engine.ui.components;
 
-import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.OnMouseClickEvent;

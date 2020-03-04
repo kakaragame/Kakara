@@ -1,10 +1,6 @@
 package org.kakara.engine.render;
 
 import org.joml.Matrix4f;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-
 import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
@@ -16,6 +12,8 @@ import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.utils.Utils;
 
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
     private Transformation transformation;

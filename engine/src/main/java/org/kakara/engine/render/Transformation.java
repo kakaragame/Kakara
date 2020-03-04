@@ -5,7 +5,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.kakara.engine.Camera;
 import org.kakara.engine.item.GameItem;
-import org.kakara.engine.math.Vector3;
 
 public class Transformation {
     private final Matrix4f projectionMatrix;

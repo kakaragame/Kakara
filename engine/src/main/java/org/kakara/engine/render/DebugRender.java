@@ -2,8 +2,6 @@ package org.kakara.engine.render;
 
 import org.kakara.engine.math.Vector3;
 
-import static org.lwjgl.opengl.GL11.glVertex3d;
-
 /**
  * Used to render debug displays.
  * NOT TO BE USED IN PRODUCTION BUILD. REMOVE BEFORE COMPILATION.

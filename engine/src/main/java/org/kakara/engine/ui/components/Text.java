@@ -2,9 +2,9 @@ package org.kakara.engine.ui.components;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
-import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.RGBA;
+import org.kakara.engine.ui.text.Font;
 import org.lwjgl.nanovg.NVGColor;
 
 import static org.lwjgl.nanovg.NanoVG.*;

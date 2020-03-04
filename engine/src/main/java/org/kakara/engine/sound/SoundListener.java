@@ -1,6 +1,5 @@
 package org.kakara.engine.sound;
 
-import org.joml.Vector3f;
 import org.kakara.engine.math.Vector3;
 
 import static org.lwjgl.openal.AL10.*;

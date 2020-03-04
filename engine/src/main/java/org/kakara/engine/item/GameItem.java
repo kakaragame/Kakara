@@ -2,7 +2,6 @@ package org.kakara.engine.item;
 
 import org.joml.Quaternionf;
 import org.kakara.engine.math.Vector3;
-import org.kakara.engine.render.Shader;
 
 import java.util.UUID;
 

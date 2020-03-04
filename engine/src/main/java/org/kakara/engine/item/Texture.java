@@ -1,23 +1,22 @@
 package org.kakara.engine.item;
 
 
-import java.nio.IntBuffer;
-
-import java.nio.ByteBuffer;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.stb.STBImage.*;
-
-import org.kakara.engine.resources.FileResource;
 import org.kakara.engine.resources.JarResource;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.system.MemoryStack;
 
-import static org.lwjgl.system.MemoryStack.*;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
+import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 
 public class Texture {
@@ -42,7 +41,7 @@ public class Texture {
      * @param pixelFormat Specifies the format of the pixel data (GL_RGBA, etc.)
      * @throws Exception
      */
-    public Texture(int width, int height, int pixelFormat) throws Exception {
+    public Texture(int width, int height, int pixelFormat) {
         this.id = glGenTextures();
         this.width = width;
         this.height = height;
@@ -54,13 +53,13 @@ public class Texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    public Texture(String fileName, int numCols, int numRows, Scene currentScene) throws Exception {
+    public Texture(String fileName, int numCols, int numRows, Scene currentScene) throws IOException {
         this(fileName, currentScene);
         this.numCols = numCols;
         this.numRows = numRows;
     }
 
-    public Texture(String fileName, Scene currentScene) throws Exception {
+    public Texture(String fileName, Scene currentScene) throws IOException {
         this(Utils.ioResourceToByteBuffer(fileName, 1024));
         this.scene = currentScene;
     }

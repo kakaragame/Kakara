@@ -2,7 +2,6 @@ package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.Collidable;
-import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.utils.Time;

@@ -4,7 +4,6 @@ import org.kakara.engine.GameEngine;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.ui.HUD;
 
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.nanovg.NanoVG.nvgCreateFontMem;

@@ -8,7 +8,6 @@ import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.events.HUDClickEvent;
 import org.kakara.engine.ui.events.HUDHoverEnterEvent;
 import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
-import org.kakara.engine.ui.events.UActionEvent;
 
 public class Panel extends GeneralComponent {
 

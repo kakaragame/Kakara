@@ -1,5 +1,6 @@
 package org.kakara.engine.scene;
 
+import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.ItemHandler;
@@ -21,7 +22,7 @@ public abstract class AbstractScene implements Scene {
         try{
             hud.init(gameHandler.getWindow());
         }catch(Exception ex){
-
+            GameEngine.LOGGER.error("Unable to load HUD", ex);
         }
     }
 

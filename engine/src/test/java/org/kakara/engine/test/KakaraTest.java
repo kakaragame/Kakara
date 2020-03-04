@@ -1,31 +1,24 @@
 package org.kakara.engine.test;
 
-import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.OnKeyPressEvent;
 import org.kakara.engine.events.event.OnMouseClickEvent;
-import org.kakara.engine.sound.SoundBuffer;
-import org.kakara.engine.sound.SoundListener;
-import org.kakara.engine.sound.SoundSource;
-import org.lwjgl.openal.AL11;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
 
 public class KakaraTest implements Game {
 
     private GameHandler gInst;
-    private MainGameScene gameScene;
-
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
-        gameScene = new MainGameScene(handler);
 
-        TitleScreenScene tss = new TitleScreenScene(handler);
+        TitleScreenScene tss = new TitleScreenScene(handler, this);
         gInst.getSceneManager().setScene(tss);
         try {
-         gInst.getSoundManager().init();
+            gInst.getSoundManager().init();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,6 +39,11 @@ public class KakaraTest implements Game {
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public void exit() {
+        gInst.exit();
     }
 
     @EventHandler

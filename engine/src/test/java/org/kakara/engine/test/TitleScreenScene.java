@@ -3,7 +3,6 @@ package org.kakara.engine.test;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.math.Vector2;
-import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
@@ -17,8 +16,10 @@ import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
 
 public class TitleScreenScene extends AbstractGameScene {
-    public TitleScreenScene(GameHandler gameHandler) throws Exception {
+    private KakaraTest kakaraTest;
+    public TitleScreenScene(GameHandler gameHandler, KakaraTest kakaraTest) throws Exception {
         super(gameHandler);
+        this.kakaraTest = kakaraTest;
         ResourceManager resourceManager = gameHandler.getResourceManager();
 
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"));
@@ -51,7 +52,7 @@ public class TitleScreenScene extends AbstractGameScene {
             public void OnHUDClick(Vector2 location, MouseClickType clickType) {
                 if(!playButton.isVisible()) return;
                 try{
-                    MainGameScene mgs = new MainGameScene(gameHandler);
+                    MainGameScene mgs = new MainGameScene(gameHandler, kakaraTest);
                     gameHandler.getSceneManager().setScene(mgs);
                 }catch(Exception ex) {
                     System.out.println("Could not switch to the main scene!");

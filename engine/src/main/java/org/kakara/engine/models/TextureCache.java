@@ -4,14 +4,14 @@ import org.kakara.engine.item.Texture;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.events.UActionEvent;
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class TextureCache {
-    private static TextureCache INSTANCE;
+    private static TextureCache instance;
 
     private Map<String, Texture> texturesMap;
     private ResourceManager resourceManager;
@@ -22,17 +22,16 @@ public class TextureCache {
     }
 
     public static synchronized TextureCache getInstance(ResourceManager resourceManager) {
-        if (INSTANCE == null) {
-            INSTANCE = new TextureCache(resourceManager);
+        if (instance == null) {
+            instance = new TextureCache(resourceManager);
         }
-        return INSTANCE;
+        return instance;
     }
 
-    public Texture getTexture(String path, Scene currentScene) throws Exception {
+    public Texture getTexture(String path, Scene currentScene) throws MalformedURLException {
         Texture texture = texturesMap.get(path);
         if (texture == null) {
             Resource resource = resourceManager.getResource(path);
-            System.out.println(resource.toString());
             texture = new Texture(resource, currentScene);
 
             texturesMap.put(path, texture);

@@ -2,9 +2,7 @@ package org.kakara.engine.events;
 
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.Texture;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.events.UActionEvent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

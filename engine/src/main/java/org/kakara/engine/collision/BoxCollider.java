@@ -2,7 +2,6 @@ package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.Collidable;
-import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.render.DebugRender;
@@ -14,7 +13,6 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;

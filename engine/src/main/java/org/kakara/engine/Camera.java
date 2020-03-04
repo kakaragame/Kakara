@@ -1,6 +1,5 @@
 package org.kakara.engine;
 
-import org.joml.Vector3f;
 import org.kakara.engine.math.Vector3;
 
 public class Camera {

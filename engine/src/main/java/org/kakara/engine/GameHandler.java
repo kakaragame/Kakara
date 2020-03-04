@@ -143,4 +143,13 @@ public class GameHandler {
     public ResourceManager getResourceManager() {
         return resourceManager;
     }
+
+    public void exit() {
+        soundManager.cleanup();
+
+
+        sceneManager.cleanupScenes();
+        gameEngine.running = false;
+        gameEngine.cleanup();
+    }
 }

@@ -1,23 +1,18 @@
 package org.kakara.engine.sound;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
-import static org.lwjgl.openal.AL10.*;
-
 import org.kakara.engine.resources.JarResource;
 import org.kakara.engine.resources.Resource;
-import org.kakara.engine.utils.Utils;
 import org.lwjgl.stb.STBVorbisInfo;
-
-import java.nio.ShortBuffer;
-
-import static org.lwjgl.stb.STBVorbis.*;
-
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import static org.lwjgl.system.MemoryUtil.*;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+
+import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.stb.STBVorbis.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class SoundBuffer {
     private final int bufferId;

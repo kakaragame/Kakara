@@ -1,10 +1,10 @@
 package org.kakara.engine.input;
 
 import org.kakara.engine.GameEngine;
-import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.event.OnKeyPressEvent;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 /**
  * Handles Key input.

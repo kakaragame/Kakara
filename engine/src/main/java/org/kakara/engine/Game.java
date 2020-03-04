@@ -17,4 +17,8 @@ public interface Game {
      */
     void update();
 
+    /**
+     * Exits the game;
+     */
+    void exit();
 }

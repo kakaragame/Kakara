@@ -6,7 +6,6 @@ import org.kakara.engine.events.event.OnMouseClickEvent;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.math.Vector2;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import java.nio.DoubleBuffer;
 

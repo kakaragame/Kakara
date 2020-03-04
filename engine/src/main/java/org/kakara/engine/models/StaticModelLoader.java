@@ -11,6 +11,7 @@ import org.kakara.engine.resources.FileResource;
 import org.kakara.engine.resources.JarResource;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
+import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -30,12 +31,12 @@ public class StaticModelLoader {
     private StaticModelLoader(){
 
     }
-    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager) throws Exception {
-        return load(resource, texturesDir, resourceManager, aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+    public static Mesh[] load(Resource resource, String texturesDir, Scene scene, ResourceManager resourceManager) throws Exception {
+        return load(resource, texturesDir, resourceManager, scene,aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
                 | aiProcess_FixInfacingNormals);
     }
 
-    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, int flags) throws Exception {
+    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, Scene scene,int flags) throws Exception {
         GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resource.toString(), texturesDir));
 
         AIScene aiScene = null;
@@ -58,7 +59,7 @@ public class StaticModelLoader {
         List<Material> materials = new ArrayList<>();
         for (int i = 0; i < numMaterials; i++) {
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            processMaterial(aiMaterial, materials, texturesDir, resourceManager);
+            processMaterial(aiMaterial, materials, texturesDir, resourceManager,scene);
         }
 
         int numMeshes = aiScene.mNumMeshes();
@@ -86,7 +87,7 @@ public class StaticModelLoader {
     }
 
     protected static void processMaterial(AIMaterial aiMaterial, List<Material> materials,
-                                          String texturesDir, ResourceManager resourceManager) throws Exception {
+                                          String texturesDir, ResourceManager resourceManager,Scene scene) throws Exception {
         // File.separator. File.pathSeparator is for the PATH variable.
         String separator = "/";
         try(AIColor4D colour = AIColor4D.create()) {
@@ -101,7 +102,7 @@ public class StaticModelLoader {
                 String textureFile = texturesDir + separator + textPath;
                 textureFile = textureFile.replace("//", separator);
                 GameEngine.LOGGER.debug(String.format("Getting Texture from %s", textureFile));
-                texture = textCache.getTexture(textureFile, GameHandler.getInstance().getSceneManager().getCurrentScene());
+                texture = textCache.getTexture(textureFile, scene);
             }
 
             int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0,

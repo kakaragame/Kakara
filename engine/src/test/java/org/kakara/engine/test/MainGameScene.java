@@ -45,7 +45,7 @@ public class MainGameScene extends AbstractGameScene {
         setCurserStatus(false);
         gameHandler.getCamera().setPosition(0, 3, 0);
         var resourceManager = gameHandler.getResourceManager();
-        Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", resourceManager);
+        Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player",this,resourceManager);
         MeshGameItem object = new MeshGameItem(mainPlayer);
         object.setPosition(4, 3f, 4);
         object.setScale(0.3f);

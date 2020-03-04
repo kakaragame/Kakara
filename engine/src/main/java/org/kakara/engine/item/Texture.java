@@ -13,6 +13,7 @@ import static org.lwjgl.stb.STBImage.*;
 import org.kakara.engine.resources.FileResource;
 import org.kakara.engine.resources.JarResource;
 import org.kakara.engine.resources.Resource;
+import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.system.MemoryStack;
 
@@ -30,6 +31,8 @@ public class Texture {
     private int numRows = 1;
 
     private int numCols = 1;
+
+    private Scene scene;
 
     /**
      * Creates an empty texture.
@@ -51,18 +54,19 @@ public class Texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    public Texture(String fileName, int numCols, int numRows) throws Exception {
-        this(fileName);
+    public Texture(String fileName, int numCols, int numRows, Scene currentScene) throws Exception {
+        this(fileName, currentScene);
         this.numCols = numCols;
         this.numRows = numRows;
     }
 
-    public Texture(String fileName) throws Exception {
+    public Texture(String fileName, Scene currentScene) throws Exception {
         this(Utils.ioResourceToByteBuffer(fileName, 1024));
+        this.scene = currentScene;
     }
 
-    public Texture(Resource resource) {
-
+    public Texture(Resource resource, Scene currentScene) {
+        this.scene = currentScene;
 
         try (MemoryStack stack = stackPush()) {
             IntBuffer w = stack.mallocInt(1);
@@ -155,5 +159,9 @@ public class Texture {
 
     public void cleanup() {
         glDeleteTextures(id);
+    }
+
+    public Scene getCurrentScene(){
+        return scene;
     }
 }

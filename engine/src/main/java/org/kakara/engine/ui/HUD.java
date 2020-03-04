@@ -3,6 +3,7 @@ package org.kakara.engine.ui;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.math.Vector2;
+import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.text.Font;
 import org.lwjgl.nanovg.NVGColor;
 
@@ -23,9 +24,14 @@ public class HUD {
     private List<HUDItem> hudItems;
     private List<Font> fonts;
 
-    public HUD(){
+    private HUDImageCache imageCache;
+    private Scene scene;
+
+    public HUD(Scene scene){
         hudItems = new ArrayList<>();
         fonts = new ArrayList<>();
+        imageCache = new HUDImageCache(this);
+        this.scene = scene;
     }
 
     public void init(Window window) throws Exception{
@@ -53,6 +59,10 @@ public class HUD {
         window.restoreState();
     }
 
+    public void cleanup(){
+
+    }
+
     public long getVG(){
         return vg;
     }
@@ -75,6 +85,14 @@ public class HUD {
             font.init(this);
         }
         fonts.add(font);
+    }
+
+    public HUDImageCache getImageCache(){
+        return imageCache;
+    }
+
+    public Scene getScene(){
+        return scene;
     }
 
     private NVGColor rgba(int r, int g, int b, int a, NVGColor colour) {

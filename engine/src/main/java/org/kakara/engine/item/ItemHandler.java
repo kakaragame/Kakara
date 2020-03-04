@@ -35,4 +35,13 @@ public class ItemHandler {
         }
         return null;
     }
+
+    /**
+     * Cleanup all of the items.
+     */
+    public void cleanup(){
+        for(GameItem gi : items){
+            gi.cleanup();
+        }
+    }
 }

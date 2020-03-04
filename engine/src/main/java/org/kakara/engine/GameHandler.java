@@ -35,7 +35,7 @@ public class GameHandler {
         this.camera = new Camera();
         this.mouseInput = new MouseInput(this);
         this.keyInput = new KeyInput(gameEngine);
-        this.eventManager = new EventManager();
+        this.eventManager = new EventManager(this);
         this.collisionManager = new CollisionManager(this);
         this.lightHandler = new LightHandler();
         this.sceneManager = new SceneManager(this);

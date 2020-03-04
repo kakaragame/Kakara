@@ -63,7 +63,7 @@ public class Rectangle extends GeneralComponent {
         for(Component cc : components){
             cc.init(hud, handler);
         }
-        handler.getEventManager().registerHandler(this);
+        handler.getEventManager().registerHandler(this, hud.getScene());
     }
 
     @Override

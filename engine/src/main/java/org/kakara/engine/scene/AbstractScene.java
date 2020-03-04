@@ -12,7 +12,7 @@ import org.kakara.engine.ui.HUDItem;
 public abstract class AbstractScene implements Scene {
     private ItemHandler itemHandler = new ItemHandler();
     private LightHandler lightHandler = new LightHandler();
-    protected HUD hud = new HUD();
+    protected HUD hud = new HUD(this);
     private boolean mouseStatus;
     protected GameHandler gameHandler;
 

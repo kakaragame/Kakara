@@ -45,8 +45,8 @@ public class Sprite extends GeneralComponent {
             c.init(hud, handler);
         }
         this.image = NanoVGGL3.nvglCreateImageFromHandle(hud.getVG(), texture.getId(), texture.getWidth(), texture.getHeight(), 0);
-        System.out.println(texture.getWidth() + " : " + texture.getHeight());
-        handler.getEventManager().registerHandler(this);
+        hud.getImageCache().addImage(this.image);
+        handler.getEventManager().registerHandler(this, hud.getScene());
     }
 
     @EventHandler
@@ -62,11 +62,13 @@ public class Sprite extends GeneralComponent {
 
     public void setImage(Texture tex){
         this.texture = tex;
+        GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getImageCache().removeImage(this.image);
         nvgDeleteImage(GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getVG(),
                 image);
         this.image = NanoVGGL3.nvglCreateImageFromHandle(
                 GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getVG(),
                 tex.getId(), texture.getWidth(),tex.getHeight(), 0);
+        GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getImageCache().addImage(this.image);
     }
 
     public Sprite setAlpha(byte b){

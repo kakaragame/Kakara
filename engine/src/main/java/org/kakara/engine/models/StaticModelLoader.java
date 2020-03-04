@@ -12,6 +12,7 @@ import java.util.List;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.kakara.engine.GameEngine;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Mesh;
 import org.kakara.engine.item.Texture;
@@ -104,7 +105,7 @@ public class StaticModelLoader {
             String textureFile = texturesDir + separator + textPath;
             textureFile = textureFile.replace("//", separator);
             GameEngine.LOGGER.debug(String.format("Getting Texture from %s", textureFile));
-            texture = textCache.getTexture(textureFile);
+            texture = textCache.getTexture(textureFile, GameHandler.getInstance().getSceneManager().getCurrentScene());
         }
 
         Vector3f ambient = Material.DEFAULT_COLOUR;

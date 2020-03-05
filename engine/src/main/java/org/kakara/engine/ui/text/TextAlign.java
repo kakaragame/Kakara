@@ -2,6 +2,9 @@ package org.kakara.engine.ui.text;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 
+/**
+ * Used with the UI Text Component.
+ */
 public final class TextAlign {
 
     public static final int LEFT = NVG_ALIGN_LEFT;

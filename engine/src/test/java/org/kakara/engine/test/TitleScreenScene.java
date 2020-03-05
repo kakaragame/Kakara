@@ -14,27 +14,42 @@ import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
+import org.kakara.engine.utils.Time;
 
+/**
+ * Example of how to make a proper UI Scene.
+ */
 public class TitleScreenScene extends AbstractGameScene {
     private KakaraTest kakaraTest;
+
+    private Text fps;
+
     public TitleScreenScene(GameHandler gameHandler, KakaraTest kakaraTest) throws Exception {
         super(gameHandler);
         this.kakaraTest = kakaraTest;
+
+        // Get the resource manager to load in needed files.
         ResourceManager resourceManager = gameHandler.getResourceManager();
 
+        // Make a new font. It is (fontName, the resource for the font)
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"));
+        // Don't forget to add the font to the HUD. The font won't be initialized if you don't
         hud.addFont(roboto);
 
+        // Create a new componentcanvas. This holds the components for the UI.
         ComponentCanvas cc = new ComponentCanvas();
 
+        // Make some more text for the title screen.
         Text title = new Text("Kakara", roboto);
         title.setSize(200);
         title.setLineWidth(500);
         title.setPosition(gameHandler.getWindow().getWidth()/2 - 250, 200);
 
+        // Create the play button from a rectangle.
         Rectangle playButton = new Rectangle(new Vector2(gameHandler.getWindow().getWidth()/2 - 100, gameHandler.getWindow().getHeight() - 300),
                 new Vector2(100, 100));
         playButton.setColor(new RGBA(0, 150, 150, 1));
+        // Setup the events for the button.
         playButton.addUActionEvent(new HUDHoverEnterEvent() {
             @Override
             public void OnHudHoverEnter(Vector2 location) {
@@ -149,11 +164,17 @@ public class TitleScreenScene extends AbstractGameScene {
 
         cc.add(popupMenu);
 
+        Text fps = new Text("FPS: 000", roboto);
+        fps.setPosition(20, 20);
+        cc.add(fps);
+        this.fps = fps;
+
 
 
         //end
 
 
+        // Make sure to add the component canvas to the hud!
         add(cc);
 
         setCurserStatus(true);
@@ -163,6 +184,6 @@ public class TitleScreenScene extends AbstractGameScene {
 
     @Override
     public void update() {
-
+        fps.setText("FPS: " + Math.round(1/Time.deltaTime));
     }
 }

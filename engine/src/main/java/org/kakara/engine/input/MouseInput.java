@@ -2,7 +2,7 @@ package org.kakara.engine.input;
 
 import org.joml.Vector2d;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.events.event.OnMouseClickEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.math.Vector2;
 import org.lwjgl.system.MemoryStack;
@@ -67,7 +67,7 @@ public class MouseInput {
                     mct = MouseClickType.OTHER;
                     break;
             }
-            handler.getEventManager().fireHandler(new OnMouseClickEvent(this.getPosition(), mct));
+            handler.getEventManager().fireHandler(new MouseClickEvent(this.getPosition(), mct));
         });
     }
 

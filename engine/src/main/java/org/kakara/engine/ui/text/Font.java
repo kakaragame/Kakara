@@ -8,6 +8,10 @@ import java.nio.ByteBuffer;
 
 import static org.lwjgl.nanovg.NanoVG.nvgCreateFontMem;
 
+/**
+ * Handles the font for the UI.
+ * <p>Remember to add this to the hud using HUD.addFont()</p>
+ */
 public class Font {
 
     private int font;
@@ -20,6 +24,9 @@ public class Font {
         this.fileName = fileName;;
     }
 
+    /**
+     * Internal Use Only
+     */
     public void init(HUD hud){
         try{
             ByteBuffer bb = fileName.getByteBuffer();
@@ -30,10 +37,17 @@ public class Font {
         }
     }
 
+    /**
+     * Get the id of the font for use with NVG static functions.
+     * @return
+     */
     public int getFont(){
         return font;
     }
 
+    /**
+     * Internal Use Only
+     */
     public ByteBuffer getByteBuffer(){
         return thisNeedsToBeHereSoTheGarbageCollectorDoesNotComeAndGetMe;
     }

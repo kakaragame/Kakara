@@ -2,7 +2,7 @@ package org.kakara.engine.ui.components;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
-import org.kakara.engine.events.event.OnMouseClickEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.RGBA;
@@ -39,9 +39,12 @@ public class Rectangle extends GeneralComponent {
     }
 
 
-    public Rectangle setColor(RGBA color){
+    /**
+     * Set the color of the rectangle.
+     * @param color The color value
+     */
+    public void setColor(RGBA color){
         this.color = color;
-        return this;
     }
 
     public RGBA getColor(){
@@ -49,7 +52,7 @@ public class Rectangle extends GeneralComponent {
     }
 
     @EventHandler
-    public void onClick(OnMouseClickEvent evt){
+    public void onClick(MouseClickEvent evt){
         if(HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(evt.getMousePosition()))){
             triggerEvent(HUDClickEvent.class, new Vector2(evt.getMousePosition()), evt.getMouseClickType());
         }

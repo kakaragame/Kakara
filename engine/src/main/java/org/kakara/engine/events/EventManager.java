@@ -68,6 +68,7 @@ public class EventManager {
 
     /**
      * Cleanup the Event Manager that way it is ready for the next scene.
+     * <p>Internal Use Only</p>
      */
     public void cleanup(){
         // I think this was added in Java 8.

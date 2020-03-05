@@ -10,6 +10,9 @@ import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.HUDItem;
 
+/**
+ * Primary Scene to derive from.
+ */
 public abstract class AbstractScene implements Scene {
     private ItemHandler itemHandler = new ItemHandler();
     private LightHandler lightHandler = new LightHandler();
@@ -50,10 +53,6 @@ public abstract class AbstractScene implements Scene {
     @Override
     public HUD getHUD(){
         return hud;
-    }
-
-    public void addItem(GameItem gameItem) {
-        itemHandler.addItem(gameItem);
     }
 
     public void add(GameItem gameItem){

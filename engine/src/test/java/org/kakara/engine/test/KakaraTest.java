@@ -3,8 +3,8 @@ package org.kakara.engine.test;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
-import org.kakara.engine.events.event.OnKeyPressEvent;
-import org.kakara.engine.events.event.OnMouseClickEvent;
+import org.kakara.engine.events.event.KeyPressEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
 
@@ -47,12 +47,12 @@ public class KakaraTest implements Game {
     }
 
     @EventHandler
-    public void onMouseClick(OnMouseClickEvent evt) {
+    public void onMouseClick(MouseClickEvent evt) {
         System.out.println("clicked1");
     }
 
     @EventHandler
-    public void onKeyEvent(OnKeyPressEvent evt) {
+    public void onKeyEvent(KeyPressEvent evt) {
         if (evt.isKeyPressed(GLFW_KEY_TAB)) {
             //Engine API replaced GLFW methods.
             gInst.getWindow().setCursorVisibility(!gInst.getWindow().isCursorVisable());

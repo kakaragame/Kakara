@@ -38,6 +38,7 @@ public class ItemHandler {
 
     /**
      * Cleanup all of the items.
+     * <p>Internal Use Only.</p>
      */
     public void cleanup(){
         for(GameItem gi : items){

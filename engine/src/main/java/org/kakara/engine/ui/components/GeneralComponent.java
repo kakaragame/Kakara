@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The standard component template.
+ */
 public abstract class GeneralComponent implements Component {
 
     protected Map<UActionEvent, Class<? extends UActionEvent>> events;
@@ -36,6 +39,11 @@ public abstract class GeneralComponent implements Component {
         isVisible = true;
     }
 
+    /**
+     * Add an event to a component.
+     * @param uae An anonymous class.
+     * @param clazz The event interface that the event is for.
+     */
     @Override
     public void addUActionEvent(UActionEvent uae, Class<? extends UActionEvent> clazz){
         events.put(uae, clazz);

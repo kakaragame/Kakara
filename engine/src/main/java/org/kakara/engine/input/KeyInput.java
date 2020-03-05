@@ -1,7 +1,7 @@
 package org.kakara.engine.input;
 
 import org.kakara.engine.GameEngine;
-import org.kakara.engine.events.event.OnKeyPressEvent;
+import org.kakara.engine.events.event.KeyPressEvent;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
@@ -19,7 +19,7 @@ public class KeyInput {
     public void init(){
         glfwSetKeyCallback(engine.getWindow().getWindowHandler(), (window, key, scancode, action, mods)->{
             if(action != GLFW_PRESS) return;
-            engine.getGameHandler().getEventManager().fireHandler(new OnKeyPressEvent(key));
+            engine.getGameHandler().getEventManager().fireHandler(new KeyPressEvent(key));
         });
     }
 

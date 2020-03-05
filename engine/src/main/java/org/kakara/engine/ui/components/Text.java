@@ -9,6 +9,9 @@ import org.lwjgl.nanovg.NVGColor;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 
+/**
+ * Displays text to the UI.
+ */
 public class Text extends GeneralComponent{
     private String text;
     private Font font;
@@ -41,20 +44,47 @@ public class Text extends GeneralComponent{
         if(!isVisible()) return;
 
         nvgBeginPath(hud.getVG());
-        nvgFontSize(hud.getVG(), size);
+        nvgFontSize(hud.getVG(), calculateSize(handler));
         nvgFontFaceId(hud.getVG(), font.getFont());
         nvgTextAlign(hud.getVG(), textAlign);
         NVGColor colorz = NVGColor.create();
         nvgRGBA((byte) color.r, (byte) color.g, (byte) color.b, (byte) color.aToNano(), colorz);
         nvgFillColor(hud.getVG(), colorz);
 
-        nvgTextBox(hud.getVG(), getTruePosition().x, getTruePosition().y, lineWidth,  text);
+        nvgTextBox(hud.getVG(), getTruePosition().x, getTruePosition().y, this.calculateLineWidth(handler),  text);
     }
 
+    /**
+     * Calculate the font size if the window is resized.
+     * @param handler Instance of gamehandler.
+     * @return The scaled size
+     */
+    protected float calculateSize(GameHandler handler){
+        return this.getSize() * ((float)handler.getWindow().getWidth()/(float)handler.getWindow().initalWidth);
+    }
+
+
+    /**
+     * Calculate the line width if the window is resized.
+     * @param handler Instance of gamehandler.
+     * @return the scaled width
+     */
+    protected float calculateLineWidth(GameHandler handler){
+        return this.getLineWidth() * ((float)handler.getWindow().getWidth()/(float)handler.getWindow().initalWidth);
+    }
+
+    /**
+     * Set the font.
+     * @param font
+     */
     public void setFont(Font font){
         this.font = font;
     }
 
+    /**
+     * Set the size of the text.
+     * @param size The size of the text. (Non-Negative)
+     */
     public void setSize(float size){
         this.size = size;
     }
@@ -63,6 +93,10 @@ public class Text extends GeneralComponent{
         return this.size;
     }
 
+    /**
+     * Set the value of the text!
+     * @param text The text.
+     */
     public void setText(String text){
         this.text = text;
     }
@@ -71,6 +105,10 @@ public class Text extends GeneralComponent{
         return this.text;
     }
 
+    /**
+     * Set how wide the text should be before it wraps.
+     * @param width The width.
+     */
     public void setLineWidth(float width){
         this.lineWidth = width;
     }
@@ -79,6 +117,10 @@ public class Text extends GeneralComponent{
         return this.lineWidth;
     }
 
+    /**
+     * Set the height of the space between lines.
+     * @param height The height.
+     */
     public void setLineHeight(float height){
         this.lineHeight = height;
     }
@@ -87,6 +129,10 @@ public class Text extends GeneralComponent{
         return this.lineHeight;
     }
 
+    /**
+     * Set the spacing between letters.
+     * @param letterSpacing The letter spacing.
+     */
     public void setLetterSpacing(float letterSpacing){
         this.letterSpacing = letterSpacing;
     }
@@ -95,10 +141,18 @@ public class Text extends GeneralComponent{
         return this.letterSpacing;
     }
 
+    /**
+     * Set the text align values. {@see ui.text.TextAlign}
+     * @param textAlign The text align values.
+     */
     public void setTextAlign(int textAlign){
         this.textAlign = textAlign;
     }
 
+    /**
+     * Set the color of the text.
+     * @param color The color.
+     */
     public void setColor(RGBA color){
         this.color = color;
     }

@@ -26,6 +26,7 @@ import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
+import org.kakara.engine.utils.Time;
 import org.kakara.engine.utils.Utils;
 
 import java.io.InputStream;
@@ -38,6 +39,8 @@ public class MainGameScene extends AbstractGameScene {
     private PointLight light;
     private GameItem lightIndication;
     private KakaraTest test;
+
+    private Text fps;
 
     public MainGameScene(GameHandler gameHandler, KakaraTest test) throws Exception {
         super(gameHandler);
@@ -53,7 +56,7 @@ public class MainGameScene extends AbstractGameScene {
         object.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
 
-        addItem(object);
+        add(object);
         player = object;
         //Load Blocks
 
@@ -67,7 +70,7 @@ public class MainGameScene extends AbstractGameScene {
 
         mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
-        addItem(gi);
+        add(gi);
         gi.setPosition(0, 0, -5);
 
 
@@ -98,48 +101,48 @@ public class MainGameScene extends AbstractGameScene {
 
         ComponentCanvas cc = new ComponentCanvas();
 
-        Panel pnl = new Panel();
-        Sprite sprite = new Sprite(grass, new Vector2(0, 0), new Vector2(grass.getWidth(), grass.getHeight()));
-        sprite.setScale(100, 100);
-        pnl.add(sprite);
-        pnl.setPosition(100, 100);
-        cc.add(pnl);
-
-
-        Rectangle rect = new Rectangle();
-        rect.setScale(50f, 50f);
-        rect.setPosition((float) gameHandler.getWindow().getWidth() / 2 - pnl.position.x, (float) gameHandler.getWindow().getHeight() / 2 - pnl.position.y);
-        pnl.add(rect);
-
-        rect.addUActionEvent(new HUDClickEvent() {
-            @Override
-            public void OnHUDClick(Vector2 location, MouseClickType clickType) {
-                System.out.println("test : " + clickType);
-                rect.setColor(new RGBA(0, 255, 0, 1));
-            }
-        }, HUDClickEvent.class);
-
-        rect.addUActionEvent(new HUDHoverEnterEvent() {
-            @Override
-            public void OnHudHoverEnter(Vector2 location) {
-                rect.setColor(new RGBA(255, 0, 0, 1));
-            }
-        }, HUDHoverEnterEvent.class);
-
-        rect.addUActionEvent(new HUDHoverLeaveEvent() {
-            @Override
-            public void OnHudHoverLeave(Vector2 location) {
-                rect.setColor(new RGBA(255, 255, 255, 1));
-            }
-        }, HUDHoverLeaveEvent.class);
+//        Panel pnl = new Panel();
+//        Sprite sprite = new Sprite(grass, new Vector2(0, 0), new Vector2(grass.getWidth(), grass.getHeight()));
+//        sprite.setScale(100, 100);
+//        pnl.add(sprite);
+//        pnl.setPosition(100, 100);
+//        cc.add(pnl);
+//
+//
+//        Rectangle rect = new Rectangle();
+//        rect.setScale(50f, 50f);
+//        rect.setPosition((float) gameHandler.getWindow().getWidth() / 2 - pnl.position.x, (float) gameHandler.getWindow().getHeight() / 2 - pnl.position.y);
+//        pnl.add(rect);
+//
+//        rect.addUActionEvent(new HUDClickEvent() {
+//            @Override
+//            public void OnHUDClick(Vector2 location, MouseClickType clickType) {
+//                System.out.println("test : " + clickType);
+//                rect.setColor(new RGBA(0, 255, 0, 1));
+//            }
+//        }, HUDClickEvent.class);
+//
+//        rect.addUActionEvent(new HUDHoverEnterEvent() {
+//            @Override
+//            public void OnHudHoverEnter(Vector2 location) {
+//                rect.setColor(new RGBA(255, 0, 0, 1));
+//            }
+//        }, HUDHoverEnterEvent.class);
+//
+//        rect.addUActionEvent(new HUDHoverLeaveEvent() {
+//            @Override
+//            public void OnHudHoverLeave(Vector2 location) {
+//                rect.setColor(new RGBA(255, 255, 255, 1));
+//            }
+//        }, HUDHoverLeaveEvent.class);
 
         Font font = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"));
         hud.addFont(font);
 
-        Text txt = new Text("This is a test!", font);
-        txt.setPosition(100, 50);
-        txt.setTextAlign(TextAlign.CENTER);
-        cc.add(txt);
+        Text fps = new Text("FPS: 000", font);
+        fps.setPosition(20, 20);
+        cc.add(fps);
+        this.fps = fps;
         add(cc);
 
 
@@ -153,6 +156,8 @@ public class MainGameScene extends AbstractGameScene {
     @Override
     public void update() {
         KeyInput ki = handler.getKeyInput();
+
+        fps.setText("FPS: " + Math.round(1/ Time.deltaTime));
 
         if (ki.isKeyPressed(GLFW_KEY_W)) {
             handler.getCamera().movePosition(0, 0, -1);

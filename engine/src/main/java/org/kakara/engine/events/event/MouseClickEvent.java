@@ -3,11 +3,11 @@ package org.kakara.engine.events.event;
 import org.joml.Vector2d;
 import org.kakara.engine.input.MouseClickType;
 
-public class OnMouseClickEvent {
+public class MouseClickEvent {
     private Vector2d position;
     private MouseClickType mouseClickType;
 
-    public OnMouseClickEvent(Vector2d position, MouseClickType mouseClickType){
+    public MouseClickEvent(Vector2d position, MouseClickType mouseClickType){
         this.position = position;
         this.mouseClickType = mouseClickType;
     }

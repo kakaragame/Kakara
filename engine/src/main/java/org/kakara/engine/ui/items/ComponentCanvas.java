@@ -9,6 +9,9 @@ import org.kakara.engine.ui.components.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Holds all of the components.
+ */
 public class ComponentCanvas implements HUDItem {
     private List<Component> components;
     boolean init = false;
@@ -17,6 +20,10 @@ public class ComponentCanvas implements HUDItem {
         components = new ArrayList<>();
     }
 
+    /**
+     * Add a child component into the canvas
+     * @param component The component to add.
+     */
     public void add(Component component){
         components.add(component);
         if(init){

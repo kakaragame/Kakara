@@ -2,7 +2,7 @@ package org.kakara.engine.ui.components;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
-import org.kakara.engine.events.event.OnMouseClickEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
@@ -23,12 +23,9 @@ public class Sprite extends GeneralComponent {
     private int image;
     private Texture texture;
 
-    private NVGPaint paint;
-
     private boolean isHovering;
 
     public Sprite(Texture texture, Vector2 position, Vector2 scale){
-        paint = NVGPaint.create();
         this.alpha = (byte) 255;
         this.rotation = 0;
         this.position = position;
@@ -50,7 +47,7 @@ public class Sprite extends GeneralComponent {
     }
 
     @EventHandler
-    public void onClick(OnMouseClickEvent evt){
+    public void onClick(MouseClickEvent evt){
         if(HUD.isColliding(getTruePosition(), scale, new Vector2(evt.getMousePosition()))){
             triggerEvent(HUDClickEvent.class, position, evt.getMouseClickType());
         }
@@ -60,6 +57,10 @@ public class Sprite extends GeneralComponent {
         this(tex, new Vector2(0, 0), new Vector2(1, 1));
     }
 
+    /**
+     * Change the image of the sprite
+     * @param tex The texture to change it to.
+     */
     public void setImage(Texture tex){
         this.texture = tex;
         GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getImageCache().removeImage(this.image);
@@ -71,6 +72,11 @@ public class Sprite extends GeneralComponent {
         GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getImageCache().addImage(this.image);
     }
 
+    /**
+     * Set the transparency of the sprite.
+     * @param b Transparency level
+     * @return The instance of the sprite.
+     */
     public Sprite setAlpha(byte b){
         this.alpha = b;
         return this;
@@ -80,6 +86,11 @@ public class Sprite extends GeneralComponent {
         return this.alpha & 0xFF;
     }
 
+    /**
+     * Set the rotation of the image
+     * @param rotation The rotation of the image in degrees.
+     * @return The instance of the sprite.
+     */
     public Sprite setRotation(float rotation){
         this.rotation = rotation;
         return this;
@@ -102,7 +113,6 @@ public class Sprite extends GeneralComponent {
             triggerEvent(HUDHoverLeaveEvent.class, handler.getMouseInput().getCurrentPosition());
         }
 
-//        Vector2 truePos = position.clone().add(relative);
         NVGPaint imagePaint = nvgImagePattern(hud.getVG(), getTruePosition().x, getTruePosition().y, getTrueScale().x, getTrueScale().y, rotation, image, 1.0f, NVGPaint.calloc());
         nvgBeginPath(hud.getVG());
         nvgRect(hud.getVG(), getTruePosition().x, getTruePosition().y, getTruePosition().x + getTrueScale().x, getTruePosition().y + getTrueScale().y);

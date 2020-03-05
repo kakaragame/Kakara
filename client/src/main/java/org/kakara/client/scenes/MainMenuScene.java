@@ -11,6 +11,9 @@ public class MainMenuScene extends AbstractGameScene {
         super(gameHandler);
 
         this.kakaraGame = kakaraGame;
+        if (kakaraGame.getClient().getGameSettings().isTestMode()) {
+
+        }
     }
 
     @Override

@@ -6,15 +6,13 @@ import org.kakara.core.game.CustomStackable;
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Client implements GameInstance {
     private GameSettings settings;
     private KakaraGame kakaraGame;
 
-    public Client(KakaraGame kakaraGame) {
-
+    public Client(KakaraGame kakaraGame, GameSettings gameSettings) {
+        this.settings = gameSettings;
         this.kakaraGame = kakaraGame;
     }
 

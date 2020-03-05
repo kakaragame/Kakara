@@ -3,3 +3,4 @@ target/
 *.iml
 *.log
 out/
+client/test

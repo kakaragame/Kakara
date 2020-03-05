@@ -1,9 +1,9 @@
 package org.kakara.client;
 
-import org.apache.commons.cli.CommandLine;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.KakaraCore;
 import org.kakara.core.KakaraCoreBuilder;
+import org.kakara.core.game.GameSettings;
 import org.kakara.core.mod.game.GameModManager;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
@@ -13,6 +13,7 @@ import org.kakara.game.resources.GameResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 public class KakaraGame implements Game {
@@ -20,12 +21,17 @@ public class KakaraGame implements Game {
     private GameHandler gameHandler;
     private Client client;
     public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
-    private MainMenuScene mainMenuScene;
 
-    public KakaraGame(CommandLine parse) {
+    public KakaraGame(GameSettings gameSettings) {
+        client = new Client(this, gameSettings);
         //Load Core
         loadKakaraCore();
-
+        if (gameSettings.isTestMode()) {
+            File file = new File("test" + File.separator + "mods");
+            file.mkdirs();
+        }
+        //Set Shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
     }
 
     private void loadKakaraCore() {
@@ -33,7 +39,7 @@ public class KakaraGame implements Game {
         KakaraCoreBuilder kakaraCoreBuilder = new KakaraCoreBuilder()
                 .setResourceManager(new GameResourceManager())
                 .setModManager(new GameModManager(new KakaraMod()))
-                .setGameInstance(new Client(this))
+                .setGameInstance(client)
                 .setItemManager(new GameItemManager());
 
         kakaraCore = kakaraCoreBuilder.createKakaraCore();
@@ -49,7 +55,7 @@ public class KakaraGame implements Game {
     public void start(GameHandler gameHandler) throws Exception {
         this.gameHandler = gameHandler;
         //Load MainMenuScene
-        mainMenuScene = new MainMenuScene(gameHandler, this);
+       MainMenuScene mainMenuScene = new MainMenuScene(gameHandler, this);
         gameHandler.getSceneManager().setScene(mainMenuScene);
         loadMusicManager();
     }
@@ -68,8 +74,24 @@ public class KakaraGame implements Game {
 
     }
 
+
+
+    public KakaraCore getKakaraCore() {
+        return kakaraCore;
+    }
+
+    public GameHandler getGameHandler() {
+        return gameHandler;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
     @Override
     public void exit() {
+
+        kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
     }
 }

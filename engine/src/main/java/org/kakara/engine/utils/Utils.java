@@ -1,8 +1,6 @@
 package org.kakara.engine.utils;
 
 import org.kakara.engine.item.Texture;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
@@ -125,6 +123,20 @@ public class Utils {
         bb.put(ioBytes);
         bb.flip();
         return new Texture(bb);
+    }
+
+    /**
+     * Convert an inputstream into a bytebuffer.
+     * @param io The input stream.
+     * @return The byte buffer.
+     * @throws IOException
+     */
+    public static ByteBuffer inputStreamToByteBuffer(InputStream io) throws IOException {
+        byte[] ioBytes = io.readAllBytes();
+        ByteBuffer bb = MemoryUtil.memAlloc(ioBytes.length);
+        bb.put(ioBytes);
+        bb.flip();
+        return bb;
     }
 
     public static File getCurrentDirectory() {

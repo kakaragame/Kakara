@@ -2,7 +2,6 @@ package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.Collidable;
-import org.kakara.engine.item.MeshGameItem;
 
 import java.util.ArrayList;
 import java.util.List;

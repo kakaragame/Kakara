@@ -1,8 +1,8 @@
 package org.kakara.engine.events.event;
 
-public class OnKeyPressEvent {
+public class KeyPressEvent {
     private int keycode;
-    public OnKeyPressEvent(int keycode){
+    public KeyPressEvent(int keycode){
         this.keycode = keycode;
     }
 

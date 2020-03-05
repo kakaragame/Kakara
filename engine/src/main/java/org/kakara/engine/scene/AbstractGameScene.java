@@ -2,7 +2,6 @@ package org.kakara.engine.scene;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
-import org.kakara.engine.lighting.PointLight;
 
 public abstract class AbstractGameScene extends AbstractScene {
 
@@ -14,6 +13,7 @@ public abstract class AbstractGameScene extends AbstractScene {
     @Override
     public final void render( ) {
         gameHandler.getGameEngine().getRenderer().render(gameHandler.getWindow(), getItemHandler().getItemList(), gameHandler.getCamera());
+        hud.render(gameHandler.getWindow());
     }
 
 

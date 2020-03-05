@@ -1,8 +1,11 @@
 package org.kakara.engine.resources;
 
+import org.kakara.engine.GameEngine;
 import org.kakara.engine.utils.Utils;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.util.MissingResourceException;
 
 public class ResourceManager {
     private String internalLocation;
@@ -23,16 +26,16 @@ public class ResourceManager {
      * @param resourcePath Path to the resource
      * @return path to the resource
      */
-    public Resource getResource(String resourcePath) throws Exception {
+    public Resource getResource(String resourcePath) throws MalformedURLException {
         File externalResource = new File(externalLocation, resourcePath.replace("/", File.separator));
-        System.out.println(externalResource.getAbsolutePath());
+        GameEngine.LOGGER.debug(externalResource.getAbsolutePath());
         if (externalResource.exists()) {
 
             return new FileResource(externalResource.toURI().toURL());
         } else {
             String location = internalLocation + resourcePath;
             location = location.replace("//", "/");
-            System.out.println(location);
+            GameEngine.LOGGER.debug(location);
             return new JarResource(location);
         }
     }

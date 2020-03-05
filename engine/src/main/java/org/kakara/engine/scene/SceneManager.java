@@ -1,6 +1,7 @@
 package org.kakara.engine.scene;
 
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.models.TextureCache;
 
 public class SceneManager {
     private Scene currentScene;
@@ -11,6 +12,8 @@ public class SceneManager {
     }
 
     public void setScene(Scene scene) {
+        if(currentScene != null)
+            this.cleanupScenes();
         currentScene = scene;
     }
 
@@ -20,5 +23,15 @@ public class SceneManager {
 
     public Scene getCurrentScene() {
         return currentScene;
+    }
+
+    /**
+     * Cleanup the scene and clear the memory that way it is ready for the next scene to be loaded.
+     */
+    public void cleanupScenes(){
+        handler.getEventManager().cleanup();
+        currentScene.getHUD().cleanup();
+        TextureCache.getInstance(handler.getResourceManager()).cleanup(currentScene);
+        handler.getItemHandler().cleanup();
     }
 }

@@ -35,7 +35,7 @@ public class GameHandler {
         this.camera = new Camera();
         this.mouseInput = new MouseInput(this);
         this.keyInput = new KeyInput(gameEngine);
-        this.eventManager = new EventManager();
+        this.eventManager = new EventManager(this);
         this.collisionManager = new CollisionManager(this);
         this.lightHandler = new LightHandler();
         this.sceneManager = new SceneManager(this);
@@ -142,5 +142,14 @@ public class GameHandler {
 
     public ResourceManager getResourceManager() {
         return resourceManager;
+    }
+
+    public void exit() {
+        soundManager.cleanup();
+
+
+        sceneManager.cleanupScenes();
+        gameEngine.running = false;
+        gameEngine.cleanup();
     }
 }

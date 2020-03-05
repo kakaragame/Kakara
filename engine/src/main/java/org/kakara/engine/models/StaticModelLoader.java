@@ -1,17 +1,9 @@
 package org.kakara.engine.models;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.kakara.engine.GameEngine;
+import org.kakara.engine.GameHandler;
+import org.kakara.engine.exceptions.ModelLoadException;
 import org.kakara.engine.item.Material;
 import org.kakara.engine.item.Mesh;
 import org.kakara.engine.item.Texture;
@@ -19,25 +11,32 @@ import org.kakara.engine.resources.FileResource;
 import org.kakara.engine.resources.JarResource;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
+import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
-import org.lwjgl.system.MemoryUtil;
 
-import static org.kakara.engine.utils.Utils.ioResourceToByteBuffer;
+import java.io.IOException;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lwjgl.assimp.Assimp.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * A model loader for static Models
  */
 public class StaticModelLoader {
-    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager) throws Exception {
-        return load(resource, texturesDir, resourceManager, aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+    private StaticModelLoader(){
+
+    }
+    public static Mesh[] load(Resource resource, String texturesDir, Scene scene, ResourceManager resourceManager) throws Exception {
+        return load(resource, texturesDir, resourceManager, scene,aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
                 | aiProcess_FixInfacingNormals);
     }
 
-    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, int flags) throws Exception {
+    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, Scene scene,int flags) throws Exception {
         GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resource.toString(), texturesDir));
 
         AIScene aiScene = null;
@@ -52,8 +51,7 @@ public class StaticModelLoader {
         }
         //I feel like this is gonna be a problem
         if (aiScene == null) {
-//            throw new Exception("Error loading model");
-            throw new Exception(aiGetErrorString());
+            throw new ModelLoadException(aiGetErrorString());
         }
 
         int numMaterials = aiScene.mNumMaterials();
@@ -61,7 +59,7 @@ public class StaticModelLoader {
         List<Material> materials = new ArrayList<>();
         for (int i = 0; i < numMaterials; i++) {
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            processMaterial(aiMaterial, materials, texturesDir, resourceManager);
+            processMaterial(aiMaterial, materials, texturesDir, resourceManager,scene);
         }
 
         int numMeshes = aiScene.mNumMeshes();
@@ -89,48 +87,39 @@ public class StaticModelLoader {
     }
 
     protected static void processMaterial(AIMaterial aiMaterial, List<Material> materials,
-                                          String texturesDir, ResourceManager resourceManager) throws Exception {
+                                          String texturesDir, ResourceManager resourceManager,Scene scene) throws Exception {
         // File.separator. File.pathSeparator is for the PATH variable.
         String separator = "/";
-        AIColor4D colour = AIColor4D.create();
+        try(AIColor4D colour = AIColor4D.create()) {
 
-        AIString path = AIString.calloc();
-        Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null,
-                null, null, null, null, null);
-        String textPath = path.dataString();
-        Texture texture = null;
-        if (textPath != null && textPath.length() > 0) {
-            TextureCache textCache = TextureCache.getInstance(resourceManager);
-            String textureFile = texturesDir + separator + textPath;
-            textureFile = textureFile.replace("//", separator);
-            GameEngine.LOGGER.debug(String.format("Getting Texture from %s", textureFile));
-            texture = textCache.getTexture(textureFile);
+            AIString path = AIString.calloc();
+            Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null,
+                    null, null, null, null, null);
+            String textPath = path.dataString();
+            Texture texture = null;
+            if (textPath != null && textPath.length() > 0) {
+                TextureCache textCache = TextureCache.getInstance(resourceManager);
+                String textureFile = texturesDir + separator + textPath;
+                textureFile = textureFile.replace("//", separator);
+                GameEngine.LOGGER.debug(String.format("Getting Texture from %s", textureFile));
+                texture = textCache.getTexture(textureFile, scene);
+            }
+
+            int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0,
+                    colour);
+
+
+            Vector3f specular = Material.DEFAULT_COLOUR;
+            result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0,
+                    colour);
+            if (result == 0) {
+                specular = new Vector3f(colour.r(), colour.g(), colour.b());
+            }
+
+            Material material = new Material(specular, 1.0f);
+            material.setTexture(texture);
+            materials.add(material);
         }
-
-        Vector3f ambient = Material.DEFAULT_COLOUR;
-        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0,
-                colour);
-        if (result == 0) {
-            ambient = new Vector3f(colour.r(), colour.g(), colour.b());
-        }
-
-        Vector3f diffuse = Material.DEFAULT_COLOUR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0,
-                colour);
-        if (result == 0) {
-            diffuse = new Vector3f(colour.r(), colour.g(), colour.b());
-        }
-
-        Vector3f specular = Material.DEFAULT_COLOUR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0,
-                colour);
-        if (result == 0) {
-            specular = new Vector3f(colour.r(), colour.g(), colour.b());
-        }
-
-        Material material = new Material(specular, 1.0f);
-        material.setTexture(texture);
-        materials.add(material);
     }
 
     private static Mesh processMesh(AIMesh aiMesh, List<Material> materials) {

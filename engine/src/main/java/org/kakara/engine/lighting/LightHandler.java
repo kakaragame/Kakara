@@ -1,8 +1,5 @@
 package org.kakara.engine.lighting;
 
-import org.kakara.engine.GameHandler;
-import org.lwjgl.vulkan.AMDRasterizationOrder;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -1,10 +1,6 @@
 package org.kakara.engine.render;
 
 import org.joml.Matrix4f;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-
 import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
@@ -16,6 +12,8 @@ import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.utils.Utils;
 
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
     private Transformation transformation;
@@ -63,6 +61,10 @@ public class Renderer {
             glViewport(0, 0, window.getWidth(), window.getHeight());
             window.setResized(false);
         }
+
+        if(gameObjects.size() < 1)
+            return;
+
         shaderProgram.bind();
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
@@ -106,7 +108,7 @@ public class Renderer {
     }
 
     public void clear() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     public void cleanup() {

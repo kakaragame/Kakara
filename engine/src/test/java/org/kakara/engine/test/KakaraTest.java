@@ -1,32 +1,28 @@
 package org.kakara.engine.test;
 
-import org.kakara.engine.GameHandler;
 import org.kakara.engine.Game;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
-import org.kakara.engine.events.event.OnKeyPressEvent;
-import org.kakara.engine.events.event.OnMouseClickEvent;
-import org.kakara.engine.sound.SoundBuffer;
-import org.kakara.engine.sound.SoundListener;
-import org.kakara.engine.sound.SoundSource;
-import org.lwjgl.openal.AL11;
+import org.kakara.engine.events.event.KeyPressEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
 
 public class KakaraTest implements Game {
 
     private GameHandler gInst;
-    private MainGameScene gameScene;
-
     @Override
     public void start(GameHandler handler) throws Exception {
         gInst = handler;
-        gameScene = new MainGameScene(handler);
-        gInst.getSceneManager().setScene(gameScene);
+
+        TitleScreenScene tss = new TitleScreenScene(handler, this);
+        gInst.getSceneManager().setScene(tss);
         try {
-         gInst.getSoundManager().init();
+            gInst.getSoundManager().init();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
 //        gInst.getSoundManager().setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
 //        gInst.getSoundManager().setListener(new SoundListener());
@@ -45,13 +41,18 @@ public class KakaraTest implements Game {
 
     }
 
+    @Override
+    public void exit() {
+        gInst.exit();
+    }
+
     @EventHandler
-    public void onMouseClick(OnMouseClickEvent evt) {
+    public void onMouseClick(MouseClickEvent evt) {
         System.out.println("clicked1");
     }
 
     @EventHandler
-    public void onKeyEvent(OnKeyPressEvent evt) {
+    public void onKeyEvent(KeyPressEvent evt) {
         if (evt.isKeyPressed(GLFW_KEY_TAB)) {
             //Engine API replaced GLFW methods.
             gInst.getWindow().setCursorVisibility(!gInst.getWindow().isCursorVisable());

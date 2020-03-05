@@ -1,9 +1,11 @@
 package org.kakara.engine.item;
-;
+
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+
+;
 
 public class Material {
     public static final Vector3f DEFAULT_COLOUR = new Vector3f(1.0f, 1.0f, 1.0f);

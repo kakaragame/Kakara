@@ -2,10 +2,10 @@ package org.kakara.engine.input;
 
 import org.joml.Vector2d;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.events.event.OnMouseClickEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.gui.Window;
+import org.kakara.engine.math.Vector2;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import java.nio.DoubleBuffer;
 
@@ -67,7 +67,7 @@ public class MouseInput {
                     mct = MouseClickType.OTHER;
                     break;
             }
-            handler.getEventManager().fireHandler(new OnMouseClickEvent(this.getPosition(), mct));
+            handler.getEventManager().fireHandler(new MouseClickEvent(this.getPosition(), mct));
         });
     }
 
@@ -139,5 +139,13 @@ public class MouseInput {
         this.currentPos.y = y;
         this.previousPos.x = x;
         this.previousPos.y = y;
+   }
+
+   public Vector2 getCurrentPosition(){
+       return new Vector2(currentPos);
+   }
+
+   public Vector2 getPreviousPosition(){
+       return new Vector2(previousPos);
    }
 }

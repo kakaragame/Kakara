@@ -1,16 +1,12 @@
 package org.kakara.engine.gui;
 
-import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 
 /**
  * Handles the physical GUI window.
@@ -24,9 +20,14 @@ public class Window {
     private boolean vSync;
     private boolean resizable;
 
+    private WindowOptions options;
+
     private boolean cursor;
 
     private long window;
+
+    public final int initalWidth;
+    public final int initalHeight;
 
     public Window(String title, int width, int height, boolean resizable, boolean vSync){
         this.title = title;
@@ -36,6 +37,10 @@ public class Window {
         this.resized = false;
         this.resizable = resizable;
         cursor = true;
+        this.options = new WindowOptions();
+
+        this.initalWidth = width;
+        this.initalHeight = height;
     }
 
     /**
@@ -57,6 +62,10 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+        if(options.antialiasing) {
+            glfwWindowHint(GLFW_SAMPLES, 4);
+        }
 
         window = glfwCreateWindow(width, height,title, NULL, NULL);
         if(window == NULL){
@@ -90,6 +99,7 @@ public class Window {
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
     }
 
     /**
@@ -110,6 +120,15 @@ public class Window {
      */
     public boolean isKeyPressed(int keyCode){
         return glfwGetKey(window, keyCode) == GLFW_PRESS;
+    }
+
+    /**
+     * If a mouse button is pressed
+     * @param mouseCode The mouse code
+     * @return If the mouse is currently pressed.
+     */
+    public boolean isMousePressed(int mouseCode){
+        return glfwGetMouseButton(window, mouseCode) == GLFW_PRESS;
     }
 
     /**
@@ -203,5 +222,19 @@ public class Window {
 
     public long getWindowHandler(){
         return window;
+    }
+
+    public WindowOptions getOptions(){
+        return options;
+    }
+
+    public void restoreState() {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (options.cullFace) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+        }
     }
 }

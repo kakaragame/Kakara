@@ -1,8 +1,5 @@
 package org.kakara.engine.resources;
 
-import org.apache.commons.io.IOUtils;
-import org.kakara.engine.utils.Utils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

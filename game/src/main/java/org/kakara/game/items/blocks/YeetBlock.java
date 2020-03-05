@@ -7,6 +7,7 @@ import org.kakara.core.annotations.Texture;
 import org.kakara.core.events.entity.StepOnEvent;
 import org.kakara.core.events.player.ClickEvent;
 import org.kakara.core.events.player.PlaceEvent;
+import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.game.ModBlock;
 
 @Texture("blocks/yeet.png")
@@ -14,6 +15,10 @@ import org.kakara.core.mod.game.ModBlock;
 @Id("yeet")
 @Hardness(0f)
 public class YeetBlock extends ModBlock {
+    public YeetBlock(Mod mod) {
+        super(mod);
+    }
+
     @Override
     public void onStep(StepOnEvent event) {
 

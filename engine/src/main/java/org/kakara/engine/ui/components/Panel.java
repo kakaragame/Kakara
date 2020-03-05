@@ -22,20 +22,15 @@ public class Panel extends GeneralComponent {
 
     @Override
     public void init(HUD hud, GameHandler handler) {
-        pollInit();
-        for(Component cc : components){
-            cc.init(hud, handler);
-        }
+        pollInit(hud, handler);
         handler.getEventManager().registerHandler(this, hud.getScene());
     }
 
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler){
-        pollRender(relative, hud, handler);
         if(!isVisible()) return;
-        for(Component cc : components){
-            cc.render(position.clone().add(relative.clone()), hud, handler);
-        }
+
+        pollRender(relative, hud, handler);
 
         boolean isColliding = HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(handler.getMouseInput().getPosition()));
         if(isColliding && !isHovering){

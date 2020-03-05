@@ -34,14 +34,14 @@ public class Text extends GeneralComponent{
 
     @Override
     public void init(HUD hud, GameHandler handler) {
-        pollInit();
+        pollInit(hud, handler);
     }
 
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
-        pollRender(relative, hud, handler);
-
         if(!isVisible()) return;
+
+        pollRender(relative, hud, handler);
 
         nvgBeginPath(hud.getVG());
         nvgFontSize(hud.getVG(), calculateSize(handler));

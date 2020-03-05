@@ -109,14 +109,21 @@ public abstract class GeneralComponent implements Component {
                 truePosition.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
         this.trueScale = new Vector2(scale.x * ((float) handler.getWindow().getWidth()/ (float)handler.getWindow().initalWidth),
                 scale.y * ((float) handler.getWindow().getHeight()/(float)handler.getWindow().initalHeight));
+
+        for(Component cc : components){
+            cc.render(relative.clone().add(position), hud, handler);
+        }
     }
 
     /**
      * Tells the engine that the object was inited.
      * This allows the engine to handle a lot of the component hassle for you.
      */
-    public void pollInit(){
+    public void pollInit(HUD hud, GameHandler handler){
         init = true;
+        for(Component cc : components){
+            cc.init(hud, handler);
+        }
     }
 
     /**

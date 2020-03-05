@@ -61,16 +61,12 @@ public class Rectangle extends GeneralComponent {
 
     @Override
     public void init(HUD hud, GameHandler handler) {
-        pollInit();
-        for(Component cc : components){
-            cc.init(hud, handler);
-        }
+        pollInit(hud, handler);
         handler.getEventManager().registerHandler(this, hud.getScene());
     }
 
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
-        pollRender(relative, hud, handler);
         if(!isVisible()) return;
         boolean isColliding = HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(handler.getMouseInput().getPosition()));
         if(isColliding && !isHovering){
@@ -88,8 +84,6 @@ public class Rectangle extends GeneralComponent {
         nvgFillColor(hud.getVG(), colorz);
         nvgFill(hud.getVG());
 
-        for(Component cc: components){
-            cc.render(relative.clone().add(position), hud, handler);
-        }
+        pollRender(relative, hud, handler);
     }
 }

@@ -5,6 +5,8 @@ import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.test.components.LoadingBar;
+import org.kakara.engine.test.components.LoadingBarCompleteEvent;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.Rectangle;
 import org.kakara.engine.ui.components.Text;
@@ -23,6 +25,7 @@ public class TitleScreenScene extends AbstractGameScene {
     private KakaraTest kakaraTest;
 
     private Text fps;
+    private LoadingBar lb;
 
     public TitleScreenScene(GameHandler gameHandler, KakaraTest kakaraTest) throws Exception {
         super(gameHandler);
@@ -169,7 +172,18 @@ public class TitleScreenScene extends AbstractGameScene {
         cc.add(fps);
         this.fps = fps;
 
+        // Custom Component
+        LoadingBar lb = new LoadingBar(new Vector2(300, 300), new Vector2(300, 30), roboto);
+        cc.add(lb);
+        this.lb = lb;
 
+        this.lb.addUActionEvent(new LoadingBarCompleteEvent() {
+            @Override
+            public void LoadingBarCompleteEvent(float percent) {
+                System.out.println("hit 100%!");
+                lb.setPercent(0);
+            }
+        }, LoadingBarCompleteEvent.class);
 
         //end
 
@@ -185,5 +199,7 @@ public class TitleScreenScene extends AbstractGameScene {
     @Override
     public void update() {
         fps.setText("FPS: " + Math.round(1/Time.deltaTime));
+
+        lb.setPercent(lb.getPercent() + Time.deltaTime);
     }
 }

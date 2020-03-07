@@ -13,6 +13,8 @@ import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.items.ComponentCanvas;
 
+import static org.lwjgl.opengl.GL11.glViewport;
+
 /**
  * This abstract scene is meant for the menus only.
  */
@@ -37,6 +39,10 @@ public abstract class AbstractMenuScene implements Scene {
     @Override
     public void render() {
         gameHandler.getGameEngine().getRenderer().clear();
+        if (gameHandler.getWindow().isResized()) {
+            glViewport(0, 0, gameHandler.getWindow().getWidth(), gameHandler.getWindow().getHeight());
+            gameHandler.getWindow().setResized(false);
+        }
         hud.render(gameHandler.getWindow());
     }
 

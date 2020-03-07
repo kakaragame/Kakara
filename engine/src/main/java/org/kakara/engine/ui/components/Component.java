@@ -5,6 +5,8 @@ import org.kakara.engine.math.Vector2;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.events.UActionEvent;
 
+import java.util.List;
+
 public interface Component {
     void addUActionEvent(UActionEvent uae, Class<? extends UActionEvent> clazz);
 
@@ -73,5 +75,22 @@ public interface Component {
      * @return If the element is currently visible.
      */
     boolean isVisible();
+
+    /**
+     * Get all child components
+     * @return The list of child components
+     */
+    List<Component> getChildren();
+
+    /**
+     * Clear the component of all children.
+     */
+    void clearChildren();
+
+    /**
+     * Remove a component from the list of children.
+     * @param component The component to remove.
+     */
+    void remove(Component component);
 
 }

@@ -170,4 +170,19 @@ public abstract class GeneralComponent implements Component {
         return isVisible;
     }
 
+    @Override
+    public List<Component> getChildren(){
+        return components;
+    }
+
+    @Override
+    public void clearChildren(){
+        components.clear();
+    }
+
+    @Override
+    public void remove(Component component){
+        components.remove(component);
+    }
+
 }

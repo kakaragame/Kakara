@@ -60,6 +60,7 @@ public class GameResourceManager implements ResourceManager {
     @Override
     public void load(KakaraCore kakaraCore) {
         this.kakaraCore = kakaraCore;
+        if (kakaraCore.getGameType() == GameType.SERVER) return;
         resourceDirectory = new File(kakaraCore.getWorkingDirectory(), "resources");
     }
 }

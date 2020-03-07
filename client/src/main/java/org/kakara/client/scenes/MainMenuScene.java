@@ -24,7 +24,7 @@ public class MainMenuScene extends AbstractGameScene {
 
         this.kakaraGame = kakaraGame;
         getHUD().addFont(kakaraGame.getFont());
-        ComponentCanvas componentCanvas = new ComponentCanvas();
+        ComponentCanvas componentCanvas = new ComponentCanvas(this);
         Panel menu = new Panel();
         Texture texture = loadTextTexture();
         if (kakaraGame.getClient().getGameSettings().isTestMode()) {

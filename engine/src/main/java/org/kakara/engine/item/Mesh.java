@@ -217,11 +217,13 @@ public class Mesh {
     }
 
     public void render() {
+        System.out.println("Start Mesh Render");
         initRender();
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
         endRender();
+        System.out.println("End Mesh Render");
     }
 
 

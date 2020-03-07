@@ -21,7 +21,7 @@ public class GameEngine implements Runnable {
     private final Time time;
 
     private final Game game;
-    private final Renderer renderer;
+    private Renderer renderer;
     private final GameHandler gameHandler;
     protected boolean running = true;
 
@@ -132,12 +132,17 @@ public class GameEngine implements Runnable {
         return window;
     }
 
-    public Renderer getRenderer() {
+    public final Renderer getRenderer() {
         return renderer;
     }
 
     public GameHandler getGameHandler() {
         return gameHandler;
+    }
+
+    public void resetRender() throws Exception {
+        renderer = new Renderer();
+        renderer.init();
     }
 
 

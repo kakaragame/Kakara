@@ -60,6 +60,7 @@ public class Renderer {
     }
 
     public void render(Window window, List<GameItem> gameObjects, Camera camera) {
+        System.out.println("Start Render");
         clear();
 
         if (window.isResized()) {
@@ -93,22 +94,10 @@ public class Renderer {
             }
             // Render the meshes for this game item
             gameObject.render();
-            /*
-                Below is the code for the debug mode for the box collider.
-             */
-            if (gameObject instanceof Collidable) {
-                Collidable collidable = (Collidable) gameObject;
-                if (collidable.getCollider() instanceof BoxCollider) {
-                    Matrix4f colliderViewMatrix = new Matrix4f().identity().scale(0.3f).translate(collidable.getCollider().getAbsolutePoint1().subtract(1, 1, 1).divide(1 - gameObject.getScale()).toJoml());
-                    Matrix4f viewCurr = new Matrix4f(viewMatrix);
-                    Matrix4f curColliderMatrix = viewCurr.mul(colliderViewMatrix);
-                    shaderProgram.setUniform("modelMatrix", curColliderMatrix);
-                    ((BoxCollider) collidable.getCollider()).render();
-                }
-            }
         }
 
         shaderProgram.unbind();
+        System.out.println("end renderer");
 
     }
 
@@ -119,6 +108,7 @@ public class Renderer {
      * @param scene The current scene
      */
     public void renderSkyBox(Window window, Camera camera, Scene scene){
+        System.out.println("start skybox");
         skyBoxShaderProgram.bind();
         skyBoxShaderProgram.setUniform("texture_sampler", 0);
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
@@ -136,6 +126,7 @@ public class Renderer {
         scene.getSkyBox().getMesh().render();
 
         skyBoxShaderProgram.unbind();
+        System.out.println("end skybox");
 
     }
 

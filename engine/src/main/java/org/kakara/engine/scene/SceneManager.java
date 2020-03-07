@@ -14,6 +14,11 @@ public class SceneManager {
     public void setScene(Scene scene) {
         if(currentScene != null)
             this.cleanupScenes();
+        try {
+            handler.getGameEngine().resetRender();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         currentScene = scene;
     }
 

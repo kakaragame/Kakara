@@ -100,7 +100,6 @@ public class Sprite extends GeneralComponent {
     @Override
     public void render(Vector2 relative, HUD hud, GameHandler handler) {
         if(!isVisible()) return;
-        pollRender(relative, hud, handler);
         boolean isColliding = HUD.isColliding(getTruePosition(), getTrueScale(), new Vector2(handler.getMouseInput().getPosition()));
         if(isColliding && !isHovering){
             isHovering = true;
@@ -116,6 +115,7 @@ public class Sprite extends GeneralComponent {
         nvgFillPaint(hud.getVG(), imagePaint);
         nvgFill(hud.getVG());
         imagePaint.free();
+        pollRender(relative, hud, handler);
     }
 
     public void cleanup(){

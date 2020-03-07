@@ -73,7 +73,7 @@ public class MainGameScene extends AbstractGameScene {
         add(gi);
         gi.setPosition(0, 0, -5);
         Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
-        SkyBox skyBox = new SkyBox(skyb, false);
+        SkyBox skyBox = new SkyBox(skyb, true);
         setSkyBox(skyBox);
 
 

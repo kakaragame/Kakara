@@ -117,9 +117,7 @@ public class GameEngine implements Runnable {
         if(gameHandler.getSceneManager().getCurrentScene() == null) return;
         renderer.cleanup();
         if(gameHandler.getSceneManager().getCurrentScene()== null) return;
-        for (GameItem gameObject : gameHandler.getSceneManager().getCurrentScene().getItemHandler().getItemList()) {
-            gameObject.cleanup();
-        }
+        gameHandler.getItemHandler().cleanup();
     }
 
     protected void collide() {

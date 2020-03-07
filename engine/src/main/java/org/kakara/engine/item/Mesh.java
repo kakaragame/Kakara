@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -217,13 +218,20 @@ public class Mesh {
     }
 
     public void render() {
-        System.out.println("Start Mesh Render");
         initRender();
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
         endRender();
-        System.out.println("End Mesh Render");
+    }
+
+    public void renderList(List<GameItem> gameItems, Consumer<GameItem> consumer){
+        initRender();
+        for(GameItem gameItem : gameItems){
+            consumer.accept(gameItem);
+            glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+        }
+        endRender();
     }
 
 

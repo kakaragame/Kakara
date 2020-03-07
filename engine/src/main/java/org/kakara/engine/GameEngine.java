@@ -92,7 +92,7 @@ public class GameEngine implements Runnable {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException ie) {
-
+                ie.printStackTrace();
             }
         }
     }
@@ -114,6 +114,7 @@ public class GameEngine implements Runnable {
 
     protected void cleanup() {
         if(gameHandler.getSceneManager().getCurrentScene() instanceof AbstractMenuScene) return;
+        if(gameHandler.getSceneManager().getCurrentScene() == null) return;
         renderer.cleanup();
         for (GameItem gameObject : gameHandler.getSceneManager().getCurrentScene().getItemHandler().getItemList()) {
             gameObject.cleanup();

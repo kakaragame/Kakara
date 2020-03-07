@@ -164,6 +164,10 @@ public class Renderer {
         if (shaderProgram != null) {
             shaderProgram.cleanup();
         }
+
+        if(skyBoxShaderProgram != null){
+            skyBoxShaderProgram.cleanup();
+        }
     }
 
     public Transformation getTransformation() {

@@ -106,6 +106,9 @@ public abstract class AbstractMenuScene implements Scene {
     }
 }
 
+/**
+ * INTERNAL USE ONLY
+ */
 class BackgroundImage extends GeneralComponent{
 
     private Sprite sprite;

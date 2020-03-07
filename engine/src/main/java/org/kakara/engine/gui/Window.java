@@ -4,6 +4,8 @@ import org.kakara.engine.GameEngine;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -56,6 +58,10 @@ public class Window {
             return;
         }
 
+        glfwSetErrorCallback((error, description) -> {
+            System.err.println("GLFW error [" + Integer.toHexString(error) + "]: " + GLFWErrorCallback.getDescription(description));
+        });
+
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
@@ -63,6 +69,7 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
         if (options.antialiasing) {
             glfwWindowHint(GLFW_SAMPLES, 4);
@@ -79,6 +86,7 @@ public class Window {
             this.height = height;
             this.resized = true;
         });
+
 
         // On Key Press
         glfwSetKeyCallback(window, (win, key, scancode, action, mods) -> {
@@ -97,6 +105,7 @@ public class Window {
         glfwShowWindow(window);
         boolean y = true;
         GL.createCapabilities();
+        Callback debugProc = GLUtil.setupDebugMessageCallback();
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);

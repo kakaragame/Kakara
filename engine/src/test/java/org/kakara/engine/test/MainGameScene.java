@@ -72,8 +72,8 @@ public class MainGameScene extends AbstractGameScene {
         MeshGameItem gi = new MeshGameItem(mesh);
         add(gi);
         gi.setPosition(0, 0, -5);
-
-        SkyBox skyBox = new SkyBox(grass);
+        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
+        SkyBox skyBox = new SkyBox(skyb, true);
         setSkyBox(skyBox);
 
 

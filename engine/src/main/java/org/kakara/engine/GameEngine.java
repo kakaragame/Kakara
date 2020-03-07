@@ -113,6 +113,7 @@ public class GameEngine implements Runnable {
 
     protected void cleanup() {
         renderer.cleanup();
+        if(gameHandler.getSceneManager().getCurrentScene()== null) return;
         for (GameItem gameObject : gameHandler.getSceneManager().getCurrentScene().getItemHandler().getItemList()) {
             gameObject.cleanup();
         }

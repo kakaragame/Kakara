@@ -140,6 +140,8 @@ public class MainGameScene extends AbstractGameScene {
         hud.addFont(font);
 
         Text fps = new Text("FPS: 000", font);
+        fps.setColor(new RGBA(0,0,0,1));
+
         fps.setPosition(20, 20);
         cc.add(fps);
         this.fps = fps;

@@ -4,6 +4,7 @@ import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.ItemHandler;
+import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
@@ -16,6 +17,8 @@ import org.kakara.engine.ui.HUDItem;
 public abstract class AbstractScene implements Scene {
     private ItemHandler itemHandler = new ItemHandler();
     private LightHandler lightHandler = new LightHandler();
+    private SkyBox skyBox;
+
     protected HUD hud = new HUD(this);
     private boolean mouseStatus;
     protected GameHandler gameHandler;
@@ -69,6 +72,14 @@ public abstract class AbstractScene implements Scene {
 
     public void add(HUDItem hudItem){
         hud.addItem(hudItem);
+    }
+
+    public SkyBox getSkyBox(){
+        return skyBox;
+    }
+
+    public void setSkyBox(SkyBox skyBox){
+        this.skyBox = skyBox;
     }
 
 

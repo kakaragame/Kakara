@@ -4,6 +4,7 @@ import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.render.Renderer;
+import org.kakara.engine.scene.AbstractMenuScene;
 import org.kakara.engine.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class GameEngine implements Runnable {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException ie) {
-
+                ie.printStackTrace();
             }
         }
     }
@@ -112,6 +113,8 @@ public class GameEngine implements Runnable {
     }
 
     protected void cleanup() {
+        if(gameHandler.getSceneManager().getCurrentScene() instanceof AbstractMenuScene) return;
+        if(gameHandler.getSceneManager().getCurrentScene() == null) return;
         renderer.cleanup();
         if(gameHandler.getSceneManager().getCurrentScene()== null) return;
         for (GameItem gameObject : gameHandler.getSceneManager().getCurrentScene().getItemHandler().getItemList()) {

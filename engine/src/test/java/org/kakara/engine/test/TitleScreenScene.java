@@ -2,9 +2,10 @@ package org.kakara.engine.test;
 
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.input.MouseClickType;
+import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
-import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.scene.AbstractMenuScene;
 import org.kakara.engine.test.components.LoadingBar;
 import org.kakara.engine.test.components.LoadingBarCompleteEvent;
 import org.kakara.engine.ui.RGBA;
@@ -17,11 +18,12 @@ import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
+import org.kakara.engine.utils.Utils;
 
 /**
  * Example of how to make a proper UI Scene.
  */
-public class TitleScreenScene extends AbstractGameScene {
+public class TitleScreenScene extends AbstractMenuScene {
     private KakaraTest kakaraTest;
 
     private Text fps;
@@ -40,7 +42,7 @@ public class TitleScreenScene extends AbstractGameScene {
         hud.addFont(roboto);
 
         // Create a new componentcanvas. This holds the components for the UI.
-        ComponentCanvas cc = new ComponentCanvas();
+        ComponentCanvas cc = new ComponentCanvas(this);
 
         // Make some more text for the title screen.
         Text title = new Text("Kakara", roboto);
@@ -192,6 +194,8 @@ public class TitleScreenScene extends AbstractGameScene {
         add(cc);
 
         setCurserStatus(true);
+
+        setBackground(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/oa.png")));
 
 
     }

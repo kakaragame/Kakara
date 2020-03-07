@@ -116,6 +116,12 @@ public class Sprite extends GeneralComponent {
         nvgFill(hud.getVG());
         imagePaint.free();
         pollRender(relative, hud, handler);
+    }
 
+    public void cleanup(){
+        GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getImageCache().removeImage(this.image);
+        nvgDeleteImage(GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getVG(),
+                image);
+        image = 0;
     }
 }

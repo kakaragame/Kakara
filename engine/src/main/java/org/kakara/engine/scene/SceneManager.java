@@ -32,6 +32,7 @@ public class SceneManager {
         handler.getEventManager().cleanup();
         currentScene.getHUD().cleanup();
         TextureCache.getInstance(handler.getResourceManager()).cleanup(currentScene);
+        if(getCurrentScene() instanceof AbstractMenuScene) return;
         handler.getItemHandler().cleanup();
     }
 }

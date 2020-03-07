@@ -8,7 +8,9 @@ import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.MeshGameItem;
+import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.lighting.LightHandler;
+import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class Renderer {
     }
 
     private Shader shaderProgram;
+    private Shader skyBoxShaderProgram;
 
     private static final float FOV = (float) Math.toRadians(60.0f);
 
@@ -52,6 +55,8 @@ public class Renderer {
         shaderProgram.createPointLightsUniform("pointLights");
         shaderProgram.createSpotLightsUniform("spotLights");
         shaderProgram.createUniform("viewPos");
+
+        setupSkyBoxShader();
     }
 
     public void render(Window window, List<GameItem> gameObjects, Camera camera) {
@@ -106,6 +111,50 @@ public class Renderer {
         shaderProgram.unbind();
 
     }
+
+    /**
+     * Render the skybox
+     * @param window The window
+     * @param camera The game
+     * @param scene The current scene
+     */
+    public void renderSkyBox(Window window, Camera camera, Scene scene){
+        skyBoxShaderProgram.bind();
+        skyBoxShaderProgram.setUniform("texture_sampler", 0);
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        skyBoxShaderProgram.setUniform("projectionMatrix", projectionMatrix);
+
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        viewMatrix.m30(0);
+        viewMatrix.m31(0);
+        viewMatrix.m32(0);
+        //TODO remove model view matrix
+        Matrix4f modelViewMatrix = transformation.getModelViewMatrix(scene.getSkyBox(), viewMatrix);
+        skyBoxShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+        skyBoxShaderProgram.setUniform("ambientLight", scene.getLightHandler().getDirectionalLight().getAmbient().toJoml());
+
+        scene.getSkyBox().getMesh().render();
+
+        skyBoxShaderProgram.unbind();
+
+    }
+
+    /**
+     * Setup the skybox shader.
+     * @throws Exception
+     */
+    private void setupSkyBoxShader() throws Exception{
+        skyBoxShaderProgram = new Shader();
+        skyBoxShaderProgram.createVertexShader(Utils.loadResource("/skyboxVertex.vs"));
+        skyBoxShaderProgram.createFragmentShader(Utils.loadResource("/skyboxFragment.fs"));
+        skyBoxShaderProgram.link();
+
+        skyBoxShaderProgram.createUniform("projectionMatrix");
+        skyBoxShaderProgram.createUniform("modelViewMatrix");
+        skyBoxShaderProgram.createUniform("texture_sampler");
+        skyBoxShaderProgram.createUniform("ambientLight");
+    }
+
 
     public void clear() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

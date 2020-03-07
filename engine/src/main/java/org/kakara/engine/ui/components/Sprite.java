@@ -116,6 +116,12 @@ public class Sprite extends GeneralComponent {
         nvgFillPaint(hud.getVG(), imagePaint);
         nvgFill(hud.getVG());
         imagePaint.free();
+    }
 
+    public void cleanup(){
+        GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getImageCache().removeImage(this.image);
+        nvgDeleteImage(GameHandler.getInstance().getSceneManager().getCurrentScene().getHUD().getVG(),
+                image);
+        image = 0;
     }
 }

@@ -73,6 +73,9 @@ public class MainGameScene extends AbstractGameScene {
         add(gi);
         gi.setPosition(0, 0, -5);
 
+        SkyBox skyBox = new SkyBox(grass);
+        setSkyBox(skyBox);
+
 
         for (int x = 5; x > -12; x--) {
             for (int z = 5; z > -12; z--) {
@@ -99,7 +102,7 @@ public class MainGameScene extends AbstractGameScene {
 
          */
 
-        ComponentCanvas cc = new ComponentCanvas();
+        ComponentCanvas cc = new ComponentCanvas(this);
 
 //        Panel pnl = new Panel();
 //        Sprite sprite = new Sprite(grass, new Vector2(0, 0), new Vector2(grass.getWidth(), grass.getHeight()));

@@ -3,9 +3,9 @@ package org.kakara.engine.engine;
 /**
  * Contains all of the data for a cube.
  */
-public class CubeData {
+public final class CubeData {
 
-    public static float[] vertex = {
+    public static final float[] vertex = {
             -0.5f, 0.5f, 0.5f,
             -0.5f, -0.5f, 0.5f,
             0.5f, -0.5f, 0.5f,
@@ -38,7 +38,7 @@ public class CubeData {
             -0.5f, 0.5f, 0.5f
     };
 
-    public static float[] texture = {
+    public static final float[] texture = {
             0.25f, 0.33f,
             0.25f, 0.66f,
             0.5f, 0.66f,
@@ -70,7 +70,7 @@ public class CubeData {
             0.25f, 0.33f
     };
 
-    public static float[] normal = {
+    public static final float[] normal = {
             0, 0, 1,
             0, 0, 1,
             0, 0, 1,
@@ -102,7 +102,7 @@ public class CubeData {
             -1, 0, 0
     };
 
-    public static int[] indices = {
+    public static final int[] indices = {
             0, 1, 2, 0, 3, 2,
             // back
             4, 5, 6, 4, 7, 6,
@@ -114,5 +114,38 @@ public class CubeData {
             16, 17, 18, 16, 19, 18,
             // left
             20, 21, 22, 20, 23, 22
+    };
+
+    public static final float[] skyboxVertex = {
+            -100f, 100f, 100f,
+            -100f, -100f, 100f,
+            100f, -100f, 100f,
+            100f, 100f, 100f,
+            //back
+            -100f, 100f, -100f,
+            -100f, -100f, -100f,
+            100f, -100f, -100f,
+            100f, 100f, -100f,
+            //top
+            -100f, 100f, -100f,
+            -100f, 100f, 100f,
+            100f, 100f, 100f,
+            100f, 100f, -100f,
+            //bottom
+            -100f, -100f, -100f,
+            -100f, -100f, 100f,
+            100f, -100f, 100f,
+            100f, -100f, -100f,
+            //right
+            100f, 100f, 100f,
+            100f, -100f, 100f,
+            100f, -100f, -100f,
+            100f, 100f, -100f,
+
+            // left
+            -100f, 100f, -100f,
+            -100f, -100f, -100f,
+            -100f, -100f, 100f,
+            -100f, 100f, 100f
     };
 }

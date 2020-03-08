@@ -7,6 +7,16 @@ import org.kakara.engine.ui.HUD;
 import org.kakara.engine.weather.Fog;
 
 public interface Scene {
+    /**
+     * Any loading of non graphics that are needed
+     */
+    void work();
+
+    /**
+     * Load the graphics
+     */
+    void loadGraphics();
+
 
 
     /**
@@ -22,30 +32,35 @@ public interface Scene {
 
     /**
      * Set if the cursor should be enabled.
+     *
      * @param status Cursor enabled.
      */
     void setCurserStatus(boolean status);
 
     /**
      * Check if the cursor is enabled.
+     *
      * @return If the cursor is enabled.
      */
     boolean getCurserStatus();
 
     /**
      * Get the ItemHandler
+     *
      * @return The item handler for this scene.
      */
     ItemHandler getItemHandler();
 
     /**
      * Get the LightHandler for this scene.
+     *
      * @return The light handler
      */
     LightHandler getLightHandler();
 
     /**
      * Get the HUD for this scene.
+     *
      * @return The hud.
      */
     HUD getHUD();
@@ -53,8 +68,10 @@ public interface Scene {
     void unload();
 
     SkyBox getSkyBox();
+
     void setSkyBox(SkyBox skyBox);
 
     Fog getFog();
+
     void setFog(Fog fog);
 }

@@ -28,14 +28,14 @@ public class ResourceManager {
      */
     public Resource getResource(String resourcePath) throws MalformedURLException {
         File externalResource = new File(externalLocation, resourcePath.replace("/", File.separator));
-        //GameEngine.LOGGER.debug(externalResource.getAbsolutePath());
+        GameEngine.LOGGER.debug(externalResource.getAbsolutePath());
         if (externalResource.exists()) {
 
             return new FileResource(externalResource.toURI().toURL());
         } else {
             String location = internalLocation + resourcePath;
             location = location.replace("//", "/");
-         //   GameEngine.LOGGER.debug(location);
+            GameEngine.LOGGER.debug(location);
             return new JarResource(location);
         }
     }

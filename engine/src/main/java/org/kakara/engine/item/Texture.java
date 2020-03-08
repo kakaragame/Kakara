@@ -1,6 +1,7 @@
 package org.kakara.engine.item;
 
 
+import org.kakara.engine.exceptions.TextureException;
 import org.kakara.engine.resources.JarResource;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.scene.Scene;
@@ -66,7 +67,6 @@ public class Texture {
 
     public Texture(Resource resource, Scene currentScene) {
         this.scene = currentScene;
-
         try (MemoryStack stack = stackPush()) {
             IntBuffer w = stack.mallocInt(1);
             IntBuffer h = stack.mallocInt(1);
@@ -75,15 +75,15 @@ public class Texture {
             // Decode texture image into a byte buffer
 
             ByteBuffer decodedImage;
-            if(resource instanceof JarResource) {
+            if (resource instanceof JarResource) {
                 decodedImage = stbi_load_from_memory(resource.getByteBuffer(), w, h, avChannels, 4);
-            }else{
+            } else {
                 decodedImage = stbi_load(resource.getPath(), w, h, avChannels, 4);
             }
-            if(decodedImage==null) {
-                System.out.println("Failure");
-            System.exit(1);
+            if (decodedImage == null) {
+                throw new TextureException("Unable to create texture for " + resource.toString());
             }
+
             this.width = w.get();
             this.height = h.get();
 
@@ -106,9 +106,12 @@ public class Texture {
             h.clear();
             avChannels.clear();
             decodedImage.clear();
+        } catch (Exception e) {
+            throw new TextureException(e);
         }
 
     }
+
 
     public Texture(ByteBuffer imageData) {
         try (MemoryStack stack = stackPush()) {
@@ -173,7 +176,7 @@ public class Texture {
         glDeleteTextures(id);
     }
 
-    public Scene getCurrentScene(){
+    public Scene getCurrentScene() {
         return scene;
     }
 }

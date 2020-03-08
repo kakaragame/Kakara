@@ -12,14 +12,17 @@ public class SceneManager {
     }
 
     public void setScene(Scene scene) {
-        if(currentScene != null)
+        if (currentScene != null)
             this.cleanupScenes();
+        currentScene = scene;
+
+        scene.work();
         try {
             handler.getGameEngine().resetRender();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        currentScene = scene;
+        scene.loadGraphics();
     }
 
     public void renderCurrentScene() {
@@ -33,11 +36,12 @@ public class SceneManager {
     /**
      * Cleanup the scene and clear the memory that way it is ready for the next scene to be loaded.
      */
-    public void cleanupScenes(){
+    public void cleanupScenes() {
+        currentScene.unload();
         handler.getEventManager().cleanup();
         currentScene.getHUD().cleanup();
         TextureCache.getInstance(handler.getResourceManager()).cleanup(currentScene);
-        if(getCurrentScene() instanceof AbstractMenuScene) return;
+        if (getCurrentScene() instanceof AbstractMenuScene) return;
         handler.getItemHandler().cleanup();
     }
 }

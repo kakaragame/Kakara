@@ -105,7 +105,7 @@ public class Window {
         glfwShowWindow(window);
         boolean y = true;
         GL.createCapabilities();
-        Callback debugProc = GLUtil.setupDebugMessageCallback();
+//        Callback debugProc = GLUtil.setupDebugMessageCallback();
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);

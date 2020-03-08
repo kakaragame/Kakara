@@ -98,6 +98,11 @@ public class Texture {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, decodedImage);
             // Generate Mip Map
             glGenerateMipmap(GL_TEXTURE_2D);
+
+            w.clear();
+            h.clear();
+            avChannels.clear();
+            decodedImage.clear();
         }
 
     }
@@ -129,6 +134,11 @@ public class Texture {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, decodedImage);
             // Generate Mip Map
             glGenerateMipmap(GL_TEXTURE_2D);
+
+            w.clear();
+            h.clear();
+            avChannels.clear();
+            decodedImage.clear();
         }
     }
 

@@ -8,6 +8,7 @@ import org.kakara.engine.lighting.DirectionalLighting;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
+import org.kakara.engine.weather.Fog;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -234,6 +235,18 @@ public class Shader {
             setUniform(uniformName + "[" + i + "].outerCutOff", pt.getOuterCutOff());
             i++;
         }
+    }
+
+    public void createFogUniform(String uniformName) throws Exception{
+        createUniform(uniformName + ".activeFog");
+        createUniform(uniformName + ".color");
+        createUniform(uniformName + ".density");
+    }
+
+    public void setUniform(String uniformName, Fog fog) {
+        setUniform(uniformName + ".activeFog", fog.isActive() ? 1 : 0);
+        setUniform(uniformName + ".color", fog.getColor().toJoml());
+        setUniform(uniformName + ".density", fog.getDensity());
     }
 
     public void bind() {

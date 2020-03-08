@@ -38,22 +38,8 @@ public class Renderer {
      * @throws Exception
      */
     public void init() throws Exception {
-        shaderProgram = new Shader();
-        shaderProgram.createVertexShader(Utils.loadResource("/vertex.vs"));
-        shaderProgram.createFragmentShader(Utils.loadResource("/fragment.fs"));
-        shaderProgram.link();
-        shaderProgram.createUniform("projectionMatrix");
-        shaderProgram.createUniform("modelMatrix");
-        shaderProgram.createUniform("viewMatrix");
-        /*
-         * Setup uniforms for lighting
-         */
-        shaderProgram.createMaterialUniform("material");
-        shaderProgram.createDirectinalLightUniform("dirLight");
-        shaderProgram.createPointLightsUniform("pointLights");
-        shaderProgram.createSpotLightsUniform("spotLights");
-        shaderProgram.createUniform("viewPos");
 
+        setupSceneShader();
         setupSkyBoxShader();
     }
 
@@ -77,6 +63,8 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
         shaderProgram.setUniform("viewMatrix", viewMatrix);
 
+        shaderProgram.setUniform("fog", scene.getFog());
+
         // Set Lighting Uniforms
         LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
         shaderProgram.setUniform("dirLight", lh.getDirectionalLight());
@@ -90,6 +78,7 @@ public class Renderer {
             mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) ->{
                 Matrix4f pureModelMatrix = transformation.getModelMatrix(gameItem);
                 shaderProgram.setUniform("modelMatrix", pureModelMatrix);
+                shaderProgram.setUniform("modelViewMatrix", transformation.getModelViewMatrix(gameItem, viewMatrix));
             });
         }
 
@@ -137,6 +126,27 @@ public class Renderer {
         skyBoxShaderProgram.createUniform("modelViewMatrix");
         skyBoxShaderProgram.createUniform("texture_sampler");
         skyBoxShaderProgram.createUniform("ambientLight");
+    }
+
+    private void setupSceneShader() throws Exception {
+        shaderProgram = new Shader();
+        shaderProgram.createVertexShader(Utils.loadResource("/vertex.vs"));
+        shaderProgram.createFragmentShader(Utils.loadResource("/fragment.fs"));
+        shaderProgram.link();
+        shaderProgram.createUniform("projectionMatrix");
+        shaderProgram.createUniform("modelMatrix");
+        shaderProgram.createUniform("viewMatrix");
+        shaderProgram.createUniform("modelViewMatrix");
+        /*
+         * Setup uniforms for lighting
+         */
+        shaderProgram.createMaterialUniform("material");
+        shaderProgram.createDirectinalLightUniform("dirLight");
+        shaderProgram.createPointLightsUniform("pointLights");
+        shaderProgram.createSpotLightsUniform("spotLights");
+        shaderProgram.createUniform("viewPos");
+
+        shaderProgram.createFogUniform("fog");
     }
 
 

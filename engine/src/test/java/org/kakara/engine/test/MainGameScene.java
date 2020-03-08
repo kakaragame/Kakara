@@ -28,6 +28,7 @@ import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
 import org.kakara.engine.utils.Utils;
+import org.kakara.engine.weather.Fog;
 
 import java.io.InputStream;
 
@@ -101,6 +102,9 @@ public class MainGameScene extends AbstractGameScene {
             The brand new canvas code.
 
          */
+
+        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.15f));
+
 
         ComponentCanvas cc = new ComponentCanvas(this);
 

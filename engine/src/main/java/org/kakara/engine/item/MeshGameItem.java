@@ -135,6 +135,10 @@ public class MeshGameItem implements Collidable {
         return rotation;
     }
 
+    public Vector3 getRotationAsVector3() {
+        return new Vector3(getRotation().x, getRotation().y, getRotation().z);
+    }
+
     /**
      * Set the rotation of the Object
      *
@@ -246,26 +250,38 @@ public class MeshGameItem implements Collidable {
     }
 
     public void movePosition(float offsetX, float offsetY, float offsetZ) {
-        if ( offsetZ != 0 ) {
-            position.x += (float)Math.sin(Math.toRadians(rotation.y)) * -1.0f * offsetZ;
-            position.z += (float)Math.cos(Math.toRadians(rotation.y)) * offsetZ;
+        if (offsetZ != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y)) * -1.0f * offsetZ;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y)) * offsetZ;
         }
-        if ( offsetX != 0) {
-            position.x += (float)Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offsetX;
-            position.z += (float)Math.cos(Math.toRadians(rotation.y - 90)) * offsetX;
+        if (offsetX != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offsetX;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y - 90)) * offsetX;
         }
         position.y += offsetY;
     }
 
     public void movePosition(Vector3 offset) {
-        if ( offset.z != 0 ) {
-            position.x += (float)Math.sin(Math.toRadians(rotation.y)) * -1.0f * offset.z;
-            position.z += (float)Math.cos(Math.toRadians(rotation.y)) * offset.z;
+        if (offset.z != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y)) * -1.0f * offset.z;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y)) * offset.z;
         }
-        if ( offset.x != 0) {
-            position.x += (float)Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offset.x;
-            position.z += (float)Math.cos(Math.toRadians(rotation.y - 90)) * offset.x;
+        if (offset.x != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offset.x;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y - 90)) * offset.x;
         }
         position.y += offset.y;
+    }
+
+    public void moveRotation(float offsetX, float offsetY, float offsetZ) {
+        rotation.x += offsetX;
+        rotation.y += offsetY;
+        rotation.z += offsetZ;
+    }
+
+    public void moveRotation(Vector3 offset) {
+        rotation.x += offset.x;
+        rotation.y += offset.y;
+        rotation.z += offset.z;
     }
 }

@@ -3,6 +3,7 @@ package org.kakara.client;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.world.Location;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.resources.ResourceManager;
 
 import java.net.MalformedURLException;
 import java.nio.ByteBuffer;

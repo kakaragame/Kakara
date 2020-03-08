@@ -79,7 +79,10 @@ public class Texture {
                 decodedImage = stbi_load_from_memory(resource.getByteBuffer(), w, h, avChannels, 4);
             }else{
                 decodedImage = stbi_load(resource.getPath(), w, h, avChannels, 4);
-
+            }
+            if(decodedImage==null) {
+                System.out.println("Failure");
+            System.exit(1);
             }
             this.width = w.get();
             this.height = h.get();

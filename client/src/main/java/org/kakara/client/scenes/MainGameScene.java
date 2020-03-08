@@ -10,6 +10,7 @@ import org.kakara.core.world.ChunkGenerator;
 import org.kakara.core.world.GameBlock;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
+import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
@@ -18,6 +19,7 @@ import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
+import org.kakara.engine.models.TextureCache;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.utils.Utils;
 
@@ -46,18 +48,24 @@ public class MainGameScene extends AbstractGameScene {
 
 
         loadMods();
+        var resourceManager = gameHandler.getResourceManager();
 
 
         ChunkGenerator generator = kakaraGame.getKakaraCore().getWorldGenerationManager().getChunkGenerators().get(0);
         ChunkBase base = new ChunkBase(null, 0, 0, new ArrayList<>());
         base = generator.generateChunk(45, base);
+        System.out.println(base.getGameBlocks().size());
+        Vector3 vector3f = null;
         for (GameBlock gameBlock : base.getGameBlocks()) {
             Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
             Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(gameBlock.getItemStack().getItem().getTexture(), TextureResolution._16, gameBlock.getItemStack().getItem().getMod());
-            Material mt = new Material(new Texture(MoreUtils.coreResourceToEngineResource(resource, kakaraGame), this));
+            Material mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
             mesh.setMaterial(mt);
             MeshGameItem gi = new MeshGameItem(mesh);
             gi.setPosition(MoreUtils.locationToVector3(gameBlock.getLocation()));
+            gi.setCollider(new ObjectBoxCollider(false, true));
+
+            vector3f = MoreUtils.locationToVector3(gameBlock.getLocation());
             add(gi);
 
         }
@@ -75,16 +83,15 @@ public class MainGameScene extends AbstractGameScene {
 
         //Load Player
 
-        var resourceManager = gameHandler.getResourceManager();
+
         Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
         player = new MeshGameItem(mainPlayer);
-        player.setPosition(4, 3f, 4);
+        player.setPosition(12,12,12);
         player.setScale(0.3f);
         player.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
         player.getCollider().setUseGravity(true).setTrigger(false);
         ((BoxCollider) player.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
         add(player);
-
     }
 
     public void loadMods() {
@@ -106,29 +113,31 @@ public class MainGameScene extends AbstractGameScene {
         if (player == null) return;
 
         KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
-
+Vector3 oldP = player.getPosition();
         if (ki.isKeyPressed(GLFW_KEY_W)) {
-            kakaraGame.getGameHandler().getCamera().movePosition(0, 0, -1);
+            player.movePosition(0, 0, -1);
         }
         if (ki.isKeyPressed(GLFW_KEY_S)) {
-            kakaraGame.getGameHandler().getCamera().movePosition(0, 0, 1);
+            player.movePosition(0, 0, 1);
         }
         if (ki.isKeyPressed(GLFW_KEY_A)) {
-            kakaraGame.getGameHandler().getCamera().movePosition(-1, 0, 0);
+            player.movePosition(-1, 0, 0);
         }
         if (ki.isKeyPressed(GLFW_KEY_D)) {
-            kakaraGame.getGameHandler().getCamera().movePosition(1, 0, 0);
+            player.movePosition(1, 0, 0);
         }
         if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
-            kakaraGame.getGameHandler().getCamera().movePosition(0, 1, 0);
+            player.movePosition(0, 1, 0);
         }
         if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-            kakaraGame.getGameHandler().getCamera().movePosition(0, -1, 0);
+            player.movePosition(0, -1, 0);
         }
         MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
-        kakaraGame.getGameHandler().getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
+        player.moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
         if (kakaraGame.getGameHandler().getSoundManager().getListener() != null)
             kakaraGame.getGameHandler().getSoundManager().getListener().setPosition(gameHandler.getCamera().getPosition());
-        getLightHandler().getDisplayPointLights().get(0).setPosition(kakaraGame.getGameHandler().getCamera().getPosition());
+        getLightHandler().getDisplayPointLights().get(0).setPosition(player.getPosition());
+        gameHandler.getCamera().setPosition(player.getPosition().add(0,1,0));
+        gameHandler.getCamera().setRotation(player.getRotationAsVector3());
     }
 }

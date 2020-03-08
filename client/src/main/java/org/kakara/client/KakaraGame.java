@@ -1,6 +1,7 @@
 package org.kakara.client;
 
 import org.kakara.client.scenes.MainMenuScene;
+import org.kakara.core.Kakara;
 import org.kakara.core.KakaraCore;
 import org.kakara.core.KakaraCoreBuilder;
 import org.kakara.core.game.GameSettings;
@@ -55,7 +56,9 @@ public class KakaraGame implements Game {
             kakaraCore.load();
         } catch (IOException e) {
             LOGGER.error("Unable to load core!", e);
+            System.exit(2);
         }
+        Kakara.setKakaraCore(kakaraCore);
     }
 
     @Override

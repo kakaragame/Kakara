@@ -12,6 +12,7 @@ import org.kakara.engine.ui.HUDItem;
 import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.weather.Fog;
 
 import static org.lwjgl.opengl.GL11.glViewport;
 
@@ -65,7 +66,7 @@ public abstract class AbstractMenuScene implements Scene {
 
     @Override
     public LightHandler getLightHandler() {
-        GameEngine.LOGGER.warn("There is not lighting in this scene implementation! Did you mean to use AbstractGameScene?");
+        GameEngine.LOGGER.warn("There is no lighting in this scene implementation! Did you mean to use AbstractGameScene?");
         return null;
     }
 
@@ -81,13 +82,13 @@ public abstract class AbstractMenuScene implements Scene {
 
     @Override
     public SkyBox getSkyBox() {
-        GameEngine.LOGGER.warn("There is not skybox in this implementation of scene! Did you mean to use AbstractGameScene?");
+        GameEngine.LOGGER.warn("There is no skybox in this implementation of scene! Did you mean to use AbstractGameScene?");
         return null;
     }
 
     @Override
     public void setSkyBox(SkyBox skyBox) {
-        GameEngine.LOGGER.warn("There is not skybox in this implementation of scene! Did you mean to use AbstractGameScene?");
+        GameEngine.LOGGER.warn("There is no skybox in this implementation of scene! Did you mean to use AbstractGameScene?");
     }
 
     public void add(HUDItem hudItem){
@@ -103,6 +104,18 @@ public abstract class AbstractMenuScene implements Scene {
             ((BackgroundImage)cc.getComponents().get(0)).cleanup();
         cc.clearComponents();
         cc.add(new BackgroundImage(texture, gameHandler));
+    }
+
+
+    @Override
+    public void setFog(Fog fog){
+        GameEngine.LOGGER.warn("There is no fog in this implementation of scene! Did you mean to use AbstractGameScene?");
+    }
+
+    @Override
+    public Fog getFog(){
+        GameEngine.LOGGER.warn("There is no fog in this implementation of scene! Did you mean to use AbstractGameScene?");
+        return null;
     }
 }
 

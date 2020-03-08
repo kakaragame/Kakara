@@ -3,6 +3,8 @@
 in vec2 outTexCoord;
 in vec3 vecNormal;
 in vec3 vecPos;
+// Position with view matrix added in.
+in vec3 vecViewPos;
 
 out vec4 fragColor;
 
@@ -58,6 +60,15 @@ struct SpotLight {
     vec3 diffuse;
     vec3 specular;
 };
+
+// Handles the settings for the fog
+struct Fog
+{
+    int activeFog;
+    vec3 color;
+    float density;
+};
+
 uniform DirLight dirLight;
 // The position of the camera.
 uniform vec3 viewPos;
@@ -70,10 +81,13 @@ uniform Material material;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 
+uniform Fog fog;
+
 
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec4 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec4 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+vec4 calcFog(vec3 pos, vec4 color, Fog fog, DirLight dirLight);
 
 vec4 finalDiffuse;
 vec4 finalSpecular;
@@ -117,6 +131,11 @@ void main()
         }
 
     fragColor = result;
+
+     if ( fog.activeFog == 1 )
+        {
+            fragColor = calcFog(vecViewPos, fragColor, fog, dirLight);
+        }
 }
 
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
@@ -178,4 +197,16 @@ vec4 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
     return (ambient + diffuse + specular);
+}
+
+//Calculate the fog in the scene.
+vec4 calcFog(vec3 pos, vec4 color, Fog fog, DirLight dirLight)
+{
+    vec3 fogColor = fog.color * (dirLight.ambient);
+    float distance = length(pos);
+    float fogFactor = 1.0 / exp( (distance * fog.density)* (distance * fog.density));
+    fogFactor = clamp( fogFactor, 0.0, 1.0 );
+
+    vec3 resultColor = mix(fogColor, color.xyz, fogFactor);
+    return vec4(resultColor.xyz, color.w);
 }

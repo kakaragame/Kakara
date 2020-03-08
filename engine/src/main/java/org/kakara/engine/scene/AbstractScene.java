@@ -10,6 +10,7 @@ import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.HUDItem;
+import org.kakara.engine.weather.Fog;
 
 /**
  * Primary Scene to derive from.
@@ -23,8 +24,11 @@ public abstract class AbstractScene implements Scene {
     private boolean mouseStatus;
     protected GameHandler gameHandler;
 
+    private Fog fog;
+
     protected AbstractScene(GameHandler gameHandler) {
         this.gameHandler = gameHandler;
+        fog = Fog.NOFOG;
         try{
             hud.init(gameHandler.getWindow());
         }catch(Exception ex){
@@ -80,6 +84,14 @@ public abstract class AbstractScene implements Scene {
 
     public void setSkyBox(SkyBox skyBox){
         this.skyBox = skyBox;
+    }
+
+    public Fog getFog(){
+        return fog;
+    }
+
+    public void setFog(Fog fog){
+        this.fog = fog;
     }
 
 

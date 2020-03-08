@@ -4,6 +4,7 @@ import org.kakara.engine.item.ItemHandler;
 import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.ui.HUD;
+import org.kakara.engine.weather.Fog;
 
 public interface Scene {
 
@@ -53,4 +54,7 @@ public interface Scene {
 
     SkyBox getSkyBox();
     void setSkyBox(SkyBox skyBox);
+
+    Fog getFog();
+    void setFog(Fog fog);
 }

@@ -12,6 +12,7 @@ import org.kakara.engine.ui.text.Font;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.mod.KakaraMod;
 import org.kakara.game.resources.GameResourceManager;
+import org.kakara.game.world.GameWorldGenerationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class KakaraGame implements Game {
     private Font font;
 
     public KakaraGame(GameSettings gameSettings) {
-        if (gameSettings.isTestMode()) System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+        if (gameSettings.isTestMode()) System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
 
         client = new Client(this, gameSettings);
         //Load Core
@@ -48,10 +49,11 @@ public class KakaraGame implements Game {
                 .setResourceManager(new GameResourceManager())
                 .setModManager(new GameModManager(new KakaraMod()))
                 .setGameInstance(client)
-                .setItemManager(new GameItemManager());
+                .setItemManager(new GameItemManager()).
+                        setWorldGenerationManager(new GameWorldGenerationManager());
 
         kakaraCore = kakaraCoreBuilder.createKakaraCore();
-
+//KakaraCore.LOGGER = LOGGER;
         try {
             kakaraCore.load();
         } catch (IOException e) {

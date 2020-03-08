@@ -6,6 +6,8 @@ import org.kakara.core.game.CustomStackable;
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
+import org.kakara.game.items.GameItemStack;
+import org.kakara.game.items.GameMetaData;
 
 public class Client implements GameInstance {
     private GameSettings settings;
@@ -26,9 +28,7 @@ public class Client implements GameInstance {
         if (item instanceof CustomStackable) {
             return ((CustomStackable) item).createItemStack();
         }
-        ItemStack stack = null;
-        //TODO create GameItemStack
-        return stack;
+        return new GameItemStack(1, item, new GameMetaData(item.getName()));
     }
 
     @Override

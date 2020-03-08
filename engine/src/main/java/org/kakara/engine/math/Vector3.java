@@ -24,6 +24,12 @@ public class Vector3 {
 
     }
 
+    public Vector3(double x, double y, double z) {
+        this.x = (float) x;
+        this.y = (float) y;
+        this.z = (float) z;
+    }
+
     /**
      * Clone the vector
      * @return The cloned vector.

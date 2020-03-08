@@ -23,6 +23,8 @@ public class Main {
         File testFile = new File("test" + File.separator + "test.properties");
         ClientSettings clientSettings = null;
         if (testFile.exists()) {
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel","debug");
+
             KakaraGame.LOGGER.info("In Test Mode");
             Properties properties = new Properties();
             properties.load(new FileInputStream(testFile));

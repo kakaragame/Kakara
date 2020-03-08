@@ -43,6 +43,10 @@ public class ItemHandler {
         return null;
     }
 
+    public List<GameItem> getItems() {
+        return items;
+    }
+
     /**
      * Cleanup all of the items.
      * <p>Internal Use Only.</p>

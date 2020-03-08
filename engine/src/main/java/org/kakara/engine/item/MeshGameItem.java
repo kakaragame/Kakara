@@ -245,5 +245,27 @@ public class MeshGameItem implements Collidable {
         return clone;
     }
 
+    public void movePosition(float offsetX, float offsetY, float offsetZ) {
+        if ( offsetZ != 0 ) {
+            position.x += (float)Math.sin(Math.toRadians(rotation.y)) * -1.0f * offsetZ;
+            position.z += (float)Math.cos(Math.toRadians(rotation.y)) * offsetZ;
+        }
+        if ( offsetX != 0) {
+            position.x += (float)Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offsetX;
+            position.z += (float)Math.cos(Math.toRadians(rotation.y - 90)) * offsetX;
+        }
+        position.y += offsetY;
+    }
 
+    public void movePosition(Vector3 offset) {
+        if ( offset.z != 0 ) {
+            position.x += (float)Math.sin(Math.toRadians(rotation.y)) * -1.0f * offset.z;
+            position.z += (float)Math.cos(Math.toRadians(rotation.y)) * offset.z;
+        }
+        if ( offset.x != 0) {
+            position.x += (float)Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offset.x;
+            position.z += (float)Math.cos(Math.toRadians(rotation.y - 90)) * offset.x;
+        }
+        position.y += offset.y;
+    }
 }

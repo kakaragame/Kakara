@@ -75,6 +75,7 @@ public class TitleScreenScene extends AbstractMenuScene {
                     MainGameScene mgs = new MainGameScene(gameHandler, kakaraTest);
                     gameHandler.getSceneManager().setScene(mgs);
                 }catch(Exception ex) {
+                    ex.printStackTrace();
                     System.out.println("Could not switch to the main scene!");
                 }
             }

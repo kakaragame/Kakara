@@ -104,46 +104,11 @@ public class MainGameScene extends AbstractGameScene {
 
         ComponentCanvas cc = new ComponentCanvas(this);
 
-//        Panel pnl = new Panel();
-//        Sprite sprite = new Sprite(grass, new Vector2(0, 0), new Vector2(grass.getWidth(), grass.getHeight()));
-//        sprite.setScale(100, 100);
-//        pnl.add(sprite);
-//        pnl.setPosition(100, 100);
-//        cc.add(pnl);
-//
-//
-//        Rectangle rect = new Rectangle();
-//        rect.setScale(50f, 50f);
-//        rect.setPosition((float) gameHandler.getWindow().getWidth() / 2 - pnl.position.x, (float) gameHandler.getWindow().getHeight() / 2 - pnl.position.y);
-//        pnl.add(rect);
-//
-//        rect.addUActionEvent(new HUDClickEvent() {
-//            @Override
-//            public void OnHUDClick(Vector2 location, MouseClickType clickType) {
-//                System.out.println("test : " + clickType);
-//                rect.setColor(new RGBA(0, 255, 0, 1));
-//            }
-//        }, HUDClickEvent.class);
-//
-//        rect.addUActionEvent(new HUDHoverEnterEvent() {
-//            @Override
-//            public void OnHudHoverEnter(Vector2 location) {
-//                rect.setColor(new RGBA(255, 0, 0, 1));
-//            }
-//        }, HUDHoverEnterEvent.class);
-//
-//        rect.addUActionEvent(new HUDHoverLeaveEvent() {
-//            @Override
-//            public void OnHudHoverLeave(Vector2 location) {
-//                rect.setColor(new RGBA(255, 255, 255, 1));
-//            }
-//        }, HUDHoverLeaveEvent.class);
-
         Font font = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"));
         hud.addFont(font);
 
         Text fps = new Text("FPS: 000", font);
-        fps.setColor(new RGBA(0,0,0,1));
+        fps.setColor(new RGBA(255,255,255,1));
 
         fps.setPosition(20, 20);
         cc.add(fps);
@@ -152,6 +117,7 @@ public class MainGameScene extends AbstractGameScene {
 
 
         this.handler = gameHandler;
+
     }
 
     public GameItem getPlayer() {

@@ -1,26 +1,33 @@
 package org.kakara.engine.item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ItemHandler {
     private List<GameItem> items;
 
+    private Map<Mesh, List<GameItem>> meshMap;
+
     public ItemHandler() {
         items = new ArrayList<>();
+        meshMap = new HashMap<>();
     }
 
     public void addItem(GameItem obj) {
-        this.items.add(obj);
+        Mesh mesh = obj.getMesh();
+        List<GameItem> list = meshMap.computeIfAbsent(mesh, k -> new ArrayList<>());
+        list.add(obj);
     }
 
     /**
      * <p>Looping through this is extremely performance heavy!</p>
      * @return The list of gameitems
      */
-    public List<GameItem> getItemList() {
-        return this.items;
+//    public List<GameItem> getItemList() {
+//        return this.items;
+//    }
+
+    public Map<Mesh, List<GameItem>> getMeshMap(){
+        return meshMap;
     }
 
     /**
@@ -41,8 +48,10 @@ public class ItemHandler {
      * <p>Internal Use Only.</p>
      */
     public void cleanup(){
-        for(GameItem gi : items){
-            gi.cleanup();
+        for(Mesh m : meshMap.keySet()){
+            for(GameItem gi : meshMap.get(m)){
+                gi.cleanup();
+            }
         }
     }
 }

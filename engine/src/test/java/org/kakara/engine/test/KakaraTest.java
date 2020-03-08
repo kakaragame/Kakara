@@ -16,6 +16,7 @@ public class KakaraTest implements Game {
         gInst = handler;
 
         TitleScreenScene tss = new TitleScreenScene(handler, this);
+//        MainGameScene mgs = new MainGameScene(handler, this);
         gInst.getSceneManager().setScene(tss);
         try {
             gInst.getSoundManager().init();

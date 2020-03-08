@@ -117,5 +117,7 @@ public interface GameItem {
      */
     GameItem clone(boolean exact);
 
+    Mesh getMesh();
+
 
 }

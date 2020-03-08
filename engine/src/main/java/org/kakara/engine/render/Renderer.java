@@ -5,15 +5,13 @@ import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.gui.Window;
-import org.kakara.engine.item.Collidable;
-import org.kakara.engine.item.GameItem;
-import org.kakara.engine.item.MeshGameItem;
-import org.kakara.engine.item.SkyBox;
+import org.kakara.engine.item.*;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -59,7 +57,7 @@ public class Renderer {
         setupSkyBoxShader();
     }
 
-    public void render(Window window, List<GameItem> gameObjects, Camera camera) {
+    public void render(Window window, Camera camera, Scene scene) {
         clear();
 
         if (window.isResized()) {
@@ -67,9 +65,12 @@ public class Renderer {
             window.setResized(false);
         }
 
-        if(gameObjects.size() < 1)
-            return;
 
+        renderScene(window, camera, scene);
+
+    }
+
+    public void renderScene(Window window, Camera camera, Scene scene){
         shaderProgram.bind();
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
@@ -83,33 +84,16 @@ public class Renderer {
         shaderProgram.setSpotLightUniform("spotLights", lh.getDisplaySpotLights());
         shaderProgram.setUniform("viewPos", camera.getPosition().toJoml());
 
-        for (GameItem gameObject : gameObjects) {
-            // Set world matrix for this item
-            Matrix4f pureModelMatrix = transformation.getModelMatrix(gameObject);
-            shaderProgram.setUniform("modelMatrix", pureModelMatrix);
-            if (gameObject instanceof MeshGameItem) {
-                shaderProgram.setUniform("material", ((MeshGameItem) gameObject).getMesh().getMaterial());
-
-            }
-            // Render the meshes for this game item
-            gameObject.render();
-            /*
-                Below is the code for the debug mode for the box collider.
-             */
-            if (gameObject instanceof Collidable) {
-                Collidable collidable = (Collidable) gameObject;
-                if (collidable.getCollider() instanceof BoxCollider) {
-                    Matrix4f colliderViewMatrix = new Matrix4f().identity().scale(0.3f).translate(collidable.getCollider().getAbsolutePoint1().subtract(1, 1, 1).divide(1 - gameObject.getScale()).toJoml());
-                    Matrix4f viewCurr = new Matrix4f(viewMatrix);
-                    Matrix4f curColliderMatrix = viewCurr.mul(colliderViewMatrix);
-                    shaderProgram.setUniform("modelMatrix", curColliderMatrix);
-                    ((BoxCollider) collidable.getCollider()).render();
-                }
-            }
+        Map<Mesh, List<GameItem>> mapMeshes = scene.getItemHandler().getMeshMap();
+        for(Mesh mesh : mapMeshes.keySet()){
+            shaderProgram.setUniform("material", mesh.getMaterial());
+            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) ->{
+                Matrix4f pureModelMatrix = transformation.getModelMatrix(gameItem);
+                shaderProgram.setUniform("modelMatrix", pureModelMatrix);
+            });
         }
 
         shaderProgram.unbind();
-
     }
 
     /**

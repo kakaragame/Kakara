@@ -145,11 +145,7 @@ public class GameHandler {
     }
 
     public void exit() {
-        soundManager.cleanup();
-
-
-        sceneManager.cleanupScenes();
         gameEngine.running = false;
-        gameEngine.cleanup();
+        soundManager.cleanup();
     }
 }

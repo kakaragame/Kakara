@@ -208,7 +208,7 @@ public class Renderer {
         //TODO remove model view matrix
         Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(scene.getSkyBox(), viewMatrix);
         skyBoxShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-        skyBoxShaderProgram.setUniform("ambientLight", scene.getLightHandler().getAmbientLight().toJoml());
+        skyBoxShaderProgram.setUniform("ambientLight", scene.getLightHandler().getSkyBoxLight().toJoml());
 
         scene.getSkyBox().getMesh().render();
 

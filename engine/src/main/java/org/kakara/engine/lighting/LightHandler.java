@@ -1,5 +1,6 @@
 package org.kakara.engine.lighting;
 
+import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.math.Vector3;
 
 import java.util.ArrayList;
@@ -18,12 +19,14 @@ public class LightHandler {
     private List<SpotLight> spotLights;
     private DirectionalLight directionalLight;
     private Vector3 ambientLight;
+    private Vector3 skyBoxLight;
 
     public LightHandler(){
         this.pointLights = new ArrayList<>();
         this.spotLights = new ArrayList<>();
         this.directionalLight = new DirectionalLight(new LightColor(255, 255, 255), new Vector3(0, 1, 0), 0.5f);
         ambientLight = new Vector3(0.3f, 0.3f, 0.3f);
+        skyBoxLight = new Vector3(1, 1, 1);
     }
 
     public void addPointLight(PointLight pl){
@@ -104,6 +107,18 @@ public class LightHandler {
 
     public void setAmbientLight(float r, float g, float b){
         this.ambientLight = new Vector3(r, g, b);
+    }
+
+    public Vector3 getSkyBoxLight(){
+        return skyBoxLight;
+    }
+
+    public void setSkyBoxLight(Vector3 skyBoxLight){
+        this.skyBoxLight = skyBoxLight;
+    }
+
+    public void setSkyBoxLight(float r, float g, float b){
+        this.skyBoxLight = new Vector3(r, g, b);
     }
 
 }

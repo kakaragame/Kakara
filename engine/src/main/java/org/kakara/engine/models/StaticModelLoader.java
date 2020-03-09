@@ -91,7 +91,7 @@ public class StaticModelLoader {
                                           String texturesDir, ResourceManager resourceManager,Scene scene) throws Exception {
         // File.separator. File.pathSeparator is for the PATH variable.
         String separator = "/";
-        try(AIColor4D colour = AIColor4D.create()) {
+        AIColor4D colour = AIColor4D.create();
 
             AIString path = AIString.calloc();
             Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null,
@@ -106,12 +106,12 @@ public class StaticModelLoader {
                 texture = textCache.getTexture(textureFile, scene);
             }
 
-            int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0,
-                    colour);
+//            int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0,
+//                    colour);
 
 
             Vector4f specular = Material.DEFAULT_COLOUR;
-            result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0,
+            int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0,
                     colour);
             if (result == 0) {
                 specular = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
@@ -120,7 +120,6 @@ public class StaticModelLoader {
             Material material = new Material(specular, 1.0f);
             material.setTexture(texture);
             materials.add(material);
-        }
     }
 
     private static Mesh processMesh(AIMesh aiMesh, List<Material> materials) {

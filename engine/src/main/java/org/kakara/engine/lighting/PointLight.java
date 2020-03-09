@@ -1,6 +1,5 @@
 package org.kakara.engine.lighting;
 
-import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
@@ -9,39 +8,45 @@ import org.kakara.engine.math.Vector3;
  * Point based lighting.
  */
 public class PointLight implements Comparable<PointLight> {
-    private Vector3 color;
+    private LightColor color;
     private Vector3 position;
     private float intensity;
 
     private Attenuation attenuation;
 
-    public PointLight(Vector3 color, Vector3 position, float intensity) {
+    /**
+     * Create a point light
+     * @param color The color of the light
+     * @param position The position of the light
+     * @param intensity The intensity of the light.
+     */
+    public PointLight(LightColor color, Vector3 position, float intensity) {
         attenuation = new Attenuation(1, 0, 0);
         this.color = color;
         this.position = position;
         this.intensity = intensity;
     }
 
-    public PointLight(Vector3 color, Vector3 position, float intensity, Attenuation attenuation) {
+    public PointLight(LightColor color, Vector3 position, float intensity, Attenuation attenuation) {
         this(color, position, intensity);
         this.attenuation = attenuation;
     }
 
     public PointLight(PointLight pointLight) {
-        this(pointLight.getColor().clone(), pointLight.getPosition().clone(),
+        this(pointLight.getColor(), pointLight.getPosition().clone(),
                 pointLight.getIntensity(), pointLight.getAttenuation());
     }
 
-    public Vector3 getColor() {
+    public LightColor getColor() {
         return color;
     }
 
-    public void setColor(Vector3 color) {
+    public void setColor(LightColor color) {
         this.color = color;
     }
 
-    public void setColor(float r, float g, float b){
-        this.color = new Vector3(r, g, b);
+    public void setColor(int r, int g, int b){
+        this.color = new LightColor(r, g, b);
     }
 
     public Vector3 getPosition() {
@@ -78,6 +83,9 @@ public class PointLight implements Comparable<PointLight> {
         return Math.round(KMath.distance(cameraPos, getPosition()) - KMath.distance(cameraPos, o.getPosition()));
     }
 
+    /**
+     * Handles the Attenuation information of the light.
+     */
     public static class Attenuation{
         private float constant;
         private float linear;

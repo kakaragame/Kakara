@@ -22,7 +22,7 @@ public class LightHandler {
     public LightHandler(){
         this.pointLights = new ArrayList<>();
         this.spotLights = new ArrayList<>();
-        this.directionalLight = new DirectionalLight(new Vector3(10, 10, 10), new Vector3(0, -1, 0), 0.5f);
+        this.directionalLight = new DirectionalLight(new LightColor(255, 255, 255), new Vector3(0, 1, 0), 0.5f);
         ambientLight = new Vector3(0.3f, 0.3f, 0.3f);
     }
 

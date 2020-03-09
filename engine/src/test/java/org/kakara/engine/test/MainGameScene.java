@@ -10,6 +10,7 @@ import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
 import org.kakara.engine.lighting.DirectionalLight;
+import org.kakara.engine.lighting.LightColor;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.Vector2;
@@ -90,12 +91,12 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
 
-        PointLight pointLight = new PointLight(new Vector3(1, 1, 1), new Vector3(1, 1, 1), 1);
+        PointLight pointLight = new PointLight(new LightColor(255, 255, 0), new Vector3(1, 1, 1), 1);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
         this.add(pointLight);
 
-        getLightHandler().setDirectionalLight(new DirectionalLight(new Vector3(1, 1, 1), new Vector3(0, 1, 0), 0.3f));
+        getLightHandler().setDirectionalLight(new DirectionalLight(new LightColor(255, 255, 255), new Vector3(1, 1, -1), 0.7f));
 
         /*
 
@@ -103,7 +104,7 @@ public class MainGameScene extends AbstractGameScene {
 
          */
 
-        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.15f));
+        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.05f));
 
 
         ComponentCanvas cc = new ComponentCanvas(this);

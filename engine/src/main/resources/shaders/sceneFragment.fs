@@ -51,12 +51,12 @@ struct Material
 };
 
 // Handles the settings for the fog
-//struct Fog
-//{
-   // int activeFog;
-   // vec3 color;
-    //float density;
-//};
+struct Fog
+{
+   int activeFog;
+   vec3 color;
+   float density;
+};
 
 uniform sampler2D texture_sampler;
 uniform vec3 ambientLight;
@@ -66,7 +66,7 @@ uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform DirectionalLight directionalLight;
 
-//uniform Fog fog;
+uniform Fog fog;
 
 
 vec4 ambientC;
@@ -86,7 +86,7 @@ void setupColors(Material material, vec2 textCoord){
 }
 
 
-//vec4 calcFog(vec3 pos, vec4 color, Fog fog, DirLight dirLight);
+vec4 calcFog(vec3 pos, vec4 color, Fog fog, vec3 ambientLight, DirectionalLight dirLight);
 
 vec4 calcLightColor(vec3 light_color, float light_intensity, vec3 position, vec3 to_light_dir, vec3 normal)
 {
@@ -143,12 +143,24 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
     return calcLightColor(light.color, light.intensity, position, normalize(light.direction), normal);
 }
 
+//Calculate the overlay textures for each object.
+void calculateOverlayTextures()
+{
+    vec4 tempDiffuse = ambientC;
+    for(int i = 0; i < material.numberOfOverlays; i++){
+        vec4 overlay = texture(material.overlayTextures[i], outTexCoord);
+        tempDiffuse = mix(tempDiffuse, overlay, overlay.a);
+    }
+
+    ambientC = tempDiffuse;
+}
+
 
 void main()
 {
-    //CalcDiffAndSpec();
-
     setupColors(material, outTexCoord);
+
+    calculateOverlayTextures();
 
     vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, outVertexPos, outVertexNormal);
 
@@ -170,22 +182,20 @@ void main()
 
         fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComp;
 
-    //fragColor = result;
-
-     //if ( fog.activeFog == 1 )
-        //{
-            //fragColor = calcFog(vecViewPos, fragColor, fog, dirLight);
-        //}
+    if ( fog.activeFog == 1 )
+    {
+        fragColor = calcFog(outVertexPos, fragColor, fog, ambientLight, directionalLight);
+    }
 }
 
 //Calculate the fog in the scene.
-//vec4 calcFog(vec3 pos, vec4 color, Fog fog, DirLight dirLight)
-//{
-    //vec3 fogColor = fog.color * (dirLight.ambient);
-    //float distance = length(pos);
-    //float fogFactor = 1.0 / exp( (distance * fog.density)* (distance * fog.density));
-    //fogFactor = clamp( fogFactor, 0.0, 1.0 );
+vec4 calcFog(vec3 pos, vec4 color, Fog fog, vec3 ambientLight, DirectionalLight dirLight)
+{
+    vec3 fogColor = fog.color * (ambientLight + dirLight.color * dirLight.intensity);
+    float distance = length(pos);
+    float fogFactor = 1.0 / exp( (distance * fog.density)* (distance * fog.density));
+    fogFactor = clamp( fogFactor, 0.0, 1.0 );
 
-    //vec3 resultColor = mix(fogColor, color.xyz, fogFactor);
-    //return vec4(resultColor.xyz, color.w);
-//}
+    vec3 resultColour = mix(fogColor, color.xyz, fogFactor);
+    return vec4(resultColour.xyz, 1);
+}

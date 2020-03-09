@@ -158,9 +158,9 @@ public class Shader {
         createUniform(uniformName + ".hasTexture");
         createUniform(uniformName + ".reflectance");
 
-//        for(int i = 0; i < 5; i++)
-//            createUniform(uniformName + ".overlayTextures[" + i + "]");
-//        createUniform(uniformName + ".numberOfOverlays");
+        for(int i = 0; i < 5; i++)
+            createUniform(uniformName + ".overlayTextures[" + i + "]");
+        createUniform(uniformName + ".numberOfOverlays");
     }
     /*
         Lighting Set Uniform
@@ -177,7 +177,7 @@ public class Shader {
     }
 
     public void setUniform(String uniformName, PointLight pointLight) {
-        setUniform(uniformName + ".color", pointLight.getColor().toJoml());
+        setUniform(uniformName + ".color", pointLight.getColor().toVector());
         setUniform(uniformName + ".position", pointLight.getPosition().toJoml());
         setUniform(uniformName + ".intensity", pointLight.getIntensity());
         PointLight.Attenuation att = pointLight.getAttenuation();
@@ -192,10 +192,14 @@ public class Shader {
         setUniform(uniformName + ".specular", material.getSpecularColor());
         setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
         setUniform(uniformName + ".reflectance", material.getReflectance());
+
+        for(int i = 0; i < 5; i++)
+            setUniform(uniformName + ".overlayTextures[" + i + "]", i + 3);
+        setUniform(uniformName + ".numberOfOverlays", material.getOverlayTextures().size());
     }
 
     public void setUniform(String uniformName, DirectionalLight dirLight){
-        setUniform(uniformName + ".color", dirLight.getColor().toJoml());
+        setUniform(uniformName + ".color", dirLight.getColor().toVector());
         setUniform(uniformName + ".direction", dirLight.getDirection().toJoml());
         setUniform(uniformName + ".intensity", dirLight.getIntensity());
     }

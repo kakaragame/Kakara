@@ -76,7 +76,7 @@ public class Renderer {
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
-//        shaderProgram.setUniform("fog", scene.getFog());
+        shaderProgram.setUniform("fog", scene.getFog());
 
         // Render Lighting
         LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
@@ -93,6 +93,9 @@ public class Renderer {
         shaderProgram.unbind();
     }
 
+    /**
+     * Handles the rendering of lights.
+     */
     private void renderLights(Matrix4f viewMatrix, Vector3f ambientLight, List<PointLight> pointLightList, List<SpotLight> spotLightList, DirectionalLight directionalLight){
         shaderProgram.setUniform("ambientLight", ambientLight);
         shaderProgram.setUniform("specularPower", specularPower);
@@ -195,7 +198,7 @@ public class Renderer {
          * Setup uniforms for lighting
          */
 
-//        shaderProgram.createFogUniform("fog");
+        shaderProgram.createFogUniform("fog");
     }
 
     private void setupLightingShader() throws Exception {

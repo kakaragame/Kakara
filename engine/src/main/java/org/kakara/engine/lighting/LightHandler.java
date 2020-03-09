@@ -1,5 +1,7 @@
 package org.kakara.engine.lighting;
 
+import org.kakara.engine.math.Vector3;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,16 +11,19 @@ import java.util.List;
  */
 public class LightHandler {
 
-    public static final int MAX_POINT_LIGHTS = 20;
-    public static final int MAX_SPOT_LIGHTS = 10;
+    public static final int MAX_POINT_LIGHTS = 5;
+    public static final int MAX_SPOT_LIGHTS = 5;
 
     private List<PointLight> pointLights;
     private List<SpotLight> spotLights;
-    private DirectionalLighting directionalLight;
+    private DirectionalLight directionalLight;
+    private Vector3 ambientLight;
+
     public LightHandler(){
         this.pointLights = new ArrayList<>();
         this.spotLights = new ArrayList<>();
-        this.directionalLight = new DirectionalLighting();
+        this.directionalLight = new DirectionalLight(new Vector3(10, 10, 10), new Vector3(0, -1, 0), 0.5f);
+        ambientLight = new Vector3(0.3f, 0.3f, 0.3f);
     }
 
     public void addPointLight(PointLight pl){
@@ -81,12 +86,24 @@ public class LightHandler {
         return spotLights;
     }
 
-    public DirectionalLighting getDirectionalLight(){
+    public DirectionalLight getDirectionalLight(){
         return directionalLight;
     }
 
-    public void setDirectionalLight(DirectionalLighting dl){
+    public void setDirectionalLight(DirectionalLight dl){
         this.directionalLight = dl;
+    }
+
+    public Vector3 getAmbientLight(){
+        return ambientLight;
+    }
+
+    public void setAmbientLight(Vector3 ambientLight){
+        this.ambientLight = ambientLight;
+    }
+
+    public void setAmbientLight(float r, float g, float b){
+        this.ambientLight = new Vector3(r, g, b);
     }
 
 }

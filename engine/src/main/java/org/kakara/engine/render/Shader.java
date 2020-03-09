@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.kakara.engine.item.Material;
-import org.kakara.engine.lighting.DirectionalLighting;
+import org.kakara.engine.lighting.DirectionalLight;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
@@ -118,124 +118,105 @@ public class Shader {
         glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
     }
 
-    public void createMaterialUniform(String uniformName) throws Exception {
-        createUniform(uniformName + ".diffuse");
-        createUniform(uniformName + ".specular");
-        for(int i = 0; i < 5; i++)
-            createUniform(uniformName + ".overlayTextures[" + i + "]");
-        createUniform(uniformName + ".numberOfOverlays");
-        createUniform(uniformName + ".specularColor");
-        createUniform(uniformName + ".hasSpecularText");
-        createUniform(uniformName + ".reflectance");
+    public void createPointLightListUniform(String uniformName, int size) throws Exception {
+        for (int i = 0; i < size; i++) {
+            createPointLightUniform(uniformName + "[" + i + "]");
+        }
     }
 
-    public void createDirectinalLightUniform(String uniformName) throws Exception{
-        createUniform(uniformName + ".direction");
-        createUniform(uniformName + ".ambient");
-        createUniform(uniformName + ".diffuse");
-        createUniform(uniformName + ".specular");
-    }
-
-    public void createPointLightUniform(String uniformName) throws Exception{
+    public void createPointLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".color");
         createUniform(uniformName + ".position");
-        createUniform(uniformName + ".constant");
-        createUniform(uniformName + ".linear");
-        createUniform(uniformName + ".quadratic");
+        createUniform(uniformName + ".intensity");
+        createUniform(uniformName + ".att.constant");
+        createUniform(uniformName + ".att.linear");
+        createUniform(uniformName + ".att.exponent");
+    }
+
+    public void createSpotLightListUniform(String uniformName, int size) throws Exception {
+        for (int i = 0; i < size; i++) {
+            createSpotLightUniform(uniformName + "[" + i + "]");
+        }
+    }
+
+    public void createSpotLightUniform(String uniformName) throws Exception {
+        createPointLightUniform(uniformName + ".pl");
+        createUniform(uniformName + ".conedir");
+        createUniform(uniformName + ".cutoff");
+    }
+
+    public void createDirectionalLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".color");
+        createUniform(uniformName + ".direction");
+        createUniform(uniformName + ".intensity");
+    }
+
+    public void createMaterialUniform(String uniformName) throws Exception {
         createUniform(uniformName + ".ambient");
         createUniform(uniformName + ".diffuse");
         createUniform(uniformName + ".specular");
-    }
+        createUniform(uniformName + ".hasTexture");
+        createUniform(uniformName + ".reflectance");
 
-    public void createPointLightsUniform(String uniformName) throws Exception{
-        for(int i = 0; i < LightHandler.MAX_POINT_LIGHTS; i++){
-            createUniform(uniformName + "[" + i + "].position");
-            createUniform(uniformName + "[" + i + "].constant");
-            createUniform(uniformName + "[" + i + "].linear");
-            createUniform(uniformName + "[" + i + "].quadratic");
-            createUniform(uniformName + "[" + i + "].ambient");
-            createUniform(uniformName + "[" + i + "].diffuse");
-            createUniform(uniformName + "[" + i + "].specular");
+//        for(int i = 0; i < 5; i++)
+//            createUniform(uniformName + ".overlayTextures[" + i + "]");
+//        createUniform(uniformName + ".numberOfOverlays");
+    }
+    /*
+        Lighting Set Uniform
+     */
+
+    public void setPointLightsUniform(String uniformName, List<PointLight> pointLights) {
+        int numLights = pointLights != null ? pointLights.size() : 0;
+        for (int i = 0; i < numLights; i++) {
+            setUniform(uniformName, pointLights.get(i), i);
         }
     }
-
-    public void createSpotLightsUniform(String uniformName) throws Exception{
-        for(int i = 0; i < LightHandler.MAX_SPOT_LIGHTS; i++){
-            createUniform(uniformName + "[" + i + "].position");
-            createUniform(uniformName + "[" + i + "].direction");
-            createUniform(uniformName + "[" + i + "].constant");
-            createUniform(uniformName + "[" + i + "].linear");
-            createUniform(uniformName + "[" + i + "].quadratic");
-            createUniform(uniformName + "[" + i + "].ambient");
-            createUniform(uniformName + "[" + i + "].diffuse");
-            createUniform(uniformName + "[" + i + "].specular");
-            createUniform(uniformName + "[" + i + "].cutOff");
-            createUniform(uniformName + "[" + i + "].outerCutOff");
-        }
+    public void setUniform(String uniformName, PointLight spotLight, int pos) {
+        setUniform(uniformName + "[" + pos + "]", spotLight);
     }
 
-
-    public void setUniform(String uniformName, Material material){
-        setUniform(uniformName + ".diffuse", 0);
-        setUniform(uniformName + ".specular", 2);
-        setUniform(uniformName + ".overlayTextures[0]", 3);
-        setUniform(uniformName + ".overlayTextures[1]", 4);
-        setUniform(uniformName + ".overlayTextures[2]", 5);
-        setUniform(uniformName + ".overlayTextures[3]", 6);
-        setUniform(uniformName + ".overlayTextures[4]", 7);
-        setUniform(uniformName + ".numberOfOverlays", material.getOverlayTextures().size());
-        setUniform(uniformName + ".specularColor", material.getSpecularColor());
-        setUniform(uniformName + ".hasSpecularText", material.getSpecularMap() == null ? 0 : 1);
-        setUniform(uniformName + ".reflectance", material.getShininess());
-        // TODO add in support for overlay textures.
+    public void setUniform(String uniformName, PointLight pointLight) {
+        setUniform(uniformName + ".color", pointLight.getColor().toJoml());
+        setUniform(uniformName + ".position", pointLight.getPosition().toJoml());
+        setUniform(uniformName + ".intensity", pointLight.getIntensity());
+        PointLight.Attenuation att = pointLight.getAttenuation();
+        setUniform(uniformName + ".att.constant", att.getConstant());
+        setUniform(uniformName + ".att.linear", att.getLinear());
+        setUniform(uniformName + ".att.exponent", att.getExponent());
     }
 
-    public void setUniform(String uniformName, DirectionalLighting dirLight){
+    public void setUniform(String uniformName, Material material) {
+        setUniform(uniformName + ".ambient", material.getAmbientColor());
+        setUniform(uniformName + ".diffuse", material.getDiffuseColor());
+        setUniform(uniformName + ".specular", material.getSpecularColor());
+        setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
+        setUniform(uniformName + ".reflectance", material.getReflectance());
+    }
+
+    public void setUniform(String uniformName, DirectionalLight dirLight){
+        setUniform(uniformName + ".color", dirLight.getColor().toJoml());
         setUniform(uniformName + ".direction", dirLight.getDirection().toJoml());
-        setUniform(uniformName + ".ambient", dirLight.getAmbient().toJoml());
-        setUniform(uniformName + ".diffuse", dirLight.getDiffuse().toJoml());
-        setUniform(uniformName + ".specular", dirLight.getSpecular().toJoml());
+        setUniform(uniformName + ".intensity", dirLight.getIntensity());
     }
 
-    public void setUniform(String uniformName, PointLight pt){
-        setUniform(uniformName + ".position", pt.getPosition().toJoml());
-        setUniform(uniformName + ".constant", pt.getConstant());
-        setUniform(uniformName + ".linear", pt.getLinear());
-        setUniform(uniformName + ".quadratic", pt.getQuadratic());
-        setUniform(uniformName + ".ambient", pt.getAmbient().toJoml());
-        setUniform(uniformName + ".diffuse", pt.getDiffuse().toJoml());
-        setUniform(uniformName + ".specular", pt.getSpecular().toJoml());
-    }
-
-    public void setPointLightUniform(String uniformName, List<PointLight> pts){
-        int i = 0;
-        for(PointLight pt : pts){
-            setUniform(uniformName + "[" + i + "].position", pt.getPosition().toJoml());
-            setUniform(uniformName + "[" + i + "].constant", pt.getConstant());
-            setUniform(uniformName + "[" + i + "].linear", pt.getLinear());
-            setUniform(uniformName + "[" + i + "].quadratic", pt.getQuadratic());
-            setUniform(uniformName + "[" + i + "].ambient", pt.getAmbient().toJoml());
-            setUniform(uniformName + "[" + i + "].diffuse", pt.getDiffuse().toJoml());
-            setUniform(uniformName + "[" + i + "].specular", pt.getSpecular().toJoml());
-            i++;
+    public void setUniform(String uniformName, List<SpotLight> spotLights) {
+        int numLights = spotLights != null ? spotLights.size() : 0;
+        for (int i = 0; i < numLights; i++) {
+            setUniform(uniformName, spotLights.get(i), i);
         }
     }
-
-    public void setSpotLightUniform(String uniformName, List<SpotLight> spt){
-        int i = 0;
-        for(SpotLight pt : spt){
-            setUniform(uniformName + "[" + i + "].position", pt.getPosition().toJoml());
-            setUniform(uniformName + "[" + i + "].direction", pt.getDirection().toJoml());
-            setUniform(uniformName + "[" + i + "].constant", pt.getConstant());
-            setUniform(uniformName + "[" + i + "].linear", pt.getLinear());
-            setUniform(uniformName + "[" + i + "].quadratic", pt.getQuadratic());
-            setUniform(uniformName + "[" + i + "].ambient", pt.getAmbient().toJoml());
-            setUniform(uniformName + "[" + i + "].diffuse", pt.getDiffuse().toJoml());
-            setUniform(uniformName + "[" + i + "].specular", pt.getSpecular().toJoml());
-            setUniform(uniformName + "[" + i + "].cutOff", pt.getCutOff());
-            setUniform(uniformName + "[" + i + "].outerCutOff", pt.getOuterCutOff());
-            i++;
-        }
+    public void setUniform(String uniformName, SpotLight spotLight, int pos) {
+        setUniform(uniformName + "[" + pos + "]", spotLight);
     }
+
+    public void setUniform(String uniformName, SpotLight spotLight) {
+        setUniform(uniformName + ".pl", spotLight.getPointLight());
+        setUniform(uniformName + ".conedir", spotLight.getConeDirection());
+        setUniform(uniformName + ".cutoff", spotLight.getCutOff());
+    }
+
+
 
     public void createFogUniform(String uniformName) throws Exception{
         createUniform(uniformName + ".activeFog");

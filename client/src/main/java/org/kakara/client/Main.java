@@ -7,6 +7,7 @@ import org.kakara.core.client.ClientSettings;
 import org.kakara.core.client.ClientSettingsBuilder;
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
+import org.lwjgl.system.Configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +25,7 @@ public class Main {
         ClientSettings clientSettings = null;
         if (testFile.exists()) {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel","debug");
-
+            Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
             KakaraGame.LOGGER.info("In Test Mode");
             Properties properties = new Properties();
             properties.load(new FileInputStream(testFile));

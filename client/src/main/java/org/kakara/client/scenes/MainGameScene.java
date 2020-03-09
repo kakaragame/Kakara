@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -42,7 +43,7 @@ public class MainGameScene extends AbstractGameScene {
     // private GameItem lightIndication;
 
     private MeshGameItem player;
-    private ChunkBase myChunk;
+    private List<ChunkBase> myChunk = new ArrayList<>();
 
     public MainGameScene(GameHandler gameHandler, KakaraGame kakaraGame) throws Exception {
         super(gameHandler);
@@ -70,9 +71,14 @@ public class MainGameScene extends AbstractGameScene {
         loadMods();
 
         ChunkGenerator generator = kakaraGame.getKakaraCore().getWorldGenerationManager().getChunkGenerators().get(0);
-        ChunkBase base = new ChunkBase(null, 0, 0, new ArrayList<>());
-        myChunk = generator.generateChunk(45, base);
-        kakaraGame.getGameHandler().getEventManager().registerHandler(this,this);
+        myChunk.add(generator.generateChunk(45, new ChunkBase(null, 0, 0, new ArrayList<>())));
+
+        ChunkBase base = null;
+        for (int i = 1; i < 9; i++) {
+
+        }
+        myChunk.add(generator.generateChunk(45, base));
+        kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
 
     }
 
@@ -80,23 +86,24 @@ public class MainGameScene extends AbstractGameScene {
     public void loadGraphics() {
         var resourceManager = gameHandler.getResourceManager();
 
+        for (ChunkBase chunkBase : myChunk) {
+            for (GameBlock gameBlock : chunkBase.getGameBlocks()) {
+                Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
+                Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(gameBlock.getItemStack().getItem().getTexture(), TextureResolution._16, gameBlock.getItemStack().getItem().getMod());
+                Material mt = null;
+                try {
+                    mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                mesh.setMaterial(mt);
+                MeshGameItem gi = new MeshGameItem(mesh);
+                gi.setPosition(MoreUtils.locationToVector3(gameBlock.getLocation()));
+                gi.setCollider(new ObjectBoxCollider(false, true));
 
-        for (GameBlock gameBlock : myChunk.getGameBlocks()) {
-            Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
-            Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(gameBlock.getItemStack().getItem().getTexture(), TextureResolution._16, gameBlock.getItemStack().getItem().getMod());
-            Material mt = null;
-            try {
-                mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+                add(gi);
+
             }
-            mesh.setMaterial(mt);
-            MeshGameItem gi = new MeshGameItem(mesh);
-            gi.setPosition(MoreUtils.locationToVector3(gameBlock.getLocation()));
-            gi.setCollider(new ObjectBoxCollider(false, true));
-
-            add(gi);
-
         }
 
         light = new PointLight(new Vector3f(0, 2, 0));
@@ -118,9 +125,10 @@ public class MainGameScene extends AbstractGameScene {
             mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
         player = new MeshGameItem(mainPlayer);
-        player.setPosition(12, 12, 12);
+        player.setPosition(12, 50, 12);
         player.setScale(0.3f);
         player.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
         player.getCollider().setUseGravity(true).setTrigger(false);

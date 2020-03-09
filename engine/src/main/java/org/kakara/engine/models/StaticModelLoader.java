@@ -28,15 +28,16 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * A model loader for static Models
  */
 public class StaticModelLoader {
-    private StaticModelLoader(){
+    private StaticModelLoader() {
 
     }
+
     public static Mesh[] load(Resource resource, String texturesDir, Scene scene, ResourceManager resourceManager) throws Exception {
-        return load(resource, texturesDir, resourceManager, scene,aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+        return load(resource, texturesDir, resourceManager, scene, aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
                 | aiProcess_FixInfacingNormals);
     }
 
-    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, Scene scene,int flags) throws Exception {
+    public static Mesh[] load(Resource resource, String texturesDir, ResourceManager resourceManager, Scene scene, int flags) throws Exception {
         GameEngine.LOGGER.debug(String.format("Loading Model %s With Textures in %s", resource.toString(), texturesDir));
 
         AIScene aiScene = null;
@@ -59,7 +60,7 @@ public class StaticModelLoader {
         List<Material> materials = new ArrayList<>();
         for (int i = 0; i < numMaterials; i++) {
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            processMaterial(aiMaterial, materials, texturesDir, resourceManager,scene);
+            processMaterial(aiMaterial, materials, texturesDir, resourceManager, scene);
         }
 
         int numMeshes = aiScene.mNumMeshes();
@@ -87,16 +88,17 @@ public class StaticModelLoader {
     }
 
     protected static void processMaterial(AIMaterial aiMaterial, List<Material> materials,
-                                          String texturesDir, ResourceManager resourceManager,Scene scene) throws Exception {
+                                          String texturesDir, ResourceManager resourceManager, Scene scene) throws Exception {
         // File.separator. File.pathSeparator is for the PATH variable.
         String separator = "/";
-        try(AIColor4D colour = AIColor4D.create()) {
 
+        AIColor4D colour = AIColor4D.create();
             AIString path = AIString.calloc();
             Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null,
                     null, null, null, null, null);
             String textPath = path.dataString();
             Texture texture = null;
+
             if (textPath != null && textPath.length() > 0) {
                 TextureCache textCache = TextureCache.getInstance(resourceManager);
                 String textureFile = texturesDir + separator + textPath;
@@ -115,11 +117,10 @@ public class StaticModelLoader {
             if (result == 0) {
                 specular = new Vector3f(colour.r(), colour.g(), colour.b());
             }
-
             Material material = new Material(specular, 1.0f);
             material.setTexture(texture);
             materials.add(material);
-        }
+
     }
 
     private static Mesh processMesh(AIMesh aiMesh, List<Material> materials) {

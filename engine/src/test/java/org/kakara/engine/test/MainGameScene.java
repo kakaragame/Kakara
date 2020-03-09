@@ -43,10 +43,18 @@ public class MainGameScene extends AbstractGameScene {
     private GameItem lightIndication;
     private KakaraTest test;
 
+    private float angleInc;
+
+    private float lightAngle;
+
     private Text fps;
 
     public MainGameScene(GameHandler gameHandler, KakaraTest test) throws Exception {
         super(gameHandler);
+
+        angleInc = 0.05f;
+        lightAngle = 45;
+
         this.test = test;
         setCurserStatus(false);
         gameHandler.getCamera().setPosition(0, 3, 0);
@@ -91,12 +99,21 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
 
+        MeshGameItem sh = (MeshGameItem) gi.clone(false);
+        sh.setPosition(-4, 3, -4);
+        this.add(sh);
+
+
         PointLight pointLight = new PointLight(new LightColor(255, 255, 0), new Vector3(1, 1, 1), 1);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
         this.add(pointLight);
 
-        getLightHandler().setDirectionalLight(new DirectionalLight(new LightColor(255, 255, 255), new Vector3(1, 1, -1), 0.7f));
+
+        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 223, 0), new Vector3(0, 1, 0.5f), 0.3f);
+        directionalLight.setShadowPosMult(8);
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+        getLightHandler().setDirectionalLight(directionalLight);
 
         /*
 
@@ -194,6 +211,22 @@ public class MainGameScene extends AbstractGameScene {
         handler.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
         if (handler.getSoundManager().getListener() != null)
             handler.getSoundManager().getListener().setPosition(gameHandler.getCamera().getPosition());
+
+
+        lightAngle += Time.deltaTime * 1.3;
+        if (lightAngle < 0) {
+            lightAngle = 0;
+        } else if (lightAngle > 180) {
+            lightAngle = 180;
+        }
+        float zValue = (float) Math.cos(Math.toRadians(lightAngle));
+        float yValue = (float) Math.sin(Math.toRadians(lightAngle));
+        Vector3f lightDirection = getLightHandler().getDirectionalLight().getDirection().toJoml();
+        lightDirection.x = 0;
+        lightDirection.y = yValue;
+        lightDirection.z = zValue;
+        lightDirection.normalize();
+        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
     }
 
 

@@ -9,6 +9,8 @@ public class DirectionalLight {
     private LightColor color;
     private Vector3 direction;
     private float intensity;
+    private OrthoCoords orthoCords;
+    private float shadowPosMult;
 
     /**
      * Create a directional light.
@@ -20,6 +22,8 @@ public class DirectionalLight {
         this.color = color;
         this.direction = direction;
         this.intensity = intensity;
+        this.orthoCords = new OrthoCoords();
+        this.shadowPosMult = 1;
     }
 
     /**
@@ -96,5 +100,41 @@ public class DirectionalLight {
      */
     public void setIntensity(float intensity) {
         this.intensity = intensity;
+    }
+
+    public float getShadowPosMult() {
+        return shadowPosMult;
+    }
+
+    public void setShadowPosMult(float shadowPosMult) {
+        this.shadowPosMult = shadowPosMult;
+    }
+
+    public OrthoCoords getOrthoCoords(){
+        return orthoCords;
+    }
+
+    public void setOrthoCords(float left, float right, float bottom, float top, float near, float far) {
+        orthoCords.left = left;
+        orthoCords.right = right;
+        orthoCords.bottom = bottom;
+        orthoCords.top = top;
+        orthoCords.near = near;
+        orthoCords.far = far;
+    }
+
+    public static class OrthoCoords {
+
+        public float left;
+
+        public float right;
+
+        public float bottom;
+
+        public float top;
+
+        public float near;
+
+        public float far;
     }
 }

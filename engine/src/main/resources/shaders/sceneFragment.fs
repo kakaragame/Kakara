@@ -190,7 +190,7 @@ void main()
 {
     setupColors(material, outTexCoord);
 
-
+    calculateOverlayTextures();
 
     vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, outVertexPos, outVertexNormal);
 
@@ -219,7 +219,6 @@ void main()
         fragColor = calcFog(outVertexPos, fragColor, fog, ambientLight, directionalLight);
     }
 
-    calculateOverlayTextures();
 }
 
 //Calculate the fog in the scene.

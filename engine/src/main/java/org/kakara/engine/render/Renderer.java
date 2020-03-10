@@ -1,5 +1,6 @@
 package org.kakara.engine.render;
 
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -7,6 +8,7 @@ import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.*;
+import org.kakara.engine.item.Particles.ParticleEmitter;
 import org.kakara.engine.lighting.*;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.scene.Scene;
@@ -32,6 +34,7 @@ public class Renderer {
     private Shader shaderProgram;
     private Shader skyBoxShaderProgram;
     private Shader depthShaderProgram;
+    private Shader particleShaderProgram;
 
     private ShadowMap shadowMap;
 
@@ -56,6 +59,7 @@ public class Renderer {
         setupLightingShader();
         setupSkyBoxShader();
         setupDepthShader();
+        setupParticleShader();
     }
 
     public void render(Window window, Camera camera, Scene scene) {
@@ -70,6 +74,7 @@ public class Renderer {
 
 
         renderScene(window, camera, scene);
+        renderParticles(window, camera, scene);
 
     }
 
@@ -212,7 +217,70 @@ public class Renderer {
         scene.getSkyBox().getMesh().render();
 
         skyBoxShaderProgram.unbind();
+    }
 
+    private void renderParticles(Window window, Camera camera, Scene scene) {
+        particleShaderProgram.bind();
+
+        particleShaderProgram.setUniform("texture_sampler", 0);
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix();
+        particleShaderProgram.setUniform("projectionMatrix", projectionMatrix);
+
+        Matrix4f viewMatrix = transformation.getViewMatrix();
+        List<ParticleEmitter> emitters = scene.getParticleHandler().getParticleEmitters();
+        int numEmitters = emitters != null ? emitters.size() : 0;
+
+        glDepthMask(false);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+        for (int i = 0; i < numEmitters; i++) {
+            ParticleEmitter emitter = emitters.get(i);
+            Mesh mesh = emitter.getBaseParticle().getMesh();
+
+            Texture text = mesh.getMaterial().getTexture();
+            particleShaderProgram.setUniform("numCols", text.getNumCols());
+            particleShaderProgram.setUniform("numRows", text.getNumRows());
+
+            mesh.renderList((emitter.getParticles()), (GameItem gameItem) -> {
+                        int col = gameItem.getTextPos() % text.getNumCols();
+                        int row = gameItem.getTextPos() / text.getNumCols();
+                        float textXOffset = (float) col / text.getNumCols();
+                        float textYOffset = (float) row / text.getNumRows();
+                        particleShaderProgram.setUniform("texXOffset", textXOffset);
+                        particleShaderProgram.setUniform("texYOffset", textYOffset);
+
+                        Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+
+                        viewMatrix.transpose3x3(modelMatrix);
+                        viewMatrix.scale(gameItem.getScale());
+
+                        Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+                        modelViewMatrix.scale(gameItem.getScale());
+                        particleShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+                    }
+            );
+        }
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(true);
+
+        particleShaderProgram.unbind();
+    }
+
+    private void setupParticleShader() throws Exception {
+        particleShaderProgram = new Shader();
+        particleShaderProgram.createVertexShader(Utils.loadResource("/shaders/particleVertex.vs"));
+        particleShaderProgram.createFragmentShader(Utils.loadResource("/shaders/particleFragment.fs"));
+        particleShaderProgram.link();
+
+        particleShaderProgram.createUniform("projectionMatrix");
+        particleShaderProgram.createUniform("modelViewMatrix");
+        particleShaderProgram.createUniform("texture_sampler");
+
+        particleShaderProgram.createUniform("texXOffset");
+        particleShaderProgram.createUniform("texYOffset");
+        particleShaderProgram.createUniform("numCols");
+        particleShaderProgram.createUniform("numRows");
     }
 
     /**

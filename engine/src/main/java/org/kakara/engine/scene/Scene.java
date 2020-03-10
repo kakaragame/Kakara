@@ -1,6 +1,7 @@
 package org.kakara.engine.scene;
 
 import org.kakara.engine.item.ItemHandler;
+import org.kakara.engine.item.Particles.ParticleHandler;
 import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.ui.HUD;
@@ -18,7 +19,7 @@ public interface Scene {
     /**
      * Called every time the game updates.
      */
-    void update();
+    void update(float interval);
 
     /**
      * Set if the cursor should be enabled.
@@ -49,6 +50,8 @@ public interface Scene {
      * @return The hud.
      */
     HUD getHUD();
+
+    ParticleHandler getParticleHandler();
 
     void unload();
 

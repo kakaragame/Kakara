@@ -20,6 +20,7 @@ public class MeshGameItem implements Collidable {
     private Vector3 position;
     private final UUID uuid;
     private Collider collider;
+    private int textPos;
 
     public MeshGameItem() {
         this(new Mesh[0]);
@@ -35,6 +36,7 @@ public class MeshGameItem implements Collidable {
         scale = 1;
         rotation = new Quaternionf();
         uuid = UUID.randomUUID();
+        textPos = 0;
     }
 
     /**
@@ -172,6 +174,16 @@ public class MeshGameItem implements Collidable {
 
     public Mesh getMesh() {
         return meshes[0];
+    }
+
+    @Override
+    public int getTextPos() {
+        return this.textPos;
+    }
+
+    @Override
+    public void setTextPos(int pos) {
+        this.textPos = pos;
     }
 
     public Mesh[] getMeshes() {

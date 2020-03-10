@@ -59,6 +59,12 @@ public class Texture {
         this.numRows = numRows;
     }
 
+    public Texture(Resource fileName, int numCols, int numRows, Scene currentScene) throws IOException {
+        this(fileName, currentScene);
+        this.numCols = numCols;
+        this.numRows = numRows;
+    }
+
     public Texture(String fileName, Scene currentScene) throws IOException {
         this(Utils.ioResourceToByteBuffer(fileName, 1024));
         this.scene = currentScene;

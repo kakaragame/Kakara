@@ -1,5 +1,7 @@
 package org.kakara.engine.lighting;
 
+import org.kakara.engine.math.Vector3;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,16 +11,21 @@ import java.util.List;
  */
 public class LightHandler {
 
-    public static final int MAX_POINT_LIGHTS = 20;
-    public static final int MAX_SPOT_LIGHTS = 10;
+    public static final int MAX_POINT_LIGHTS = 5;
+    public static final int MAX_SPOT_LIGHTS = 5;
 
     private List<PointLight> pointLights;
     private List<SpotLight> spotLights;
-    private DirectionalLighting directionalLight;
+    private DirectionalLight directionalLight;
+    private LightColor ambientLight;
+    private LightColor skyBoxLight;
+
     public LightHandler(){
         this.pointLights = new ArrayList<>();
         this.spotLights = new ArrayList<>();
-        this.directionalLight = new DirectionalLighting();
+        this.directionalLight = new DirectionalLight(new LightColor(255, 255, 255), new Vector3(0, 1, 0), 0.5f);
+        ambientLight = new LightColor(76, 76, 76);
+        skyBoxLight = new LightColor(255, 255, 255);
     }
 
     public void addPointLight(PointLight pl){
@@ -81,12 +88,40 @@ public class LightHandler {
         return spotLights;
     }
 
-    public DirectionalLighting getDirectionalLight(){
+    public DirectionalLight getDirectionalLight(){
         return directionalLight;
     }
 
-    public void setDirectionalLight(DirectionalLighting dl){
+    public void setDirectionalLight(DirectionalLight dl){
         this.directionalLight = dl;
+    }
+
+    public LightColor getAmbientLight(){
+        return ambientLight;
+    }
+
+    public void setAmbientLight(LightColor ambientLight){
+        this.ambientLight = ambientLight;
+    }
+
+    public void setAmbientLight(int r, int g, int b){
+        this.ambientLight = new LightColor(r, g, b);
+    }
+
+    public LightColor getSkyBoxLight(){
+        return skyBoxLight;
+    }
+
+    /**
+     * Set the color of the skybox light.
+     * @param skyBoxLight The skybox light.
+     */
+    public void setSkyBoxLight(LightColor skyBoxLight){
+        this.skyBoxLight = skyBoxLight;
+    }
+
+    public void setSkyBoxLight(int r, int g, int b){
+        this.skyBoxLight = new LightColor(r, g, b);
     }
 
 }

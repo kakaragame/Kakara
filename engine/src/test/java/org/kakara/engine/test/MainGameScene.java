@@ -6,26 +6,20 @@ import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.input.KeyInput;
-import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
+import org.kakara.engine.item.Particles.FlowParticleEmitter;
+import org.kakara.engine.item.Particles.Particle;
+import org.kakara.engine.lighting.DirectionalLight;
+import org.kakara.engine.lighting.LightColor;
 import org.kakara.engine.lighting.PointLight;
-import org.kakara.engine.lighting.SpotLight;
-import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
-import org.kakara.engine.ui.components.Panel;
-import org.kakara.engine.ui.components.Rectangle;
-import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.components.Text;
-import org.kakara.engine.ui.events.HUDClickEvent;
-import org.kakara.engine.ui.events.HUDHoverEnterEvent;
-import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
-import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
 import org.kakara.engine.utils.Utils;
 import org.kakara.engine.weather.Fog;
@@ -41,10 +35,20 @@ public class MainGameScene extends AbstractGameScene {
     private GameItem lightIndication;
     private KakaraTest test;
 
+    private float angleInc;
+
+    private FlowParticleEmitter particleEmitter;
+
+    private float lightAngle;
+
     private Text fps;
 
     public MainGameScene(GameHandler gameHandler, KakaraTest test) throws Exception {
         super(gameHandler);
+
+        angleInc = 0.05f;
+        lightAngle = 45;
+
         this.test = test;
         setCurserStatus(false);
         gameHandler.getCamera().setPosition(0, 3, 0);
@@ -69,6 +73,8 @@ public class MainGameScene extends AbstractGameScene {
         mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/oa.png")));
         mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/ovly2.png")));
 
+        mt.setReflectance(0.3f);
+
         mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
         add(gi);
@@ -87,15 +93,21 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
 
-        light = new PointLight(new Vector3f(0, 2, 0));
-        lightIndication = new MeshGameItem(mesh).setScale(0.3f).setPosition(0, 2, 0);
-        add(light);
-        this.add(new PointLight().setPosition(0, 3, 0).setDiffuse(0.1f, 0, 0).setSpecular(0.5f, 0, 0));
-        this.add(new PointLight().setPosition(3, 3, 3).setDiffuse(0f, 0.3f, 0).setSpecular(0, 0, 0.7f));
-        this.add(new SpotLight(gameHandler.getCamera().getPosition(), new Vector3(0, 0, 1)));
-        this.add(lightIndication);
-        // Allows you to see the light.
-        this.getLightHandler().getDirectionalLight().setDirection(-1, -1, 0);
+        MeshGameItem sh = (MeshGameItem) gi.clone(false);
+        sh.setPosition(-4, 3, -4);
+        this.add(sh);
+
+
+        PointLight pointLight = new PointLight(new LightColor(255, 255, 0), new Vector3(1, 1, 1), 1);
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+        pointLight.setAttenuation(att);
+        this.add(pointLight);
+
+
+        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 223, 0), new Vector3(0, 1, 0.5f), 0.3f);
+        directionalLight.setShadowPosMult(8);
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+        getLightHandler().setDirectionalLight(directionalLight);
 
         /*
 
@@ -103,7 +115,7 @@ public class MainGameScene extends AbstractGameScene {
 
          */
 
-        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.15f));
+        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.05f));
 
 
         ComponentCanvas cc = new ComponentCanvas(this);
@@ -119,6 +131,31 @@ public class MainGameScene extends AbstractGameScene {
         this.fps = fps;
         add(cc);
 
+        /**
+         * Particles
+         */
+
+        int maxParticles = 200;
+        Vector3f particleSpeed = new Vector3f(0, 1, 0);
+        particleSpeed.mul(2.5f);
+        long ttl = 4000;
+        long creationPeriodMillis = 300;
+        float range = 0.2f;
+        float scale = 1.0f;
+//        Mesh partMesh = OBJLoader.loadMesh("/models/particle.obj", maxParticles);
+        Mesh partMesh = StaticModelLoader.load(resourceManager.getResource("particle.obj"), "", this, resourceManager)[0];
+        Texture particleTexture = new Texture(resourceManager.getResource("particle_anim.png"), 4, 4, this);
+        Material partMaterial = new Material(particleTexture, 1);
+        partMesh.setMaterial(partMaterial);
+        Particle particle = new Particle(partMesh, new Vector3(particleSpeed), ttl, 100);
+        particle.setScale(scale);
+        particleEmitter = new FlowParticleEmitter(particle, maxParticles, creationPeriodMillis);
+        particleEmitter.setActive(true);
+        particleEmitter.setPositionRndRange(range);
+        particleEmitter.setSpeedRndRange(range);
+        particleEmitter.setAnimRange(10);
+        this.add(particleEmitter);
+
 
         this.handler = gameHandler;
 
@@ -129,17 +166,7 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     @Override
-    public void work() {
-
-    }
-
-    @Override
-    public void loadGraphics() {
-
-    }
-
-    @Override
-    public void update() {
+    public void update(float interval) {
         KeyInput ki = handler.getKeyInput();
 
         fps.setText("FPS: " + Math.round(1/ Time.deltaTime));
@@ -196,14 +223,31 @@ public class MainGameScene extends AbstractGameScene {
             lightIndication.translateBy(1, 0, 0);
         }
 
-        light.setPosition(lightIndication.getPosition());
-
-        getLightHandler().getSpotLight(0).setPosition(handler.getCamera().getPosition());
+//        light.setPosition(lightIndication.getPosition());
+//        getLightHandler().getSpotLight(0).setPosition(handler.getCamera().getPosition());
 
         MouseInput mi = handler.getMouseInput();
         handler.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
         if (handler.getSoundManager().getListener() != null)
             handler.getSoundManager().getListener().setPosition(gameHandler.getCamera().getPosition());
+
+
+        lightAngle += Time.deltaTime * 1.3;
+        if (lightAngle < 0) {
+            lightAngle = 0;
+        } else if (lightAngle > 180) {
+            lightAngle = 180;
+        }
+        float zValue = (float) Math.cos(Math.toRadians(lightAngle));
+        float yValue = (float) Math.sin(Math.toRadians(lightAngle));
+        Vector3f lightDirection = getLightHandler().getDirectionalLight().getDirection().toJoml();
+        lightDirection.x = 0;
+        lightDirection.y = yValue;
+        lightDirection.z = zValue;
+        lightDirection.normalize();
+        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
+
+        particleEmitter.update((long) (interval * 1000));
     }
 
 

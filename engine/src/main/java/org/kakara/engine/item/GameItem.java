@@ -119,5 +119,9 @@ public interface GameItem {
 
     Mesh getMesh();
 
+    int getTextPos();
+
+    void setTextPos(int pos);
+
 
 }

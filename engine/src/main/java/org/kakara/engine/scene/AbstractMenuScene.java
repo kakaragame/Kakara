@@ -3,6 +3,7 @@ package org.kakara.engine.scene;
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.ItemHandler;
+import org.kakara.engine.item.Particles.ParticleHandler;
 import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.lighting.LightHandler;
@@ -115,6 +116,12 @@ public abstract class AbstractMenuScene implements Scene {
     @Override
     public Fog getFog(){
         GameEngine.LOGGER.warn("There is no fog in this implementation of scene! Did you mean to use AbstractGameScene?");
+        return null;
+    }
+
+    @Override
+    public ParticleHandler getParticleHandler(){
+        GameEngine.LOGGER.warn("There are no particle in this implementation of scene! Did you mean to use AbstractGameScene?");
         return null;
     }
 }

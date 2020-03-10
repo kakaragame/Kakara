@@ -1,9 +1,6 @@
 package org.kakara.engine.scene;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.GameItem;
-
-import static org.lwjgl.opengl.GL11.*;
 
 public abstract class AbstractGameScene extends AbstractScene {
 

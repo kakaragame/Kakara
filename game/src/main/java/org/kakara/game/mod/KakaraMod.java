@@ -4,6 +4,7 @@ import org.kakara.core.KakaraCore;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.ModRules;
 import org.kakara.core.mod.ModType;
+import org.slf4j.Logger;
 
 public class KakaraMod implements Mod {
     @Override
@@ -33,6 +34,11 @@ public class KakaraMod implements Mod {
 
     @Override
     public ModRules getModRules() {
+        return null;
+    }
+
+    @Override
+    public Logger getLogger() {
         return null;
     }
 

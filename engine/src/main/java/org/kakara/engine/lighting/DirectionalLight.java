@@ -24,6 +24,7 @@ public class DirectionalLight {
         this.intensity = intensity;
         this.orthoCords = new OrthoCoords();
         this.shadowPosMult = 1;
+        setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
     }
 
     /**

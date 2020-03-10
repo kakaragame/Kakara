@@ -5,7 +5,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.kakara.engine.Camera;
 import org.kakara.engine.item.GameItem;
-import org.kakara.engine.math.Vector3;
 
 public class Transformation {
     private final Matrix4f projectionMatrix;
@@ -84,29 +83,6 @@ public class Transformation {
                 gameItem.getScale(), gameItem.getScale());
         return modelViewMatrix;
     }
-
-
-//    public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {
-//        Quaternionf rotation = gameItem.getRotation();
-//        modelViewMatrix.translationRotateScale(gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, gameItem.getScale(),
-//                gameItem.getScale(), gameItem.getScale());
-//        Matrix4f viewCurr = new Matrix4f(viewMatrix);
-//        return viewCurr.mul(modelViewMatrix);
-//    }
-
-
-//    public Matrix4f getViewMatrix(Camera camera) {
-//        Vector3f cameraPos = camera.getPosition().toJoml();
-//        Vector3f rotation = camera.getRotation().toJoml();
-//
-//        viewMatrix.identity();
-//        // First do the rotation so camera rotates over its position
-//        viewMatrix.rotate((float) Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
-//                .rotate((float) Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
-//        // Then do the translation
-//        viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-//        return viewMatrix;
-//    }
 
     public final Matrix4f getOrthoProjectionMatrix() {
         return orthoProjMatrix;

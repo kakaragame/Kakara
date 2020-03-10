@@ -5,7 +5,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.gui.Window;
 import org.kakara.engine.item.*;
 import org.kakara.engine.lighting.*;
@@ -86,7 +85,7 @@ public class Renderer {
 
         // Render Lighting
         LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
-        renderLights(viewMatrix, lh.getAmbientLight().toJoml(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight());
+        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight());
 
         shaderProgram.setUniform("fog", scene.getFog());
         shaderProgram.setUniform("shadowMap", 2);
@@ -208,7 +207,7 @@ public class Renderer {
         //TODO remove model view matrix
         Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(scene.getSkyBox(), viewMatrix);
         skyBoxShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-        skyBoxShaderProgram.setUniform("ambientLight", scene.getLightHandler().getSkyBoxLight().toJoml());
+        skyBoxShaderProgram.setUniform("ambientLight", scene.getLightHandler().getSkyBoxLight().toVector());
 
         scene.getSkyBox().getMesh().render();
 

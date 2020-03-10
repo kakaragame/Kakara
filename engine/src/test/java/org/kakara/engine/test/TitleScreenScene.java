@@ -202,6 +202,16 @@ public class TitleScreenScene extends AbstractMenuScene {
     }
 
     @Override
+    public void work() {
+
+    }
+
+    @Override
+    public void loadGraphics() {
+
+    }
+
+    @Override
     public void update(float interval) {
         fps.setText("FPS: " + Math.round(1/Time.deltaTime));
 

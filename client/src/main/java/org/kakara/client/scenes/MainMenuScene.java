@@ -114,7 +114,6 @@ public class MainMenuScene extends AbstractMenuScene {
     }
 
     @Override
-    public void update() {
-
+    public void update(float i) {
     }
 }

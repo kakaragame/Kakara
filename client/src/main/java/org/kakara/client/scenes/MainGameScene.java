@@ -3,6 +3,7 @@ package org.kakara.client.scenes;
 import org.joml.Vector3f;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.core.game.ItemStack;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.ChunkBase;
@@ -18,6 +19,8 @@ import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
+import org.kakara.engine.lighting.DirectionalLight;
+import org.kakara.engine.lighting.LightColor;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.Vector3;
@@ -33,6 +36,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -69,59 +73,72 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void work() {
+        long currentTime = System.currentTimeMillis();
         loadMods();
 
         ChunkGenerator generator = kakaraGame.getKakaraCore().getWorldGenerationManager().getChunkGenerators().get(0);
 
         ChunkBase base = null;
-        for (int i = -16; i <= 16; i = i + 16) {
-            for (int j = -16; j <= 16; j = j + 16) {
-                System.out.println(i + " " + j);
+        for (int i = -4; i <= 4; i = i + 4) {
+            for (int j = -4; j <= 4; j = j + 4) {
                 myChunk.add(generator.generateChunk(45, new ChunkBase(null, i, j, new ArrayList<>())));
 
             }
         }
+
         //myChunk.add(generator.generateChunk(45, base));
         kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
+        System.out.println(System.currentTimeMillis() - currentTime);
     }
 
     @Override
     public void loadGraphics() {
+        long currentTime = System.currentTimeMillis();
+
         var resourceManager = gameHandler.getResourceManager();
         try {
             setSkyBox(new SkyBox(loadSkyBoxTexture(), true));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        for (ChunkBase chunkBase : myChunk) {
-            for (GameBlock gameBlock : chunkBase.getGameBlocks()) {
+        Map<ItemStack, List<Location>> gameBlockMutableIntMap = MoreUtils.sortByType(myChunk);
+        InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, MoreUtils.calculateSize(gameBlockMutableIntMap));
 
+        for (Map.Entry<ItemStack, List<Location>> entry : gameBlockMutableIntMap.entrySet()) {
+            Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(entry.getKey().getItem().getTexture(), TextureResolution._16, entry.getKey().getItem().getMod());
+            Material mt = null;
+            try {
+                mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
 
-                Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
-                Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(gameBlock.getItemStack().getItem().getTexture(), TextureResolution._16, gameBlock.getItemStack().getItem().getMod());
-                Material mt = null;
-                try {
-                    mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                mesh.setMaterial(mt);
-                MeshGameItem gi = new MeshGameItem(mesh);
-                gi.setPosition(MoreUtils.locationToVector3(gameBlock.getLocation()));
-                gi.setCollider(new ObjectBoxCollider(false, true));
-
-                add(gi);
-
+            for (Location location : entry.getValue()) {
+                MeshGameItem item = new MeshGameItem(mesh);
+                item.setPosition(MoreUtils.locationToVector3(location));
+                item.setCollider(new ObjectBoxCollider(false, true));
+                item.setMesh(mesh);
+                item.getMesh().setMaterial(mt);
+                add(item);
             }
         }
 
-        light = new PointLight(new Vector3f(0, 2, 0));
-        add(light);
-        this.add(new PointLight().setPosition(0, 3, 0).setDiffuse(0.1f, 0, 0).setSpecular(0.5f, 0, 0));
-        this.add(new PointLight().setPosition(3, 3, 3).setDiffuse(0f, 0.3f, 0).setSpecular(0, 0, 0.7f));
-        this.add(new SpotLight(gameHandler.getCamera().getPosition(), new Vector3(0, 0, 1)));
-        // Allows you to see the light.
-        this.getLightHandler().getDirectionalLight().setDirection(-1, -1, 0);
+
+        PointLight pointLight = new PointLight(new LightColor(255, 255, 0), new Vector3(1, 1, 1), 1);
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+        pointLight.setAttenuation(att);
+        this.
+
+                add(pointLight);
+
+
+        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 223, 0), new Vector3(0, 1, 0.5f), 0.3f);
+        directionalLight.setShadowPosMult(8);
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+
+        getLightHandler().
+
+                setDirectionalLight(directionalLight);
 
 
         //Load Player
@@ -130,17 +147,34 @@ public class MainGameScene extends AbstractGameScene {
         Mesh[] mainPlayer = new Mesh[0];
         try {
             mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             return;
         }
-        player = new MeshGameItem(mainPlayer);
+
+        player = new
+
+                MeshGameItem(mainPlayer);
         player.setPosition(12, 50, 12);
         player.setScale(0.3f);
-        player.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
-        player.getCollider().setUseGravity(true).setTrigger(false);
-        ((BoxCollider) player.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+        player.setCollider(new
+
+                BoxCollider(new Vector3(0, 0, 0), new
+
+                Vector3(1, 1.5f, 1)));
+        player.getCollider().
+
+                setUseGravity(true).
+
+                setTrigger(false);
+        ((BoxCollider) player.getCollider()).
+
+                setOffset(new Vector3(0, 0.7f, 0));
+
         add(player);
+        System.out.println(System.currentTimeMillis() - currentTime);
+
     }
 
     private Texture loadSkyBoxTexture() {
@@ -154,7 +188,7 @@ public class MainGameScene extends AbstractGameScene {
 
 
     @Override
-    public void update() {
+    public void update(float s) {
         if (player == null) return;
 
         KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
@@ -162,13 +196,13 @@ public class MainGameScene extends AbstractGameScene {
             player.movePosition(0, 0, -1);
         }
         if (ki.isKeyPressed(GLFW_KEY_S)) {
-            player.movePosition(0, 0, 1);
+            player.movePosition(0, 0, 1 );
         }
         if (ki.isKeyPressed(GLFW_KEY_A)) {
             player.movePosition(-1, 0, 0);
         }
         if (ki.isKeyPressed(GLFW_KEY_D)) {
-            player.movePosition(1, 0, 0);
+            player.movePosition(1 , 0, 0);
         }
 
         if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {

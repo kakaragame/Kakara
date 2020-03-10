@@ -6,6 +6,7 @@ import org.kakara.core.game.ItemStack;
 import org.kakara.core.game.MetaData;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class GameItemStack implements ItemStack {
     private int count;
@@ -46,5 +47,18 @@ this.count = count;
     @Override
     public void addCharm(Charm charm, Byte level) {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameItemStack that = (GameItemStack) o;
+        return Objects.equals(item, that.item);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(item);
     }
 }

@@ -14,11 +14,14 @@ public class SceneManager {
     public void setScene(Scene scene) {
         if(currentScene != null)
             this.cleanupScenes();
+        scene.work();
+        scene.unload();
         try {
             handler.getGameEngine().resetRender();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        scene.loadGraphics();
         currentScene = scene;
     }
 

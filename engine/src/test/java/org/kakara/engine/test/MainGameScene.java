@@ -9,6 +9,8 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
+import org.kakara.engine.lighting.DirectionalLight;
+import org.kakara.engine.lighting.LightColor;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.Vector2;
@@ -41,10 +43,18 @@ public class MainGameScene extends AbstractGameScene {
     private GameItem lightIndication;
     private KakaraTest test;
 
+    private float angleInc;
+
+    private float lightAngle;
+
     private Text fps;
 
     public MainGameScene(GameHandler gameHandler, KakaraTest test) throws Exception {
         super(gameHandler);
+
+        angleInc = 0.05f;
+        lightAngle = 45;
+
         this.test = test;
         setCurserStatus(false);
         gameHandler.getCamera().setPosition(0, 3, 0);
@@ -69,6 +79,8 @@ public class MainGameScene extends AbstractGameScene {
         mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/oa.png")));
         mt.addOverlayTexture(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/ovly2.png")));
 
+        mt.setReflectance(0.3f);
+
         mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
         add(gi);
@@ -87,15 +99,21 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
 
-        light = new PointLight(new Vector3f(0, 2, 0));
-        lightIndication = new MeshGameItem(mesh).setScale(0.3f).setPosition(0, 2, 0);
-        add(light);
-        this.add(new PointLight().setPosition(0, 3, 0).setDiffuse(0.1f, 0, 0).setSpecular(0.5f, 0, 0));
-        this.add(new PointLight().setPosition(3, 3, 3).setDiffuse(0f, 0.3f, 0).setSpecular(0, 0, 0.7f));
-        this.add(new SpotLight(gameHandler.getCamera().getPosition(), new Vector3(0, 0, 1)));
-        this.add(lightIndication);
-        // Allows you to see the light.
-        this.getLightHandler().getDirectionalLight().setDirection(-1, -1, 0);
+        MeshGameItem sh = (MeshGameItem) gi.clone(false);
+        sh.setPosition(-4, 3, -4);
+        this.add(sh);
+
+
+        PointLight pointLight = new PointLight(new LightColor(255, 255, 0), new Vector3(1, 1, 1), 1);
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+        pointLight.setAttenuation(att);
+        this.add(pointLight);
+
+
+        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 223, 0), new Vector3(0, 1, 0.5f), 0.3f);
+        directionalLight.setShadowPosMult(8);
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+        getLightHandler().setDirectionalLight(directionalLight);
 
         /*
 
@@ -103,7 +121,7 @@ public class MainGameScene extends AbstractGameScene {
 
          */
 
-        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.15f));
+        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.05f));
 
 
         ComponentCanvas cc = new ComponentCanvas(this);
@@ -186,14 +204,29 @@ public class MainGameScene extends AbstractGameScene {
             lightIndication.translateBy(1, 0, 0);
         }
 
-        light.setPosition(lightIndication.getPosition());
-
-        getLightHandler().getSpotLight(0).setPosition(handler.getCamera().getPosition());
+//        light.setPosition(lightIndication.getPosition());
+//        getLightHandler().getSpotLight(0).setPosition(handler.getCamera().getPosition());
 
         MouseInput mi = handler.getMouseInput();
         handler.getCamera().moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
         if (handler.getSoundManager().getListener() != null)
             handler.getSoundManager().getListener().setPosition(gameHandler.getCamera().getPosition());
+
+
+        lightAngle += Time.deltaTime * 1.3;
+        if (lightAngle < 0) {
+            lightAngle = 0;
+        } else if (lightAngle > 180) {
+            lightAngle = 180;
+        }
+        float zValue = (float) Math.cos(Math.toRadians(lightAngle));
+        float yValue = (float) Math.sin(Math.toRadians(lightAngle));
+        Vector3f lightDirection = getLightHandler().getDirectionalLight().getDirection().toJoml();
+        lightDirection.x = 0;
+        lightDirection.y = yValue;
+        lightDirection.z = zValue;
+        lightDirection.normalize();
+        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
     }
 
 

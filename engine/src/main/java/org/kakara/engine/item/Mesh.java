@@ -176,13 +176,13 @@ public class Mesh {
             glBindTexture(GL_TEXTURE_2D, normalMap.getId());
         }
 
-        Texture specMap = material != null ? material.getSpecularMap() : null;
-        if (specMap != null) {
-            // Activate third texture bank
-            glActiveTexture(GL_TEXTURE2);
-            // Bind the texture
-            glBindTexture(GL_TEXTURE_2D, specMap.getId());
-        }
+//        Texture specMap = material != null ? material.getSpecularMap() : null;
+//        if (specMap != null) {
+//            // Activate third texture bank
+//            glActiveTexture(GL_TEXTURE2);
+//            // Bind the texture
+//            glBindTexture(GL_TEXTURE_2D, specMap.getId());
+//        }
 
         int[] textures = {GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7};
         for(int i = 0; i < material.getOverlayTextures().size(); i++){

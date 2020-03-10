@@ -1,6 +1,5 @@
 package org.kakara.engine.lighting;
 
-import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
@@ -9,190 +8,117 @@ import org.kakara.engine.math.Vector3;
  * Point based lighting.
  */
 public class PointLight implements Comparable<PointLight> {
-    private Vector3f position;
+    private LightColor color;
+    private Vector3 position;
+    private float intensity;
 
-    private float constant;
-    private float linear;
-    private float quadratic;
+    private Attenuation attenuation;
 
-    private Vector3f ambient;
-    private Vector3f diffuse;
-    private Vector3f specular;
-
-    public PointLight(){
-        this(new Vector3f(0, 0, 0));
-    }
-
-    public PointLight(Vector3f position){
+    /**
+     * Create a point light
+     * @param color The color of the light
+     * @param position The position of the light
+     * @param intensity The intensity of the light.
+     */
+    public PointLight(LightColor color, Vector3 position, float intensity) {
+        attenuation = new Attenuation(1, 0, 0);
+        this.color = color;
         this.position = position;
-
-        this.constant = 1.0f;
-        this.linear = 0.09f;
-        this.quadratic = 0.032f;
-
-        this.ambient = new Vector3f(1.0f * 0.1f, 0.6f * 0.1f, 0.0f);
-        this.diffuse = new Vector3f(1.0f, 0.6f, 0.0f);
-        this.specular = new Vector3f(1.0f, 0.6f, 0.0f);
+        this.intensity = intensity;
     }
 
-    /**
-     * Set the position of the light.
-     * @param x The x
-     * @param y The y
-     * @param z The z
-     * @return The instance of the point light.
-     */
-    public PointLight setPosition(float x, float y, float z){
-        this.position.x = x;
-        this.position.y = y;
-        this.position.z = z;
-        return this;
+    public PointLight(LightColor color, Vector3 position, float intensity, Attenuation attenuation) {
+        this(color, position, intensity);
+        this.attenuation = attenuation;
     }
 
-    /**
-     * Set the position of the light.
-     * @param position The vector position
-     * @return The instace of the point light.
-     */
-    public PointLight setPosition(Vector3 position){
-        return setPosition(position.x, position.y, position.z);
+    public PointLight(PointLight pointLight) {
+        this(pointLight.getColor(), pointLight.getPosition().clone(),
+                pointLight.getIntensity(), pointLight.getAttenuation());
     }
 
-    /**
-     * Get the position of the light
-     * @return The position of the light.
-     */
-    public Vector3 getPosition(){
-        return new Vector3(position);
+    public LightColor getColor() {
+        return color;
     }
 
-    public PointLight translateBy(float x, float y, float z){
-        position = new Vector3f(position.x + x, position.y + y, position.z + z);
-        return this;
+    public void setColor(LightColor color) {
+        this.color = color;
     }
 
-    public PointLight translateBy(Vector3 pos){
-        return translateBy(pos.x, pos.y, pos.z);
+    public void setColor(int r, int g, int b){
+        this.color = new LightColor(r, g, b);
     }
 
-    public PointLight setConstant(float constant){
-        this.constant = constant;
-        return this;
+    public Vector3 getPosition() {
+        return position;
     }
 
-    public float getConstant(){
-        return constant;
+    public void setPosition(Vector3 position) {
+        this.position = position;
     }
 
-    public PointLight setLinear(float linear){
-        this.linear = linear;
-        return this;
+    public void setPosition(float x, float y, float z){
+        this.position = new Vector3(x, y, z);
     }
 
-    public float getLinear(){
-        return linear;
+    public float getIntensity() {
+        return intensity;
     }
 
-    public PointLight setQuadratic(float quadratic){
-        this.quadratic = quadratic;
-        return this;
+    public void setIntensity(float intensity) {
+        this.intensity = intensity;
     }
 
-    public float getQuadratic(){
-        return quadratic;
+    public Attenuation getAttenuation() {
+        return attenuation;
     }
 
-    /**
-     * The light around the point light.
-     * <p>Normally this is kept at default.</p>
-     * <p>All values range from 0 - 1</p>
-     * @param ambient The vector containing the data.
-     * @return The instance of this light.
-     */
-    public PointLight setAmbient(Vector3 ambient){
-        this.ambient = ambient.toJoml();
-        return this;
-    }
-
-    /**
-     * The light around the point light.
-     * <p>Normally this is kept at default.</p>
-     * <p>All values range from 0 - 1</p>
-     * @param x The x value
-     * @param y The y value
-     * @param z The z value
-     * @return The instance of this light.
-     */
-    public PointLight setAmbient(float x, float y, float z){
-        this.ambient = new Vector3f(x, y, z);
-        return this;
-    }
-
-    /**
-     * Get the ambient of the light.
-     * @return
-     */
-    public Vector3 getAmbient(){
-        return new Vector3(ambient);
-    }
-
-    /**
-     * Set the color of the outer radius of the light.
-     * <p>All values range from 0 - 1 and represent r, g, b</p>
-     * @param x The Red
-     * @param y The Green
-     * @param z The Blue
-     * @return The instance of the light
-     */
-    public PointLight setDiffuse(float x, float y, float z){
-        this.diffuse = new Vector3f(x, y, z);
-        return this;
-    }
-
-    /**
-     * Set the color of the outer radius of the light.
-     * <p>All values range from 0 - 1 and represent r, g, b</p>
-     * @param diffuse The r, g, b
-     * @return The instance of the light
-     */
-    public PointLight setDiffuse(Vector3 diffuse){
-        return setDiffuse(diffuse.x, diffuse.y, diffuse.z);
-    }
-
-    public Vector3 getDiffuse(){
-        return new Vector3(diffuse);
-    }
-
-    /**
-     * The color and intensity of the inner circle.
-     * <p>All values range from 0 - 1 and represent r, g, b</p>
-     * @param x The Red
-     * @param y The Green
-     * @param z The Blue
-     * @return The instance of the light
-     */
-    public PointLight setSpecular(float x, float y, float z) {
-        this.specular = new Vector3f(x, y, z);
-        return this;
-    }
-
-    /**
-     * The color and intensity of the inner circle
-     * <p>All values range from 0 - 1 and represent r, g, b</p>
-     * @param specular The r, g, b
-     * @return The instance of the light.
-     */
-    public PointLight setSpecular(Vector3 specular){
-        return setSpecular(specular.x, specular.y, specular.z);
-    }
-
-    public Vector3 getSpecular(){
-        return new Vector3(specular);
+    public void setAttenuation(Attenuation attenuation) {
+        this.attenuation = attenuation;
     }
 
     @Override
     public int compareTo(PointLight o) {
         Vector3 cameraPos = GameHandler.getInstance().getCamera().getPosition();
         return Math.round(KMath.distance(cameraPos, getPosition()) - KMath.distance(cameraPos, o.getPosition()));
+    }
+
+    /**
+     * Handles the Attenuation information of the light.
+     */
+    public static class Attenuation{
+        private float constant;
+        private float linear;
+        private float exponent;
+
+        public Attenuation(float constant, float linear, float exponent){
+            this.constant = constant;
+            this.linear = linear;
+            this.exponent = exponent;
+        }
+
+        public float getConstant(){
+            return  constant;
+        }
+
+        public void setConstant(float constant){
+            this.constant = constant;
+        }
+
+        public float getLinear(){
+            return linear;
+        }
+
+        public void setLinear(float linear){
+            this.linear = linear;
+        }
+
+        public float getExponent(){
+            return exponent;
+        }
+
+        public void setExponent(float exponent){
+            this.exponent = exponent;
+        }
     }
 }

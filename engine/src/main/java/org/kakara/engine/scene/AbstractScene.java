@@ -4,6 +4,8 @@ import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.ItemHandler;
+import org.kakara.engine.item.Particles.ParticleEmitter;
+import org.kakara.engine.item.Particles.ParticleHandler;
 import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.lighting.LightHandler;
 import org.kakara.engine.lighting.PointLight;
@@ -18,6 +20,7 @@ import org.kakara.engine.weather.Fog;
 public abstract class AbstractScene implements Scene {
     private ItemHandler itemHandler = new ItemHandler();
     private LightHandler lightHandler = new LightHandler();
+    private ParticleHandler particleHandler = new ParticleHandler();
     private SkyBox skyBox;
 
     protected HUD hud = new HUD(this);
@@ -62,6 +65,11 @@ public abstract class AbstractScene implements Scene {
         return hud;
     }
 
+    @Override
+    public ParticleHandler getParticleHandler(){
+        return particleHandler;
+    }
+
     public void add(GameItem gameItem){
         itemHandler.addItem(gameItem);
     }
@@ -76,6 +84,10 @@ public abstract class AbstractScene implements Scene {
 
     public void add(HUDItem hudItem){
         hud.addItem(hudItem);
+    }
+
+    public void add(ParticleEmitter emitter){
+        particleHandler.addParticleEmitter(emitter);
     }
 
     public SkyBox getSkyBox(){

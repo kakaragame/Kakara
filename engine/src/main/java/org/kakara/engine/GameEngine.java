@@ -102,7 +102,7 @@ public class GameEngine implements Runnable {
 
     protected void update(float interval) {
         gameHandler.update();
-        gameHandler.getSceneManager().getCurrentScene().update();
+        gameHandler.getSceneManager().getCurrentScene().update(interval);
         game.update();
         collide();
     }
@@ -117,7 +117,7 @@ public class GameEngine implements Runnable {
         if(gameHandler.getSceneManager().getCurrentScene() == null) return;
         renderer.cleanup();
         if(gameHandler.getSceneManager().getCurrentScene()== null) return;
-        gameHandler.getItemHandler().cleanup();
+        gameHandler.getSceneManager().getCurrentScene().getItemHandler().cleanup();
     }
 
     protected void collide() {

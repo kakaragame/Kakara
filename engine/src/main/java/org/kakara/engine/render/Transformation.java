@@ -70,6 +70,14 @@ public class Transformation {
         return updateGenericViewMatrix(camera.getPosition().toJoml(), camera.getRotation().toJoml(), viewMatrix);
     }
 
+    public Matrix4f buildModelMatrix(GameItem gameItem) {
+        Quaternionf rotation = gameItem.getRotation();
+        return modelMatrix.translationRotateScale(
+                gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z,
+                rotation.x, rotation.y, rotation.z, rotation.w,
+                gameItem.getScale(), gameItem.getScale(), gameItem.getScale());
+    }
+
 
     /**
      * Get the matrix for the model position, rotation, and scale.
@@ -127,6 +135,10 @@ public class Transformation {
                 gameItem.getScale(), gameItem.getScale());
         modelViewMatrix.set(matrix);
         return modelViewMatrix.mul(modelMatrix);
+    }
+
+    public Matrix4f buildModelViewMatrix(Matrix4f modelMatrix, Matrix4f viewMatrix) {
+        return viewMatrix.mulAffine(modelMatrix, modelViewMatrix);
     }
 
 

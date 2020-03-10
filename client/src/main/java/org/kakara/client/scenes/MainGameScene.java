@@ -88,15 +88,14 @@ public class MainGameScene extends AbstractGameScene {
     @Override
     public void loadGraphics() {
         var resourceManager = gameHandler.getResourceManager();
-        List<Location> locations = new ArrayList<>();
-        System.out.println(myChunk.size());
+        try {
+            setSkyBox(new SkyBox(loadSkyBoxTexture(), true));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         for (ChunkBase chunkBase : myChunk) {
-            System.out.println(chunkBase.getGameBlocks().size());
             for (GameBlock gameBlock : chunkBase.getGameBlocks()) {
-                if (locations.contains(gameBlock.getLocation())) {
-                    System.out.println("Error");
-                }
-                locations.add(gameBlock.getLocation());
+
 
                 Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
                 Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(gameBlock.getItemStack().getItem().getTexture(), TextureResolution._16, gameBlock.getItemStack().getItem().getMod());
@@ -117,14 +116,12 @@ public class MainGameScene extends AbstractGameScene {
         }
 
         light = new PointLight(new Vector3f(0, 2, 0));
-        //lightIndication = new MeshGameItem(mesh).setScale(0.3f).setPosition(0, 2, 0);
         add(light);
-        this.add(new PointLight().setPosition(12, 12, 0).setDiffuse(0.1f, 0, 0).setSpecular(1.0f, 0, 0));
+        this.add(new PointLight().setPosition(0, 3, 0).setDiffuse(0.1f, 0, 0).setSpecular(0.5f, 0, 0));
         this.add(new PointLight().setPosition(3, 3, 3).setDiffuse(0f, 0.3f, 0).setSpecular(0, 0, 0.7f));
         this.add(new SpotLight(gameHandler.getCamera().getPosition(), new Vector3(0, 0, 1)));
-        // this.add(lightIndication);
         // Allows you to see the light.
-        this.getLightHandler().getDirectionalLight().setDirection(12, 12, 0);
+        this.getLightHandler().getDirectionalLight().setDirection(-1, -1, 0);
 
 
         //Load Player
@@ -146,12 +143,21 @@ public class MainGameScene extends AbstractGameScene {
         add(player);
     }
 
+    private Texture loadSkyBoxTexture() {
+        try {
+            return TextureCache.getInstance(gameHandler.getResourceManager()).getTexture("skybox/general.png", this);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     @Override
     public void update() {
         if (player == null) return;
 
         KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
-        Vector3 oldP = player.getPosition();
         if (ki.isKeyPressed(GLFW_KEY_W)) {
             player.movePosition(0, 0, -1);
         }

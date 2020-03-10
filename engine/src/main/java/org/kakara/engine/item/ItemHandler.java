@@ -5,17 +5,24 @@ import java.util.*;
 public class ItemHandler {
     private List<GameItem> items;
 
-    private Map<Mesh, List<GameItem>> meshMap;
+    private Map<Mesh, List<GameItem>> nonInstancedMeshMap;
+    private Map<InstancedMesh, List<GameItem>> instancedMeshMap;
 
     public ItemHandler() {
         items = new ArrayList<>();
-        meshMap = new HashMap<>();
+        nonInstancedMeshMap = new HashMap<>();
+        instancedMeshMap = new HashMap<>();
     }
 
     public void addItem(GameItem obj) {
         Mesh mesh = obj.getMesh();
-        List<GameItem> list = meshMap.computeIfAbsent(mesh, k -> new ArrayList<>());
-        list.add(obj);
+        if(mesh instanceof InstancedMesh){
+            List<GameItem> list = instancedMeshMap.computeIfAbsent((InstancedMesh) mesh, k -> new ArrayList<>());
+            list.add(obj);
+        }else{
+            List<GameItem> list = nonInstancedMeshMap.computeIfAbsent(mesh, k -> new ArrayList<>());
+            list.add(obj);
+        }
     }
 
     /**
@@ -26,8 +33,12 @@ public class ItemHandler {
 //        return this.items;
 //    }
 
-    public Map<Mesh, List<GameItem>> getMeshMap(){
-        return meshMap;
+    public Map<Mesh, List<GameItem>> getNonInstancedMeshMap(){
+        return nonInstancedMeshMap;
+    }
+
+    public Map<InstancedMesh, List<GameItem>> getInstancedMeshMap(){
+        return instancedMeshMap;
     }
 
     /**
@@ -52,8 +63,14 @@ public class ItemHandler {
      * <p>Internal Use Only.</p>
      */
     public void cleanup(){
-        for(Mesh m : meshMap.keySet()){
-            for(GameItem gi : meshMap.get(m)){
+        for(Mesh m : instancedMeshMap.keySet()){
+            for(GameItem gi : instancedMeshMap.get(m)){
+                gi.cleanup();
+            }
+        }
+
+        for(Mesh m : nonInstancedMeshMap.keySet()){
+            for(GameItem gi : nonInstancedMeshMap.get(m)){
                 gi.cleanup();
             }
         }

@@ -150,6 +150,11 @@ public class Transformation {
         return modelLightViewMatrix.mul(modelLightMatrix);
     }
 
+    public Matrix4f buildModelLightViewMatrix(Matrix4f modelMatrix, Matrix4f lightViewMatrix) {
+        return lightViewMatrix.mulAffine(modelMatrix, modelLightViewMatrix);
+    }
+
+
     public Matrix4f buildOrthoProjModelMatrix(GameItem gameItem, Matrix4f orthoMatrix) {
         Quaternionf rotation = gameItem.getRotation();
         modelMatrix.identity().translationRotateScale(gameItem.getPosition().x, gameItem.getPosition().y, gameItem.getPosition().z, rotation.x, rotation.y, rotation.z, rotation.w, gameItem.getScale(),

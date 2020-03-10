@@ -95,20 +95,51 @@ public class Renderer {
         shaderProgram.setUniform("fog", scene.getFog());
         shaderProgram.setUniform("shadowMap", 2);
 
-        Map<Mesh, List<GameItem>> mapMeshes = scene.getItemHandler().getMeshMap();
-        for(Mesh mesh : mapMeshes.keySet()){
-            shaderProgram.setUniform("material", mesh.getMaterial());
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
-            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) ->{ ;
-                Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItem, viewMatrix);
-                shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-                Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(gameItem, lightViewMatrix);
-                shaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
-            });
-        }
+        renderNonInstancedMeshes(scene, false, shaderProgram, viewMatrix, lightViewMatrix);
+
+        renderInstancedMeshes(scene, false, shaderProgram, viewMatrix, lightViewMatrix);
 
         shaderProgram.unbind();
+    }
+
+    private void renderNonInstancedMeshes(Scene scene, boolean depthMap, Shader shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
+        shaderProgram.setUniform("isInstanced", 0);
+
+        // Render each mesh with the associated game Items
+        Map<Mesh, List<GameItem>> mapMeshes = scene.getItemHandler().getNonInstancedMeshMap();
+        for (Mesh mesh : mapMeshes.keySet()) {
+            if (!depthMap) {
+                shader.setUniform("material", mesh.getMaterial());
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+            }
+
+            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) -> {
+                        Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+                        if (!depthMap) {
+                            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+                            shaderProgram.setUniform("modelViewNonInstancedMatrix", modelViewMatrix);
+                        }
+                        Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(modelMatrix, lightViewMatrix);
+                        shaderProgram.setUniform("modelLightViewNonInstancedMatrix", modelLightViewMatrix);
+                    }
+            );
+        }
+    }
+
+    private void renderInstancedMeshes(Scene scene, boolean depthMap, Shader shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
+        shaderProgram.setUniform("isInstanced", 1);
+
+        // Render each mesh with the associated game Items
+        Map<InstancedMesh, List<GameItem>> mapMeshes = scene.getItemHandler().getInstancedMeshMap();
+        for (InstancedMesh mesh : mapMeshes.keySet()) {
+            if (!depthMap) {
+                shaderProgram.setUniform("material", mesh.getMaterial());
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+            }
+            mesh.renderListInstanced(mapMeshes.get(mesh), depthMap, transformation, viewMatrix, lightViewMatrix);
+        }
     }
 
     private void renderDepthMap(Window window, Camera camera, Scene scene){
@@ -128,15 +159,9 @@ public class Renderer {
         DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
 
-        depthShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
-        Map<Mesh, List<GameItem>> mapMeshes = scene.getItemHandler().getMeshMap();
-        for (Mesh mesh : mapMeshes.keySet()) {
-            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) -> {
-                        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(gameItem, lightViewMatrix);
-                        depthShaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
-                    }
-            );
-        }
+        renderNonInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
+
+        renderInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
 
         // Unbind
         depthShaderProgram.unbind();
@@ -305,7 +330,8 @@ public class Renderer {
         shaderProgram.createFragmentShader(Utils.loadResource("/shaders/sceneFragment.fs"));
         shaderProgram.link();
         shaderProgram.createUniform("projectionMatrix");
-        shaderProgram.createUniform("modelViewMatrix");
+        shaderProgram.createUniform("modelViewNonInstancedMatrix");
+        shaderProgram.createUniform("modelLightViewNonInstancedMatrix");
         shaderProgram.createMaterialUniform("material");
         /*
          * Setup uniforms for lighting
@@ -315,7 +341,8 @@ public class Renderer {
 
         shaderProgram.createUniform("shadowMap");
         shaderProgram.createUniform("orthoProjectionMatrix");
-        shaderProgram.createUniform("modelLightViewMatrix");
+
+        shaderProgram.createUniform("isInstanced");
     }
 
     private void setupLightingShader() throws Exception {

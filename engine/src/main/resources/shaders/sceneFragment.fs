@@ -4,8 +4,8 @@ const int MAX_POINT_LIGHTS = 5;
 const int MAX_SPOT_LIGHTS = 5;
 
 in vec2 outTexCoord;
-in vec3 outVertexNormal;
-in vec3 outVertexPos;
+in vec3 mvVertexNormal;
+in vec3 mvVertexPos;
 in vec4 mlightviewVertexPos;
 in mat4 outModelViewMatrix;
 
@@ -192,13 +192,13 @@ void main()
 
     calculateOverlayTextures();
 
-    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, outVertexPos, outVertexNormal);
+    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, mvVertexNormal);
 
         for (int i=0; i<MAX_POINT_LIGHTS; i++)
         {
             if ( pointLights[i].intensity > 0 )
             {
-                diffuseSpecularComp += calcPointLight(pointLights[i], outVertexPos, outVertexNormal);
+                diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, mvVertexNormal);
             }
         }
 
@@ -206,7 +206,7 @@ void main()
         {
             if ( spotLights[i].pl.intensity > 0 )
             {
-                diffuseSpecularComp += calcSpotLight(spotLights[i], outVertexPos, outVertexNormal);
+                diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, mvVertexNormal);
             }
         }
 
@@ -216,7 +216,7 @@ void main()
 
     if ( fog.activeFog == 1 )
     {
-        fragColor = calcFog(outVertexPos, fragColor, fog, ambientLight, directionalLight);
+        fragColor = calcFog(mvVertexPos, fragColor, fog, ambientLight, directionalLight);
     }
 
 }

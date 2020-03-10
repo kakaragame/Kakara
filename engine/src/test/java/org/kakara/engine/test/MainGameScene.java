@@ -65,7 +65,7 @@ public class MainGameScene extends AbstractGameScene {
         player = object;
         //Load Blocks
 
-        Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
+        InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 524288);
         InputStream io = Texture.class.getResourceAsStream("/example_texture.png");
         Texture grass = Utils.inputStreamToTexture(io);
         Material mt = new Material(grass);
@@ -84,12 +84,14 @@ public class MainGameScene extends AbstractGameScene {
         setSkyBox(skyBox);
 
 
-        for (int x = 5; x > -12; x--) {
-            for (int z = 5; z > -12; z--) {
-                MeshGameItem gis = (MeshGameItem) gi.clone(false);
-                gis.setPosition(x, 0, z);
-                gis.setCollider(new ObjectBoxCollider(false, true));
-                getItemHandler().addItem(gis);
+        for (int x = 0; x > -128; x--) {
+            for(int y = 0; y > -2; y--){
+                for (int z = 0; z > -128; z--) {
+                    MeshGameItem gis = (MeshGameItem) gi.clone(false);
+                    gis.setPosition(x, y, z);
+                    gis.setCollider(new ObjectBoxCollider(false, true));
+                    getItemHandler().addItem(gis);
+                }
             }
         }
 

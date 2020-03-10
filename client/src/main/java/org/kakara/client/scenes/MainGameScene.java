@@ -8,6 +8,7 @@ import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.ChunkBase;
 import org.kakara.core.world.ChunkGenerator;
 import org.kakara.core.world.GameBlock;
+import org.kakara.core.world.Location;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
@@ -71,23 +72,32 @@ public class MainGameScene extends AbstractGameScene {
         loadMods();
 
         ChunkGenerator generator = kakaraGame.getKakaraCore().getWorldGenerationManager().getChunkGenerators().get(0);
-        myChunk.add(generator.generateChunk(45, new ChunkBase(null, 0, 0, new ArrayList<>())));
 
         ChunkBase base = null;
-        for (int i = 1; i < 9; i++) {
+        for (int i = -16; i <= 16; i = i + 16) {
+            for (int j = -16; j <= 16; j = j + 16) {
+                System.out.println(i + " " + j);
+                myChunk.add(generator.generateChunk(45, new ChunkBase(null, i, j, new ArrayList<>())));
 
+            }
         }
-        myChunk.add(generator.generateChunk(45, base));
+        //myChunk.add(generator.generateChunk(45, base));
         kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
-
     }
 
     @Override
     public void loadGraphics() {
         var resourceManager = gameHandler.getResourceManager();
-
+        List<Location> locations = new ArrayList<>();
+        System.out.println(myChunk.size());
         for (ChunkBase chunkBase : myChunk) {
+            System.out.println(chunkBase.getGameBlocks().size());
             for (GameBlock gameBlock : chunkBase.getGameBlocks()) {
+                if (locations.contains(gameBlock.getLocation())) {
+                    System.out.println("Error");
+                }
+                locations.add(gameBlock.getLocation());
+
                 Mesh mesh = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
                 Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(gameBlock.getItemStack().getItem().getTexture(), TextureResolution._16, gameBlock.getItemStack().getItem().getMod());
                 Material mt = null;

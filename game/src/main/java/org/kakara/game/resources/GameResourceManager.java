@@ -2,9 +2,8 @@ package org.kakara.game.resources;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.kakara.core.GameType;
+import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
-import org.kakara.core.KakaraCore;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.ResourceManager;
@@ -21,7 +20,7 @@ import java.nio.file.Files;
 import java.util.MissingResourceException;
 
 public class GameResourceManager implements ResourceManager {
-    private KakaraCore kakaraCore;
+    private GameInstance kakaraCore;
     private File resourceDirectory;
     private static final String BASE_PATH = "/resources/";
 
@@ -43,7 +42,7 @@ public class GameResourceManager implements ResourceManager {
             }
             IOUtils.copy(io, new FileWriter(file), Charset.defaultCharset());
         } catch (IOException e) {
-            KakaraCore.LOGGER.error("Unable to copy file to local", e);
+            Kakara.LOGGER.error("Unable to copy file to local", e);
         }
     }
 
@@ -64,7 +63,7 @@ public class GameResourceManager implements ResourceManager {
             }
             Files.copy(io, file.toPath());
         } catch (IOException e) {
-            KakaraCore.LOGGER.error("Unable to copy file to local", e);
+            Kakara.LOGGER.error("Unable to copy file to local", e);
         }
     }
 
@@ -92,7 +91,7 @@ public class GameResourceManager implements ResourceManager {
     }
 
     @Override
-    public void load(KakaraCore kakaraCore) {
+    public void load(GameInstance kakaraCore) {
         this.kakaraCore = kakaraCore;
         resourceDirectory = new File(kakaraCore.getWorkingDirectory(), "resources");
         resourceDirectory.mkdirs();

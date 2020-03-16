@@ -1,6 +1,7 @@
 package org.kakara.game.world;
 
-import org.kakara.core.KakaraCore;
+import org.kakara.core.GameInstance;
+import org.kakara.core.Kakara;
 import org.kakara.core.world.ChunkGenerator;
 import org.kakara.core.world.WorldGenerationManager;
 import org.kakara.core.world.region.Region;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameWorldGenerationManager implements WorldGenerationManager {
-    private KakaraCore kakaraCore;
+    private GameInstance kakaraCore;
     private List<Region> regions = new ArrayList<>();
     private List<ChunkGenerator> generators = new ArrayList<>();
 
@@ -34,7 +35,7 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
     }
 
     @Override
-    public void load(KakaraCore kakaraCore) {
+    public void load(GameInstance kakaraCore) {
         this.kakaraCore = kakaraCore;
     }
 }

@@ -1,6 +1,6 @@
 package org.kakara.game.item;
 
-import org.kakara.core.KakaraCore;
+import org.kakara.core.GameInstance;
 import org.kakara.core.Utils;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemManager;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 //TODO Validate Mods provided
 public class GameItemManager implements ItemManager {
-    private KakaraCore kakaraCore;
+    private GameInstance kakaraCore;
     private Map<Item, Mod> items = new HashMap<>();
 
     @Override
@@ -58,7 +58,7 @@ public class GameItemManager implements ItemManager {
     }
 
     @Override
-    public void load(KakaraCore kakaraCore) {
+    public void load(GameInstance kakaraCore) {
         this.kakaraCore = kakaraCore;
     }
 }

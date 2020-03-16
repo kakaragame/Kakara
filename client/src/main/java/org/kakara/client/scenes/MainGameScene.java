@@ -58,7 +58,7 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     public void loadMods() {
-        kakaraGame.getKakaraCore().getModManager().loadMods(Arrays.stream(getModJars()).collect(Collectors.toList()));
+        //kakaraGame.getKakaraCore().getModManager().loadMods(Arrays.stream(getModJars()).collect(Collectors.toList()));
     }
 
     private File[] getModJars() {
@@ -196,13 +196,13 @@ public class MainGameScene extends AbstractGameScene {
             player.movePosition(0, 0, -1);
         }
         if (ki.isKeyPressed(GLFW_KEY_S)) {
-            player.movePosition(0, 0, 1 );
+            player.movePosition(0, 0, 1);
         }
         if (ki.isKeyPressed(GLFW_KEY_A)) {
             player.movePosition(-1, 0, 0);
         }
         if (ki.isKeyPressed(GLFW_KEY_D)) {
-            player.movePosition(1 , 0, 0);
+            player.movePosition(1, 0, 0);
         }
 
         if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {

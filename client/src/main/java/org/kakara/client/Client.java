@@ -1,21 +1,49 @@
 package org.kakara.client;
 
 import org.kakara.core.GameInstance;
-import org.kakara.core.GameType;
-import org.kakara.core.game.CustomStackable;
-import org.kakara.core.game.GameSettings;
-import org.kakara.core.game.Item;
-import org.kakara.core.game.ItemStack;
+import org.kakara.core.GameTypes;
+import org.kakara.core.crafting.CraftingManager;
+import org.kakara.core.events.EventManager;
+import org.kakara.core.game.*;
+import org.kakara.core.game.entity.EntityManager;
+import org.kakara.core.mod.ModManager;
+import org.kakara.core.mod.game.GameModManager;
+import org.kakara.core.resources.ResourceManager;
+import org.kakara.core.sound.SoundManager;
+import org.kakara.core.world.WorldGenerationManager;
+import org.kakara.engine.utils.Utils;
+import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.items.GameMetaData;
+import org.kakara.game.mod.KakaraMod;
+import org.kakara.game.resources.GameResourceManager;
+import org.kakara.game.world.GameWorldGenerationManager;
+
+import java.io.File;
 
 public class Client implements GameInstance {
     private GameSettings settings;
     private KakaraGame kakaraGame;
+    private EntityManager entityManager;
+    private ItemManager itemManager;
+    private CraftingManager craftingManager;
+    private ResourceManager resourceManager;
+    private SoundManager soundManager;
+    private ModManager modManager;
+    private File workingDirectory;
+    private WorldGenerationManager worldGenerationManager;
+    private EventManager eventManager;
 
     public Client(KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
         this.kakaraGame = kakaraGame;
+        workingDirectory = Utils.getCurrentDirectory();
+        worldGenerationManager = new GameWorldGenerationManager();
+        itemManager = new GameItemManager();
+        modManager = new GameModManager(new KakaraMod());
+        resourceManager = new GameResourceManager();
+        eventManager = new GameEventManager();
+
     }
 
     @Override
@@ -32,8 +60,53 @@ public class Client implements GameInstance {
     }
 
     @Override
-    public GameType getType() {
-        return GameType.CLIENT;
+    public ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+
+    @Override
+    public SoundManager getSoundManager() {
+        return soundManager;
+    }
+
+    @Override
+    public ItemManager getItemManager() {
+        return itemManager;
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    @Override
+    public CraftingManager getCraftingManager() {
+        return craftingManager;
+    }
+
+    @Override
+    public ModManager getModManager() {
+        return modManager;
+    }
+
+    @Override
+    public File getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    @Override
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    @Override
+    public WorldGenerationManager getWorldGenerationManager() {
+        return worldGenerationManager;
+    }
+
+    @Override
+    public GameTypes getType() {
+        return GameTypes.CLIENT;
     }
 
 

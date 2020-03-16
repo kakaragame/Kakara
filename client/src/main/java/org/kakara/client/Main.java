@@ -2,7 +2,6 @@ package org.kakara.client;
 
 
 import org.apache.commons.cli.*;
-import org.kakara.core.KakaraCore;
 import org.kakara.core.client.ClientSettings;
 import org.kakara.core.client.ClientSettingsBuilder;
 import org.kakara.engine.GameEngine;

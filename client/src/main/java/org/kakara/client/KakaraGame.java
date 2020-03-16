@@ -1,9 +1,9 @@
 package org.kakara.client;
 
 import org.kakara.client.scenes.MainMenuScene;
+import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
-import org.kakara.core.KakaraCore;
-import org.kakara.core.KakaraCoreBuilder;
+
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.mod.game.GameModManager;
 import org.kakara.engine.Game;
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 public class KakaraGame implements Game {
-    private KakaraCore kakaraCore;
+    private GameInstance kakaraCore;
     private GameHandler gameHandler;
     private Client client;
     public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
@@ -45,22 +45,7 @@ public class KakaraGame implements Game {
 
     private void loadKakaraCore() {
         LOGGER.info("Loading Core");
-        KakaraCoreBuilder kakaraCoreBuilder = new KakaraCoreBuilder()
-                .setResourceManager(new GameResourceManager())
-                .setModManager(new GameModManager(new KakaraMod()))
-                .setGameInstance(client)
-                .setItemManager(new GameItemManager()).
-                        setWorldGenerationManager(new GameWorldGenerationManager());
 
-        kakaraCore = kakaraCoreBuilder.createKakaraCore();
-//KakaraCore.LOGGER = LOGGER;
-        try {
-            kakaraCore.load();
-        } catch (IOException e) {
-            LOGGER.error("Unable to load core!", e);
-            System.exit(2);
-        }
-        Kakara.setKakaraCore(kakaraCore);
     }
 
     @Override
@@ -98,7 +83,7 @@ public class KakaraGame implements Game {
     }
 
 
-    public KakaraCore getKakaraCore() {
+    public GameInstance getKakaraCore() {
         return kakaraCore;
     }
 
@@ -113,7 +98,8 @@ public class KakaraGame implements Game {
     @Override
     public void exit() {
 
-        kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
+        //TODO bring back mod unloading
+        //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
     }
 

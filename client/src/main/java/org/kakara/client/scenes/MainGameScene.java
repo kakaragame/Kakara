@@ -5,7 +5,9 @@ import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.core.Kakara;
 import org.kakara.core.game.ItemStack;
+import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.UnModObject;
+import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.ChunkBase;
@@ -62,24 +64,25 @@ public class MainGameScene extends AbstractGameScene {
 
     public void loadMods(List<File> modFiles) {
         List<UnModObject> modsToLoad = Kakara.getModManager().loadModsFile(modFiles);
+        Kakara.getModManager().loadMods(modsToLoad);
+
     }
 
     protected static File[] getModJars() {
         File dir = new File("test" + File.separator + "mods");
 
-        return dir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String filename) {
-                return filename.endsWith(".jar");
-            }
-        });
+        return dir.listFiles((dir1, filename) -> filename.endsWith(".jar"));
     }
 
     @Override
     public void work() {
-        long currentTime = System.currentTimeMillis();
+        Kakara.getModManager().loadStage(Kakara.getEventManager());
+        Kakara.getModManager().loadStage(Kakara.getItemManager());
+        Kakara.getModManager().loadStage(Kakara.getWorldGenerationManager());
 
-        ChunkGenerator generator = kakaraGame.getKakaraCore().getWorldGenerationManager().getChunkGenerators().get(0);
-
+        ((GameModManager) Kakara.getModManager()).postEnable();
+        ChunkGenerator generator = Kakara.getWorldGenerationManager().getChunkGenerators().get(0);
+        if (generator == null) System.out.println("TELL ME HOW THIS HAPPENED");
         ChunkBase base = null;
         for (int i = -4; i <= 4; i = i + 4) {
             for (int j = -4; j <= 4; j = j + 4) {
@@ -90,7 +93,6 @@ public class MainGameScene extends AbstractGameScene {
 
         //myChunk.add(generator.generateChunk(45, base));
         kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
-        System.out.println(System.currentTimeMillis() - currentTime);
     }
 
     @Override
@@ -104,23 +106,23 @@ public class MainGameScene extends AbstractGameScene {
             e.printStackTrace();
         }
         Map<ItemStack, List<Location>> gameBlockMutableIntMap = MoreUtils.sortByType(myChunk);
-        InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, MoreUtils.calculateSize(gameBlockMutableIntMap));
 
         for (Map.Entry<ItemStack, List<Location>> entry : gameBlockMutableIntMap.entrySet()) {
-            Resource resource = kakaraGame.getKakaraCore().getResourceManager().getTexture(entry.getKey().getItem().getTexture(), TextureResolution._16, entry.getKey().getItem().getMod());
+            InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, entry.getValue().size());
+
+            Resource resource = Kakara.getResourceManager().getTexture(entry.getKey().getItem().getTexture(), TextureResolution._16, entry.getKey().getItem().getMod());
             Material mt = null;
             try {
                 mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-
+            mesh.setMaterial(mt);
             for (Location location : entry.getValue()) {
                 MeshGameItem item = new MeshGameItem(mesh);
                 item.setPosition(MoreUtils.locationToVector3(location));
                 item.setCollider(new ObjectBoxCollider(false, true));
                 item.setMesh(mesh);
-                item.getMesh().setMaterial(mt);
                 add(item);
             }
         }
@@ -158,7 +160,7 @@ public class MainGameScene extends AbstractGameScene {
         player = new
 
                 MeshGameItem(mainPlayer);
-        player.setPosition(12, 50, 12);
+        player.setPosition(12, 1025, 12);
         player.setScale(0.3f);
         player.setCollider(new
 
@@ -167,7 +169,7 @@ public class MainGameScene extends AbstractGameScene {
                 Vector3(1, 1.5f, 1)));
         player.getCollider().
 
-                setUseGravity(true).
+                setUseGravity(false).
 
                 setTrigger(false);
         ((BoxCollider) player.getCollider()).
@@ -210,6 +212,9 @@ public class MainGameScene extends AbstractGameScene {
         if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
             player.movePosition(0, -1, 0);
         }
+        if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
+            player.movePosition(0, 1.1F, 0);
+        }
         MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
         player.moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
         if (kakaraGame.getGameHandler().getSoundManager().getListener() != null)
@@ -221,9 +226,7 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
-        if (e.isKeyPressed(GLFW_KEY_SPACE)) {
-            player.movePosition(0, 1.1F, 0);
-        }
+
         if (e.isKeyPressed(GLFW_KEY_ESCAPE)) {
             System.exit(1);
         }

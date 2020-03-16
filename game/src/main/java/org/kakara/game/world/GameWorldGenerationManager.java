@@ -38,4 +38,9 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
     public void load(GameInstance kakaraCore) {
         this.kakaraCore = kakaraCore;
     }
+
+    @Override
+    public Class<?> getStageClass() {
+        return WorldGenerationManager.class;
+    }
 }

@@ -50,6 +50,7 @@ public class KakaraGame implements Game {
         client.getWorldGenerationManager().load(client);
         client.getItemManager().load(client);
         client.getEventManager().load(client);
+        client.getModManager().load(client);
     }
 
     @Override

@@ -61,4 +61,9 @@ public class GameItemManager implements ItemManager {
     public void load(GameInstance kakaraCore) {
         this.kakaraCore = kakaraCore;
     }
+
+    @Override
+    public Class<?> getStageClass() {
+        return ItemManager.class;
+    }
 }

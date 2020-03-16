@@ -3,7 +3,9 @@ package org.kakara.client.scenes;
 import org.joml.Vector3f;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.core.Kakara;
 import org.kakara.core.game.ItemStack;
+import org.kakara.core.mod.UnModObject;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.ChunkBase;
@@ -50,18 +52,19 @@ public class MainGameScene extends AbstractGameScene {
     private MeshGameItem player;
     private List<ChunkBase> myChunk = new ArrayList<>();
 
-    public MainGameScene(GameHandler gameHandler, KakaraGame kakaraGame) throws Exception {
+    public MainGameScene(GameHandler gameHandler, KakaraGame kakaraGame, List<File> modsToLoad) throws Exception {
         super(gameHandler);
         this.kakaraGame = kakaraGame;
         setCurserStatus(false);
+        loadMods(modsToLoad);
 
     }
 
-    public void loadMods() {
-        //kakaraGame.getKakaraCore().getModManager().loadMods(Arrays.stream(getModJars()).collect(Collectors.toList()));
+    public void loadMods(List<File> modFiles) {
+        List<UnModObject> modsToLoad = Kakara.getModManager().loadModsFile(modFiles);
     }
 
-    private File[] getModJars() {
+    protected static File[] getModJars() {
         File dir = new File("test" + File.separator + "mods");
 
         return dir.listFiles(new FilenameFilter() {
@@ -74,7 +77,6 @@ public class MainGameScene extends AbstractGameScene {
     @Override
     public void work() {
         long currentTime = System.currentTimeMillis();
-        loadMods();
 
         ChunkGenerator generator = kakaraGame.getKakaraCore().getWorldGenerationManager().getChunkGenerators().get(0);
 

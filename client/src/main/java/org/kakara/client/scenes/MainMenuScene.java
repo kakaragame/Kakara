@@ -22,6 +22,7 @@ import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
 
 import java.net.MalformedURLException;
+import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
@@ -93,7 +94,7 @@ public class MainMenuScene extends AbstractMenuScene {
                 public void OnHUDClick(Vector2 location, MouseClickType clickType) {
                     if (!playButton.isVisible()) return;
                     try {
-                        MainGameScene mgs = new MainGameScene(gameHandler, kakaraGame);
+                        MainGameScene mgs = new MainGameScene(gameHandler, kakaraGame, Arrays.asList(MainGameScene.getModJars()));
                         gameHandler.getSceneManager().setScene(mgs);
 
                     } catch (Exception ex) {

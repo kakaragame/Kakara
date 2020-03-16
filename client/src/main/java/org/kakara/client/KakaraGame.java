@@ -45,7 +45,11 @@ public class KakaraGame implements Game {
 
     private void loadKakaraCore() {
         LOGGER.info("Loading Core");
-
+        Kakara.setGameInstance(client);
+        client.getResourceManager().load(client);
+        client.getWorldGenerationManager().load(client);
+        client.getItemManager().load(client);
+        client.getEventManager().load(client);
     }
 
     @Override

@@ -65,7 +65,7 @@ public class MainGameScene extends AbstractGameScene {
         player = object;
         //Load Blocks
 
-        InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 19600);
+        InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 10000);
         InputStream io = Texture.class.getResourceAsStream("/example_texture.png");
         Texture grass = Utils.inputStreamToTexture(io);
         Material mt = new Material(grass);
@@ -79,14 +79,14 @@ public class MainGameScene extends AbstractGameScene {
         MeshGameItem gi = new MeshGameItem(mesh);
         add(gi);
         gi.setPosition(0, 0, -5);
-        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
-        SkyBox skyBox = new SkyBox(skyb, true);
-        setSkyBox(skyBox);
+//        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
+//        SkyBox skyBox = new SkyBox(skyb, true);
+//        setSkyBox(skyBox);
 
 
-        for (int x = 0; x > -140; x--) {
+        for (int x = 0; x > -100; x--) {
             for(int y = 0; y > -1; y--){
-                for (int z = 0; z > -140; z--) {
+                for (int z = 0; z > -100; z--) {
                     MeshGameItem gis = (MeshGameItem) gi.clone(false);
                     gis.setPosition(x, y, z);
                     gis.setCollider(new ObjectBoxCollider(false, true));
@@ -94,6 +94,40 @@ public class MainGameScene extends AbstractGameScene {
                 }
             }
         }
+
+        InstancedMesh most = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 10000);
+        most.setMaterial(mt);
+        MeshGameItem giz = new MeshGameItem(most);
+        add(giz);
+        gi.setPosition(0, 0, -5);
+
+        for (int x = 0; x > -300; x--) {
+            for(int y = 0; y > -1; y--){
+                for (int z = -100; z > -200; z--) {
+                    MeshGameItem gis = (MeshGameItem) giz.clone(false);
+                    gis.setPosition(x, y, z);
+                    gis.setCollider(new ObjectBoxCollider(false, true));
+                    add(gis);
+                }
+            }
+        }
+
+//        InstancedMesh mest = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 10000);
+//        mest.setMaterial(mt);
+//        MeshGameItem gab = new MeshGameItem(mest);
+//        add(gab);
+//        gi.setPosition(0, 0, -5);
+//
+//        for (int x = 0; x > -300; x--) {
+//            for(int y = 0; y > -1; y--){
+//                for (int z = -200; z > -300; z--) {
+//                    MeshGameItem gis = (MeshGameItem) gab.clone(false);
+//                    gis.setPosition(x, y, z);
+//                    gis.setCollider(new ObjectBoxCollider(false, true));
+//                    getItemHandler().addItem(gis);
+//                }
+//            }
+//        }
 
         MeshGameItem sh = (MeshGameItem) gi.clone(false);
         sh.setPosition(-4, 3, -4);

@@ -84,8 +84,8 @@ public class MainGameScene extends AbstractGameScene {
         ChunkGenerator generator = Kakara.getWorldGenerationManager().getChunkGenerators().get(0);
         if (generator == null) System.out.println("TELL ME HOW THIS HAPPENED");
         ChunkBase base = null;
-        for (int i = -4; i <= 4; i = i + 4) {
-            for (int j = -4; j <= 4; j = j + 4) {
+        for (int i = -8; i <= 8; i = i + 4) {
+            for (int j = -8; j <= 8; j = j + 4) {
                 myChunk.add(generator.generateChunk(45, new ChunkBase(null, i, j, new ArrayList<>())));
 
             }
@@ -106,7 +106,7 @@ public class MainGameScene extends AbstractGameScene {
             e.printStackTrace();
         }
         Map<ItemStack, List<Location>> gameBlockMutableIntMap = MoreUtils.sortByType(myChunk);
-
+        System.out.println(MoreUtils.calculateSize(gameBlockMutableIntMap));
         for (Map.Entry<ItemStack, List<Location>> entry : gameBlockMutableIntMap.entrySet()) {
             InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, entry.getValue().size());
 
@@ -160,7 +160,7 @@ public class MainGameScene extends AbstractGameScene {
         player = new
 
                 MeshGameItem(mainPlayer);
-        player.setPosition(12, 1025, 12);
+        player.setPosition(12, 50, 12);
         player.setScale(0.3f);
         player.setCollider(new
 
@@ -208,7 +208,6 @@ public class MainGameScene extends AbstractGameScene {
         if (ki.isKeyPressed(GLFW_KEY_D)) {
             player.movePosition(1, 0, 0);
         }
-
         if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
             player.movePosition(0, -1, 0);
         }

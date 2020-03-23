@@ -30,6 +30,14 @@ public abstract class AbstractGameScene extends AbstractScene {
         this.textureAtlas = textureAtlas;
     }
 
+    public ChunkHandler getChunkHandler(){
+        return chunkHandler;
+    }
+
+    public TextureAtlas getTextureAtlas(){
+        return textureAtlas;
+    }
+
 
 
 

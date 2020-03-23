@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -25,8 +27,10 @@ public class RenderMesh {
 
 
     //TODO this needs to be redone to combine the blocks.
-    public RenderMesh(List<RenderBlock> renderBlocks){
-        Layout layout = setupLayout(renderBlocks);
+    public RenderMesh(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas){
+        Layout layout = setupLayout(renderBlocks, textureAtlas);
+        DoubleStream ds = IntStream.range(0, layout.getIndices().length).mapToDouble(i -> layout.getIndices()[i]);
+        System.out.println(ds.boxed().collect(Collectors.toList()));
 
         FloatBuffer posBuffer = null;
         FloatBuffer texCoordsBuffer = null;
@@ -73,8 +77,8 @@ public class RenderMesh {
             vboIdList.add(vboId);
             indicesBuffer = MemoryUtil.memAllocInt(layout.getIndices().length);
             indicesBuffer.put(layout.getIndices()).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
@@ -132,12 +136,28 @@ public class RenderMesh {
      * @param renderBlocks The blocks to be rendered.
      * @return The layout.
      */
-    private Layout setupLayout (List<RenderBlock> renderBlocks){
+    private Layout setupLayout (List<RenderBlock> renderBlocks, TextureAtlas textureAtlas){
         float[] positions = {};
         for(RenderBlock rb : renderBlocks){
             float[] secondArray = rb.getLayout().getVertex();
-            float[] both = Arrays.copyOf(positions, positions.length+secondArray.length);
-            System.arraycopy(secondArray, 0, both, positions.length, secondArray.length);
+            float[] processedArray = new float[secondArray.length];
+            int c = 0;
+            for(int i = 0; i < secondArray.length; i++){
+                if(c == 0){
+                    processedArray[i] = secondArray[i] + rb.getPosition().x;
+                }
+                else if(c == 1){
+                    processedArray[i] = secondArray[i] + rb.getPosition().y;
+                }
+                else if(c == 2){
+                    processedArray[i] = secondArray[i] + rb.getPosition().z;
+                    c = 0;
+                    continue;
+                }
+                c++;
+            }
+            float[] both = Arrays.copyOf(positions, positions.length+processedArray.length);
+            System.arraycopy(processedArray, 0, both, positions.length, processedArray.length);
             positions = both;
         }
 
@@ -149,12 +169,13 @@ public class RenderMesh {
             // We need to calculate the texture positions based upon the offset of the texture atlas.
             float[] processedArray = new float[secondArray.length];
             for(int i = 0; i < secondArray.length; i++){
-                // If the texture cord is for the x-axis.
+
                 if(i % 2 == 0)
-                    processedArray[i] = secondArray[i] + rb.getTexture().getXOffset();
+                    processedArray[i] = (secondArray[i]  / textureAtlas.getNumberOfRows()) + rb.getTexture().getXOffset();
                 else
-                    processedArray[i] = secondArray[i] + rb.getTexture().getYOffset();
+                    processedArray[i] = (secondArray[i] / textureAtlas.getNumberOfRows()) + rb.getTexture().getYOffset();
             }
+            System.out.println(textureAtlas.getNumberOfRows());
             float[] both = Arrays.copyOf(texCoords, texCoords.length+processedArray.length);
             System.arraycopy(processedArray, 0, both, texCoords.length, processedArray.length);
             texCoords = both;
@@ -174,23 +195,27 @@ public class RenderMesh {
 
         int[] indicies = {};
         int i = 0;
+        int count = 0;
         for(RenderBlock rb : renderBlocks){
             int[] secondArray = rb.getLayout().getIndices();
             // Get the max value of the current indicies list.
-            int max = Collections.max(IntStream.of(indicies).boxed().collect(Collectors.toList()));
+            final int max = count;
             // THIS MAY BE A CAUSE OF ERROR.
             //Map through the second array and make all of the values add on to each other.
-            secondArray = IntStream.of(secondArray).map(ind -> ind + max + 1).toArray();
+            secondArray = IntStream.of(secondArray).map(ind -> ind + max).toArray();
             // Copy the second array
             int[] both = Arrays.copyOf(indicies, indicies.length+secondArray.length);
             System.arraycopy(secondArray, 0, both, indicies.length, secondArray.length);
             indicies = both;
             i++;
+            count += rb.getLayout().getVertex().length/3;
         }
 
         final int[] finalIndices = indicies;
-
-
+//        float[] finalPositions = positions;
+////        DoubleStream ds = IntStream.range(0, finalPositions.length).mapToDouble(x -> finalPositions[x]);
+////        System.out.println(ds.boxed().collect(Collectors.toList()));
+////        System.exit(-1);
         return new Layout() {
             @Override
             public float[] getVertex() {

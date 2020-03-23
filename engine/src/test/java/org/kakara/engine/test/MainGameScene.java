@@ -15,6 +15,11 @@ import org.kakara.engine.lighting.LightColor;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
+import org.kakara.engine.renderobjects.RenderBlock;
+import org.kakara.engine.renderobjects.RenderChunk;
+import org.kakara.engine.renderobjects.RenderTexture;
+import org.kakara.engine.renderobjects.TextureAtlas;
+import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.Text;
@@ -25,6 +30,7 @@ import org.kakara.engine.utils.Utils;
 import org.kakara.engine.weather.Fog;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -83,51 +89,23 @@ public class MainGameScene extends AbstractGameScene {
 //        SkyBox skyBox = new SkyBox(skyb, true);
 //        setSkyBox(skyBox);
 
+        /*
 
-        for (int x = 0; x > -100; x--) {
-            for(int y = 0; y > -1; y--){
-                for (int z = 0; z > -100; z--) {
-                    MeshGameItem gis = (MeshGameItem) gi.clone(false);
-                    gis.setPosition(x, y, z);
-                    gis.setCollider(new ObjectBoxCollider(false, true));
-                    getItemHandler().addItem(gis);
-                }
-            }
-        }
+        ==================================================
+                       Test of Render Chunks
+        ===================================================
 
-        InstancedMesh most = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 10000);
-        most.setMaterial(mt);
-        MeshGameItem giz = new MeshGameItem(most);
-        add(giz);
-        gi.setPosition(0, 0, -5);
+         */
+        RenderTexture txt1 = new RenderTexture(resourceManager.getResource("/example_texture.png"));
+        RenderTexture txt2 = new RenderTexture(resourceManager.getResource("/oop.png"));
+        TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2), "D:\\ztestImgs", this);
+        setTextureAtlas(atlas);
+        RenderBlock rb = new RenderBlock(new BlockLayout(), txt1, new Vector3(3, 5, 3));
+        RenderBlock rb2 = new RenderBlock(new BlockLayout(), txt2, new Vector3(0, 0, 0));
+        RenderBlock rb3 = new RenderBlock(new BlockLayout(), txt1, new Vector3(1, 2, 1));
+        RenderChunk rc = new RenderChunk(Arrays.asList(rb, rb2, rb3), getTextureAtlas());
+        getChunkHandler().addChunk(rc);
 
-        for (int x = 0; x > -300; x--) {
-            for(int y = 0; y > -1; y--){
-                for (int z = -100; z > -200; z--) {
-                    MeshGameItem gis = (MeshGameItem) giz.clone(false);
-                    gis.setPosition(x, y, z);
-                    gis.setCollider(new ObjectBoxCollider(false, true));
-                    add(gis);
-                }
-            }
-        }
-
-//        InstancedMesh mest = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 10000);
-//        mest.setMaterial(mt);
-//        MeshGameItem gab = new MeshGameItem(mest);
-//        add(gab);
-//        gi.setPosition(0, 0, -5);
-//
-//        for (int x = 0; x > -300; x--) {
-//            for(int y = 0; y > -1; y--){
-//                for (int z = -200; z > -300; z--) {
-//                    MeshGameItem gis = (MeshGameItem) gab.clone(false);
-//                    gis.setPosition(x, y, z);
-//                    gis.setCollider(new ObjectBoxCollider(false, true));
-//                    getItemHandler().addItem(gis);
-//                }
-//            }
-//        }
 
         MeshGameItem sh = (MeshGameItem) gi.clone(false);
         sh.setPosition(-4, 3, -4);

@@ -4,12 +4,14 @@ import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.resources.ResourceManager;
+import org.kakara.engine.scene.Scene;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +23,16 @@ public class TextureAtlas {
 
     private int numberOfRows;
 
-    public TextureAtlas(List<RenderTexture> textures, String output){
+    private Scene currentScene;
+
+    public TextureAtlas(List<RenderTexture> textures, String output, Scene currentScene){
         this.textures = textures;
         this.output = output;
+        this.currentScene = currentScene;
         try {
             calculateTextureAtlas(this.textures);
         }catch(IOException ex){
-            GameEngine.LOGGER.error("Could not create texture atlas. Missing texture files?");
+            GameEngine.LOGGER.error("Could not create texture atlas. Missing texture files?", ex);
         }
     }
 
@@ -44,12 +49,14 @@ public class TextureAtlas {
     }
 
     public float getYOffset(int id){
-        return ((float) id % this.numberOfRows) / numberOfRows;
+        return (float) Math.floor((double) id / (double) numberOfRows);
     }
 
     private void calculateTextureAtlas(List<RenderTexture> textures) throws IOException {
         // This might now work V
-        List<File> tempFiles = textures.stream().map(text -> new File(text.getResource().getPath())).collect(Collectors.toList());
+        List<InputStream> tempFiles = textures.stream().map(text -> text.getResource().getInputStream()).collect(Collectors.toList());
+
+        System.out.println(tempFiles.get(0));
 
 
         int numOfRows = (int) Math.ceil(Math.sqrt(tempFiles.size()));
@@ -73,7 +80,7 @@ public class TextureAtlas {
         ImageIO.write(combined, "PNG", new File(this.output, "textureAtlas.png"));
         g.dispose();
         ResourceManager rm = GameHandler.getInstance().getResourceManager();
-        this.texture = new Texture(rm.getResource(this.output + File.separator + "textureAtlas.png").getByteBuffer());
+        this.texture = new Texture(this.output + File.separator + "textureAtlas.png", currentScene);
     }
 
     private BufferedImage scale(BufferedImage imageToScale, int dWidth, int dHeight) {

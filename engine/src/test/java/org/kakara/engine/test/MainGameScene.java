@@ -30,7 +30,9 @@ import org.kakara.engine.utils.Utils;
 import org.kakara.engine.weather.Fog;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -98,13 +100,29 @@ public class MainGameScene extends AbstractGameScene {
          */
         RenderTexture txt1 = new RenderTexture(resourceManager.getResource("/example_texture.png"));
         RenderTexture txt2 = new RenderTexture(resourceManager.getResource("/oop.png"));
-        TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2), "D:\\ztestImgs", this);
+        System.out.println(resourceManager.getResource("/m.png").getInputStream());
+        RenderTexture txt3 = new RenderTexture(resourceManager.getResource("/m.png"));
+        TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2, txt3), "D:\\ztestImgs", this);
         setTextureAtlas(atlas);
-        RenderBlock rb = new RenderBlock(new BlockLayout(), txt1, new Vector3(3, 5, 3));
-        RenderBlock rb2 = new RenderBlock(new BlockLayout(), txt2, new Vector3(0, 0, 0));
-        RenderBlock rb3 = new RenderBlock(new BlockLayout(), txt1, new Vector3(1, 2, 1));
-        RenderChunk rc = new RenderChunk(Arrays.asList(rb, rb2, rb3), getTextureAtlas());
-        getChunkHandler().addChunk(rc);
+
+        for(int cx = 0; cx < 8; cx++){
+            for(int cz = 0; cz < 8; cz++){
+                RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                rc.setPosition(cx * 16, 0, cz * 16);
+                for(int x = 0; x < 16; x++){
+                    for(int y = 0; y < 16; y++){
+                        for(int z = 0; z < 16; z++){
+                            RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+                            rc.addBlock(rb);
+                        }
+                    }
+                }
+                rc.regenerateChunk(getTextureAtlas());
+                getChunkHandler().addChunk(rc);
+            }
+        }
+
+        System.out.println(getChunkHandler().getRenderChunkList());
 
 
         MeshGameItem sh = (MeshGameItem) gi.clone(false);

@@ -26,11 +26,8 @@ public class RenderMesh {
     private final int vertexCount;
 
 
-    //TODO this needs to be redone to combine the blocks.
     public RenderMesh(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas){
         Layout layout = setupLayout(renderBlocks, textureAtlas);
-        DoubleStream ds = IntStream.range(0, layout.getIndices().length).mapToDouble(i -> layout.getIndices()[i]);
-        System.out.println(ds.boxed().collect(Collectors.toList()));
 
         FloatBuffer posBuffer = null;
         FloatBuffer texCoordsBuffer = null;
@@ -175,7 +172,6 @@ public class RenderMesh {
                 else
                     processedArray[i] = (secondArray[i] / textureAtlas.getNumberOfRows()) + rb.getTexture().getYOffset();
             }
-            System.out.println(textureAtlas.getNumberOfRows());
             float[] both = Arrays.copyOf(texCoords, texCoords.length+processedArray.length);
             System.arraycopy(processedArray, 0, both, texCoords.length, processedArray.length);
             texCoords = both;

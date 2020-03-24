@@ -45,7 +45,13 @@ public class SubOctChunk {
                 return pos.x == vec.x && pos.y == vec.y && pos.z == vec.z;
             }).collect(Collectors.toList());
             if(blcks.size() < 1) return null;
+            if(blcks.size() > 1) System.out.println("fweo");
             return blcks.get(0);
         }
+    }
+
+    public void printDebug(){
+        System.out.println(even);
+        System.out.println(odd);
     }
 }

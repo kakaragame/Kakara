@@ -4,6 +4,7 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.renderobjects.oct.OctChunk;
+import org.kakara.engine.renderobjects.renderlayouts.Face;
 import org.kakara.engine.scene.AbstractGameScene;
 
 import java.util.ArrayList;
@@ -39,39 +40,50 @@ public class RenderChunk extends MeshGameItem {
         block.setParentChunk(null);
     }
 
+    public OctChunk getOctChunk(){
+        return octChunk;
+    }
+
     public List<RenderBlock> calculateVisibleBlocks(List<RenderBlock> blocks){
-        final long startTime = System.currentTimeMillis();
         List<RenderBlock> output = new ArrayList<>();
-        System.out.println("Chunk : " + octChunk.get(new Vector3(1, 1, 1)));
         for(RenderBlock block : blocks){
             Vector3 pos = block.getPosition();
-            if(octChunk.get(pos.clone().add(1, 0, 0)) == null) {
+            block.clearFaces();
+            boolean found = false;
+            if(octChunk.get(new Vector3(pos.x, pos.y, pos.z + 1)) == null) {
+                block.addFace(Face.FRONT);
                 output.add(block);
-                continue;
+                found = true;
             }
-            if(octChunk.get(pos.clone().add(-1, 0, 0)) == null) {
-                output.add(block);
-                continue;
+            if(octChunk.get(new Vector3(pos.x, pos.y, pos.z - 1)) == null) {
+                block.addFace(Face.BACK);
+                if(!found)
+                    output.add(block);
             }
-            if(octChunk.get(pos.clone().add(0, 1, 0)) == null) {
-                output.add(block);
-                continue;
+            if(octChunk.get(new Vector3(pos.x, pos.y + 1, pos.z)) == null) {
+                block.addFace(Face.TOP);
+                if(!found)
+                    output.add(block);
+                found = true;
             }
-            if(octChunk.get(pos.clone().add(0, -1, 0)) == null) {
-                output.add(block);
-                continue;
+            if(octChunk.get(new Vector3(pos.x, pos.y -1, pos.z)) == null) {
+                block.addFace(Face.BOTTOM);
+                if(!found)
+                    output.add(block);
+                found = true;
             }
-            if(octChunk.get(pos.clone().add(0, 0, 1)) == null) {
-                output.add(block);
-                continue;
+            if(octChunk.get(new Vector3(pos.x + 1, pos.y, pos.z)) == null) {
+                block.addFace(Face.RIGHT);
+                if(!found)
+                    output.add(block);
+                found = true;
             }
-            if(octChunk.get(pos.clone().add(0, 0, -1)) == null) {
-                output.add(block);
+            if(octChunk.get(new Vector3(pos.x - 1, pos.y, pos.z)) == null) {
+                block.addFace(Face.LEFT);
+                if(!found)
+                    output.add(block);
             }
         }
-        final long endTime = System.currentTimeMillis();
-
-        System.out.println("Total execution time: " + (endTime - startTime) + "ms");
         return output;
     }
 

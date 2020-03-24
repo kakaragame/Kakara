@@ -105,43 +105,48 @@ public class MainGameScene extends AbstractGameScene {
         TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2, txt3), "D:\\ztestImgs", this);
         setTextureAtlas(atlas);
 
-//        final long startTime = System.currentTimeMillis();
-//        RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-//        rc.setPosition(0 * 16, 0*16, 0 * 16);
-//        for(int x = 0; x < 16; x++){
-//            for(int y = 0; y < 16; y++){
-//                for(int z = 0; z < 16; z++){
-//                    if(y == 5 || y==6) continue;
-//                    RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
-//                    rc.addBlock(rb);
-//                }
-//            }
-//        }
-//        rc.regenerateChunk(getTextureAtlas());
-//        getChunkHandler().addChunk(rc);
-//        final long endTime = System.currentTimeMillis();
-//        System.out.println("Time taken: " + (endTime - startTime) + "ms");
+        final long startTime = System.currentTimeMillis();
 
         for(int cx = 0; cx < 8; cx++){
-            for(int cy = 0; cy < 8; cy++){
-                for(int cz = 0; cz < 2; cz++){
-                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                    rc.setPosition(cx * 16, cy*16, cz * 16);
-                    for(int x = 0; x < 16; x++){
-                        for(int y = 0; y < 16; y++){
-                            for(int z = 0; z < 16; z++){
-                                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
-                                rc.addBlock(rb);
-                            }
+            for(int cz = 0; cz < 8; cz++){
+                RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                rc.setPosition(cx * 16, 0, cz * 16);
+                for(int x = 0; x < 16; x++){
+                    for(int y = 0; y < 16; y++){
+                        for(int z = 0; z < 16; z++){
+                            if(x > 3 && x < 6 && z == 5) continue;
+                            RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+                            rc.addBlock(rb);
                         }
                     }
-                    rc.regenerateChunk(getTextureAtlas());
-                    getChunkHandler().addChunk(rc);
                 }
+                rc.regenerateChunk(getTextureAtlas());
+                getChunkHandler().addChunk(rc);
             }
         }
 
-        System.out.println(getChunkHandler().getRenderChunkList());
+        final long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime) + "ms");
+//        for(int cx = 0; cx < 8; cx++){
+//            for(int cy = 0; cy < 8; cy++){
+//                for(int cz = 0; cz < 2; cz++){
+//                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+//                    rc.setPosition(cx * 16, cy*16, cz * 16);
+//                    for(int x = 0; x < 16; x++){
+//                        for(int y = 0; y < 16; y++){
+//                            for(int z = 0; z < 16; z++){
+//                                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+//                                rc.addBlock(rb);
+//                            }
+//                        }
+//                    }
+//                    rc.regenerateChunk(getTextureAtlas());
+//                    getChunkHandler().addChunk(rc);
+//                }
+//            }
+//        }
+
+//        System.out.println(getChunkHandler().getRenderChunkList());
 
 
         MeshGameItem sh = (MeshGameItem) gi.clone(false);

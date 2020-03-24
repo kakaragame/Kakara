@@ -14,18 +14,25 @@ public class OctChunk {
 
     public void add(RenderBlock block){
         Vector3 position = block.getPosition();
-        int index = (int) (Math.abs(Math.floor(position.x/2) + Math.floor(position.y/2) + Math.floor(position.z/2)));
+        int index = (int) (Math.abs(Math.floor(position.x/2 + position.y/2 + position.z/2)));
         if(octChunks.size() > index){
             octChunks.get(index).add(block);
         }else{
-            while(octChunks.size() < index){
+            do{
                 octChunks.add(new SubOctChunk());
-            }
+            }while(octChunks.size() <= index);
+            octChunks.get(index).add(block);
         }
     }
 
+    public List<SubOctChunk> getOctChunks(){
+        return octChunks;
+    }
+
     public RenderBlock get(Vector3 vec){
-        int index = (int) (Math.floor(Math.abs(vec.x)/2) + Math.floor(Math.abs(vec.y)/2) + Math.floor(Math.abs(vec.z)/2));
+        if(vec.x < 0 || vec.y < 0 || vec.z < 0) return null;
+        if(vec.x > 16 || vec.y > 16 || vec.z > 16) return null;
+        int index = (int) (Math.floor(vec.x/2 + vec.y/2 + vec.z/2));
         if(octChunks.size() <= index) return null;
         return octChunks.get(index).get(vec);
     }

@@ -112,7 +112,7 @@ public class Renderer {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, ags.getTextureAtlas().getTexture().getId());
-
+        glDisable(GL_CULL_FACE);
         for(RenderChunk renderChunk : renderChunks){
 //            System.out.println("ran");
 //            chunkShaderProgram.setUniform("material", new Material(ags.getTextureAtlas().getTexture()));
@@ -127,6 +127,8 @@ public class Renderer {
 
             renderChunk.render();
         }
+        glEnable(GL_CULL_FACE);
+
 
         glBindTexture(GL_TEXTURE_2D, 0);
 

@@ -19,6 +19,9 @@ public class TextureAtlas {
     private String output;
     private List<RenderTexture> textures;
 
+    public static final int textureWidth = 300;
+    public static final int textureHeight = 225;
+
     private Texture texture;
 
     private int numberOfRows;
@@ -45,11 +48,11 @@ public class TextureAtlas {
     }
 
     public float getXOffset(int id){
-        return (float) id / this.numberOfRows;
+        return ((float) id % numberOfRows)/numberOfRows;
     }
 
     public float getYOffset(int id){
-        return (float) Math.floor((double) id / (double) numberOfRows);
+        return (float) Math.floor((double) id / (double) numberOfRows)/numberOfRows;
     }
 
     private void calculateTextureAtlas(List<RenderTexture> textures) throws IOException {
@@ -61,17 +64,18 @@ public class TextureAtlas {
 
         int numOfRows = (int) Math.ceil(Math.sqrt(tempFiles.size()));
         this.numberOfRows = numOfRows;
-        int w = 500 * numOfRows;
-        int h = 375 * numOfRows;
+
+        int w = textureWidth * numOfRows;
+        int h = textureHeight * numOfRows;
 
         BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics g = combined.getGraphics();
 
         int i = 0;
-        for(int y = 0; y < h; y += 375){
-            for(int x = 0; x < w; x+=500){
+        for(int y = 0; y < h; y += textureHeight){
+            for(int x = 0; x < w; x+=textureWidth){
                 if(i >= tempFiles.size()) break;
-                g.drawImage(scale(ImageIO.read(tempFiles.get(i)), 500, 375), x, y, null);
+                g.drawImage(scale(ImageIO.read(tempFiles.get(i)), textureWidth, textureHeight), x, y, null);
                 this.textures.get(i).init(i, this.getXOffset(i), this.getYOffset(i));
                 i++;
             }
@@ -88,6 +92,9 @@ public class TextureAtlas {
         if (imageToScale != null) {
             scaledImage = new BufferedImage(dWidth, dHeight, imageToScale.getType());
             Graphics2D graphics2D = scaledImage.createGraphics();
+            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             graphics2D.drawImage(imageToScale, 0, 0, dWidth, dHeight, null);
             graphics2D.dispose();
         }

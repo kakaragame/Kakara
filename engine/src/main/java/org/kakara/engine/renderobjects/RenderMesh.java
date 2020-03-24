@@ -146,18 +146,9 @@ public class RenderMesh {
 
         float[] texCoords = {};
         for (RenderBlock rb : renderBlocks) {
-            float[] secondArray = rb.getTextureFromFaces();
-            // We need to calculate the texture positions based upon the offset of the texture atlas.
-            float[] processedArray = new float[secondArray.length];
-            for (int i = 0; i < secondArray.length; i++) {
-
-                if (i % 2 == 0)
-                    processedArray[i] = (secondArray[i] / textureAtlas.getNumberOfRows()) + rb.getTexture().getXOffset();
-                else
-                    processedArray[i] = (secondArray[i] / textureAtlas.getNumberOfRows()) + rb.getTexture().getYOffset();
-            }
-            float[] both = Arrays.copyOf(texCoords, texCoords.length + processedArray.length);
-            System.arraycopy(processedArray, 0, both, texCoords.length, processedArray.length);
+            float[] secondArray = rb.getTextureFromFaces(textureAtlas);
+            float[] both = Arrays.copyOf(texCoords, texCoords.length + secondArray.length);
+            System.arraycopy(secondArray, 0, both, texCoords.length, secondArray.length);
             texCoords = both;
         }
 

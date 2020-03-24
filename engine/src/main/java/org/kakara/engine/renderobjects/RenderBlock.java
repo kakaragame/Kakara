@@ -104,28 +104,28 @@ public class RenderBlock {
         return vertex;
     }
 
-    protected float[] getTextureFromFaces(){
+    protected float[] getTextureFromFaces(TextureAtlas atlas){
         float[] vertex = {};
         for(Face f : this.visibleFaces){
             float[] temp;
             switch(f){
                 case FRONT:
-                    temp = layout.getTextureCords().getFront();
+                    temp = layout.getTextureCords().getFront(getTexture().getXOffset(), getTexture().getYOffset(), atlas.getNumberOfRows());
                     break;
                 case BACK:
-                    temp = layout.getTextureCords().getBack();
+                    temp = layout.getTextureCords().getBack(getTexture().getXOffset(), getTexture().getYOffset(), atlas.getNumberOfRows());
                     break;
                 case TOP:
-                    temp = layout.getTextureCords().getTop();
+                    temp = layout.getTextureCords().getTop(getTexture().getXOffset(), getTexture().getYOffset(), atlas.getNumberOfRows());
                     break;
                 case BOTTOM:
-                    temp = layout.getTextureCords().getBottom();
+                    temp = layout.getTextureCords().getBottom(getTexture().getXOffset(), getTexture().getYOffset(), atlas.getNumberOfRows());
                     break;
                 case LEFT:
-                    temp = layout.getTextureCords().getLeft();
+                    temp = layout.getTextureCords().getLeft(getTexture().getXOffset(), getTexture().getYOffset(), atlas.getNumberOfRows());
                     break;
                 case RIGHT:
-                    temp = layout.getTextureCords().getRight();
+                    temp = layout.getTextureCords().getRight(getTexture().getXOffset(), getTexture().getYOffset(), atlas.getNumberOfRows());
                     break;
                 default:
                     temp = new float[0];

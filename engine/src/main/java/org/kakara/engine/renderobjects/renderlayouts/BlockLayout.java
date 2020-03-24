@@ -62,51 +62,63 @@ public class BlockLayout implements Layout {
     public Texture getTextureCords() {
         return new Texture() {
             @Override
-            public float[] getFront() {
-                return new float[]{0.25f, 0.33f,
-                        0.25f, 0.66f,
-                        0.5f, 0.66f,
-                        0.5f, 0.33f};
+            public float[] getFront(float xOffset, float yOffset, int rows) {
+                return new float[]{
+                        0.25f/rows + xOffset, 0.33f/rows + yOffset,
+                        0.25f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.5f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.5f/rows + xOffset, 0.33f/rows + yOffset
+                };
             }
 
             @Override
-            public float[] getBack() {
-                return new float[]{1f, 0.33f,
-                        1f, 0.66f,
-                        0.75f, 0.66f,
-                        0.75f, 0.33f};
+            public float[] getBack(float xOffset, float yOffset, int rows) {
+                return new float[]{
+                        1f/rows + xOffset, 0.33f/rows + yOffset,
+                        1f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.75f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.75f/rows + xOffset, 0.33f/rows + yOffset
+                };
             }
 
             @Override
-            public float[] getTop() {
-                return new float[]{0.25f, 0,
-                        0.25f, 0.33f,
-                        0.5f, 0.33f,
-                        0.5f, 0,};
+            public float[] getTop(float xOffset, float yOffset, int rows) {
+                return new float[]{
+                        0.25f/rows + xOffset, 0 + yOffset,
+                        0.25f/rows + xOffset, 0.33f/rows + yOffset,
+                        0.5f/rows + xOffset, 0.33f/rows + yOffset,
+                        0.5f/rows + xOffset, 0 + yOffset
+                };
             }
 
             @Override
-            public float[] getBottom() {
-                return new float[]{0.25f, 0.66f,
-                        0.25f, 1,
-                        0.5f, 1,
-                        0.5f, 0.66f};
+            public float[] getBottom(float xOffset, float yOffset, int rows) {
+                return new float[]{
+                        0.25f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.25f/rows + xOffset, 1f/rows + yOffset,
+                        0.5f/rows + xOffset, 1f/rows + yOffset,
+                        0.5f/rows + xOffset, 0.66f/rows + yOffset
+                };
             }
 
             @Override
-            public float[] getRight() {
-                return new float[]{0.5f, 0.33f,
-                        0.5f, 0.66f,
-                        0.75f, 0.66f,
-                        0.75f, 0.33f};
+            public float[] getRight(float xOffset, float yOffset, int rows) {
+                return new float[]{
+                        0.5f/rows + xOffset, 0.33f/rows + yOffset,
+                        0.5f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.75f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.75f/rows + xOffset, 0.33f/rows + yOffset
+                };
             }
 
             @Override
-            public float[] getLeft() {
-                return new float[]{0, 0.33f,
-                        0, 0.66f,
-                        0.25f, 0.66f,
-                        0.25f, 0.33f};
+            public float[] getLeft(float xOffset, float yOffset, int rows) {
+                return new float[]{
+                        0 + xOffset, 0.33f/rows + yOffset,
+                        0 + xOffset, 0.66f/rows + yOffset,
+                        0.25f/rows + xOffset, 0.66f/rows + yOffset,
+                        0.25f/rows + xOffset, 0.33f/rows + yOffset
+                };
             }
         };
     }

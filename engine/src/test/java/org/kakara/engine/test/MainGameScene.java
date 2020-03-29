@@ -15,6 +15,11 @@ import org.kakara.engine.lighting.LightColor;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
+import org.kakara.engine.renderobjects.RenderBlock;
+import org.kakara.engine.renderobjects.RenderChunk;
+import org.kakara.engine.renderobjects.RenderTexture;
+import org.kakara.engine.renderobjects.TextureAtlas;
+import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.Text;
@@ -25,6 +30,9 @@ import org.kakara.engine.utils.Utils;
 import org.kakara.engine.weather.Fog;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -65,7 +73,7 @@ public class MainGameScene extends AbstractGameScene {
         player = object;
         //Load Blocks
 
-        InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 19600);
+        InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, 10000);
         InputStream io = Texture.class.getResourceAsStream("/example_texture.png");
         Texture grass = Utils.inputStreamToTexture(io);
         Material mt = new Material(grass);
@@ -79,21 +87,62 @@ public class MainGameScene extends AbstractGameScene {
         MeshGameItem gi = new MeshGameItem(mesh);
         add(gi);
         gi.setPosition(0, 0, -5);
-        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
-        SkyBox skyBox = new SkyBox(skyb, true);
-        setSkyBox(skyBox);
+//        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
+//        SkyBox skyBox = new SkyBox(skyb, true);
+//        setSkyBox(skyBox);
 
+        /*
 
-        for (int x = 0; x > -140; x--) {
-            for(int y = 0; y > -1; y--){
-                for (int z = 0; z > -140; z--) {
-                    MeshGameItem gis = (MeshGameItem) gi.clone(false);
-                    gis.setPosition(x, y, z);
-                    gis.setCollider(new ObjectBoxCollider(false, true));
-                    getItemHandler().addItem(gis);
+        ==================================================
+                       Test of Render Chunks
+        ===================================================
+
+         */
+        RenderTexture txt1 = new RenderTexture(resourceManager.getResource("/example_texture.png"));
+        RenderTexture txt2 = new RenderTexture(resourceManager.getResource("/oop.png"));
+        System.out.println(resourceManager.getResource("/m.png").getInputStream());
+        RenderTexture txt3 = new RenderTexture(resourceManager.getResource("/m.png"));
+        TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2, txt3), "D:\\ztestImgs", this);
+        setTextureAtlas(atlas);
+
+//        final long startTime = System.currentTimeMillis();
+//        RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+//        rc.setPosition(0 * 16, 0*16, 0 * 16);
+//        for(int x = 0; x < 16; x++){
+//            for(int y = 0; y < 16; y++){
+//                for(int z = 0; z < 16; z++){
+//                    if(y == 5 || y==6) continue;
+//                    RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+//                    rc.addBlock(rb);
+//                }
+//            }
+//        }
+//        rc.regenerateChunk(getTextureAtlas());
+//        getChunkHandler().addChunk(rc);
+//        final long endTime = System.currentTimeMillis();
+//        System.out.println("Time taken: " + (endTime - startTime) + "ms");
+
+        for(int cx = 0; cx < 8; cx++){
+            for(int cy = 0; cy < 8; cy++){
+                for(int cz = 0; cz < 2; cz++){
+                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                    rc.setPosition(cx * 16, cy*16, cz * 16);
+                    for(int x = 0; x < 16; x++){
+                        for(int y = 0; y < 16; y++){
+                            for(int z = 0; z < 16; z++){
+                                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+                                rc.addBlock(rb);
+                            }
+                        }
+                    }
+                    rc.regenerateChunk(getTextureAtlas());
+                    getChunkHandler().addChunk(rc);
                 }
             }
         }
+
+        System.out.println(getChunkHandler().getRenderChunkList());
+
 
         MeshGameItem sh = (MeshGameItem) gi.clone(false);
         sh.setPosition(-4, 3, -4);

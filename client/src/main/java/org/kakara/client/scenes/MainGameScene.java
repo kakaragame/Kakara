@@ -87,10 +87,10 @@ public class MainGameScene extends AbstractGameScene {
         ChunkGenerator generator = Kakara.getWorldGenerationManager().getChunkGenerators().get(0);
         if (generator == null) System.out.println("TELL ME HOW THIS HAPPENED");
         ChunkBase base = null;
-        for (int i = -8; i <= 8; i = i + 4) {
-            for (int j = -8; j <= 8; j = j + 4) {
-                for (int z = -8; z <= 8; z = z + 4) {
-                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, i, j, z,new ArrayList<>(), null)));
+        for (int x = 0; x <= 64; x = x + 16) {
+            for (int y = 0; y <= 64; y = y + 16) {
+                for (int z = 0; z <= 64; z = z + 16) {
+                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z,new ArrayList<>(), null)));
                 }
             }
         }
@@ -131,7 +131,10 @@ public class MainGameScene extends AbstractGameScene {
             RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
             rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
             for (GameBlock gb : cb.getGameBlocks()) {
-                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), MoreUtils.locationToVector3(gb.getLocation()));
+                Vector3 vector3 =MoreUtils.locationToVector3(gb.getLocation());
+                vector3 = vector3.subtract(cb.getX(),cb.getY(),cb.getZ());
+                System.out.println("vector3.toString() = " + vector3.toString());
+                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
                 rc.addBlock(rb);
             }
             rc.regenerateChunk(getTextureAtlas());

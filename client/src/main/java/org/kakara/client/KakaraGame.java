@@ -111,4 +111,8 @@ public class KakaraGame implements Game {
     public Font getFont() {
         return font;
     }
+
+    public int getTPS() {
+        return 20;
+    }
 }

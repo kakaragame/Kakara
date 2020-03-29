@@ -56,7 +56,6 @@ public class TextureAtlas {
         // This might now work V
         List<InputStream> tempFiles = textures.stream().map(text -> text.getResource().getInputStream()).collect(Collectors.toList());
 
-        System.out.println(tempFiles.get(0));
 
 
         int numOfRows = (int) Math.ceil(Math.sqrt(tempFiles.size()));

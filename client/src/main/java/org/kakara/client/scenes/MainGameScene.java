@@ -30,6 +30,11 @@ import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.models.TextureCache;
+import org.kakara.engine.renderobjects.RenderBlock;
+import org.kakara.engine.renderobjects.RenderChunk;
+import org.kakara.engine.renderobjects.RenderTexture;
+import org.kakara.engine.renderobjects.TextureAtlas;
+import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.utils.Utils;
 
@@ -37,10 +42,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -86,8 +89,9 @@ public class MainGameScene extends AbstractGameScene {
         ChunkBase base = null;
         for (int i = -8; i <= 8; i = i + 4) {
             for (int j = -8; j <= 8; j = j + 4) {
-                myChunk.add(generator.generateChunk(45, new ChunkBase(null, i, j, new ArrayList<>())));
-
+                for (int z = -8; z <= 8; z = z + 4) {
+                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, i, j, z,new ArrayList<>(), null)));
+                }
             }
         }
 
@@ -100,33 +104,39 @@ public class MainGameScene extends AbstractGameScene {
         long currentTime = System.currentTimeMillis();
 
         var resourceManager = gameHandler.getResourceManager();
+
+        List<RenderTexture> textures = new ArrayList<>();
+
+        for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {
+            try {
+                RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.getLocalPath()));
+                textures.add(txt1);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(textures.size());
+        File file = new File(Kakara.getWorkingDirectory(), "tmp");
+        if(!file.exists()){
+            file.mkdir();
+        }
+        TextureAtlas atlas = new TextureAtlas(textures, file.getAbsolutePath(), this);
+        setTextureAtlas(atlas);
         try {
             setSkyBox(new SkyBox(loadSkyBoxTexture(), true));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Map<ItemStack, List<Location>> gameBlockMutableIntMap = MoreUtils.sortByType(myChunk);
-        System.out.println(MoreUtils.calculateSize(gameBlockMutableIntMap));
-        for (Map.Entry<ItemStack, List<Location>> entry : gameBlockMutableIntMap.entrySet()) {
-            InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, entry.getValue().size());
-
-            Resource resource = Kakara.getResourceManager().getTexture(entry.getKey().getItem().getTexture(), TextureResolution._16, entry.getKey().getItem().getMod());
-            Material mt = null;
-            try {
-                mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+        for (ChunkBase cb : myChunk) {
+            RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+            rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+            for (GameBlock gb : cb.getGameBlocks()) {
+                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), MoreUtils.locationToVector3(gb.getLocation()));
+                rc.addBlock(rb);
             }
-            mesh.setMaterial(mt);
-            for (Location location : entry.getValue()) {
-                MeshGameItem item = new MeshGameItem(mesh);
-                item.setPosition(MoreUtils.locationToVector3(location));
-                item.setCollider(new ObjectBoxCollider(false, true));
-                item.setMesh(mesh);
-                add(item);
-            }
+            rc.regenerateChunk(getTextureAtlas());
+            getChunkHandler().addChunk(rc);
         }
-
 
         PointLight pointLight = new PointLight(new LightColor(255, 255, 0), new Vector3(1, 1, 1), 1);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);

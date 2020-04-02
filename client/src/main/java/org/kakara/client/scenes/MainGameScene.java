@@ -115,7 +115,6 @@ public class MainGameScene extends AbstractGameScene {
                 e.printStackTrace();
             }
         }
-        System.out.println(textures.size());
         File file = new File(Kakara.getWorkingDirectory(), "tmp");
         if(!file.exists()){
             file.mkdir();
@@ -130,10 +129,10 @@ public class MainGameScene extends AbstractGameScene {
         for (ChunkBase cb : myChunk) {
             RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
             rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+            System.out.println(cb.getGameBlocks().size());
             for (GameBlock gb : cb.getGameBlocks()) {
                 Vector3 vector3 =MoreUtils.locationToVector3(gb.getLocation());
                 vector3 = vector3.subtract(cb.getX(),cb.getY(),cb.getZ());
-                System.out.println("vector3.toString() = " + vector3.toString());
                 RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
                 rc.addBlock(rb);
             }

@@ -5,16 +5,14 @@ import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.core.Kakara;
+import org.kakara.core.Utils;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.UnModObject;
 import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
-import org.kakara.core.world.ChunkBase;
-import org.kakara.core.world.ChunkGenerator;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
+import org.kakara.core.world.*;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
@@ -37,11 +35,13 @@ import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
-import org.kakara.engine.utils.Utils;
+import org.kakara.game.client.ClientChunk;
+import org.kakara.game.client.ClientChunkWriter;
 import org.kakara.game.items.blocks.AirBlock;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.*;
@@ -97,7 +97,19 @@ public class MainGameScene extends AbstractGameScene {
                 }
             }
         }
+        File file = new File(Kakara.getWorkingDirectory(), "world");
+        if(!file.exists()) file.delete();
+        file.mkdir();
+        ClientChunkWriter clientChunkWriter = new ClientChunkWriter(file);
+        for (ChunkBase chunkBase : myChunk) {
 
+            ClientChunk clientChunk = new ClientChunk(chunkBase);
+            try {
+                clientChunkWriter.saveChunk(clientChunk);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         //myChunk.add(generator.generateChunk(45, base));
         kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
     }
@@ -131,10 +143,11 @@ public class MainGameScene extends AbstractGameScene {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         for (ChunkBase cb : myChunk) {
             RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
             rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
-            System.out.println(cb.getGameBlocks().size());
+
             for (GameBlock gb : cb.getGameBlocks()) {
                 if (gb.getItemStack().getItem() instanceof AirBlock) continue;
                 Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());

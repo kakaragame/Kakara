@@ -8,9 +8,11 @@ import org.kakara.core.game.*;
 import org.kakara.core.game.entity.EntityManager;
 import org.kakara.core.mod.ModManager;
 import org.kakara.core.mod.game.GameModManager;
+import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.resources.ResourceManager;
 import org.kakara.core.sound.SoundManager;
 import org.kakara.core.world.WorldGenerationManager;
+import org.kakara.core.world.WorldManager;
 import org.kakara.engine.utils.Utils;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
@@ -20,6 +22,7 @@ import org.kakara.game.resources.GameResourceManager;
 import org.kakara.game.world.GameWorldGenerationManager;
 
 import java.io.File;
+import java.util.UUID;
 
 public class Client implements GameInstance {
     private GameSettings settings;
@@ -57,7 +60,7 @@ public class Client implements GameInstance {
         if (item instanceof CustomStackable) {
             return ((CustomStackable) item).createItemStack();
         }
-        return new GameItemStack(1, item, new GameMetaData(item.getName()));
+        return new GameItemStack(1, item);
     }
 
     @Override
@@ -86,6 +89,11 @@ public class Client implements GameInstance {
     }
 
     @Override
+    public WorldManager getWorldManager() {
+        return null;
+    }
+
+    @Override
     public ModManager getModManager() {
         return modManager;
     }
@@ -103,6 +111,11 @@ public class Client implements GameInstance {
     @Override
     public WorldGenerationManager getWorldGenerationManager() {
         return worldGenerationManager;
+    }
+
+    @Override
+    public OfflinePlayer getOfflinePlayer(UUID uuid) {
+        return null;
     }
 
     @Override

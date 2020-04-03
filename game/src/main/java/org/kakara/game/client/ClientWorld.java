@@ -17,10 +17,12 @@ import java.util.UUID;
 public class ClientWorld implements World {
     private File file;
     private JsonObject worldSettings;
+    private Location worldSpawn;
+    private ClientChunkWriter clientChunkWriter;
 
     public ClientWorld(JsonElement element, GameSave save) throws WorldLoadException {
         file = new File(save.getSaveFolder(), element.getAsString());
-
+        clientChunkWriter = new ClientChunkWriter(this);
     }
 
     @Override
@@ -59,6 +61,16 @@ public class ClientWorld implements World {
     }
 
     @Override
+    public Location getWorldSpawn() {
+        return worldSpawn;
+    }
+
+    @Override
+    public void setWorldSpawn(Location location) {
+        worldSpawn = location;
+    }
+
+    @Override
     public Chunk getChunkAt(int i, int i1) {
         return null;
     }
@@ -81,5 +93,13 @@ public class ClientWorld implements World {
     @Override
     public Chunk[] getLoadedChunks() {
         return new Chunk[0];
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public ClientChunkWriter getClientChunkWriter() {
+        return clientChunkWriter;
     }
 }

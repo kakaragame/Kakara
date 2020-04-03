@@ -3,6 +3,7 @@ package org.kakara.client.scenes;
 import org.joml.Vector3f;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.core.Kakara;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.mod.Mod;
@@ -57,6 +58,7 @@ public class MainGameScene extends AbstractGameScene {
 
     private MeshGameItem player;
     private List<ChunkBase> myChunk = new ArrayList<>();
+    private boolean debugMode = false;
 
     public MainGameScene(GameHandler gameHandler, KakaraGame kakaraGame, List<File> modsToLoad) throws Exception {
         super(gameHandler);
@@ -102,6 +104,8 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void loadGraphics() {
+        getHUD().addFont(kakaraGame.getFont());
+        getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
         long currentTime = System.currentTimeMillis();
 
         var resourceManager = gameHandler.getResourceManager();
@@ -207,6 +211,9 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float s) {
+        if (debugMode) {
+            DebugModeCanvas.getInstance(kakaraGame, this).update();
+        }
         if (player == null) return;
 
         KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
@@ -228,6 +235,7 @@ public class MainGameScene extends AbstractGameScene {
         if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
             player.movePosition(0, 1.1F, 0);
         }
+
         MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
         player.moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
         if (kakaraGame.getGameHandler().getSoundManager().getListener() != null)
@@ -239,7 +247,15 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
-
+        if (e.isKeyPressed(GLFW_KEY_F3)) {
+            if (debugMode) {
+                debugMode = false;
+                DebugModeCanvas.getInstance(kakaraGame, this).remove();
+            } else {
+                debugMode = true;
+                DebugModeCanvas.getInstance(kakaraGame, this).add();
+            }
+        }
         if (e.isKeyPressed(GLFW_KEY_ESCAPE)) {
             System.exit(1);
         }

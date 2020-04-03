@@ -37,6 +37,7 @@ import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.utils.Utils;
+import org.kakara.game.items.blocks.AirBlock;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -90,7 +91,7 @@ public class MainGameScene extends AbstractGameScene {
         for (int x = 0; x <= 64; x = x + 16) {
             for (int y = 0; y <= 64; y = y + 16) {
                 for (int z = 0; z <= 64; z = z + 16) {
-                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z,new ArrayList<>(), null)));
+                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z, new ArrayList<>(), null)));
                 }
             }
         }
@@ -116,7 +117,7 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
         File file = new File(Kakara.getWorkingDirectory(), "tmp");
-        if(!file.exists()){
+        if (!file.exists()) {
             file.mkdir();
         }
         TextureAtlas atlas = new TextureAtlas(textures, file.getAbsolutePath(), this);
@@ -131,8 +132,9 @@ public class MainGameScene extends AbstractGameScene {
             rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
             System.out.println(cb.getGameBlocks().size());
             for (GameBlock gb : cb.getGameBlocks()) {
-                Vector3 vector3 =MoreUtils.locationToVector3(gb.getLocation());
-                vector3 = vector3.subtract(cb.getX(),cb.getY(),cb.getZ());
+                if (gb.getItemStack().getItem() instanceof AirBlock) continue;
+                Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
+                vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
                 RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
                 rc.addBlock(rb);
             }

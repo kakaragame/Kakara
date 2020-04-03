@@ -1,6 +1,9 @@
 package org.kakara.game.client;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.kakara.core.client.Save;
+import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.Block;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.world.Chunk;
@@ -8,10 +11,15 @@ import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.core.world.World;
 
+import java.io.File;
 import java.util.UUID;
 
 public class ClientWorld implements World {
-    public ClientWorld(JsonElement element) {
+    private File file;
+    private JsonObject worldSettings;
+
+    public ClientWorld(JsonElement element, GameSave save) throws WorldLoadException {
+        file = new File(save.getSaveFolder(), element.getAsString());
 
     }
 

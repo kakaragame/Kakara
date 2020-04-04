@@ -1,6 +1,8 @@
 package org.kakara.client.scenes.canvases;
 
 import org.kakara.client.KakaraGame;
+import org.kakara.core.world.Chunk;
+import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
@@ -52,7 +54,7 @@ public class DebugModeCanvas extends ComponentCanvas {
     public void update() {
         Vector3 v = kakaraGame.getGameHandler().getCamera().getPosition();
         location.setText(String.format(locationFormat, v.x, v.y, v.z));
-        Location l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));
+        ChunkLocation l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));
         chunkLocation.setText(String.format(locationFormat, l.getX(), l.getY(), l.getZ()));
         fps.setText("FPS: " + Math.round(1 / Time.deltaTime));
     }

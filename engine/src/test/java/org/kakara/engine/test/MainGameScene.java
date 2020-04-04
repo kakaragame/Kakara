@@ -112,7 +112,7 @@ public class MainGameScene extends AbstractGameScene {
         for(int cx = 0; cx < 4; cx++){
             for(int cz = 0; cz < 4; cz++){
                 RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                rc.setPosition(cx * 16, 0, cz * 16);
+                rc.setPosition(cx * 16, -16, cz * 16);
                 for(int x = 0; x < 16; x++){
                     for(int y = 0; y < 16; y++){
                         for(int z = 0; z < 16; z++){
@@ -162,7 +162,7 @@ public class MainGameScene extends AbstractGameScene {
         this.add(pointLight);
 
 
-        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 223, 0), new Vector3(0, 1, 0.5f), 0.3f);
+        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 255, 255), new Vector3(0, 1, 0.5f), 0.5f);
         directionalLight.setShadowPosMult(8);
         directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
         getLightHandler().setDirectionalLight(directionalLight);
@@ -173,7 +173,7 @@ public class MainGameScene extends AbstractGameScene {
 
          */
 
-        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.05f));
+        setFog(new Fog(true, new Vector3(1f, 1f, 1f), 0.005f));
 
 
         ComponentCanvas cc = new ComponentCanvas(this);
@@ -303,7 +303,7 @@ public class MainGameScene extends AbstractGameScene {
         lightDirection.y = yValue;
         lightDirection.z = zValue;
         lightDirection.normalize();
-        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
+//        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
 
         particleEmitter.update((long) (interval * 1000));
     }

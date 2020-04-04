@@ -92,25 +92,27 @@ public class MainGameScene extends AbstractGameScene {
         for (int x = 0; x <= 64; x = x + 16) {
             for (int y = -128; y <= 128; y = y + 16) {
                 for (int z = 0; z <= 64; z = z + 16) {
-                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z,new ArrayList<>(), null)));
+                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z, new ArrayList<>(), null)));
                 }
             }
         }
-        File file = new File(Kakara.getWorkingDirectory(), "world");
-        if(!file.exists()) file.delete();
-        file.mkdir();
-        ClientChunkWriter clientChunkWriter = new ClientChunkWriter(file);
-        for (ChunkBase chunkBase : myChunk) {
 
-            ClientChunk clientChunk = new ClientChunk(chunkBase);
-            try {
-                clientChunkWriter.saveChunk(clientChunk);
-            } catch (IOException e) {
-                e.printStackTrace();
+            File file = new File(Kakara.getWorkingDirectory(), "world");
+            if (!file.exists()) file.delete();
+            file.mkdir();
+            ClientChunkWriter clientChunkWriter = new ClientChunkWriter(file);
+            for (ChunkBase chunkBase : myChunk) {
+
+                ClientChunk clientChunk = new ClientChunk(chunkBase);
+                try {
+                    clientChunkWriter.saveChunk(clientChunk);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        //myChunk.add(generator.generateChunk(45, base));
-        kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
+            //myChunk.add(generator.generateChunk(45, base));
+            kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
+
     }
 
     @Override

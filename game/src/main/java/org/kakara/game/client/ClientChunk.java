@@ -1,18 +1,15 @@
 package org.kakara.game.client;
 
-import org.kakara.core.world.Chunk;
-import org.kakara.core.world.ChunkBase;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
+import org.kakara.core.world.*;
 
 import java.util.List;
 
 public class ClientChunk implements Chunk {
-    private Location location;
+    private ChunkLocation location;
     private List<GameBlock> gameBlockList;
 
     public ClientChunk(ChunkBase base) {
-        location = new Location(base.getX(), base.getY(), base.getZ());
+        location = new ChunkLocation(base.getX(), base.getY(), base.getZ());
         gameBlockList = base.getGameBlocks();
     }
 
@@ -22,7 +19,7 @@ public class ClientChunk implements Chunk {
     }
 
     @Override
-    public Location getLocation() {
+    public ChunkLocation getLocation() {
         return location;
     }
 }

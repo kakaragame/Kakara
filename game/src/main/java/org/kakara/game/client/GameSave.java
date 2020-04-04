@@ -53,7 +53,6 @@ public class GameSave implements Save {
         return null;
     }
 
-    @Override
     public Player getPlayerLocation(UUID uuid) {
         File players = new File(playersFolder, uuid.toString() + ".json");
         if (!players.exists()) {

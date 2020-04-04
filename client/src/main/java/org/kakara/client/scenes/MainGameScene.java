@@ -96,22 +96,18 @@ public class MainGameScene extends AbstractGameScene {
                 }
             }
         }
-
-            File file = new File(Kakara.getWorkingDirectory(), "world");
-            if (!file.exists()) file.delete();
-            file.mkdir();
-            ClientChunkWriter clientChunkWriter = new ClientChunkWriter(file);
-            for (ChunkBase chunkBase : myChunk) {
-
-                ClientChunk clientChunk = new ClientChunk(chunkBase);
-                try {
-                    clientChunkWriter.saveChunk(clientChunk);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            //myChunk.add(generator.generateChunk(45, base));
-            kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
+        long start = System.currentTimeMillis();
+        File file = new File(Kakara.getWorkingDirectory(), "world");
+        if (!file.exists()) file.delete();
+        file.mkdir();
+        ClientChunkWriter clientChunkWriter = new ClientChunkWriter(file);
+        try {
+            clientChunkWriter.saveChunks(myChunk.stream().map(ClientChunk::new).collect(Collectors.toList()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(start - System.currentTimeMillis());
+        kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
 
     }
 

@@ -105,43 +105,50 @@ public class MainGameScene extends AbstractGameScene {
         TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2, txt3), "D:\\ztestImgs", this);
         setTextureAtlas(atlas);
 
-//        final long startTime = System.currentTimeMillis();
-//        RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-//        rc.setPosition(0 * 16, 0*16, 0 * 16);
-//        for(int x = 0; x < 16; x++){
-//            for(int y = 0; y < 16; y++){
-//                for(int z = 0; z < 16; z++){
-//                    if(y == 5 || y==6) continue;
-//                    RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
-//                    rc.addBlock(rb);
-//                }
-//            }
-//        }
-//        rc.regenerateChunk(getTextureAtlas());
-//        getChunkHandler().addChunk(rc);
-//        final long endTime = System.currentTimeMillis();
-//        System.out.println("Time taken: " + (endTime - startTime) + "ms");
+        System.out.println(txt3.getYOffset());
 
-        for(int cx = 0; cx < 8; cx++){
-            for(int cy = 0; cy < 8; cy++){
-                for(int cz = 0; cz < 2; cz++){
-                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                    rc.setPosition(cx * 16, cy*16, cz * 16);
-                    for(int x = 0; x < 16; x++){
-                        for(int y = 0; y < 16; y++){
-                            for(int z = 0; z < 16; z++){
-                                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
-                                rc.addBlock(rb);
-                            }
+        final long startTime = System.currentTimeMillis();
+
+        for(int cx = 0; cx < 4; cx++){
+            for(int cz = 0; cz < 4; cz++){
+                RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                rc.setPosition(cx * 16, -16, cz * 16);
+                for(int x = 0; x < 16; x++){
+                    for(int y = 0; y < 16; y++){
+                        for(int z = 0; z < 16; z++){
+                            if(y > 6 && y < 10) continue;
+                            RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+                            rc.addBlock(rb);
                         }
                     }
-                    rc.regenerateChunk(getTextureAtlas());
-                    getChunkHandler().addChunk(rc);
                 }
+                rc.regenerateChunk(getTextureAtlas());
+                getChunkHandler().addChunk(rc);
             }
         }
 
-        System.out.println(getChunkHandler().getRenderChunkList());
+        final long endTime = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTime - startTime) + "ms");
+//        for(int cx = 0; cx < 8; cx++){
+//            for(int cy = 0; cy < 8; cy++){
+//                for(int cz = 0; cz < 2; cz++){
+//                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+//                    rc.setPosition(cx * 16, cy*16, cz * 16);
+//                    for(int x = 0; x < 16; x++){
+//                        for(int y = 0; y < 16; y++){
+//                            for(int z = 0; z < 16; z++){
+//                                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+//                                rc.addBlock(rb);
+//                            }
+//                        }
+//                    }
+//                    rc.regenerateChunk(getTextureAtlas());
+//                    getChunkHandler().addChunk(rc);
+//                }
+//            }
+//        }
+
+//        System.out.println(getChunkHandler().getRenderChunkList());
 
 
         MeshGameItem sh = (MeshGameItem) gi.clone(false);
@@ -155,7 +162,7 @@ public class MainGameScene extends AbstractGameScene {
         this.add(pointLight);
 
 
-        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 223, 0), new Vector3(0, 1, 0.5f), 0.3f);
+        DirectionalLight directionalLight = new DirectionalLight(new LightColor(255, 255, 255), new Vector3(0, 1, 0.5f), 0.5f);
         directionalLight.setShadowPosMult(8);
         directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
         getLightHandler().setDirectionalLight(directionalLight);
@@ -166,7 +173,7 @@ public class MainGameScene extends AbstractGameScene {
 
          */
 
-        setFog(new Fog(true, new Vector3(0.5f, 0.5f, 0.5f), 0.05f));
+        setFog(new Fog(true, new Vector3(1f, 1f, 1f), 0.005f));
 
 
         ComponentCanvas cc = new ComponentCanvas(this);
@@ -306,7 +313,7 @@ public class MainGameScene extends AbstractGameScene {
         lightDirection.y = yValue;
         lightDirection.z = zValue;
         lightDirection.normalize();
-        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
+//        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
 
         particleEmitter.update((long) (interval * 1000));
     }

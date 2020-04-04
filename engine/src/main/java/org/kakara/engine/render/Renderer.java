@@ -77,7 +77,7 @@ public class Renderer {
 
 
         renderScene(window, camera, scene);
-        renderChunk(window, camera, scene);
+        renderChunk(window, camera, scene, false);
         renderParticles(window, camera, scene);
 
     }
@@ -88,7 +88,7 @@ public class Renderer {
      * @param camera
      * @param scene
      */
-    public void renderChunk(Window window, Camera camera, Scene scene){
+    public void renderChunk(Window window, Camera camera, Scene scene, boolean depthMap){
         if(!(scene instanceof AbstractGameScene)) return;
         AbstractGameScene ags = (AbstractGameScene) scene;
         chunkShaderProgram.bind();
@@ -112,21 +112,23 @@ public class Renderer {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, ags.getTextureAtlas().getTexture().getId());
-
+        glDisable(GL_CULL_FACE);
         for(RenderChunk renderChunk : renderChunks){
-//            System.out.println("ran");
-//            chunkShaderProgram.setUniform("material", new Material(ags.getTextureAtlas().getTexture()));
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
-
             Matrix4f modelMatrix = transformation.buildModelMatrix(renderChunk);
-            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
-            chunkShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+
+            if (!depthMap) {
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+                Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+                chunkShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+            }
             Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(modelMatrix, lightViewMatrix);
             chunkShaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
 
             renderChunk.render();
         }
+        glEnable(GL_CULL_FACE);
+
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -214,10 +216,13 @@ public class Renderer {
         Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
         DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
+        depthShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+
 
         renderNonInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
 
         renderInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
+        renderChunk(window, camera, scene, true);
 
         // Unbind
         depthShaderProgram.unbind();

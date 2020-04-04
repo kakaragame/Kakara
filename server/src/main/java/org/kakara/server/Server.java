@@ -10,11 +10,14 @@ import org.kakara.core.game.ItemManager;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.game.entity.EntityManager;
 import org.kakara.core.mod.ModManager;
+import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.resources.ResourceManager;
 import org.kakara.core.sound.SoundManager;
 import org.kakara.core.world.WorldGenerationManager;
+import org.kakara.core.world.WorldManager;
 
 import java.io.File;
+import java.util.UUID;
 
 public class Server implements GameInstance {
     @Override
@@ -53,6 +56,11 @@ public class Server implements GameInstance {
     }
 
     @Override
+    public WorldManager getWorldManager() {
+        return null;
+    }
+
+    @Override
     public ModManager getModManager() {
         return null;
     }
@@ -69,6 +77,11 @@ public class Server implements GameInstance {
 
     @Override
     public WorldGenerationManager getWorldGenerationManager() {
+        return null;
+    }
+
+    @Override
+    public OfflinePlayer getOfflinePlayer(UUID uuid) {
         return null;
     }
 

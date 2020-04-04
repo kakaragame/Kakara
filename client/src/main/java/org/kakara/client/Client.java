@@ -16,7 +16,6 @@ import org.kakara.core.world.WorldManager;
 import org.kakara.engine.utils.Utils;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
-import org.kakara.game.items.GameMetaData;
 import org.kakara.game.mod.KakaraMod;
 import org.kakara.game.resources.GameResourceManager;
 import org.kakara.game.world.GameWorldGenerationManager;

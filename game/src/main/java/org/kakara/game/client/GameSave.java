@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class GameSave implements Save {
-    private File saveFolder;
+    private final File saveFolder;
     private SaveSettings saveSettings;
     private File playersFolder;
 
@@ -46,6 +46,11 @@ public class GameSave implements Save {
             worlds.add(world);
         }
         return worlds;
+    }
+
+    @Override
+    public World getDefaultWorld() {
+        return null;
     }
 
     @Override

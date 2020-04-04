@@ -89,11 +89,10 @@ public class MainGameScene extends AbstractGameScene {
         ((GameModManager) Kakara.getModManager()).postEnable();
         ChunkGenerator generator = Kakara.getWorldGenerationManager().getChunkGenerators().get(0);
         if (generator == null) System.out.println("TELL ME HOW THIS HAPPENED");
-        ChunkBase base = null;
         for (int x = 0; x <= 64; x = x + 16) {
-            for (int y = 0; y <= 64; y = y + 16) {
+            for (int y = -128; y <= 128; y = y + 16) {
                 for (int z = 0; z <= 64; z = z + 16) {
-                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z, new ArrayList<>(), null)));
+                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z,new ArrayList<>(), null)));
                 }
             }
         }

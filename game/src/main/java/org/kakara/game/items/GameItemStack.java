@@ -3,20 +3,23 @@ package org.kakara.game.items;
 import org.kakara.core.charm.Charm;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
-import org.kakara.core.game.MetaData;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class GameItemStack implements ItemStack {
     private int count;
     private Item item;
-    private MetaData metaData;
+    private String name;
+    private List<String> lore;
 
-    public GameItemStack(int count, Item item, MetaData metaData) {
+    public GameItemStack(int count, Item item) {
         this.count = count;
         this.item = item;
-        this.metaData = metaData;
+        name = item.getName();
+        lore = new ArrayList<>();
     }
 
     @Override
@@ -24,10 +27,6 @@ public class GameItemStack implements ItemStack {
         return item;
     }
 
-    @Override
-    public MetaData getMetaData() {
-        return metaData;
-    }
 
     @Override
     public int getCount() {
@@ -36,7 +35,7 @@ public class GameItemStack implements ItemStack {
 
     @Override
     public void setCount(int count) {
-this.count = count;
+        this.count = count;
     }
 
     @Override
@@ -47,6 +46,16 @@ this.count = count;
     @Override
     public void addCharm(Charm charm, Byte level) {
 
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public List<String> getLore() {
+        return new ArrayList<>(lore);
     }
 
     @Override

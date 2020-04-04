@@ -10,12 +10,11 @@ import org.kakara.core.events.player.click.ClickEvent;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.game.ModBlock;
 
-@Texture("blocks/yeet.png")
-@Name("Yeet!")
-@Id("yeet")
-@Hardness(0f)
-public class YeetBlock extends ModBlock {
-    public YeetBlock(Mod mod) {
+@Name("Air")
+@Id("air")
+//Not to be rendered. It exists solely. So you can set a block to air.
+public class AirBlock extends ModBlock {
+    public AirBlock(Mod mod) {
         super(mod);
     }
 
@@ -29,6 +28,19 @@ public class YeetBlock extends ModBlock {
 
     }
 
+
+
+
+    @Override
+    public float getHardness() {
+        return 0;
+    }
+
+
+    @Override
+    public String getTexture() {
+        return "";
+    }
 
     @Override
     public void onClick(ClickEvent clickEvent) {

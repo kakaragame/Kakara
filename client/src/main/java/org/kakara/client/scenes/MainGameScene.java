@@ -3,17 +3,16 @@ package org.kakara.client.scenes;
 import org.joml.Vector3f;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.core.Kakara;
+import org.kakara.core.Utils;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.UnModObject;
 import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
-import org.kakara.core.world.ChunkBase;
-import org.kakara.core.world.ChunkGenerator;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
+import org.kakara.core.world.*;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.collision.ObjectBoxCollider;
@@ -30,17 +29,23 @@ import org.kakara.engine.lighting.SpotLight;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.models.TextureCache;
+import org.kakara.engine.renderobjects.RenderBlock;
+import org.kakara.engine.renderobjects.RenderChunk;
+import org.kakara.engine.renderobjects.RenderTexture;
+import org.kakara.engine.renderobjects.TextureAtlas;
+import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
-import org.kakara.engine.utils.Utils;
+import org.kakara.game.client.ClientChunk;
+import org.kakara.game.client.ClientChunkWriter;
+import org.kakara.game.items.blocks.AirBlock;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -53,6 +58,7 @@ public class MainGameScene extends AbstractGameScene {
 
     private MeshGameItem player;
     private List<ChunkBase> myChunk = new ArrayList<>();
+    private boolean debugMode = false;
 
     public MainGameScene(GameHandler gameHandler, KakaraGame kakaraGame, List<File> modsToLoad) throws Exception {
         super(gameHandler);
@@ -83,50 +89,72 @@ public class MainGameScene extends AbstractGameScene {
         ((GameModManager) Kakara.getModManager()).postEnable();
         ChunkGenerator generator = Kakara.getWorldGenerationManager().getChunkGenerators().get(0);
         if (generator == null) System.out.println("TELL ME HOW THIS HAPPENED");
-        ChunkBase base = null;
-        for (int i = -8; i <= 8; i = i + 4) {
-            for (int j = -8; j <= 8; j = j + 4) {
-                myChunk.add(generator.generateChunk(45, new ChunkBase(null, i, j, new ArrayList<>())));
-
+        for (int x = 0; x <= 64; x = x + 16) {
+            for (int y = -128; y <= 128; y = y + 16) {
+                for (int z = 0; z <= 64; z = z + 16) {
+                    myChunk.add(generator.generateChunk(45, new Random(), new ChunkBase(null, x, y, z, new ArrayList<>(), null)));
+                }
             }
         }
-
-        //myChunk.add(generator.generateChunk(45, base));
+        long start = System.currentTimeMillis();
+        File file = new File(Kakara.getWorkingDirectory(), "world");
+        if (!file.exists()) file.delete();
+        file.mkdir();
+        ClientChunkWriter clientChunkWriter = new ClientChunkWriter(file);
+        try {
+            clientChunkWriter.saveChunks(myChunk.stream().map(ClientChunk::new).collect(Collectors.toList()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(start - System.currentTimeMillis());
         kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
+
     }
 
     @Override
     public void loadGraphics() {
+        getHUD().addFont(kakaraGame.getFont());
+        getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
         long currentTime = System.currentTimeMillis();
 
         var resourceManager = gameHandler.getResourceManager();
+
+        List<RenderTexture> textures = new ArrayList<>();
+
+        for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {
+            try {
+                RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.getLocalPath()));
+                textures.add(txt1);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+        File file = new File(Kakara.getWorkingDirectory(), "tmp");
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        TextureAtlas atlas = new TextureAtlas(textures, file.getAbsolutePath(), this);
+        setTextureAtlas(atlas);
         try {
             setSkyBox(new SkyBox(loadSkyBoxTexture(), true));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Map<ItemStack, List<Location>> gameBlockMutableIntMap = MoreUtils.sortByType(myChunk);
-        System.out.println(MoreUtils.calculateSize(gameBlockMutableIntMap));
-        for (Map.Entry<ItemStack, List<Location>> entry : gameBlockMutableIntMap.entrySet()) {
-            InstancedMesh mesh = new InstancedMesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices, entry.getValue().size());
 
-            Resource resource = Kakara.getResourceManager().getTexture(entry.getKey().getItem().getTexture(), TextureResolution._16, entry.getKey().getItem().getMod());
-            Material mt = null;
-            try {
-                mt = new Material(TextureCache.getInstance(resourceManager).getTexture(resource.getLocalPath(), this));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+        for (ChunkBase cb : myChunk) {
+            RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+            rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+
+            for (GameBlock gb : cb.getGameBlocks()) {
+                if (gb.getItemStack().getItem() instanceof AirBlock) continue;
+                Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
+                vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
+                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
+                rc.addBlock(rb);
             }
-            mesh.setMaterial(mt);
-            for (Location location : entry.getValue()) {
-                MeshGameItem item = new MeshGameItem(mesh);
-                item.setPosition(MoreUtils.locationToVector3(location));
-                item.setCollider(new ObjectBoxCollider(false, true));
-                item.setMesh(mesh);
-                add(item);
-            }
+            rc.regenerateChunk(getTextureAtlas());
+            getChunkHandler().addChunk(rc);
         }
-
 
         PointLight pointLight = new PointLight(new LightColor(255, 255, 0), new Vector3(1, 1, 1), 1);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
@@ -193,6 +221,9 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float s) {
+        if (debugMode) {
+            DebugModeCanvas.getInstance(kakaraGame, this).update();
+        }
         if (player == null) return;
 
         KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
@@ -214,6 +245,7 @@ public class MainGameScene extends AbstractGameScene {
         if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
             player.movePosition(0, 1.1F, 0);
         }
+
         MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
         player.moveRotation((float) (mi.getDeltaPosition().y), (float) mi.getDeltaPosition().x, 0);
         if (kakaraGame.getGameHandler().getSoundManager().getListener() != null)
@@ -225,7 +257,15 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
-
+        if (e.isKeyPressed(GLFW_KEY_F3)) {
+            if (debugMode) {
+                debugMode = false;
+                DebugModeCanvas.getInstance(kakaraGame, this).remove();
+            } else {
+                debugMode = true;
+                DebugModeCanvas.getInstance(kakaraGame, this).add();
+            }
+        }
         if (e.isKeyPressed(GLFW_KEY_ESCAPE)) {
             System.exit(1);
         }

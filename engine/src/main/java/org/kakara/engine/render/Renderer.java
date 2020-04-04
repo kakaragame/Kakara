@@ -11,6 +11,8 @@ import org.kakara.engine.item.*;
 import org.kakara.engine.item.Particles.ParticleEmitter;
 import org.kakara.engine.lighting.*;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.renderobjects.RenderChunk;
+import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 
@@ -18,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
@@ -35,6 +36,7 @@ public class Renderer {
     private Shader skyBoxShaderProgram;
     private Shader depthShaderProgram;
     private Shader particleShaderProgram;
+    private Shader chunkShaderProgram;
 
     private ShadowMap shadowMap;
 
@@ -60,6 +62,7 @@ public class Renderer {
         setupSkyBoxShader();
         setupDepthShader();
         setupParticleShader();
+        setupChunkShader();
     }
 
     public void render(Window window, Camera camera, Scene scene) {
@@ -74,8 +77,63 @@ public class Renderer {
 
 
         renderScene(window, camera, scene);
+        renderChunk(window, camera, scene, false);
         renderParticles(window, camera, scene);
 
+    }
+
+    /**
+     * Render a chunk
+     * @param window
+     * @param camera
+     * @param scene
+     */
+    public void renderChunk(Window window, Camera camera, Scene scene, boolean depthMap){
+        if(!(scene instanceof AbstractGameScene)) return;
+        AbstractGameScene ags = (AbstractGameScene) scene;
+        chunkShaderProgram.bind();
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix();
+        chunkShaderProgram.setUniform("projectionMatrix", projectionMatrix);
+        Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
+        chunkShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+        Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
+
+        Matrix4f viewMatrix = transformation.getViewMatrix();
+
+        // Render Lighting
+        LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
+        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight());
+
+        chunkShaderProgram.setUniform("fog", scene.getFog());
+        chunkShaderProgram.setUniform("shadowMap", 2);
+        chunkShaderProgram.setUniform("textureAtlas", 0);
+
+        List<RenderChunk> renderChunks = ags.getChunkHandler().getRenderChunkList();
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, ags.getTextureAtlas().getTexture().getId());
+        glDisable(GL_CULL_FACE);
+        for(RenderChunk renderChunk : renderChunks){
+            Matrix4f modelMatrix = transformation.buildModelMatrix(renderChunk);
+
+            if (!depthMap) {
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+                Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+                chunkShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+            }
+            Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(modelMatrix, lightViewMatrix);
+            chunkShaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+
+            renderChunk.render();
+        }
+        glEnable(GL_CULL_FACE);
+
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+        chunkShaderProgram.unbind();
     }
 
     public void renderScene(Window window, Camera camera, Scene scene){
@@ -158,10 +216,13 @@ public class Renderer {
         Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
         DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
+        depthShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+
 
         renderNonInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
 
         renderInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
+        renderChunk(window, camera, scene, true);
 
         // Unbind
         depthShaderProgram.unbind();
@@ -343,6 +404,34 @@ public class Renderer {
         shaderProgram.createUniform("orthoProjectionMatrix");
 
         shaderProgram.createUniform("isInstanced");
+    }
+
+    private void setupChunkShader() throws Exception{
+        chunkShaderProgram = new Shader();
+        chunkShaderProgram.createVertexShader(Utils.loadResource("/shaders/chunkVertex.vs"));
+        chunkShaderProgram.createFragmentShader(Utils.loadResource("/shaders/chunkFragment.fs"));
+        chunkShaderProgram.link();
+
+        chunkShaderProgram.createUniform("projectionMatrix");
+        chunkShaderProgram.createUniform("modelViewMatrix");
+        chunkShaderProgram.createUniform("modelLightViewMatrix");
+//        chunkShaderProgram.createMaterialUniform("material");
+        /*
+         * Setup uniforms for lighting
+         */
+
+        chunkShaderProgram.createFogUniform("fog");
+
+        chunkShaderProgram.createUniform("shadowMap");
+        chunkShaderProgram.createUniform("orthoProjectionMatrix");
+
+        chunkShaderProgram.createUniform("specularPower");
+        chunkShaderProgram.createUniform("ambientLight");
+        chunkShaderProgram.createPointLightListUniform("pointLights", LightHandler.MAX_POINT_LIGHTS);
+        chunkShaderProgram.createSpotLightListUniform("spotLights", LightHandler.MAX_SPOT_LIGHTS);
+        chunkShaderProgram.createDirectionalLightUniform("directionalLight");
+
+        chunkShaderProgram.createUniform("textureAtlas");
     }
 
     private void setupLightingShader() throws Exception {

@@ -1,6 +1,8 @@
 package org.kakara.engine.item;
 
 import org.joml.Matrix4f;
+import org.kakara.engine.GameHandler;
+import org.kakara.engine.math.KMath;
 import org.kakara.engine.render.Transformation;
 import org.lwjgl.system.MemoryUtil;
 
@@ -106,6 +108,10 @@ public class InstancedMesh extends Mesh {
         this.modelLightViewBuffer.clear();
         int i = 0;
         for (GameItem gameItem : gameItems) {
+
+            if(KMath.distance(gameItem.getPosition(), GameHandler.getInstance().getCamera().getPosition()) > 100)
+                continue;
+
             Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
             if (!depthMap) {
                 Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
@@ -119,7 +125,7 @@ public class InstancedMesh extends Mesh {
         glBufferData(GL_ARRAY_BUFFER, modelViewBuffer, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, modelLightViewVBO);
         glBufferData(GL_ARRAY_BUFFER, modelLightViewBuffer, GL_DYNAMIC_DRAW);
-        glDrawElementsInstanced(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0, gameItems.size());
+        glDrawElementsInstanced(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0, i);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 

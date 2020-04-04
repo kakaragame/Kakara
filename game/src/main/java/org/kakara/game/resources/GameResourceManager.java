@@ -17,14 +17,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.MissingResourceException;
+import java.util.*;
 
 public class GameResourceManager implements ResourceManager {
     private GameInstance kakaraCore;
     private File resourceDirectory;
     private static final String BASE_PATH = "/resources/";
+    private Map<Mod, List<String>> textureResources = new HashMap<>();
 
     public GameResourceManager() {
+    }
+
+    @Override
+    public List<Resource> getAllTextures(TextureResolution textureResolution) {
+        System.out.println("textureResources.size() = " + textureResources.size());
+        List<Resource> myTextureResources = new ArrayList<>();
+        for (Map.Entry<Mod, List<String>> modListEntry : textureResources.entrySet()) {
+            for (String s : modListEntry.getValue()) {
+                myTextureResources.add(getTexture(s, textureResolution, modListEntry.getKey()));
+            }
+        }
+        return myTextureResources;
+
     }
 
     @Override
@@ -49,10 +63,14 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public void registerTexture(String s, TextureResolution i, Mod mod) {
+        System.out.println("s = " + s);
         File directory = new File(getModDir(mod), "texture" + File.separator + String.valueOf(i.getResolution()));
         directory.mkdirs();
         String path = BASE_PATH + "texture/" + i.getResolution() + "/" + s;
         File file = new File(directory, correctPath(s));
+        List<String> strings = textureResources.computeIfAbsent(mod, mod1 -> new ArrayList<>());
+        strings.add(s);
+        textureResources.put(mod, strings);
         if (file.exists()) return;
         file.getParentFile().mkdirs();
 
@@ -65,6 +83,7 @@ public class GameResourceManager implements ResourceManager {
         } catch (IOException e) {
             Kakara.LOGGER.error("Unable to copy file to local", e);
         }
+
     }
 
     @Override
@@ -80,6 +99,7 @@ public class GameResourceManager implements ResourceManager {
     @Override
     public Resource getTexture(String s, TextureResolution i, Mod mod) {
         String path = mod.getName().toLowerCase() + "/texture/" + i.getResolution() + "/" + s;
+        System.out.println(path);
         File directory = new File(resourceDirectory, correctPath(path));
         if (!directory.exists()) {
             if (i == TextureResolution._4) {
@@ -103,7 +123,7 @@ public class GameResourceManager implements ResourceManager {
     }
 
     public File getModDir(Mod mod) {
-        return new File(resourceDirectory,  mod.getName().toLowerCase());
+        return new File(resourceDirectory, mod.getName().toLowerCase());
     }
 
     public File getModDir(Mod mod, ResourceType resourceType) {

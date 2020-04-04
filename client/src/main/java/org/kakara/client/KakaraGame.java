@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class KakaraGame implements Game {
     private GameInstance kakaraCore;
@@ -111,4 +113,9 @@ public class KakaraGame implements Game {
     public Font getFont() {
         return font;
     }
+
+    public int getTPS() {
+        return 20;
+    }
+
 }

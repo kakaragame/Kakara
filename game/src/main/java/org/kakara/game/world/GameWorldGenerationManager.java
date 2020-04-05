@@ -28,8 +28,9 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
     @Override
     public ChunkGenerator getGenerator(NameKey nameKey) {
         for (ChunkGenerator generator : generators) {
-            if (generator.getNameKey().equals(nameKey))
+            if (generator.getNameKey().equals(nameKey)){
                 return generator;
+            }
         }
         return null;
     }

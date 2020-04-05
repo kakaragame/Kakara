@@ -109,17 +109,21 @@ public class ClientWorld implements World {
                 if (loadedChunk.getLocation().equals(location))
                     completableFuture.complete(loadedChunk);
             }
-            Chunk chunk = null;
             try {
-                chunk = clientChunkWriter.getChunk(location);
+                Chunk chunk1 = clientChunkWriter.getChunk(location);
+                if (chunk1 != null) {
+                    loadChunk(chunk1);
+                    completableFuture.complete(chunk1);
+                    return;
+                }
             } catch (IOException e) {
+                e.printStackTrace();
                 completableFuture.completeExceptionally(e);
-                return;
             }
-            if (chunk == null) {
-                ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
-                chunk = new ClientChunk(chunkGenerator.generateChunk(seed, random, base));
-            }
+            ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
+            base = chunkGenerator.generateChunk(seed, random, base);
+            Chunk chunk = new ClientChunk(base);
+            loadChunk(chunk);
             completableFuture.complete(chunk);
         });
 
@@ -131,6 +135,7 @@ public class ClientWorld implements World {
         if (isChunkLoaded(chunk.getLocation())) {
             return;
         }
+
         loadedChunks.add(chunk);
     }
 

@@ -56,7 +56,9 @@ public class ClientChunkWriter {
 
     public ClientChunk getChunk(ChunkLocation chunkLocation) throws IOException {
         File chunkFile = getChunkFile(chunkLocation);
-        if (!chunkFile.exists()) return null;
+        if (!chunkFile.exists()) {
+            return null;
+        }
         JsonObject jo;
         FileReader fileReader = new FileReader(chunkFile);
         jo = gson.fromJson(fileReader, JsonObject.class);

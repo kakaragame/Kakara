@@ -33,6 +33,11 @@ public class GameSave implements Save {
 
 
     @Override
+    public void prepareWorlds() {
+
+    }
+
+    @Override
     public List<World> getWorlds() {
         File worldsJson = new File(saveFolder, "worlds.json");
         JsonObject jsonObject = GsonUtils.loadFile(worldsJson);

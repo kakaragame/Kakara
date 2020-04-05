@@ -3,33 +3,23 @@ package org.kakara.client.scenes;
 import org.kakara.client.KakaraGame;
 import org.kakara.core.client.Save;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector2;
-import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.scene.AbstractMenuScene;
 import org.kakara.engine.ui.RGBA;
-import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.Rectangle;
-import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.components.Text;
 import org.kakara.engine.ui.events.HUDClickEvent;
 import org.kakara.engine.ui.events.HUDHoverEnterEvent;
 import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
-import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
-import org.kakara.engine.utils.Time;
-import org.kakara.game.IntergratedServer;
+import org.kakara.game.IntegratedServer;
 import org.kakara.game.client.TestSave;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Arrays;
-
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
 
 public class MainMenuScene extends AbstractMenuScene {
     private KakaraGame kakaraGame;
@@ -101,7 +91,8 @@ public class MainMenuScene extends AbstractMenuScene {
                         File file = new File("testsave");
                         if (!file.exists()) file.mkdirs();
                         Save save = new TestSave(file);
-                        IntergratedServer intergratedServer = new IntergratedServer(null, save, null);
+                        //
+                        IntegratedServer intergratedServer = new IntegratedServer(null, save);
 
                         MainGameScene mgs = new MainGameScene(gameHandler, intergratedServer, kakaraGame);
                         gameHandler.getSceneManager().setScene(mgs);

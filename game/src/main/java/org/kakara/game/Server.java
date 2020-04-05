@@ -6,11 +6,16 @@ import org.kakara.core.world.Chunk;
 import org.kakara.core.world.GameEntity;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 public interface Server {
 
     DataWatcher getDataWatcher();
+
+    void loadPlayer(UUID uuid);
+
+    void loadWorld();
 
     Player getPlayerEntity();
 

@@ -61,6 +61,7 @@ public class MainGameScene extends AbstractGameScene {
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
+        setCurserStatus(false);
         this.server = server;
         this.kakaraGame = kakaraGame;
     }
@@ -84,7 +85,15 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void work() {
+        kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
         server.loadMods();
+
+        System.out.println("Loading Stages");
+        Kakara.getModManager().loadStage(Kakara.getEventManager());
+        Kakara.getModManager().loadStage(Kakara.getItemManager());
+        Kakara.getModManager().loadStage(Kakara.getWorldGenerationManager());
+        server.loadWorld();
+        server.loadPlayer(UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"));
     }
 
     @Override
@@ -108,6 +117,7 @@ public class MainGameScene extends AbstractGameScene {
         if (!file.exists()) {
             file.mkdir();
         }
+        file.deleteOnExit();
         TextureAtlas atlas = new TextureAtlas(textures, file.getAbsolutePath(), this);
         setTextureAtlas(atlas);
         try {
@@ -130,9 +140,22 @@ public class MainGameScene extends AbstractGameScene {
     @Override
     public void update(float interval) {
         server.update();
+
         playerMovement();
         for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
-//CHeck if Chunk Needs to be re rendered.
+            ChunkLocation cb = loadedChunk.getLocation();
+            RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+            rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+
+            for (GameBlock gb : loadedChunk.getGameBlocks()) {
+                if (gb.getItemStack().getItem() instanceof AirBlock) continue;
+                Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
+                vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
+                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
+                rc.addBlock(rb);
+            }
+            rc.regenerateChunk(getTextureAtlas());
+            getChunkHandler().addChunk(rc);
         }
     }
 
@@ -163,7 +186,7 @@ public class MainGameScene extends AbstractGameScene {
         }
         //I NEED HELP!
         MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
-        player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
+        player.moveLocation((float) mi.getDeltaPosition().x(), (float) mi.getDeltaPosition().y());
         Location l = player.getLocation();
         gameHandler.getCamera().setPosition(MoreUtils.locationToVector3(l).add(0, 2, 0));
         gameHandler.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));

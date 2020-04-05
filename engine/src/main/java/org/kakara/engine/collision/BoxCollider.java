@@ -1,7 +1,6 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.Collidable;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.render.DebugRender;
@@ -126,25 +125,25 @@ public class BoxCollider implements Collider {
 
     public Vector3 getRelativePoint1(){
         if(!relative)
-            return point1.add(offset).subtract(item.getPosition());
+            return point1.add(offset).subtract(item.getColPosition());
         return point1.add(offset);
     }
 
     public Vector3 getAbsolutePoint1(){
         if(relative)
-            return point1.add(offset).add(item.getPosition());
+            return point1.add(offset).add(item.getColPosition());
         return point1.add(offset);
     }
 
     public Vector3 getRelativePoint2(){
         if(!relative)
-            return point2.add(offset).subtract(item.getPosition());
+            return point2.add(offset).subtract(item.getColPosition());
         return point2.add(offset);
     }
 
     public Vector3 getAbsolutePoint2(){
         if(relative)
-            return point2.add(offset).add(item.getPosition());
+            return point2.add(offset).add(item.getColPosition());
         return point2.add(offset);
     }
 
@@ -184,42 +183,42 @@ public class BoxCollider implements Collider {
     public void update() {
         if(isTrigger) return;
         //Calculate delta position.
-        this.deltaPosition = item.getPosition().subtract(this.lastPosition);
-        this.lastPosition = item.getPosition();
+        this.deltaPosition = item.getColPosition().subtract(this.lastPosition);
+        this.lastPosition = item.getColPosition();
 
         CollisionManager cm = handler.getCollisionManager();
         //Loop through the colliding item list.
-        for(Collidable gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems(item.getColPosition())){
             // Prevent collision with itself.
             if(gi == item) continue;
             // If the objects are colliding. (Gravity will never cause this).
             if(cm.isColliding(gi, item)){
                 // Remove gravity forces from vector rollback.
                 if(deltaPosition.y > -gravity + KMath.FLOAT_MIN_ERROR && deltaPosition.y < -gravity + KMath.FLOAT_MAX_ERROR) deltaPosition.y = 0;
-                Vector3 currentPosition = item.getPosition().subtract(deltaPosition);
+                Vector3 currentPosition = item.getColPosition().subtract(deltaPosition);
                 this.lastPosition = currentPosition;
                 // Set the calculated vector rollback.
-                item.setPosition(currentPosition.x, currentPosition.y, currentPosition.z);
+                item.setColPosition(new Vector3(currentPosition.x, currentPosition.y, currentPosition.z));
             }
         }
         // If gravity is enabled move it by the gravitational velocity.
         if(useGravity){
-            item.translateBy(0, -getGravityVelocity(), 0);
+            item.colTranslateBy(new Vector3(0, -getGravityVelocity(), 0));
         }
 
         boolean found = false;
         // Handle collision for gravity.
-        for(Collidable gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems(item.getColPosition())){
             // Prevent object from colliding with itself.
             if(gi == item) continue;
             // If the object is not colliding, then prevent further calculations.
             if(!cm.isColliding(gi, item)) continue;
             // Check to see if it is possible for the object to collide. If not stop calculations.
-            if(KMath.distance(gi.getPosition(), item.getPosition()) > 20) continue;
+            if(KMath.distance(gi.getColPosition(), item.getColPosition()) > 20) continue;
             //The bottom collision point of this object.
-            Vector3 point1 = KMath.distance(this.getAbsolutePoint1(), item.getPosition()) > KMath.distance(this.getAbsolutePoint2(), item.getPosition()) ? item.getCollider().getAbsolutePoint2() : item.getCollider().getAbsolutePoint1();
+            Vector3 point1 = KMath.distance(this.getAbsolutePoint1(), item.getColPosition()) > KMath.distance(this.getAbsolutePoint2(), item.getColPosition()) ? item.getCollider().getAbsolutePoint2() : item.getCollider().getAbsolutePoint1();
             // The top collision point of the colliding object.
-            Vector3 point2 = KMath.distance(gi.getCollider().getAbsolutePoint1(), gi.getPosition()) < KMath.distance(gi.getCollider().getAbsolutePoint2(), gi.getPosition()) ? gi.getCollider().getAbsolutePoint2() : gi.getCollider().getAbsolutePoint1();
+            Vector3 point2 = KMath.distance(gi.getCollider().getAbsolutePoint1(), gi.getColPosition()) < KMath.distance(gi.getCollider().getAbsolutePoint2(), gi.getColPosition()) ? gi.getCollider().getAbsolutePoint2() : gi.getCollider().getAbsolutePoint1();
 
             // Negate x and z.
             point1.x = 0;
@@ -230,7 +229,7 @@ public class BoxCollider implements Collider {
                 isInAir = false;
                 found = true;
                 // Undo last gravitational action.
-                item.translateBy(0, getGravityVelocity(), 0);
+                item.colTranslateBy(new Vector3(0, getGravityVelocity(), 0));
             }
         }
         // If no collision actions are done then it is in the air.
@@ -248,7 +247,6 @@ public class BoxCollider implements Collider {
         this.item = item;
         lastPosition = new Vector3(0, 0, 0);
         deltaPosition = new Vector3(0, 0, 0);
-        handler.getCollisionManager().addCollidingItem(item);
 
         enableDebugRender();
     }
@@ -279,7 +277,7 @@ public class BoxCollider implements Collider {
     public void enableDebugRender(){
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
-        float[] position = DebugRender.getPositions(this.getRelativePoint1().add(item.getPosition()), this.getRelativePoint2().add(item.getPosition()));
+        float[] position = DebugRender.getPositions(this.getRelativePoint1().add(item.getColPosition()), this.getRelativePoint2().add(item.getColPosition()));
         int[] indices = DebugRender.getIndices();
 
         FloatBuffer posBuffer;

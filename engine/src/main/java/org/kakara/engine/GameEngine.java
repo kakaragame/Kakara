@@ -1,9 +1,10 @@
 package org.kakara.engine;
 
+import org.kakara.engine.collision.Collidable;
 import org.kakara.engine.gui.Window;
-import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.render.Renderer;
+import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.scene.AbstractMenuScene;
 import org.kakara.engine.utils.Time;
 import org.slf4j.Logger;
@@ -121,7 +122,7 @@ public class GameEngine implements Runnable {
     }
 
     protected void collide() {
-        for (Collidable gi : gameHandler.getCollisionManager().getCollidngItems()) {
+        for (Collidable gi : gameHandler.getCollisionManager().getCollidngItems(null)) {
             gi.getCollider().update();
         }
     }

@@ -2,6 +2,7 @@ package org.kakara.engine.item;
 
 import org.joml.Quaternionf;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.collision.Collidable;
 import org.kakara.engine.collision.Collider;
 import org.kakara.engine.math.Vector3;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
  * <p>
  * This is a Collidable GameItem. That uses meshes to create an item
  */
-public class MeshGameItem implements Collidable {
+public class MeshGameItem implements GameItem, Collidable {
 
     private Mesh[] meshes;
     private float scale;
@@ -202,16 +203,26 @@ public class MeshGameItem implements Collidable {
         this.meshes = new Mesh[]{mesh};
     }
 
+    @Override
+    public final Vector3 getColPosition() {
+        return getPosition();
+    }
+
+    @Override
+    public float getColScale() {
+        return getScale();
+    }
+
     /**
      * Set the collider for a game item
      *
      * @param collider The instance of the collider.
      * @return The instance of the game item.
      */
-    public GameItem setCollider(Collider collider) {
+    public void setCollider(Collider collider) {
         this.collider = collider;
         collider.onRegister(this);
-        return this;
+        GameHandler.getInstance().getCollisionManager().addCollidingItem(this);
     }
 
     /**
@@ -220,6 +231,16 @@ public class MeshGameItem implements Collidable {
     public void removeCollider() {
         this.collider = null;
         GameHandler.getInstance().getCollisionManager().removeCollidingItem(this);
+    }
+
+    @Override
+    public void colTranslateBy(Vector3 vec) {
+        translateBy(vec);
+    }
+
+    @Override
+    public void setColPosition(Vector3 vec) {
+        setPosition(vec.clone());
     }
 
     /**
@@ -252,7 +273,7 @@ public class MeshGameItem implements Collidable {
      * @return The clone of the gameobject.
      */
     public GameItem clone(boolean exact) {
-        Collidable clone = new MeshGameItem(this.meshes);
+        GameItem clone = new MeshGameItem(this.meshes);
         if (exact) {
             clone.setPosition(this.position.x, this.position.y, this.position.z);
             clone.setRotation(this.rotation);

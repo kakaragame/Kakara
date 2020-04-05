@@ -29,6 +29,7 @@ public class GameSave implements Save {
         if (!playersFolder.exists()) {
             playersFolder.mkdir();
         }
+        Kakara.LOGGER.warn("Unsupported Code");
     }
 
 
@@ -74,5 +75,10 @@ public class GameSave implements Save {
 
     public File getSaveFolder() {
         return saveFolder;
+    }
+
+    @Override
+    public List<File> getModsToLoad() {
+        return null;
     }
 }

@@ -13,6 +13,7 @@ import org.kakara.game.Server;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,5 +80,12 @@ public class TestSave implements Save {
 
     public File getSaveFolder() {
         return saveFolder;
+    }
+
+    @Override
+    public List<File> getModsToLoad() {
+        File dir = new File("test" + File.separator + "mods");
+
+        return Arrays.asList(dir.listFiles((dir1, filename) -> filename.endsWith(".jar")));
     }
 }

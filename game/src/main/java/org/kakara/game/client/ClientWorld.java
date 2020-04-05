@@ -33,17 +33,7 @@ public class ClientWorld implements World {
     private final int seed;
     private final Random random;
 
-    public ClientWorld(JsonElement element, TestSave save, Server server) throws WorldLoadException {
-        this.server = server;
-        worldFolder = new File(save.getSaveFolder(), element.getAsString());
-        clientChunkWriter = new ClientChunkWriter(this);
-        worldSettings = loadWorldSettings();
-        chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(worldSettings.get("generator").getAsString());
-        seed = worldSettings.get("seed").getAsInt();
-        random = new Random(seed);
-    }
-
-    public ClientWorld(JsonElement element, GameSave save, Server server) throws WorldLoadException {
+    public ClientWorld(JsonElement element, Save save, Server server) throws WorldLoadException {
         this.server = server;
         worldFolder = new File(save.getSaveFolder(), element.getAsString());
         clientChunkWriter = new ClientChunkWriter(this);

@@ -4,6 +4,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.joml.Vector3f;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.client.RenderedChunk;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
@@ -62,7 +63,7 @@ public class MainGameScene extends AbstractGameScene {
     private boolean debugMode = false;
     private KakaraGame kakaraGame;
     private Server server;
-    private List<Chunk> renderedChunks = new CopyOnWriteArrayList<>();
+    private List<RenderedChunk> renderedChunks = new CopyOnWriteArrayList<>();
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -143,12 +144,21 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     public boolean doesChunkNeedToBeUpdated(Chunk chunk) {
-        for (Chunk renderedChunk : renderedChunks) {
-            if (renderedChunk.getLocation().equals(chunk.getLocation())) {
-                return !CollectionUtils.isEqualCollection(renderedChunk.getGameBlocks(), chunk.getGameBlocks());
+        for (RenderedChunk renderedChunk : renderedChunks) {
+            if (renderedChunk.getChunk().getLocation().equals(chunk.getLocation())) {
+                return !CollectionUtils.isEqualCollection(renderedChunk.getChunk().getGameBlocks(), chunk.getGameBlocks());
             }
         }
         return true;
+    }
+
+    public RenderedChunk getChunk(Chunk chunk) {
+        for (RenderedChunk renderedChunk : renderedChunks) {
+            if (renderedChunk.getChunk().getLocation().equals(chunk.getLocation())) {
+                return renderedChunk;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -158,7 +168,10 @@ public class MainGameScene extends AbstractGameScene {
         playerMovement();
         for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
             if (doesChunkNeedToBeUpdated(loadedChunk)) {
-                renderedChunks.removeIf(chunk -> chunk.getLocation().equals(loadedChunk.getLocation()));
+                RenderedChunk renderedChunk = getChunk(loadedChunk);
+                if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
+                renderedChunks.removeIf(chunk -> chunk.getChunk().getLocation().equals(loadedChunk.getLocation()));
+
                 if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), 8)) {
                     ChunkLocation cb = loadedChunk.getLocation();
                     RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
@@ -173,9 +186,9 @@ public class MainGameScene extends AbstractGameScene {
                     }
                     rc.regenerateChunk(getTextureAtlas());
                     getChunkHandler().addChunk(rc);
+                    renderedChunks.add(new RenderedChunk(rc.getId(), loadedChunk));
                 }
             }
-            ChunkLocation cb = loadedChunk.getLocation();
 
         }
     }

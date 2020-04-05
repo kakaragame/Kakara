@@ -5,6 +5,7 @@ import org.kakara.core.world.Chunk;
 import org.kakara.core.world.GameEntity;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public interface Server {
 
@@ -21,7 +22,8 @@ public interface Server {
 
     /**
      * Local Servers will be invoked locally external servers will be invoked that way
-     *
      */
     void tickUpdate();
+
+    ExecutorService getExecutorService();
 }

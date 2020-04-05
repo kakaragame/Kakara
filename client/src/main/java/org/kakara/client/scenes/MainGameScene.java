@@ -255,6 +255,8 @@ public class MainGameScene extends AbstractGameScene {
         gameHandler.getCamera().setRotation(player.getRotationAsVector3());
     }
 
+
+
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
         if (e.isKeyPressed(GLFW_KEY_F3)) {

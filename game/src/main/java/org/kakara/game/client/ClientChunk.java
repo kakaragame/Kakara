@@ -13,6 +13,11 @@ public class ClientChunk implements Chunk {
         gameBlockList = base.getGameBlocks();
     }
 
+    public ClientChunk(ChunkLocation chunkLocation, List<GameBlock> gameBlocks) {
+        location = chunkLocation;
+        gameBlockList = gameBlocks;
+    }
+
     @Override
     public List<GameBlock> getGameBlocks() {
         return gameBlockList;

@@ -2,13 +2,13 @@ package org.kakara.game.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.kakara.core.Utils;
 import org.kakara.core.serializers.gson.GsonSerializerRegistar;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
+import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
-import org.kakara.core.world.World;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -25,7 +25,7 @@ public class ClientChunkWriter {
 
     public ClientChunkWriter(ClientWorld world) {
         this.world = world;
-        chunkFolder = new File(world.getFile(), "chunks");
+        chunkFolder = new File(world.getWorldFolder(), "chunks");
         if (!chunkFolder.exists()) chunkFolder.mkdir();
 
     }
@@ -52,6 +52,24 @@ public class ClientChunkWriter {
         File file = new File(chunkFolder, String.format("_%s_%s_%s_.json", x, y, z));
         return file;
 
+    }
+
+    public ClientChunk getChunk(ChunkLocation chunkLocation) throws IOException {
+        File chunkFile = getChunkFile(chunkLocation);
+        if (!chunkFile.exists()) return null;
+        JsonObject jo;
+        FileReader fileReader = new FileReader(chunkFile);
+        jo = gson.fromJson(fileReader, JsonObject.class);
+        String value = getLocFormat(chunkLocation);
+        if (!jo.has(value)) {
+            return null;
+        }
+        JsonObject chunkValue = jo.getAsJsonObject(value);
+        List<GameBlock> gameBlocks = new ArrayList<>();
+        for (JsonElement element : chunkValue.get("blocks").getAsJsonArray()) {
+            gameBlocks.add(gson.fromJson(element, GameBlock.class));
+        }
+        return new ClientChunk(chunkLocation, gameBlocks);
     }
 
     public void saveChunk(Chunk chunk) throws IOException {

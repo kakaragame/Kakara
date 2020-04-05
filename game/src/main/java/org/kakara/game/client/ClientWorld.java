@@ -2,27 +2,56 @@ package org.kakara.game.client;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.kakara.core.client.Save;
+import org.kakara.core.Kakara;
+import org.kakara.core.Utils;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.Block;
 import org.kakara.core.game.ItemStack;
-import org.kakara.core.world.Chunk;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
-import org.kakara.core.world.World;
+import org.kakara.core.world.*;
+import org.kakara.game.Server;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientWorld implements World {
-    private File file;
-    private JsonObject worldSettings;
+    private final File worldFolder;
+    private final JsonObject worldSettings;
     private Location worldSpawn;
-    private ClientChunkWriter clientChunkWriter;
+    private final ClientChunkWriter clientChunkWriter;
+    private final List<Chunk> loadedChunks = new CopyOnWriteArrayList<>();
+    private final Server server;
+    private final ChunkGenerator chunkGenerator;
+    private final int seed;
+    private final Random random;
 
-    public ClientWorld(JsonElement element, GameSave save) throws WorldLoadException {
-        file = new File(save.getSaveFolder(), element.getAsString());
+    public ClientWorld(JsonElement element, GameSave save, Server server) throws WorldLoadException {
+        this.server = server;
+        worldFolder = new File(save.getSaveFolder(), element.getAsString());
         clientChunkWriter = new ClientChunkWriter(this);
+        worldSettings = loadWorldSettings();
+        chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(worldSettings.get("generator").getAsString());
+        seed = worldSettings.get("seed").getAsInt();
+        random = new Random(seed);
+    }
+
+    private JsonObject loadWorldSettings() throws WorldLoadException {
+        File file = new File(worldFolder, "world.json");
+        if (!file.exists()) {
+            throw new WorldLoadException("Unable to locate world.json");
+        }
+        try {
+            FileReader reader = new FileReader(file);
+            return Utils.getGson().fromJson(reader, JsonObject.class);
+        } catch (FileNotFoundException e) {
+            throw new WorldLoadException(e);
+        }
     }
 
     @Override
@@ -32,12 +61,12 @@ public class ClientWorld implements World {
 
     @Override
     public UUID getUUID() {
-        return null;
+        return UUID.fromString(worldSettings.get("uuid").getAsString());
     }
 
     @Override
     public String getName() {
-        return null;
+        return worldSettings.get("name").getAsString();
     }
 
     @Override
@@ -71,32 +100,45 @@ public class ClientWorld implements World {
     }
 
     @Override
-    public Chunk getChunkAt(int i, int i1) {
-        return null;
-    }
+    public CompletableFuture<Chunk> getChunkAt(ChunkLocation location) {
+        CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
+        server.getExecutorService().submit(() -> {
+            for (Chunk loadedChunk : loadedChunks) {
+                if (loadedChunk.getLocation().equals(location))
+                    completableFuture.complete(loadedChunk);
+            }
+            Chunk chunk = clientChunkWriter.getChunk(location);
+            if (chunk == null) {
+                ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
+                chunk = new ClientChunk(chunkGenerator.generateChunk(seed, random, base));
+            }
+            completableFuture.complete(chunk);
+        });
 
-    @Override
-    public Chunk getChunkAt(Location location) {
-        return null;
+        return completableFuture;
     }
 
     @Override
     public void loadChunk(Chunk chunk) {
-
+        if (isChunkLoaded(chunk.getLocation())) {
+            return;
+        }
+        loadedChunks.add(chunk);
     }
 
     @Override
-    public boolean isChunkLoaded(int i, int i1) {
-        return false;
+    public boolean isChunkLoaded(ChunkLocation location) {
+        return loadedChunks.stream().anyMatch(chunk -> chunk.getLocation().equals(location));
     }
+
 
     @Override
     public Chunk[] getLoadedChunks() {
-        return new Chunk[0];
+        return loadedChunks.toArray(Chunk[]::new);
     }
 
-    public File getFile() {
-        return file;
+    public File getWorldFolder() {
+        return worldFolder;
     }
 
     public ClientChunkWriter getClientChunkWriter() {

@@ -1,6 +1,5 @@
 package org.kakara.game.client;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.kakara.core.Kakara;
@@ -9,6 +8,7 @@ import org.kakara.core.client.SaveSettings;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.player.Player;
 import org.kakara.core.world.World;
+import org.kakara.game.Server;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,11 +19,13 @@ public class GameSave implements Save {
     private final File saveFolder;
     private SaveSettings saveSettings;
     private File playersFolder;
+    private Server server;
 
-    public GameSave(File saveFolder) throws SaveLoadException {
+    public GameSave(File saveFolder, Server server) throws SaveLoadException {
         this.saveFolder = saveFolder;
         this.saveSettings = new ClientSaveSettings(new File(saveFolder, "config.json"));
         playersFolder = new File(saveFolder, "players");
+        this.server = server;
         if (!playersFolder.exists()) {
             playersFolder.mkdir();
         }
@@ -38,7 +40,7 @@ public class GameSave implements Save {
         for (JsonElement element : jsonObject.getAsJsonArray("worlds")) {
             World world;
             try {
-                world = new ClientWorld(element, this);
+                world = new ClientWorld(element, this, server);
             } catch (WorldLoadException e) {
                 Kakara.LOGGER.error("Unable to load world ", e);
                 continue;

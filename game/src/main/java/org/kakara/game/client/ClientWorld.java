@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
+import org.kakara.core.client.Save;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.Block;
 import org.kakara.core.game.ItemStack;
@@ -13,6 +14,7 @@ import org.kakara.game.Server;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,6 +32,16 @@ public class ClientWorld implements World {
     private final ChunkGenerator chunkGenerator;
     private final int seed;
     private final Random random;
+
+    public ClientWorld(JsonElement element, TestSave save, Server server) throws WorldLoadException {
+        this.server = server;
+        worldFolder = new File(save.getSaveFolder(), element.getAsString());
+        clientChunkWriter = new ClientChunkWriter(this);
+        worldSettings = loadWorldSettings();
+        chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(worldSettings.get("generator").getAsString());
+        seed = worldSettings.get("seed").getAsInt();
+        random = new Random(seed);
+    }
 
     public ClientWorld(JsonElement element, GameSave save, Server server) throws WorldLoadException {
         this.server = server;
@@ -107,7 +119,13 @@ public class ClientWorld implements World {
                 if (loadedChunk.getLocation().equals(location))
                     completableFuture.complete(loadedChunk);
             }
-            Chunk chunk = clientChunkWriter.getChunk(location);
+            Chunk chunk = null;
+            try {
+                chunk = clientChunkWriter.getChunk(location);
+            } catch (IOException e) {
+                completableFuture.completeExceptionally(e);
+                return;
+            }
             if (chunk == null) {
                 ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
                 chunk = new ClientChunk(chunkGenerator.generateChunk(seed, random, base));

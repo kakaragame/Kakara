@@ -2,6 +2,7 @@ package org.kakara.game.world;
 
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
+import org.kakara.core.NameKey;
 import org.kakara.core.world.ChunkGenerator;
 import org.kakara.core.world.WorldGenerationManager;
 import org.kakara.core.world.region.Region;
@@ -22,6 +23,15 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
     @Override
     public void registerChunkGenerator(ChunkGenerator chunkGenerator) {
         generators.add(chunkGenerator);
+    }
+
+    @Override
+    public ChunkGenerator getGenerator(NameKey nameKey) {
+        for (ChunkGenerator generator : generators) {
+            if (generator.getNameKey().equals(nameKey))
+                return generator;
+        }
+        return null;
     }
 
     @Override

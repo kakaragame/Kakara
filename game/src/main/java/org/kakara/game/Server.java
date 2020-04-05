@@ -1,6 +1,7 @@
 package org.kakara.game;
 
 import org.kakara.core.game.Entity;
+import org.kakara.core.player.Player;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.GameEntity;
 
@@ -11,9 +12,11 @@ public interface Server {
 
     DataWatcher getDataWatcher();
 
-    GameEntity getPlayerEntity();
+    Player getPlayerEntity();
 
     List<Chunk> chunksToRender();
+
+    List<Player> getOnlinePlayers();
 
     /**
      * IDK when this will be invoked.

@@ -9,6 +9,7 @@ import org.kakara.engine.scene.AbstractGameScene;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class RenderChunk extends MeshGameItem {
@@ -16,12 +17,18 @@ public class RenderChunk extends MeshGameItem {
     private List<RenderBlock> blocks;
     private RenderMesh mesh;
     private OctChunk octChunk;
+    private UUID chunkId;
 
     public RenderChunk(List<RenderBlock> blocks, TextureAtlas atlas){
         super();
         this.setPosition(new Vector3(0, 0, 0));
-        this.blocks = blocks;
         this.octChunk = new OctChunk();
+        this.blocks = blocks;
+        for(RenderBlock blck : blocks){
+            blck.setParentChunk(this);
+            octChunk.add(blck);
+        }
+        chunkId = UUID.randomUUID();
         regenerateChunk(atlas);
     }
 
@@ -38,6 +45,14 @@ public class RenderChunk extends MeshGameItem {
     public void removeBlock(RenderBlock block){
         blocks.remove(block);
         block.setParentChunk(null);
+    }
+
+    /**
+     * Get the ID of the chunk.
+     * @return The id
+     */
+    public UUID getId(){
+        return chunkId;
     }
 
     public OctChunk getOctChunk(){

@@ -30,6 +30,7 @@ import org.kakara.engine.utils.Utils;
 import org.kakara.engine.weather.Fog;
 
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,8 +40,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class MainGameScene extends AbstractGameScene {
     private GameItem player;
     private GameHandler handler;
-    private PointLight light;
-    private GameItem lightIndication;
+    private GameItem collider;
     private KakaraTest test;
 
     private float angleInc;
@@ -85,8 +85,10 @@ public class MainGameScene extends AbstractGameScene {
 
         mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
+        gi.setCollider(new ObjectBoxCollider());
         add(gi);
         gi.setPosition(0, 0, -5);
+        collider = gi;
 //        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
 //        SkyBox skyBox = new SkyBox(skyb, true);
 //        setSkyBox(skyBox);
@@ -102,7 +104,7 @@ public class MainGameScene extends AbstractGameScene {
         RenderTexture txt2 = new RenderTexture(resourceManager.getResource("/oop.png"));
         System.out.println(resourceManager.getResource("/m.png").getInputStream());
         RenderTexture txt3 = new RenderTexture(resourceManager.getResource("/m.png"));
-        TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2, txt3), "D:\\ztestImgs", this);
+        TextureAtlas atlas = new TextureAtlas(Arrays.asList(txt1, txt2, txt3), Paths.get("").toAbsolutePath().toString(), this);
         setTextureAtlas(atlas);
 
         System.out.println(txt3.getYOffset());
@@ -254,32 +256,38 @@ public class MainGameScene extends AbstractGameScene {
             this.setCurserStatus(!this.getCurserStatus());
         }
 
-        Vector3 currentPos = player.getPosition();
+        Vector3 currentPos = collider.getPosition();
         if (ki.isKeyPressed(GLFW_KEY_UP)) {
-            player.translateBy(0.1f, 0, 0);
+            collider.translateBy(0.1f, 0, 0);
         }
         if (ki.isKeyPressed(GLFW_KEY_DOWN)) {
-            player.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
+            collider.setPosition(currentPos.x - 0.1f, currentPos.y, currentPos.z);
         }
         if (ki.isKeyPressed(GLFW_KEY_LEFT)) {
-            player.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
+            collider.setPosition(currentPos.x, currentPos.y, currentPos.z + 0.1f);
         }
         if (ki.isKeyPressed(GLFW_KEY_RIGHT)) {
-            player.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
+            collider.setPosition(currentPos.x, currentPos.y, currentPos.z - 0.1f);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_N)){
+            collider.translateBy(0, 0.1f,0);
+        }
+        if(ki.isKeyPressed(GLFW_KEY_M)){
+            collider.translateBy(0, -0.1f,0);
         }
 
-        if (ki.isKeyPressed(GLFW_KEY_I)) {
-            lightIndication.translateBy(0, 0, 1);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_K)) {
-            lightIndication.translateBy(0, 0, -1);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_J)) {
-            lightIndication.translateBy(-1, 0, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_L)) {
-            lightIndication.translateBy(1, 0, 0);
-        }
+//        if (ki.isKeyPressed(GLFW_KEY_I)) {
+//            lightIndication.translateBy(0, 0, 1);
+//        }
+//        if (ki.isKeyPressed(GLFW_KEY_K)) {
+//            lightIndication.translateBy(0, 0, -1);
+//        }
+//        if (ki.isKeyPressed(GLFW_KEY_J)) {
+//            lightIndication.translateBy(-1, 0, 0);
+//        }
+//        if (ki.isKeyPressed(GLFW_KEY_L)) {
+//            lightIndication.translateBy(1, 0, 0);
+//        }
 
 //        light.setPosition(lightIndication.getPosition());
 //        getLightHandler().getSpotLight(0).setPosition(handler.getCamera().getPosition());

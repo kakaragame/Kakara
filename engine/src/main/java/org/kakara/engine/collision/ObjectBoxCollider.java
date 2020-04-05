@@ -1,7 +1,6 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.Collidable;
 import org.kakara.engine.math.KMath;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.utils.Time;
@@ -55,17 +54,17 @@ public class ObjectBoxCollider implements Collider {
 
     @Override
     public Vector3 getAbsolutePoint1() {
-        return item.getPosition();
+        return item.getColPosition();
     }
 
     @Override
     public Vector3 getRelativePoint2() {
-        return new Vector3(item.getScale(), item.getScale(), item.getScale());
+        return new Vector3(item.getColScale(), item.getColScale(), item.getColScale());
     }
 
     @Override
     public Vector3 getAbsolutePoint2() {
-        return item.getPosition().add(item.getScale(), item.getScale(), item.getScale());
+        return item.getColPosition().add(item.getColScale(), item.getColScale(), item.getColScale());
     }
 
     public Collider setTrigger(boolean value){
@@ -94,37 +93,37 @@ public class ObjectBoxCollider implements Collider {
     @Override
     public void update() {
         if(isTrigger) return;
-        this.deltaPosition = item.getPosition().subtract(this.lastPosition);
-        this.lastPosition = item.getPosition();
+        this.deltaPosition = item.getColPosition().clone().subtract(this.lastPosition);
+        this.lastPosition = item.getColPosition().clone();
 
         CollisionManager cm = handler.getCollisionManager();
-        for(Collidable gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems(item.getColPosition())){
             if(gi == item) continue;
             if(cm.isColliding(gi, item)){
-                Vector3 currentPosition = item.getPosition().subtract(deltaPosition);
+                Vector3 currentPosition = item.getColPosition().subtract(deltaPosition);
                 this.lastPosition = currentPosition;
-                item.setPosition(currentPosition.x, currentPosition.y, currentPosition.z);
+                item.setColPosition(new Vector3(currentPosition.x, currentPosition.y, currentPosition.z));
 
             }
         }
         // If gravity is enabled move it by the gravitational velocity.
         if(useGravity){
-            item.translateBy(0, -getGravityVelocity(), 0);
+            item.colTranslateBy(new Vector3(0, -getGravityVelocity(), 0));
         }
 
         boolean found = false;
         // Handle collision for gravity.
-        for(Collidable gi : cm.getCollidngItems()){
+        for(Collidable gi : cm.getCollidngItems(item.getColPosition())){
             // Prevent object from colliding with itself.
             if(gi == item) continue;
             // If the object is not colliding, then prevent further calculations.
             if(!cm.isColliding(gi, item)) continue;
             // Check to see if it is possible for the object to collide. If not stop calculations.
-            if(KMath.distance(gi.getPosition(), item.getPosition()) > 20) continue;
+            if(KMath.distance(gi.getColPosition(), item.getColPosition()) > 20) continue;
             //The bottom collision point of this object.
-            Vector3 point1 = KMath.distance(this.getAbsolutePoint1(), item.getPosition()) > KMath.distance(this.getAbsolutePoint2(), item.getPosition()) ? item.getCollider().getAbsolutePoint2() : item.getCollider().getAbsolutePoint1();
+            Vector3 point1 = KMath.distance(this.getAbsolutePoint1(), item.getColPosition()) > KMath.distance(this.getAbsolutePoint2(), item.getColPosition()) ? item.getCollider().getAbsolutePoint2() : item.getCollider().getAbsolutePoint1();
             // The top collision point of the colliding object.
-            Vector3 point2 = KMath.distance(gi.getCollider().getAbsolutePoint1(), gi.getPosition()) < KMath.distance(gi.getCollider().getAbsolutePoint2(), gi.getPosition()) ? gi.getCollider().getAbsolutePoint2() : gi.getCollider().getAbsolutePoint1();
+            Vector3 point2 = KMath.distance(gi.getCollider().getAbsolutePoint1(), gi.getColPosition()) < KMath.distance(gi.getCollider().getAbsolutePoint2(), gi.getColPosition()) ? gi.getCollider().getAbsolutePoint2() : gi.getCollider().getAbsolutePoint1();
 
             // Negate x and z.
             point1.x = 0;
@@ -135,7 +134,7 @@ public class ObjectBoxCollider implements Collider {
                 isInAir = false;
                 found = true;
                 // Undo last gravitational action.
-                item.translateBy(0, getGravityVelocity(), 0);
+                item.colTranslateBy(new Vector3(0, getGravityVelocity(), 0));
             }
         }
         // If no collision actions are done then it is in the air.
@@ -153,6 +152,5 @@ public class ObjectBoxCollider implements Collider {
         this.item = item;
         lastPosition = new Vector3(0, 0, 0);
         deltaPosition = new Vector3(0, 0, 0);
-        handler.getCollisionManager().addCollidingItem(item);
     }
 }

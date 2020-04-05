@@ -1,7 +1,9 @@
 package org.kakara.engine.renderobjects;
 
+import org.kakara.engine.collision.Collidable;
+import org.kakara.engine.collision.Collider;
+import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.math.Vector3;
-import org.kakara.engine.renderobjects.chunkcollision.ChunkCollidable;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.renderobjects.renderlayouts.Face;
 import org.kakara.engine.renderobjects.renderlayouts.Layout;
@@ -13,7 +15,7 @@ import java.util.List;
 /**
  * The individual blocks of the chunk.
  */
-public class RenderBlock {
+public class RenderBlock implements Collidable {
 
     private Layout layout;
     private RenderTexture texture;
@@ -24,14 +26,15 @@ public class RenderBlock {
     private Vector3 relativePosition;
     private List<Face> visibleFaces;
 
-    private ChunkCollidable chunkCollidable;
+    private Collider collider;
 
     public RenderBlock(Layout layout, RenderTexture texture, Vector3 position){
         this.layout = layout;
         this.texture = texture;
         this.position = position;
         this.visibleFaces = new ArrayList<>();
-        this.chunkCollidable = new ChunkCollidable();
+        collider = new ObjectBoxCollider(false, true);
+        collider.onRegister(this);
     }
 
     public RenderBlock(RenderTexture texture, Vector3 position){
@@ -72,11 +75,6 @@ public class RenderBlock {
 
     public void clearFaces(){
         visibleFaces.clear();
-    }
-
-    public ChunkCollidable getChunkCollider(){
-        chunkCollidable.setPosition(parentChunk.getPosition().clone().add(this.getPosition().clone()));
-        return chunkCollidable;
     }
 
     protected float[] getVertexFromFaces(){
@@ -224,4 +222,39 @@ public class RenderBlock {
     }
 
 
+    @Override
+    public final Vector3 getColPosition() {
+        return getPosition().clone().add(parentChunk.getPosition().clone());
+    }
+
+    @Override
+    public float getColScale() {
+        return 1;
+    }
+
+    @Override
+    public void setCollider(Collider collider) {
+        this.collider = collider;
+        collider.onRegister(this);
+    }
+
+    @Override
+    public void removeCollider() {
+        this.collider = null;
+    }
+
+    @Override
+    public void colTranslateBy(Vector3 vec) {
+        this.position = this.position.add(vec.clone());
+    }
+
+    @Override
+    public void setColPosition(Vector3 vec) {
+        setPosition(vec.clone());
+    }
+
+    @Override
+    public Collider getCollider() {
+        return collider;
+    }
 }

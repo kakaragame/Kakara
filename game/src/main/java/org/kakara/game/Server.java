@@ -18,6 +18,8 @@ public interface Server {
 
     List<Player> getOnlinePlayers();
 
+    void loadMods();
+
     /**
      * IDK when this will be invoked.
      */

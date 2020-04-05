@@ -5,9 +5,12 @@ import org.kakara.core.player.Player;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameEntity;
+import org.kakara.game.client.GameSave;
+import org.kakara.game.client.TestSave;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +30,11 @@ public class IntergratedServer implements Server {
         this.player = gameEntity;
         executorService = Executors.newFixedThreadPool(2);
         players.add(player);
+        if(save instanceof GameSave){
+            ((GameSave) save).setServer(this);
+        }else if(save instanceof TestSave){
+            ((TestSave) save).setServer(this);
+        }
     }
 
     @Override
@@ -48,6 +56,11 @@ public class IntergratedServer implements Server {
     @Override
     public List<Player> getOnlinePlayers() {
         return players;
+    }
+
+    @Override
+    public void loadMods() {
+
     }
 
     @Override

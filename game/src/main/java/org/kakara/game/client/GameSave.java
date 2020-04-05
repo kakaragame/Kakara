@@ -21,11 +21,10 @@ public class GameSave implements Save {
     private File playersFolder;
     private Server server;
 
-    public GameSave(File saveFolder, Server server) throws SaveLoadException {
+    public GameSave(File saveFolder) throws SaveLoadException {
         this.saveFolder = saveFolder;
         this.saveSettings = new ClientSaveSettings(new File(saveFolder, "config.json"));
         playersFolder = new File(saveFolder, "players");
-        this.server = server;
         if (!playersFolder.exists()) {
             playersFolder.mkdir();
         }
@@ -80,5 +79,9 @@ public class GameSave implements Save {
     @Override
     public List<File> getModsToLoad() {
         return null;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
     }
 }

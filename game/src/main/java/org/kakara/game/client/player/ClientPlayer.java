@@ -31,6 +31,10 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         location = location.add(x, y, z);
     }
 
+    public void moveLocation(float yaw, float pitch) {
+        location = location.add(new Location(0, 0, 0, pitch, yaw));
+    }
+
     @Override
     public void teleport(Location location) {
         EntityTeleportEvent entityTeleportEvent = new EntityTeleportEvent(this, this.location, location);

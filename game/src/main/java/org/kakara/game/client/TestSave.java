@@ -23,11 +23,10 @@ public class TestSave implements Save {
     private File playersFolder;
     private Server server;
 
-    public TestSave(File saveFolder, Server server) throws SaveLoadException {
+    public TestSave(File saveFolder) throws SaveLoadException {
         this.saveFolder = saveFolder;
         this.saveSettings = new SaveSettings("test", new ArrayList<>());
         playersFolder = new File(saveFolder, "players");
-        this.server = server;
         if (!playersFolder.exists()) {
             playersFolder.mkdir();
         }
@@ -87,5 +86,9 @@ public class TestSave implements Save {
         File dir = new File("test" + File.separator + "mods");
 
         return Arrays.asList(dir.listFiles((dir1, filename) -> filename.endsWith(".jar")));
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
     }
 }

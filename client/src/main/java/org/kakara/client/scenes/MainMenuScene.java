@@ -1,6 +1,7 @@
 package org.kakara.client.scenes;
 
 import org.kakara.client.KakaraGame;
+import org.kakara.core.client.Save;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseClickType;
@@ -20,7 +21,10 @@ import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
+import org.kakara.game.IntergratedServer;
+import org.kakara.game.client.TestSave;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 
@@ -94,7 +98,12 @@ public class MainMenuScene extends AbstractMenuScene {
                 public void OnHUDClick(Vector2 location, MouseClickType clickType) {
                     if (!playButton.isVisible()) return;
                     try {
-                        MainGameScene mgs = new MainGameScene(gameHandler, kakaraGame, Arrays.asList(MainGameScene.getModJars()));
+                        File file = new File("testsave");
+                        if (!file.exists()) file.mkdirs();
+                        Save save = new TestSave(file);
+                        IntergratedServer intergratedServer = new IntergratedServer(null, save, null);
+
+                        MainGameScene mgs = new MainGameScene(gameHandler, intergratedServer, kakaraGame);
                         gameHandler.getSceneManager().setScene(mgs);
 
                     } catch (Exception ex) {

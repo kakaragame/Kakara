@@ -1,6 +1,7 @@
 package org.kakara.engine.renderobjects;
 
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.renderobjects.chunkcollision.ChunkCollidable;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.renderobjects.renderlayouts.Face;
 import org.kakara.engine.renderobjects.renderlayouts.Layout;
@@ -23,11 +24,14 @@ public class RenderBlock {
     private Vector3 relativePosition;
     private List<Face> visibleFaces;
 
+    private ChunkCollidable chunkCollidable;
+
     public RenderBlock(Layout layout, RenderTexture texture, Vector3 position){
         this.layout = layout;
         this.texture = texture;
         this.position = position;
         this.visibleFaces = new ArrayList<>();
+        this.chunkCollidable = new ChunkCollidable();
     }
 
     public RenderBlock(RenderTexture texture, Vector3 position){
@@ -68,6 +72,11 @@ public class RenderBlock {
 
     public void clearFaces(){
         visibleFaces.clear();
+    }
+
+    public ChunkCollidable getChunkCollider(){
+        chunkCollidable.setPosition(parentChunk.getPosition().clone().add(this.getPosition().clone()));
+        return chunkCollidable;
     }
 
     protected float[] getVertexFromFaces(){

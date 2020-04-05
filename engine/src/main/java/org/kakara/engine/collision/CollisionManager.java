@@ -28,6 +28,7 @@ public class CollisionManager {
     }
 
     public List<Collidable> getCollidngItems(){
+//        handler.getSceneManager().getCurrentScene().get
         return collidingItems;
     }
 
@@ -55,7 +56,7 @@ public class CollisionManager {
                     >= item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x;
             yCollision = (item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y) + (((BoxCollider) item.getCollider()).getRelativePoint2().y) >= (other.getPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y)
                     && (other.getPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y) + ( ((BoxCollider) other.getCollider()).getRelativePoint2().y)
-                    >= item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y;
+                    >= item.getPosition().y + item.getCollider().getRelativePoint1().y;
             zCollision = (item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z) + (((BoxCollider) item.getCollider()).getRelativePoint2().z) >= (other.getPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint1().z)
                     && (other.getPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint1().z) + (((BoxCollider) other.getCollider()).getRelativePoint2().z)
                     >= item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z;

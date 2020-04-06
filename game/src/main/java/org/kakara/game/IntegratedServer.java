@@ -53,7 +53,7 @@ public class IntegratedServer implements Server {
         }
         try {
             JsonObject jsonObject = Utils.getGson().fromJson(new FileReader(playerFile), JsonObject.class);
-            return new ClientPlayer(jsonObject, new Location(save.getDefaultWorld(), 0, 0, 0), this);
+            return new ClientPlayer(jsonObject, new Location(save.getDefaultWorld(), 500, 50, 500), this);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -129,10 +129,12 @@ public class IntegratedServer implements Server {
     public void update() {
         if (player == null) return;
         ChunkLocation start = GameUtils.getChunkLocation(player.getLocation());
-        for (int x = start.getX(); x <= (start.getX() + (radius * 16)); x = x + 16) {
-            for (int y = start.getY(); y <= (start.getY() + (radius * 16)); y = y + 16) {
-                for (int z = start.getZ(); z <= (start.getZ() + (radius * 16)); z = z + 16) {
+        for (int x =(start.getX() - (radius * 16)); x <= (start.getX() + (radius * 16)); x += 16) {
+            for (int y = (start.getY() - (radius * 16)); y <= (start.getY() + (radius * 16)); y += 16) {
+                for (int z = (start.getZ() - (radius * 16)); z <= (start.getZ() + (radius * 16)); z += 16) {
                     ChunkLocation chunkLocation = new ChunkLocation(x, y, z);
+                    System.out.println("Start " + start.toString());
+                    System.out.println("End "+chunkLocation.toString());
                     if (GameUtils.isLocationInsideCurrentLocationRadius(start, chunkLocation, radius)) {
                         player.getLocation().getWorld().getChunkAt(chunkLocation);
                     }
@@ -140,6 +142,7 @@ public class IntegratedServer implements Server {
             }
         }
     }
+
     @Override
     public void tickUpdate() {
 

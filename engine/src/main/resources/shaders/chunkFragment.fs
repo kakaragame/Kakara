@@ -71,6 +71,8 @@ uniform sampler2D shadowMap;
 
 uniform Fog fog;
 
+uniform float reflectance;
+
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -100,7 +102,7 @@ vec4 calcLightColor(vec3 light_color, float light_intensity, vec3 position, vec3
     vec3 reflected_light = normalize(reflect(from_light_dir , normal));
     float specularFactor = max( dot(camera_direction, reflected_light), 0.0);
     specularFactor = pow(specularFactor, specularPower);
-    specColor = specularC * light_intensity  * specularFactor * material.reflectance * vec4(light_color, 1.0);
+    specColor = specularC * light_intensity  * specularFactor * reflectance * vec4(light_color, 1.0);
 
     return (diffuseColor + specColor);
 }

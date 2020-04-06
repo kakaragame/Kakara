@@ -102,11 +102,12 @@ public class Renderer {
 
         // Render Lighting
         LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
-        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight());
+        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight(), chunkShaderProgram);
 
         chunkShaderProgram.setUniform("fog", scene.getFog());
         chunkShaderProgram.setUniform("shadowMap", 2);
         chunkShaderProgram.setUniform("textureAtlas", 0);
+        chunkShaderProgram.setUniform("reflectance", 1f);
 
         List<RenderChunk> renderChunks = ags.getChunkHandler().getRenderChunkList();
 
@@ -148,7 +149,7 @@ public class Renderer {
 
         // Render Lighting
         LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
-        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight());
+        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight(), shaderProgram);
 
         shaderProgram.setUniform("fog", scene.getFog());
         shaderProgram.setUniform("shadowMap", 2);
@@ -232,9 +233,9 @@ public class Renderer {
     /**
      * Handles the rendering of lights.
      */
-    private void renderLights(Matrix4f viewMatrix, Vector3f ambientLight, List<PointLight> pointLightList, List<SpotLight> spotLightList, DirectionalLight directionalLight){
-        shaderProgram.setUniform("ambientLight", ambientLight);
-        shaderProgram.setUniform("specularPower", specularPower);
+    private void renderLights(Matrix4f viewMatrix, Vector3f ambientLight, List<PointLight> pointLightList, List<SpotLight> spotLightList, DirectionalLight directionalLight, Shader program){
+        program.setUniform("ambientLight", ambientLight);
+        program.setUniform("specularPower", specularPower);
 
         // Process Point Lights
         int numLights = pointLightList != null ? pointLightList.size() : 0;
@@ -248,7 +249,7 @@ public class Renderer {
             lightPos.y = aux.y;
             lightPos.z = aux.z;
             currPointLight.setPosition(lightPos.x, lightPos.y, lightPos.z);
-            shaderProgram.setUniform("pointLights", currPointLight, i);
+            program.setUniform("pointLights", currPointLight, i);
         }
 
         // Process Spot Ligths
@@ -267,7 +268,7 @@ public class Renderer {
             lightPos.y = aux.y;
             lightPos.z = aux.z;
 
-            shaderProgram.setUniform("spotLights", currSpotLight, i);
+            program.setUniform("spotLights", currSpotLight, i);
         }
 
         // Get a copy of the directional light object and transform its position to view coordinates
@@ -275,7 +276,7 @@ public class Renderer {
         Vector4f dir = new Vector4f(currDirLight.getDirection().toJoml(), 0);
         dir.mul(viewMatrix);
         currDirLight.setDirection(new Vector3(dir.x, dir.y, dir.z));
-        shaderProgram.setUniform("directionalLight", currDirLight);
+        program.setUniform("directionalLight", currDirLight);
 
     }
 
@@ -430,6 +431,8 @@ public class Renderer {
         chunkShaderProgram.createPointLightListUniform("pointLights", LightHandler.MAX_POINT_LIGHTS);
         chunkShaderProgram.createSpotLightListUniform("spotLights", LightHandler.MAX_SPOT_LIGHTS);
         chunkShaderProgram.createDirectionalLightUniform("directionalLight");
+
+        chunkShaderProgram.createUniform("reflectance");
 
         chunkShaderProgram.createUniform("textureAtlas");
     }

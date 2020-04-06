@@ -18,7 +18,7 @@ public class GameUtils {
         //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?
         return (Math.pow((centerPoint.getX() - location.getX()), 2) +
                 Math.pow((centerPoint.getY() - location.getY()), 2) +
-                Math.pow((centerPoint.getZ() - location.getZ()), 2)) < Math.pow(radius, 2);
+                Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius * 16), 2);
     }
 
     public static ChunkLocation getChunkFileLocation(ChunkLocation location) {

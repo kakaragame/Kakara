@@ -36,4 +36,6 @@ public interface Server {
     void tickUpdate();
 
     ExecutorService getExecutorService();
+
+    boolean isRunning();
 }

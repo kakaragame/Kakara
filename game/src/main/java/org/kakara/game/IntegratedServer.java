@@ -28,10 +28,11 @@ public class IntegratedServer implements Server {
     private LocalDataWatcher dataWatcher;
     private Save save;
     private Player player;
-    private int radius = 8;
+    public static final int radius = 8;
     private ExecutorService executorService;
     private List<Player> players = new ArrayList<>();
     private File playersFolder;
+    private boolean running = true;
 
     public IntegratedServer(LocalDataWatcher dataWatcher, Save save) {
         this.dataWatcher = dataWatcher;
@@ -133,14 +134,12 @@ public class IntegratedServer implements Server {
                 for (int z = start.getZ(); z <= (start.getZ() + (radius * 16)); z = z + 16) {
                     ChunkLocation chunkLocation = new ChunkLocation(x, y, z);
                     if (GameUtils.isLocationInsideCurrentLocationRadius(start, chunkLocation, radius)) {
-                       player.getLocation().getWorld().getChunkAt(chunkLocation);
+                        player.getLocation().getWorld().getChunkAt(chunkLocation);
                     }
                 }
             }
         }
     }
-
-
     @Override
     public void tickUpdate() {
 
@@ -148,5 +147,10 @@ public class IntegratedServer implements Server {
 
     public ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
     }
 }

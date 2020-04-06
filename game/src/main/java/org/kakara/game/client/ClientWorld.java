@@ -131,6 +131,29 @@ public class ClientWorld implements World {
     }
 
     @Override
+    public void unloadChunk(Chunk chunk) {
+        loadedChunks.removeIf(chunk1 -> chunk1.getLocation().equals(chunk.getLocation()));
+        try {
+            clientChunkWriter.saveChunk(chunk);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void unloadChunks(List<Chunk> chunk) {
+        for (Chunk chunk1 : chunk) {
+            System.out.println(chunk1.getLocation());
+            loadedChunks.removeIf(chunk2 -> chunk1.getLocation().equals(chunk1.getLocation()));
+        }
+        try {
+            clientChunkWriter.saveChunks(chunk);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void loadChunk(Chunk chunk) {
         if (isChunkLoaded(chunk.getLocation())) {
             return;
@@ -147,6 +170,7 @@ public class ClientWorld implements World {
 
     @Override
     public Chunk[] getLoadedChunks() {
+
         return loadedChunks.toArray(Chunk[]::new);
     }
 

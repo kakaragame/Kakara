@@ -27,7 +27,10 @@ public class ClientChunkWriter {
         this.world = world;
         chunkFolder = new File(world.getWorldFolder(), "chunks");
         if (!chunkFolder.exists()) chunkFolder.mkdir();
-
+        GsonBuilder js = new GsonBuilder();
+        GsonSerializerRegistar.registerSerializers(js);
+        js.setPrettyPrinting();
+        gson = js.create();
     }
 
     @Deprecated
@@ -136,12 +139,14 @@ public class ClientChunkWriter {
     }
 
     private Map<ChunkLocation, List<Chunk>> sortChunk(List<Chunk> chunk) {
+        System.out.println(chunk.size());
         Map<ChunkLocation, List<Chunk>> sorted = new HashMap<>();
         for (Chunk chunk1 : chunk) {
             ChunkLocation groupLocation = getGroupLocation(chunk1.getLocation());
             List<Chunk> list = sorted.getOrDefault(groupLocation, new ArrayList<>());
             list.add(chunk1);
             sorted.put(groupLocation, list);
+            System.out.println(chunk1+" Fasdf");
         }
         return sorted;
     }

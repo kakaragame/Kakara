@@ -1,14 +1,15 @@
 package org.kakara.client;
 
 import org.kakara.core.world.Chunk;
+import org.kakara.core.world.ChunkLocation;
 
 import java.util.UUID;
 
 public class RenderedChunk {
     private UUID renderChunkID;
-    private Chunk chunk;
+    private ChunkLocation chunk;
 
-    public RenderedChunk(UUID renderChunkID, Chunk chunk) {
+    public RenderedChunk(UUID renderChunkID, ChunkLocation chunk) {
         this.renderChunkID = renderChunkID;
         this.chunk = chunk;
     }
@@ -17,7 +18,7 @@ public class RenderedChunk {
         return renderChunkID;
     }
 
-    public Chunk getChunk() {
+    public ChunkLocation getChunk() {
         return chunk;
     }
 }

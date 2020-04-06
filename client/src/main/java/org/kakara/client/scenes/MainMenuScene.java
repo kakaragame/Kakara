@@ -1,5 +1,6 @@
 package org.kakara.client.scenes;
 
+import org.kakara.client.ChunkCollector;
 import org.kakara.client.KakaraGame;
 import org.kakara.core.client.Save;
 import org.kakara.engine.GameHandler;
@@ -93,7 +94,8 @@ public class MainMenuScene extends AbstractMenuScene {
                         Save save = new TestSave(file);
                         //
                         IntegratedServer intergratedServer = new IntegratedServer(null, save);
-
+                        //TODO save this somewhere.
+                        new ChunkCollector(save, intergratedServer).start();
                         MainGameScene mgs = new MainGameScene(gameHandler, intergratedServer, kakaraGame);
                         gameHandler.getSceneManager().setScene(mgs);
 

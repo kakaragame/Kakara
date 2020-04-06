@@ -133,8 +133,6 @@ public class IntegratedServer implements Server {
             for (int y = (start.getY() - (radius * 16)); y <= (start.getY() + (radius * 16)); y += 16) {
                 for (int z = (start.getZ() - (radius * 16)); z <= (start.getZ() + (radius * 16)); z += 16) {
                     ChunkLocation chunkLocation = new ChunkLocation(x, y, z);
-                    System.out.println("Start " + start.toString());
-                    System.out.println("End "+chunkLocation.toString());
                     if (GameUtils.isLocationInsideCurrentLocationRadius(start, chunkLocation, radius)) {
                         player.getLocation().getWorld().getChunkAt(chunkLocation);
                     }

@@ -50,7 +50,8 @@ public class ChunkHandler {
                 for(int x = -1; x < 2; x++){
                     for(int y=-2; y < 3; y++){
                         for(int z = -1; z < 2; z++){
-                            RenderBlock blck = chunk.getOctChunk().get(coordsToRenderCoords(chunk.getPosition(), pos.clone().add(x, y, z)));
+                            Vector3 coords = coordsToRenderCoords(chunk.getPosition(), pos.clone().add(x, y, z));
+                            RenderBlock blck = chunk.getOctChunk().get((int) coords.x, (int) coords.y, (int) coords.z);
                             if(blck != null)
                                 collisionList.add(blck);
                         }

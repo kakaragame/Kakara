@@ -1,5 +1,6 @@
 package org.kakara.engine.renderobjects;
 
+import me.ryandw11.octree.Octree;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.Vector3;
@@ -16,17 +17,17 @@ public class RenderChunk extends MeshGameItem {
 
     private List<RenderBlock> blocks;
     private RenderMesh mesh;
-    private OctChunk octChunk;
+    private Octree<RenderBlock> octChunk;
     private UUID chunkId;
 
     public RenderChunk(List<RenderBlock> blocks, TextureAtlas atlas){
         super();
         this.setPosition(new Vector3(0, 0, 0));
-        this.octChunk = new OctChunk();
+        this.octChunk = new Octree<>(0,0,0,17,17,17);
         this.blocks = blocks;
         for(RenderBlock blck : blocks){
             blck.setParentChunk(this);
-            octChunk.add(blck);
+            octChunk.insert((int)blck.getPosition().x, (int)blck.getPosition().y, (int)blck.getPosition().z, blck);
         }
         chunkId = UUID.randomUUID();
         regenerateChunk(atlas);
@@ -39,11 +40,12 @@ public class RenderChunk extends MeshGameItem {
     public void addBlock(RenderBlock block){
         block.setParentChunk(this);
         blocks.add(block);
-        octChunk.add(block);
+        octChunk.insert(Math.round(block.getPosition().x), Math.round(block.getPosition().y), Math.round(block.getPosition().z), block);
     }
 
     public void removeBlock(RenderBlock block){
         blocks.remove(block);
+        octChunk.remove((int)block.getPosition().x, (int)block.getPosition().y, (int)block.getPosition().z);
         block.setParentChunk(null);
     }
 
@@ -55,7 +57,7 @@ public class RenderChunk extends MeshGameItem {
         return chunkId;
     }
 
-    public OctChunk getOctChunk(){
+    public Octree<RenderBlock> getOctChunk(){
         return octChunk;
     }
 
@@ -63,37 +65,40 @@ public class RenderChunk extends MeshGameItem {
         List<RenderBlock> output = new ArrayList<>();
         for(RenderBlock block : blocks){
             Vector3 pos = block.getPosition();
+            int x = (int) pos.x;
+            int y = (int) pos.y;
+            int z = (int) pos.z;
             block.clearFaces();
             boolean found = false;
-            if(octChunk.get(new Vector3(pos.x, pos.y, pos.z + 1)) == null) {
+            if(!octChunk.find(x, y, z + 1)) {
                 block.addFace(Face.FRONT);
                 output.add(block);
                 found = true;
             }
-            if(octChunk.get(new Vector3(pos.x, pos.y, pos.z - 1)) == null) {
+            if(!octChunk.find(x, y, z - 1)) {
                 block.addFace(Face.BACK);
                 if(!found)
                     output.add(block);
             }
-            if(octChunk.get(new Vector3(pos.x, pos.y + 1, pos.z)) == null) {
+            if(!octChunk.find(x, y + 1, z)) {
                 block.addFace(Face.TOP);
                 if(!found)
                     output.add(block);
                 found = true;
             }
-            if(octChunk.get(new Vector3(pos.x, pos.y -1, pos.z)) == null) {
+            if(!octChunk.find(x, y -1, z)) {
                 block.addFace(Face.BOTTOM);
                 if(!found)
                     output.add(block);
                 found = true;
             }
-            if(octChunk.get(new Vector3(pos.x + 1, pos.y, pos.z)) == null) {
+            if(!octChunk.find(x + 1, y, z)) {
                 block.addFace(Face.RIGHT);
                 if(!found)
                     output.add(block);
                 found = true;
             }
-            if(octChunk.get(new Vector3(pos.x - 1, pos.y, pos.z)) == null) {
+            if(!octChunk.find(x - 1, y, z)) {
                 block.addFace(Face.LEFT);
                 if(!found)
                     output.add(block);

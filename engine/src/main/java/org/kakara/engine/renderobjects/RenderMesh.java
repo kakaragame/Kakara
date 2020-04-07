@@ -135,45 +135,36 @@ public class RenderMesh {
      */
     private MeshLayout setupLayout(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas) {
         float[] positions = {};
-        for (RenderBlock rb : renderBlocks) {
-            float[] arrayToCopy = rb.getVertexFromFaces();
-            float[] both = Arrays.copyOf(positions, positions.length + arrayToCopy.length);
-            System.arraycopy(arrayToCopy, 0, both, positions.length, arrayToCopy.length);
-            positions = both;
-        }
-
-        final float[] finalPos = positions;
-
         float[] texCoords = {};
-        for (RenderBlock rb : renderBlocks) {
-            float[] secondArray = rb.getTextureFromFaces(textureAtlas);
-            float[] both = Arrays.copyOf(texCoords, texCoords.length + secondArray.length);
-            System.arraycopy(secondArray, 0, both, texCoords.length, secondArray.length);
-            texCoords = both;
-        }
-
-        final float[] finalTexCord = texCoords;
-
         float[] normals = {};
-        for (RenderBlock rb : renderBlocks) {
-            float[] secondArray = rb.getNormalsFromFaces();
-            float[] both = Arrays.copyOf(normals, normals.length + secondArray.length);
-            System.arraycopy(secondArray, 0, both, normals.length, secondArray.length);
-            normals = both;
-        }
-
-        final float[] finalNormals = normals;
-
         int[] indicies = {};
         int count = 0;
         for (RenderBlock rb : renderBlocks) {
-            int[] secondArray = rb.getIndicesFromFaces(count);
-            int[] both = Arrays.copyOf(indicies, indicies.length + secondArray.length);
-            System.arraycopy(secondArray, 0, both, indicies.length, secondArray.length);
-            indicies = both;
+            float[] posCopy = rb.getVertexFromFaces();
+            float[] posBoth = Arrays.copyOf(positions, positions.length + posCopy.length);
+            System.arraycopy(posCopy, 0, posBoth, positions.length, posCopy.length);
+            positions = posBoth;
+
+            float[] textCopy = rb.getTextureFromFaces(textureAtlas);
+            float[] textBoth = Arrays.copyOf(texCoords, texCoords.length + textCopy.length);
+            System.arraycopy(textCopy, 0, textBoth, texCoords.length, textCopy.length);
+            texCoords = textBoth;
+
+            float[] normalCopy = rb.getNormalsFromFaces();
+            float[] normalBoth = Arrays.copyOf(normals, normals.length + normalCopy.length);
+            System.arraycopy(normalCopy, 0, normalBoth, normals.length, normalCopy.length);
+            normals = normalBoth;
+
+            int[] indCopy = rb.getIndicesFromFaces(count);
+            int[] indBoth = Arrays.copyOf(indicies, indicies.length + indCopy.length);
+            System.arraycopy(indCopy, 0, indBoth, indicies.length, indCopy.length);
+            indicies = indBoth;
             count += rb.getVisibleFaces().size() * 4;
         }
 
+        final float[] finalPos = positions;
+        final float[] finalTexCord = texCoords;
+        final float[] finalNormals = normals;
         final int[] finalIndices = indicies;
         return new MeshLayout() {
             @Override

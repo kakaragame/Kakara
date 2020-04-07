@@ -1,5 +1,6 @@
 package org.kakara.client.scenes;
 
+import me.ryandw11.octree.Octree;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joml.Vector3f;
 import org.kakara.client.Client;
@@ -66,7 +67,7 @@ public class MainGameScene extends AbstractGameScene {
     private boolean debugMode = false;
     private KakaraGame kakaraGame;
     private Server server;
-    private List<RenderedChunk> renderedChunks = new CopyOnWriteArrayList<>();
+    private Octree<RenderedChunk> renderedChunks = new Octree<>(-30000000, -100, -30000000, 30000000, 10000, 30000000);
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -146,23 +147,10 @@ public class MainGameScene extends AbstractGameScene {
         return null;
     }
 
-    public boolean doesChunkNeedToBeUpdated(Chunk chunk) {
-        for (RenderedChunk renderedChunk : renderedChunks) {
-            if (renderedChunk.getChunk().equals(chunk.getLocation())) {
-                ClientChunk clientChunk = (ClientChunk) chunk;
-                return clientChunk.isUpdatedHappened();
-            }
-        }
-        return true;
-    }
 
     public RenderedChunk getChunk(Chunk chunk) {
-        for (RenderedChunk renderedChunk : renderedChunks) {
-            if (renderedChunk.getChunk().equals(chunk.getLocation())) {
-                return renderedChunk;
-            }
-        }
-        return null;
+
+        return renderedChunks.get(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
     }
 
     @Override
@@ -172,14 +160,15 @@ public class MainGameScene extends AbstractGameScene {
         playerMovement();
         for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
             RenderedChunk renderedChunk = getChunk(loadedChunk);
+            ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
             if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.radius)) {
                 if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
-                renderedChunks.removeIf(chunk -> chunk.getChunk().equals(loadedChunk.getLocation()));
+                renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
             }
-            if (doesChunkNeedToBeUpdated(loadedChunk)) {
+            if (renderedChunk == null || clientChunk.isUpdatedHappened()) {
                 if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
-                renderedChunks.removeIf(chunk -> chunk.getChunk().equals(loadedChunk.getLocation()));
+                renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
                 if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.radius)) {
                     ChunkLocation cb = loadedChunk.getLocation();
                     RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
@@ -192,10 +181,10 @@ public class MainGameScene extends AbstractGameScene {
                         RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
                         rc.addBlock(rb);
                     }
-                    ((ClientChunk) loadedChunk).setUpdatedHappened(false);
+                    clientChunk.setUpdatedHappened(false);
                     rc.regenerateChunk(getTextureAtlas());
                     getChunkHandler().addChunk(rc);
-                    renderedChunks.add(new RenderedChunk(rc.getId(), loadedChunk.getLocation()));
+                    renderedChunks.insert(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ(), new RenderedChunk(rc.getId(), loadedChunk.getLocation()));
                 }
             }
 

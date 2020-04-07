@@ -1,6 +1,7 @@
 package org.kakara.client.scenes;
 
 import me.ryandw11.octree.Octree;
+import me.ryandw11.octree.OutOfBoundsException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joml.Vector3f;
 import org.kakara.client.Client;
@@ -66,14 +67,22 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
 public class MainGameScene extends AbstractGameScene {
     private boolean debugMode = false;
     private KakaraGame kakaraGame;
+
+
     private Server server;
-    private Octree<RenderedChunk> renderedChunks = new Octree<>(-30000000, -100, -30000000, 30000000, 10000, 30000000);
+    private Octree<RenderedChunk> renderedChunks;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
         setCurserStatus(false);
         this.server = server;
         this.kakaraGame = kakaraGame;
+        try {
+            renderedChunks = new Octree<>(-30000000, -100, -30000000, 30000000, 10000, 30000000);
+        } catch (OutOfBoundsException e) {
+            e.printStackTrace();
+        }
+        ;
     }
 
 
@@ -184,7 +193,11 @@ public class MainGameScene extends AbstractGameScene {
                     clientChunk.setUpdatedHappened(false);
                     rc.regenerateChunk(getTextureAtlas());
                     getChunkHandler().addChunk(rc);
-                    renderedChunks.insert(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ(), new RenderedChunk(rc.getId(), loadedChunk.getLocation()));
+                    try {
+                        renderedChunks.insert(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ(), new RenderedChunk(rc.getId(), loadedChunk.getLocation()));
+                    } catch (OutOfBoundsException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -223,4 +236,8 @@ public class MainGameScene extends AbstractGameScene {
         gameHandler.getCamera().setPosition(MoreUtils.locationToVector3(l).add(0, 2, 0));
         gameHandler.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
     }
+    public Server getServer() {
+        return server;
+    }
+
 }

@@ -72,8 +72,10 @@ public class ClientChunkWriter {
         JsonObject chunkValue = jo.getAsJsonObject(value);
         List<GameBlock> gameBlocks = new ArrayList<>();
         for (JsonElement element : chunkValue.get("blocks").getAsJsonArray()) {
+
             gameBlocks.add(gson.fromJson(element, GameBlock.class));
         }
+        System.out.println(chunkLocation.toString());
         return new ClientChunk(chunkLocation, gameBlocks);
     }
 
@@ -108,7 +110,8 @@ public class ClientChunkWriter {
     public void saveChunks(List<Chunk> chunks) throws IOException {
         Map<ChunkLocation, List<Chunk>> sortedChunks = sortChunk(chunks);
         for (Map.Entry<ChunkLocation, List<Chunk>> entry : sortedChunks.entrySet()) {
-            File chunkFile = getChunkFile(entry.getKey());
+            ChunkLocation groupLoc = entry.getKey();
+            File chunkFile = new File(chunkFolder, String.format("_%s_%s_%s_.json", groupLoc.getX(), groupLoc.getY(), groupLoc.getZ()));
             JsonObject jo;
             if (chunkFile.exists()) {
                 jo = gson.fromJson(new FileReader(chunkFile), JsonObject.class);
@@ -146,7 +149,7 @@ public class ClientChunkWriter {
             List<Chunk> list = sorted.getOrDefault(groupLocation, new ArrayList<>());
             list.add(chunk1);
             sorted.put(groupLocation, list);
-            System.out.println(chunk1+" Fasdf");
+            System.out.println(chunk1 + " Fasdf");
         }
         return sorted;
     }

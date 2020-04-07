@@ -7,6 +7,7 @@ import org.kakara.core.world.World;
 import org.kakara.game.GameUtils;
 import org.kakara.game.IntegratedServer;
 import org.kakara.game.Server;
+import org.kakara.game.client.ClientWorld;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +32,17 @@ public class ChunkCollector extends Thread {
             ChunkLocation location = GameUtils.getChunkLocation(server.getPlayerEntity().getLocation());
             World world = server.getPlayerEntity().getLocation().getWorld();
             List<Chunk> chunksToUnload = new ArrayList<>();
+            List<Chunk> chunksToSave = new ArrayList<>();
             System.out.println(world.getLoadedChunks().length);
             for (Chunk loadedChunk : world.getLoadedChunks()) {
                 if (!GameUtils.isLocationInsideCurrentLocationRadius(location, loadedChunk.getLocation(), IntegratedServer.radius)) {
                     chunksToUnload.add(loadedChunk);
+                } else {
+                    chunksToSave.add(loadedChunk);
                 }
             }
-            server.getExecutorService().submit(() -> {
-                world.unloadChunks(chunksToUnload);
-            });
-
+            world.unloadChunks(chunksToUnload);
+            ((ClientWorld) world).saveChunks(chunksToSave);
         }
     }
 }

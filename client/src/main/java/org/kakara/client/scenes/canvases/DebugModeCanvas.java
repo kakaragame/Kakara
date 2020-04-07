@@ -1,6 +1,7 @@
 package org.kakara.client.scenes.canvases;
 
 import org.kakara.client.KakaraGame;
+import org.kakara.client.scenes.MainGameScene;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
@@ -20,10 +21,12 @@ public class DebugModeCanvas extends ComponentCanvas {
     private Text fps;
     private Text location;
     private Text chunkLocation;
+    private Text numberOfChunksLoaded;
     private String locationFormat = "X: %1$s Y: %2$s Z: %3$s";
-
-    private DebugModeCanvas(KakaraGame kakaraGame, Scene scene) {
+private MainGameScene gameScene;
+    private DebugModeCanvas(KakaraGame kakaraGame, MainGameScene scene) {
         super(scene);
+gameScene = scene;
         this.kakaraGame = kakaraGame;
 
         fps = new Text("60", kakaraGame.getFont());
@@ -41,10 +44,15 @@ public class DebugModeCanvas extends ComponentCanvas {
         chunkLocation.setTextAlign(TextAlign.CENTER);
         chunkLocation.setLineWidth(500);
 
+        numberOfChunksLoaded = new Text("0", kakaraGame.getFont());
+        numberOfChunksLoaded.position = new Vector2(0, 150);
+        numberOfChunksLoaded.setTextAlign(TextAlign.CENTER);
+        numberOfChunksLoaded.setLineWidth(500);
+
 
     }
 
-    public static DebugModeCanvas getInstance(KakaraGame kakaraGame, Scene scene) {
+    public static DebugModeCanvas getInstance(KakaraGame kakaraGame, MainGameScene scene) {
         if (instance == null) {
             instance = new DebugModeCanvas(kakaraGame, scene);
         }
@@ -57,17 +65,21 @@ public class DebugModeCanvas extends ComponentCanvas {
         ChunkLocation l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));
         chunkLocation.setText(String.format(locationFormat, l.getX(), l.getY(), l.getZ()));
         fps.setText("FPS: " + Math.round(1 / Time.deltaTime));
+
+        numberOfChunksLoaded.setText("NOC: "+ gameScene.getServer().getPlayerEntity().getLocation().getWorld().getLoadedChunks().length);
     }
 
     public void remove() {
         removeComponent(fps);
         removeComponent(location);
         removeComponent(chunkLocation);
+        removeComponent(numberOfChunksLoaded);
     }
 
     public void add() {
         add(fps);
         add(location);
         add(chunkLocation);
+        add(numberOfChunksLoaded);
     }
 }

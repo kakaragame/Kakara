@@ -181,4 +181,12 @@ public class ClientWorld implements World {
     public ClientChunkWriter getClientChunkWriter() {
         return clientChunkWriter;
     }
+
+    public void saveChunks(List<Chunk> chunksToSave) {
+        try {
+            clientChunkWriter.saveChunks(chunksToSave);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

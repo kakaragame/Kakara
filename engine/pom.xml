@@ -187,7 +187,7 @@
         <dependency>
             <groupId>com.github.ryandw11</groupId>
             <artifactId>Octree</artifactId>
-            <version>-ef40635429-1</version>
+            <version>88e9fbd0f3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

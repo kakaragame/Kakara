@@ -137,23 +137,27 @@ public class RenderMesh {
         float[] positions = {};
         float[] texCoords = {};
         float[] normals = {};
+
+        float[] copy;
+        float[] both;
+
         int[] indicies = {};
         int count = 0;
         for (RenderBlock rb : renderBlocks) {
-            float[] posCopy = rb.getVertexFromFaces();
-            float[] posBoth = Arrays.copyOf(positions, positions.length + posCopy.length);
-            System.arraycopy(posCopy, 0, posBoth, positions.length, posCopy.length);
-            positions = posBoth;
+            copy = rb.getVertexFromFaces();
+            both = Arrays.copyOf(positions, positions.length + copy.length);
+            System.arraycopy(copy, 0, both, positions.length, copy.length);
+            positions = both;
 
-            float[] textCopy = rb.getTextureFromFaces(textureAtlas);
-            float[] textBoth = Arrays.copyOf(texCoords, texCoords.length + textCopy.length);
-            System.arraycopy(textCopy, 0, textBoth, texCoords.length, textCopy.length);
-            texCoords = textBoth;
+            copy = rb.getTextureFromFaces(textureAtlas);
+            both = Arrays.copyOf(texCoords, texCoords.length + copy.length);
+            System.arraycopy(copy, 0, both, texCoords.length, copy.length);
+            texCoords = both;
 
-            float[] normalCopy = rb.getNormalsFromFaces();
-            float[] normalBoth = Arrays.copyOf(normals, normals.length + normalCopy.length);
-            System.arraycopy(normalCopy, 0, normalBoth, normals.length, normalCopy.length);
-            normals = normalBoth;
+            copy = rb.getNormalsFromFaces();
+            both = Arrays.copyOf(normals, normals.length + copy.length);
+            System.arraycopy(copy, 0, both, normals.length, copy.length);
+            normals = both;
 
             int[] indCopy = rb.getIndicesFromFaces(count);
             int[] indBoth = Arrays.copyOf(indicies, indicies.length + indCopy.length);

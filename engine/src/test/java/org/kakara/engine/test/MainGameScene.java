@@ -226,6 +226,16 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     @Override
+    public void work() {
+
+    }
+
+    @Override
+    public void loadGraphics() {
+
+    }
+
+    @Override
     public void update(float interval) {
         KeyInput ki = handler.getKeyInput();
 

@@ -65,9 +65,9 @@ public class MainGameScene extends AbstractGameScene {
         MeshGameItem object = new MeshGameItem(mainPlayer);
         object.setPosition(4, 3f, 4);
         object.setScale(0.3f);
-        object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
-        object.getCollider().setUseGravity(true).setTrigger(false);
-        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+//        object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
+//        object.getCollider().setUseGravity(true).setTrigger(false);
+//        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
 
         add(object);
         player = object;
@@ -85,9 +85,9 @@ public class MainGameScene extends AbstractGameScene {
 
         mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
-        gi.setCollider(new ObjectBoxCollider());
+        gi.setCollider(new ObjectBoxCollider(true, false));
         add(gi);
-        gi.setPosition(0, 0, -5);
+        gi.setPosition(5, 2, 5);
         collider = gi;
 //        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
 //        SkyBox skyBox = new SkyBox(skyb, true);
@@ -111,8 +111,8 @@ public class MainGameScene extends AbstractGameScene {
 
         final long startTime = System.currentTimeMillis();
 
-        for(int cx = 0; cx < 4; cx++){
-            for(int cz = 0; cz < 4; cz++){
+        for(int cx = 0; cx < 1; cx++){
+            for(int cz = 0; cz < 1; cz++){
                 RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
                 rc.setPosition(cx * 16, -16, cz * 16);
                 for(int x = 0; x < 16; x++){

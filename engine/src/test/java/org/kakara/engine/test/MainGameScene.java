@@ -15,7 +15,10 @@ import org.kakara.engine.lighting.LightColor;
 import org.kakara.engine.lighting.PointLight;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
-import org.kakara.engine.renderobjects.*;
+import org.kakara.engine.renderobjects.RenderBlock;
+import org.kakara.engine.renderobjects.RenderChunk;
+import org.kakara.engine.renderobjects.RenderTexture;
+import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
@@ -58,13 +61,13 @@ public class MainGameScene extends AbstractGameScene {
         setCurserStatus(false);
         gameHandler.getCamera().setPosition(0, 3, 0);
         var resourceManager = gameHandler.getResourceManager();
-        Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
+        Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player",this,resourceManager);
         MeshGameItem object = new MeshGameItem(mainPlayer);
         object.setPosition(4, 3f, 4);
         object.setScale(0.3f);
-        object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
-        object.getCollider().setUseGravity(true).setTrigger(false);
-        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+//        object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
+//        object.getCollider().setUseGravity(true).setTrigger(false);
+//        ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
 
         add(object);
         player = object;
@@ -82,9 +85,9 @@ public class MainGameScene extends AbstractGameScene {
 
         mesh.setMaterial(mt);
         MeshGameItem gi = new MeshGameItem(mesh);
-        gi.setCollider(new ObjectBoxCollider());
+        gi.setCollider(new ObjectBoxCollider(true, false));
         add(gi);
-        gi.setPosition(0, 0, -5);
+        gi.setPosition(5, 2, 5);
         collider = gi;
 //        Texture skyb = Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/skybox.png"));
 //        SkyBox skyBox = new SkyBox(skyb, true);
@@ -108,14 +111,14 @@ public class MainGameScene extends AbstractGameScene {
 
         final long startTime = System.currentTimeMillis();
 
-        for (int cx = 0; cx < 4; cx++) {
-            for (int cz = 0; cz < 4; cz++) {
+        for(int cx = 0; cx < 1; cx++){
+            for(int cz = 0; cz < 1; cz++){
                 RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
                 rc.setPosition(cx * 16, -16, cz * 16);
-                for (int x = 0; x < 16; x++) {
-                    for (int y = 0; y < 16; y++) {
-                        for (int z = 0; z < 16; z++) {
-                            if (y > 6 && y < 10) continue;
+                for(int x = 0; x < 16; x++){
+                    for(int y = 0; y < 16; y++){
+                        for(int z = 0; z < 16; z++){
+                            if(y > 6 && y < 10) continue;
                             RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
                             rc.addBlock(rb);
                         }
@@ -181,7 +184,7 @@ public class MainGameScene extends AbstractGameScene {
         hud.addFont(font);
 
         Text fps = new Text("FPS: 000", font);
-        fps.setColor(new RGBA(255, 255, 255, 1));
+        fps.setColor(new RGBA(255,255,255,1));
 
         fps.setPosition(20, 20);
         cc.add(fps);
@@ -218,26 +221,15 @@ public class MainGameScene extends AbstractGameScene {
 
     }
 
-
     public GameItem getPlayer() {
         return player;
-    }
-
-    @Override
-    public void work() {
-
-    }
-
-    @Override
-    public void loadGraphics() {
-
     }
 
     @Override
     public void update(float interval) {
         KeyInput ki = handler.getKeyInput();
 
-        fps.setText("FPS: " + Math.round(1 / Time.deltaTime));
+        fps.setText("FPS: " + Math.round(1/ Time.deltaTime));
 
         if (ki.isKeyPressed(GLFW_KEY_W)) {
             handler.getCamera().movePosition(0, 0, -1);

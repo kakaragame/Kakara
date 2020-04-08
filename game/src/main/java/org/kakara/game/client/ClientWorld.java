@@ -109,7 +109,7 @@ public class ClientWorld implements World {
                 if (loadedChunk.getLocation().equals(location))
                     completableFuture.complete(loadedChunk);
             }
-            try {
+            /*try {
                 Chunk chunk1 = clientChunkWriter.getChunk(location);
                 if (chunk1 != null) {
                     loadChunk(chunk1);
@@ -119,7 +119,7 @@ public class ClientWorld implements World {
             } catch (IOException e) {
                 e.printStackTrace();
                 completableFuture.completeExceptionally(e);
-            }
+            }*/
             ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
             base = chunkGenerator.generateChunk(seed, random, base);
             Chunk chunk = new ClientChunk(base);

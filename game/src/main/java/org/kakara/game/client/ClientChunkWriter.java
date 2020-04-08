@@ -112,14 +112,15 @@ public class ClientChunkWriter {
         for (Map.Entry<ChunkLocation, List<Chunk>> entry : sortedChunks.entrySet()) {
             ChunkLocation groupLoc = entry.getKey();
             File chunkFile = new File(chunkFolder, String.format("_%s_%s_%s_.json", groupLoc.getX(), groupLoc.getY(), groupLoc.getZ()));
-            JsonObject jo;
+            JsonObject jo = null;
             if (chunkFile.exists()) {
                 jo = gson.fromJson(new FileReader(chunkFile), JsonObject.class);
                 File backup = new File(chunkFile.getAbsolutePath() + ".bak");
                 if (backup.exists()) backup.delete();
                 Files.copy(chunkFile.toPath(), backup.toPath());
                 chunkFile.delete();
-            } else {
+            }
+            if (jo == null) {
                 jo = new JsonObject();
             }
             chunkFile.createNewFile();

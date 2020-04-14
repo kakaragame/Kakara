@@ -6,6 +6,7 @@ import org.kakara.core.Kakara;
 
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.mod.game.GameModManager;
+import org.kakara.core.serializers.messagepack.MPSerializerRegistrar;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.ui.text.Font;
@@ -53,7 +54,8 @@ public class KakaraGame implements Game {
         client.getItemManager().load(client);
         client.getEventManager().load(client);
         client.getModManager().load(client);
-    }
+        MPSerializerRegistrar.load();
+}
 
     @Override
     public void start(GameHandler gameHandler) throws Exception {

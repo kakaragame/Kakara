@@ -3,6 +3,7 @@ package org.kakara.client;
 import org.kakara.core.GameInstance;
 import org.kakara.core.GameTypes;
 import org.kakara.core.crafting.CraftingManager;
+import org.kakara.core.data.SerializerManager;
 import org.kakara.core.events.EventManager;
 import org.kakara.core.game.*;
 import org.kakara.core.game.entity.EntityManager;
@@ -10,6 +11,7 @@ import org.kakara.core.mod.ModManager;
 import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.resources.ResourceManager;
+import org.kakara.core.serializers.messagepack.MPSerializerRegistrar;
 import org.kakara.core.sound.SoundManager;
 import org.kakara.core.world.WorldGenerationManager;
 import org.kakara.core.world.WorldManager;
@@ -35,6 +37,7 @@ public class Client implements GameInstance {
     private File workingDirectory;
     private WorldGenerationManager worldGenerationManager;
     private EventManager eventManager;
+    private SerializerManager serializerManager;
 
     public Client(KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
@@ -45,7 +48,7 @@ public class Client implements GameInstance {
         modManager = new GameModManager(new KakaraMod());
         resourceManager = new GameResourceManager();
         eventManager = new GameEventManager();
-
+        serializerManager = new SerializerManager();
     }
 
     @Override
@@ -110,6 +113,11 @@ public class Client implements GameInstance {
     @Override
     public WorldGenerationManager getWorldGenerationManager() {
         return worldGenerationManager;
+    }
+
+    @Override
+    public SerializerManager getSerializerManager() {
+        return serializerManager;
     }
 
     @Override

@@ -1,19 +1,25 @@
 package org.kakara.engine;
 
+import org.joml.Matrix4f;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.render.Transformation;
 
 public class Camera {
     private final Vector3 position;
     private final Vector3 rotation;
 
+    private Matrix4f viewMatrix;
+
     public Camera(){
         position = new Vector3(0, 0, 0);
         rotation = new Vector3(0, 0, 0);
+        viewMatrix = new Matrix4f();
     }
 
     public Camera(Vector3 position, Vector3 rotation){
         this.position = position;
         this.rotation = rotation;
+        viewMatrix = new Matrix4f();
     }
 
     public Vector3 getPosition(){
@@ -78,6 +84,14 @@ public class Camera {
         rotation.x += offset.x;
         rotation.y += offset.y;
         rotation.z += offset.z;
+    }
+
+    public Matrix4f getViewMatrix(){
+        return viewMatrix;
+    }
+
+    public Matrix4f updateViewMatrix(){
+        return Transformation.updateGenericViewMatrix(position.toJoml(), rotation.toJoml(), viewMatrix);
     }
 
     public Vector3 getRotation(){

@@ -1,5 +1,6 @@
 package org.kakara.engine.scene;
 
+import org.kakara.engine.Camera;
 import org.kakara.engine.item.ItemHandler;
 import org.kakara.engine.item.Particles.ParticleHandler;
 import org.kakara.engine.item.SkyBox;
@@ -60,4 +61,6 @@ public interface Scene {
 
     Fog getFog();
     void setFog(Fog fog);
+
+    Camera getCamera();
 }

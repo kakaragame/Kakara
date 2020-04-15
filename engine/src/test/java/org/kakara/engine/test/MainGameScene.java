@@ -3,9 +3,13 @@ package org.kakara.engine.test;
 import org.joml.Vector3f;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
+import org.kakara.engine.collision.Collidable;
 import org.kakara.engine.collision.ObjectBoxCollider;
 import org.kakara.engine.engine.CubeData;
+import org.kakara.engine.events.EventHandler;
+import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.input.KeyInput;
+import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
 import org.kakara.engine.item.Particles.FlowParticleEmitter;
@@ -20,8 +24,10 @@ import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
+import org.kakara.engine.renderobjects.renderlayouts.Face;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
+import org.kakara.engine.ui.components.Rectangle;
 import org.kakara.engine.ui.components.Text;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
@@ -50,6 +56,8 @@ public class MainGameScene extends AbstractGameScene {
     private float lightAngle;
 
     private Text fps;
+
+    private boolean once = false;
 
     public MainGameScene(GameHandler gameHandler, KakaraTest test) throws Exception {
         super(gameHandler);
@@ -189,6 +197,12 @@ public class MainGameScene extends AbstractGameScene {
         fps.setPosition(20, 20);
         cc.add(fps);
         this.fps = fps;
+        Rectangle rect = new Rectangle();
+        rect.setColor(new RGBA(0, 255, 0, 1));
+        rect.setScale(5, 5);
+        rect.setPosition((float)gameHandler.getWindow().getWidth()/2, (float)gameHandler.getWindow().getHeight()/2);
+        cc.add(rect);
+
         add(cc);
 
         /**
@@ -228,6 +242,11 @@ public class MainGameScene extends AbstractGameScene {
     @Override
     public void update(float interval) {
         KeyInput ki = handler.getKeyInput();
+
+        if(!once){
+            gameHandler.getEventManager().registerHandler(this, this);
+            once = true;
+        }
 
         fps.setText("FPS: " + Math.round(1/ Time.deltaTime));
 
@@ -314,6 +333,20 @@ public class MainGameScene extends AbstractGameScene {
 //        getLightHandler().getDirectionalLight().setDirection(new Vector3(lightDirection));
 
         particleEmitter.update((long) (interval * 1000));
+    }
+
+    @EventHandler
+    public void OnMouseClick(MouseClickEvent evt){
+        if(evt.getMouseClickType() == MouseClickType.LEFT_CLICK){
+            System.out.println("Clicked!");
+            Collidable selected = this.selectGameItems();
+            if(selected instanceof RenderBlock){
+                RenderBlock block = (RenderBlock) selected;
+                RenderChunk parentChunk = block.getParentChunk();
+                parentChunk.removeBlock(block);
+                parentChunk.regenerateChunk(getTextureAtlas());
+            }
+        }
     }
 
 

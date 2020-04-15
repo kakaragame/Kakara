@@ -25,6 +25,12 @@ public class InstancedMesh extends Mesh {
 
     private static final int MATRIX_SIZE_FLOATS = 4 * 4;
 
+    private static final int FLOAT_SIZE_BYTES = 4;
+
+    private static final int INSTANCE_SIZE_BYTES = InstancedMesh.MATRIX_SIZE_BYTES * 2 + InstancedMesh.FLOAT_SIZE_BYTES * 2 + InstancedMesh.FLOAT_SIZE_BYTES;
+
+    private static final int INSTANCE_SIZE_FLOATS = InstancedMesh.MATRIX_SIZE_FLOATS * 2 + 3;
+
     private final int numInstances;
 
     private final int modelViewVBO;
@@ -47,10 +53,12 @@ public class InstancedMesh extends Mesh {
         this.modelViewBuffer = MemoryUtil.memAllocFloat(numInstances * MATRIX_SIZE_FLOATS);
         glBindBuffer(GL_ARRAY_BUFFER, modelViewVBO);
         int start = 5;
+        int strideStart = 0;
         for (int i = 0; i < 4; i++) {
-            glVertexAttribPointer(start, 4, GL_FLOAT, false, MATRIX_SIZE_BYTES, i * VECTOR4F_SIZE_BYTES);
+            glVertexAttribPointer(start, 4, GL_FLOAT, false, MATRIX_SIZE_BYTES, strideStart);
             glVertexAttribDivisor(start, 1);
             start++;
+            strideStart += InstancedMesh.VECTOR4F_SIZE_BYTES;
         }
 
         // Light view matrix
@@ -59,11 +67,16 @@ public class InstancedMesh extends Mesh {
         this.modelLightViewBuffer = MemoryUtil.memAllocFloat(numInstances * InstancedMesh.MATRIX_SIZE_FLOATS);
         glBindBuffer(GL_ARRAY_BUFFER, modelLightViewVBO);
         for (int i = 0; i < 4; i++) {
-            glVertexAttribPointer(start, 4, GL_FLOAT, false, InstancedMesh.MATRIX_SIZE_BYTES, i * InstancedMesh.VECTOR4F_SIZE_BYTES);
+            glVertexAttribPointer(start, 4, GL_FLOAT, false, InstancedMesh.MATRIX_SIZE_BYTES, strideStart);
             glVertexAttribDivisor(start, 1);
             glEnableVertexAttribArray(start);
             start++;
+            strideStart += InstancedMesh.VECTOR4F_SIZE_BYTES;
         }
+
+        glVertexAttribPointer(start, 1, GL_FLOAT, false, InstancedMesh.INSTANCE_SIZE_BYTES, strideStart);
+        glVertexAttribDivisor(start, 1);
+        glEnableVertexAttribArray(start);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);

@@ -23,6 +23,8 @@ public class MeshGameItem implements GameItem, Collidable {
     private Collider collider;
     private int textPos;
 
+    private boolean selected;
+
     public MeshGameItem() {
         this(new Mesh[0]);
     }
@@ -250,6 +252,16 @@ public class MeshGameItem implements GameItem, Collidable {
      */
     public Collider getCollider() {
         return this.collider;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public void render() {

@@ -1,5 +1,6 @@
 package org.kakara.engine.scene;
 
+import org.kakara.engine.Camera;
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.ItemHandler;
@@ -123,6 +124,11 @@ public abstract class AbstractMenuScene implements Scene {
     public ParticleHandler getParticleHandler(){
         GameEngine.LOGGER.warn("There are no particle in this implementation of scene! Did you mean to use AbstractGameScene?");
         return null;
+    }
+
+    @Override
+    public Camera getCamera(){
+        return gameHandler.getCamera();
     }
 }
 

@@ -63,6 +63,27 @@ public class ChunkHandler {
         return collisionList;
     }
 
+    public List<Collidable> getChunkSelections(Vector3 position){
+        Vector3 pos = new Vector3((int)Math.floor(position.x), (int)Math.floor(position.y), (int)Math.floor(position.z));
+        List<Collidable> collisionList = new ArrayList<>();
+        for(RenderChunk chunk : renderChunkList){
+            if(KMath.distance(new Vector3(0, chunk.getPosition().y, 0), new Vector3(0, pos.y, 0)) > 16) continue;
+            if(KMath.distance(new Vector3(chunk.getPosition().x, 0, chunk.getPosition().z), new Vector3(pos.x, 0, pos.z)) < 25){
+                for(int x = -10; x < 10; x++){
+                    for(int y= -10; y < 10; y++){
+                        for(int z = -10; z < 10; z++){
+                            Vector3 coords = coordsToRenderCoords(chunk.getPosition(), pos.clone().add(x, y, z));
+                            RenderBlock blck = chunk.getOctChunk().get((int) coords.x, (int) coords.y, (int) coords.z);
+                            if(blck != null)
+                                collisionList.add(blck);
+                        }
+                    }
+                }
+            }
+        }
+        return collisionList;
+    }
+
     public List<RenderChunk> getRenderChunkList(){
         return renderChunkList;
     }

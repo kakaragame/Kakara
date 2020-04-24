@@ -1,5 +1,6 @@
 package org.kakara.engine.scene;
 
+import org.kakara.engine.Camera;
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
@@ -68,6 +69,11 @@ public abstract class AbstractScene implements Scene {
     @Override
     public ParticleHandler getParticleHandler(){
         return particleHandler;
+    }
+
+    @Override
+    public Camera getCamera(){
+        return gameHandler.getCamera();
     }
 
     public void add(GameItem gameItem){

@@ -1,5 +1,6 @@
 package org.kakara.engine.test;
 
+import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.item.Texture;

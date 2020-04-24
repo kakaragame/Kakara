@@ -25,6 +25,7 @@ public class RenderBlock implements Collidable {
     private RenderChunk parentChunk;
     private Vector3 relativePosition;
     private List<Face> visibleFaces;
+    private boolean selected;
 
     private Collider collider;
 
@@ -33,6 +34,7 @@ public class RenderBlock implements Collidable {
         this.texture = texture;
         this.position = position;
         this.visibleFaces = new ArrayList<>();
+        this.selected = false;
         collider = new ObjectBoxCollider(false, true);
         collider.onRegister(this);
     }
@@ -256,5 +258,15 @@ public class RenderBlock implements Collidable {
     @Override
     public Collider getCollider() {
         return collider;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

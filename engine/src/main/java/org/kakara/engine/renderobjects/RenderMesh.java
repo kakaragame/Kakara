@@ -8,6 +8,8 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -22,75 +24,155 @@ public class RenderMesh {
 
     protected final int vaoId;
     protected final List<Integer> vboIdList;
-    private final int vertexCount;
+    private int vertexCount;
+    private boolean finished;
+    private boolean polled;
+
+    private static final Queue<Runnable> queue = new LinkedList<>();
 
 
-    public RenderMesh(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas) {
-        MeshLayout layout = setupLayout(renderBlocks, textureAtlas);
+    public RenderMesh(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas, boolean async) {
+        vboIdList = new ArrayList<>();
+        vaoId = glGenVertexArrays();
+        if(!async){
+            finished = true;
+            polled = true;
+            MeshLayout layout = setupLayout(renderBlocks, textureAtlas);
 
-        FloatBuffer posBuffer = null;
-        FloatBuffer texCoordsBuffer = null;
-        FloatBuffer vecNormalsBuffer = null;
-        IntBuffer indicesBuffer = null;
+            FloatBuffer posBuffer = null;
+            FloatBuffer texCoordsBuffer = null;
+            FloatBuffer vecNormalsBuffer = null;
+            IntBuffer indicesBuffer = null;
 
-        try {
-            vertexCount = layout.getIndices().length;
+            try {
+                vertexCount = layout.getIndices().length;
+                glBindVertexArray(vaoId);
 
-            vboIdList = new ArrayList<>();
+                // Position VBO
+                int vboId = glGenBuffers();
+                vboIdList.add(vboId);
+                posBuffer = MemoryUtil.memAllocFloat(layout.getVertex().length);
+                posBuffer.put(layout.getVertex()).flip();
+                glBindBuffer(GL_ARRAY_BUFFER, vboId);
+                glBufferData(GL_ARRAY_BUFFER, posBuffer, GL_STATIC_DRAW);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
-            vaoId = glGenVertexArrays();
-            glBindVertexArray(vaoId);
+                // Texture Coordinates VBO
+                vboId = glGenBuffers();
+                vboIdList.add(vboId);
+                texCoordsBuffer = MemoryUtil.memAllocFloat(layout.getTextCoords().length);
+                texCoordsBuffer.put(layout.getTextCoords()).flip();
+                glBindBuffer(GL_ARRAY_BUFFER, vboId);
+                glBufferData(GL_ARRAY_BUFFER, texCoordsBuffer, GL_STATIC_DRAW);
+                glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
-            // Position VBO
-            int vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            posBuffer = MemoryUtil.memAllocFloat(layout.getVertex().length);
-            posBuffer.put(layout.getVertex()).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, posBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+                //Vertex Normals VBO
+                vboId = glGenBuffers();
+                vboIdList.add(vboId);
+                vecNormalsBuffer = MemoryUtil.memAllocFloat(layout.getNormals().length);
+                vecNormalsBuffer.put(layout.getNormals()).flip();
+                glBindBuffer(GL_ARRAY_BUFFER, vboId);
+                glBufferData(GL_ARRAY_BUFFER, vecNormalsBuffer, GL_STATIC_DRAW);
+                glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
 
-            // Texture Coordinates VBO
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            texCoordsBuffer = MemoryUtil.memAllocFloat(layout.getTextCoords().length);
-            texCoordsBuffer.put(layout.getTextCoords()).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, texCoordsBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+                // Indices VBO
+                vboId = glGenBuffers();
+                vboIdList.add(vboId);
+                indicesBuffer = MemoryUtil.memAllocInt(layout.getIndices().length);
+                indicesBuffer.put(layout.getIndices()).flip();
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 
-            //Vertex Normals VBO
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            vecNormalsBuffer = MemoryUtil.memAllocFloat(layout.getNormals().length);
-            vecNormalsBuffer.put(layout.getNormals()).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, vecNormalsBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
-
-            // Indices VBO
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            indicesBuffer = MemoryUtil.memAllocInt(layout.getIndices().length);
-            indicesBuffer.put(layout.getIndices()).flip();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                glBindVertexArray(0);
 
 
-        } finally {
-            if (posBuffer != null)
-                MemoryUtil.memFree(posBuffer);
-            if (texCoordsBuffer != null)
-                MemoryUtil.memFree(texCoordsBuffer);
-            if (vecNormalsBuffer != null)
-                MemoryUtil.memFree(vecNormalsBuffer);
-            if (indicesBuffer != null)
-                MemoryUtil.memFree(indicesBuffer);
+            } finally {
+                if (posBuffer != null)
+                    MemoryUtil.memFree(posBuffer);
+                if (texCoordsBuffer != null)
+                    MemoryUtil.memFree(texCoordsBuffer);
+                if (vecNormalsBuffer != null)
+                    MemoryUtil.memFree(vecNormalsBuffer);
+                if (indicesBuffer != null)
+                    MemoryUtil.memFree(indicesBuffer);
+            }
+        }else {
+            polled = false;
+            new Thread(new Runnable(){
+                @Override
+                public void run() {
+                    MeshLayout layout = setupLayout(renderBlocks, textureAtlas);
+                    vertexCount = layout.getIndices().length;
+                    finished = true;
+                    queue.add(new Runnable(){
+                        @Override
+                        public void run() {
+                            FloatBuffer posBuffer = null;
+                            FloatBuffer texCoordsBuffer = null;
+                            FloatBuffer vecNormalsBuffer = null;
+                            IntBuffer indicesBuffer = null;
+
+                            try {
+                                glBindVertexArray(vaoId);
+
+                                // Position VBO
+                                int vboId = glGenBuffers();
+                                vboIdList.add(vboId);
+                                posBuffer = MemoryUtil.memAllocFloat(layout.getVertex().length);
+                                posBuffer.put(layout.getVertex()).flip();
+                                glBindBuffer(GL_ARRAY_BUFFER, vboId);
+                                glBufferData(GL_ARRAY_BUFFER, posBuffer, GL_STATIC_DRAW);
+                                glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+
+                                // Texture Coordinates VBO
+                                vboId = glGenBuffers();
+                                vboIdList.add(vboId);
+                                texCoordsBuffer = MemoryUtil.memAllocFloat(layout.getTextCoords().length);
+                                texCoordsBuffer.put(layout.getTextCoords()).flip();
+                                glBindBuffer(GL_ARRAY_BUFFER, vboId);
+                                glBufferData(GL_ARRAY_BUFFER, texCoordsBuffer, GL_STATIC_DRAW);
+                                glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+
+                                //Vertex Normals VBO
+                                vboId = glGenBuffers();
+                                vboIdList.add(vboId);
+                                vecNormalsBuffer = MemoryUtil.memAllocFloat(layout.getNormals().length);
+                                vecNormalsBuffer.put(layout.getNormals()).flip();
+                                glBindBuffer(GL_ARRAY_BUFFER, vboId);
+                                glBufferData(GL_ARRAY_BUFFER, vecNormalsBuffer, GL_STATIC_DRAW);
+                                glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+
+                                // Indices VBO
+                                vboId = glGenBuffers();
+                                vboIdList.add(vboId);
+                                indicesBuffer = MemoryUtil.memAllocInt(layout.getIndices().length);
+                                indicesBuffer.put(layout.getIndices()).flip();
+                                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId);
+                                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+
+                                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                                glBindVertexArray(0);
+
+
+                            } finally {
+                                if (posBuffer != null)
+                                    MemoryUtil.memFree(posBuffer);
+                                if (texCoordsBuffer != null)
+                                    MemoryUtil.memFree(texCoordsBuffer);
+                                if (vecNormalsBuffer != null)
+                                    MemoryUtil.memFree(vecNormalsBuffer);
+                                if (indicesBuffer != null)
+                                    MemoryUtil.memFree(indicesBuffer);
+                            }
+                        }
+                    });
+                }
+            }).start();
         }
     }
+
+
 
     public int getVertexCount() {
         return vertexCount;
@@ -104,6 +186,13 @@ public class RenderMesh {
     }
 
     public void render() {
+        if(!finished) return;
+
+        if(!polled){
+            queue.poll().run();
+            polled = true;
+        }
+
         initRender();
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
         closeRender();

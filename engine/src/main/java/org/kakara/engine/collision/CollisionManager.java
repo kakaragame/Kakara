@@ -28,11 +28,23 @@ public class CollisionManager {
         collidingItems.remove(item);
     }
 
+    public List<Collidable> getNonChunkCollidingItems(){
+        return collidingItems;
+    }
+
     public List<Collidable> getCollidngItems(Vector3 position){
         if(position == null) return collidingItems;
         List<Collidable> colliders = new ArrayList<>(collidingItems);
         if(handler.getSceneManager().getCurrentScene() instanceof  AbstractGameScene)
             colliders.addAll(((AbstractGameScene) handler.getSceneManager().getCurrentScene()).getChunkHandler().getChunkCollisions(position));
+        return colliders;
+    }
+
+    public List<Collidable> getSelectionItems(Vector3 position){
+        if(position == null) return collidingItems;
+        List<Collidable> colliders = new ArrayList<>(collidingItems);
+        if(handler.getSceneManager().getCurrentScene() instanceof  AbstractGameScene)
+            colliders.addAll(((AbstractGameScene) handler.getSceneManager().getCurrentScene()).getChunkHandler().getChunkSelections(position));
         return colliders;
     }
 

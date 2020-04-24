@@ -19,4 +19,16 @@ public interface Collidable {
      * @return The collider. (Null if there is none).
      */
     Collider getCollider();
+
+    /**
+     * If the collidable is selected.
+     * @return If the collidable is selected.
+     */
+    boolean isSelected();
+
+    /**
+     * Set if the collidable is selected.
+     * @param selected If the collidable is selected.
+     */
+    void setSelected(boolean selected);
 }

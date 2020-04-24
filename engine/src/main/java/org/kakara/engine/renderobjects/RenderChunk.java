@@ -125,9 +125,17 @@ public class RenderChunk extends MeshGameItem {
             mesh.cleanUp();
         }
         List<RenderBlock> visBlocks = calculateVisibleBlocks(blocks);
-        //TODO FIX THIS MESS
-        this.mesh = new RenderMesh(visBlocks, atlas);
+        this.mesh = new RenderMesh(visBlocks, atlas, false);
     }
+
+    public void regenerateChunkAsync(TextureAtlas atlas){
+        if(mesh != null){
+            mesh.cleanUp();
+        }
+        List<RenderBlock> visBlocks = calculateVisibleBlocks(blocks);
+        this.mesh = new RenderMesh(visBlocks, atlas, true);
+    }
+
 
     @Override
     public void render(){

@@ -3,6 +3,7 @@ package org.kakara.server;
 import org.kakara.core.GameInstance;
 import org.kakara.core.GameTypes;
 import org.kakara.core.crafting.CraftingManager;
+import org.kakara.core.data.SerializerManager;
 import org.kakara.core.events.EventManager;
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.game.Item;
@@ -77,6 +78,11 @@ public class Server implements GameInstance {
 
     @Override
     public WorldGenerationManager getWorldGenerationManager() {
+        return null;
+    }
+
+    @Override
+    public SerializerManager getSerializerManager() {
         return null;
     }
 

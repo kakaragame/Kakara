@@ -119,44 +119,46 @@ public class MainGameScene extends AbstractGameScene {
 
         final long startTime = System.currentTimeMillis();
 
-        for(int cx = 0; cx < 1; cx++){
-            for(int cz = 0; cz < 1; cz++){
-                RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                rc.setPosition(cx * 16, -16, cz * 16);
-                for(int x = 0; x < 16; x++){
-                    for(int y = 0; y < 16; y++){
-                        for(int z = 0; z < 16; z++){
-                            if(y > 6 && y < 10) continue;
-                            RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
-                            rc.addBlock(rb);
+//        for(int cx = 0; cx < 1; cx++){
+//            for(int cz = 0; cz < 1; cz++){
+//                RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+//                rc.setPosition(cx * 16, -16, cz * 16);
+//                for(int x = 0; x < 16; x++){
+//                    for(int y = 0; y < 16; y++){
+//                        for(int z = 0; z < 16; z++){
+//                            if(y > 6 && y < 10) continue;
+//                            RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+//                            rc.addBlock(rb);
+//                        }
+//                    }
+//                }
+//                rc.regenerateChunkAsync(getTextureAtlas());
+//                getChunkHandler().addChunk(rc);
+//            }
+//        }
+
+
+        for(int cx = 0; cx < 8; cx++){
+            for(int cy = 0; cy < 8; cy++){
+                for(int cz = 0; cz < 2; cz++){
+                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                    rc.setPosition(cx * 16, cy*16, cz * 16);
+                    for(int x = 0; x < 16; x++){
+                        for(int y = 0; y < 16; y++){
+                            for(int z = 0; z < 16; z++){
+                                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
+                                rc.addBlock(rb);
+                            }
                         }
                     }
+                    rc.regenerateChunkAsync(getTextureAtlas());
+                    getChunkHandler().addChunk(rc);
                 }
-                rc.regenerateChunk(getTextureAtlas());
-                getChunkHandler().addChunk(rc);
             }
         }
 
         final long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime) + "ms");
-//        for(int cx = 0; cx < 8; cx++){
-//            for(int cy = 0; cy < 8; cy++){
-//                for(int cz = 0; cz < 2; cz++){
-//                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-//                    rc.setPosition(cx * 16, cy*16, cz * 16);
-//                    for(int x = 0; x < 16; x++){
-//                        for(int y = 0; y < 16; y++){
-//                            for(int z = 0; z < 16; z++){
-//                                RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), new Vector3(x, y, z));
-//                                rc.addBlock(rb);
-//                            }
-//                        }
-//                    }
-//                    rc.regenerateChunk(getTextureAtlas());
-//                    getChunkHandler().addChunk(rc);
-//                }
-//            }
-//        }
 
 //        System.out.println(getChunkHandler().getRenderChunkList());
 

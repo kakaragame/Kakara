@@ -54,8 +54,18 @@ public class GameItemStack implements ItemStack {
     }
 
     @Override
+    public void setName(String s) {
+        this.name = s;
+    }
+
+    @Override
     public List<String> getLore() {
         return new ArrayList<>(lore);
+    }
+
+    @Override
+    public void setLore(List<String> list) {
+this.lore = list;
     }
 
     @Override

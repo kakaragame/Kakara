@@ -54,7 +54,7 @@ public class MainMenuScene extends AbstractMenuScene {
     }
 
     @Override
-    public void loadGraphics() {
+    public void loadGraphics(GameHandler handler) {
         setBackground(loadBackgroundTexture());
         getHUD().addFont(kakaraGame.getFont());
         ComponentCanvas componentCanvas = new ComponentCanvas(this);

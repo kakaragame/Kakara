@@ -93,7 +93,7 @@
         <dependency>
             <groupId>com.github.ryandw11</groupId>
             <artifactId>Octree</artifactId>
-            <version>88e9fbd0f3</version>
+            <version>master-104a60aa59-1</version>
         </dependency>
 
     </dependencies>

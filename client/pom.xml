@@ -55,6 +55,12 @@
 
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.kakara</groupId>
@@ -79,7 +85,16 @@
             <version>1.7.30</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ryandw11</groupId>
+            <artifactId>Octree</artifactId>
+            <version>master-104a60aa59-1</version>
+        </dependency>
 
     </dependencies>
 

@@ -63,10 +63,10 @@ public class DirectionalLight {
 
     /**
      * Get the direction of the light.
-     * @return The direction.
+     * @return A *clone* of the direction.
      */
     public Vector3 getDirection() {
-        return direction;
+        return direction.clone();
     }
 
     /**

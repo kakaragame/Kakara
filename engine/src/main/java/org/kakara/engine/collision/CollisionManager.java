@@ -1,7 +1,8 @@
 package org.kakara.engine.collision;
 
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.Collidable;
+import org.kakara.engine.math.Vector3;
+import org.kakara.engine.scene.AbstractGameScene;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,24 @@ public class CollisionManager {
         collidingItems.remove(item);
     }
 
-    public List<Collidable> getCollidngItems(){
+    public List<Collidable> getNonChunkCollidingItems(){
         return collidingItems;
+    }
+
+    public List<Collidable> getCollidngItems(Vector3 position){
+        if(position == null) return collidingItems;
+        List<Collidable> colliders = new ArrayList<>(collidingItems);
+        if(handler.getSceneManager().getCurrentScene() instanceof  AbstractGameScene)
+            colliders.addAll(((AbstractGameScene) handler.getSceneManager().getCurrentScene()).getChunkHandler().getChunkCollisions(position));
+        return colliders;
+    }
+
+    public List<Collidable> getSelectionItems(Vector3 position){
+        if(position == null) return collidingItems;
+        List<Collidable> colliders = new ArrayList<>(collidingItems);
+        if(handler.getSceneManager().getCurrentScene() instanceof  AbstractGameScene)
+            colliders.addAll(((AbstractGameScene) handler.getSceneManager().getCurrentScene()).getChunkHandler().getChunkSelections(position));
+        return colliders;
     }
 
     /**
@@ -42,38 +59,38 @@ public class CollisionManager {
         boolean yCollision;
         boolean zCollision;
         if(item.getCollider() instanceof BoxCollider && other.getCollider() instanceof ObjectBoxCollider){
-            xCollision = (item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x) + (((BoxCollider) item.getCollider()).getRelativePoint2().x) >= other.getPosition().x && other.getPosition().x + other.getScale()
-                    >= item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x;
-            yCollision = (item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y) + (((BoxCollider) item.getCollider()).getRelativePoint2().y) >= other.getPosition().y && other.getPosition().y + other.getScale()
-                    >= item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y;
-            zCollision = (item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z) + (((BoxCollider) item.getCollider()).getRelativePoint2().z) >= other.getPosition().z && other.getPosition().z + other.getScale()
-                    >= item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z;
+            xCollision = (item.getColPosition().x + item.getCollider().getRelativePoint1().x) + (((BoxCollider) item.getCollider()).getRelativePoint2().x) >= other.getColPosition().x && other.getColPosition().x + other.getColScale()
+                    >= item.getColPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x;
+            yCollision = (item.getColPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y) + (((BoxCollider) item.getCollider()).getRelativePoint2().y) >= other.getColPosition().y && other.getColPosition().y + other.getColScale()
+                    >= item.getColPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y;
+            zCollision = (item.getColPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z) + (((BoxCollider) item.getCollider()).getRelativePoint2().z) >= other.getColPosition().z && other.getColPosition().z + other.getColScale()
+                    >= item.getColPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z;
         }
         else if(item.getCollider() instanceof BoxCollider && other.getCollider() instanceof BoxCollider){
-            xCollision = (item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x) + (((BoxCollider) item.getCollider()).getRelativePoint2().x) >= (other.getPosition().x + ((BoxCollider) other.getCollider()).getRelativePoint1().x)
-                    && (other.getPosition().x + ((BoxCollider) other.getCollider()).getRelativePoint1().x) + (((BoxCollider) other.getCollider()).getRelativePoint2().x)
-                    >= item.getPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x;
-            yCollision = (item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y) + (((BoxCollider) item.getCollider()).getRelativePoint2().y) >= (other.getPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y)
-                    && (other.getPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y) + ( ((BoxCollider) other.getCollider()).getRelativePoint2().y)
-                    >= item.getPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y;
-            zCollision = (item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z) + (((BoxCollider) item.getCollider()).getRelativePoint2().z) >= (other.getPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint1().z)
-                    && (other.getPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint1().z) + (((BoxCollider) other.getCollider()).getRelativePoint2().z)
-                    >= item.getPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z;
+            xCollision = (item.getColPosition().x + ((BoxCollider) item.getCollider()).getRelativePoint1().x) + (((BoxCollider) item.getCollider()).getRelativePoint2().x) >= (other.getColPosition().x + ((BoxCollider) other.getCollider()).getRelativePoint1().x)
+                    && (other.getColPosition().x + other.getCollider().getRelativePoint1().x) + (((BoxCollider) other.getCollider()).getRelativePoint2().x)
+                    >= item.getColPosition().x + item.getCollider().getRelativePoint1().x;
+            yCollision = (item.getColPosition().y + ((BoxCollider) item.getCollider()).getRelativePoint1().y) + (((BoxCollider) item.getCollider()).getRelativePoint2().y) >= (other.getColPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y)
+                    && (other.getColPosition().y + ((BoxCollider) other.getCollider()).getRelativePoint1().y) + ( ((BoxCollider) other.getCollider()).getRelativePoint2().y)
+                    >= item.getColPosition().y + item.getCollider().getRelativePoint1().y;
+            zCollision = (item.getColPosition().z + ((BoxCollider) item.getCollider()).getRelativePoint1().z) + (((BoxCollider) item.getCollider()).getRelativePoint2().z) >= (other.getColPosition().z + ((BoxCollider) other.getCollider()).getRelativePoint1().z)
+                    && (other.getColPosition().z + other.getCollider().getRelativePoint1().z) + (((BoxCollider) other.getCollider()).getRelativePoint2().z)
+                    >= item.getColPosition().z + item.getCollider().getRelativePoint1().z;
         }
         else if(item.getCollider() instanceof  ObjectBoxCollider && other.getCollider() instanceof ObjectBoxCollider){
-            xCollision = item.getPosition().x + item.getScale() >= other.getPosition().x && other.getPosition().x + other.getScale() >= item.getPosition().x;
-            yCollision = item.getPosition().y + item.getScale() >= other.getPosition().y && other.getPosition().y + other.getScale() >= item.getPosition().y;
-            zCollision = item.getPosition().z + item.getScale() >= other.getPosition().z && other.getPosition().z + other.getScale() >= item.getPosition().z;
+            xCollision = item.getColPosition().x + item.getColScale() >= other.getColPosition().x && other.getColPosition().x + other.getColScale() >= item.getColPosition().x;
+            yCollision = item.getColPosition().y + item.getColScale() >= other.getColPosition().y && other.getColPosition().y + other.getColScale() >= item.getColPosition().y;
+            zCollision = item.getColPosition().z + item.getColScale() >= other.getColPosition().z && other.getColPosition().z + other.getColScale() >= item.getColPosition().z;
         }
         else if(item.getCollider() instanceof ObjectBoxCollider && other.getCollider() instanceof BoxCollider){
             Collidable itemCopy = other;
             Collidable otherCopy = item;
-            xCollision = (itemCopy.getPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().x) >= otherCopy.getPosition().x && otherCopy.getPosition().x + otherCopy.getScale()
-                    >= itemCopy.getPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x;
-            yCollision = (itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().y) >= otherCopy.getPosition().y && otherCopy.getPosition().y + otherCopy.getScale()
-                    >= itemCopy.getPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y;
-            zCollision = (itemCopy.getPosition().z + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().z) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().z) >= otherCopy.getPosition().z && otherCopy.getPosition().z + otherCopy.getScale()
-                    >= itemCopy.getPosition().z + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().z;
+            xCollision = (itemCopy.getColPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().x) >= otherCopy.getColPosition().x && otherCopy.getColPosition().x + otherCopy.getColScale()
+                    >= itemCopy.getColPosition().x + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().x;
+            yCollision = (itemCopy.getColPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().y) >= otherCopy.getColPosition().y && otherCopy.getColPosition().y + otherCopy.getColScale()
+                    >= itemCopy.getColPosition().y + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().y;
+            zCollision = (itemCopy.getColPosition().z + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().z) + (((BoxCollider) itemCopy.getCollider()).getRelativePoint2().z) >= otherCopy.getColPosition().z && otherCopy.getColPosition().z + otherCopy.getColScale()
+                    >= itemCopy.getColPosition().z + ((BoxCollider) itemCopy.getCollider()).getRelativePoint1().z;
         }
         else{
             return false;

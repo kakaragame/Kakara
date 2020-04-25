@@ -1,13 +1,17 @@
 package org.kakara.engine;
 
+import org.kakara.engine.collision.Collidable;
 import org.kakara.engine.gui.Window;
-import org.kakara.engine.item.Collidable;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.render.Renderer;
+import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.scene.AbstractMenuScene;
 import org.kakara.engine.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Handles the primary function of the game.
@@ -24,6 +28,8 @@ public class GameEngine implements Runnable {
     private Renderer renderer;
     private final GameHandler gameHandler;
     protected boolean running = true;
+
+    private Queue<Runnable> mainThreadQueue = new LinkedList<>();
 
     public GameEngine(String windowTitle, int width, int height, boolean vSync, Game game) {
         this.window = new Window(windowTitle, width, height, true, vSync);
@@ -110,6 +116,9 @@ public class GameEngine implements Runnable {
     protected void render() {
         gameHandler.getSceneManager().renderCurrentScene();
         window.update();
+        while(!mainThreadQueue.isEmpty()){
+            mainThreadQueue.poll().run();
+        }
     }
 
     protected void cleanup() {
@@ -121,7 +130,7 @@ public class GameEngine implements Runnable {
     }
 
     protected void collide() {
-        for (Collidable gi : gameHandler.getCollisionManager().getCollidngItems()) {
+        for (Collidable gi : gameHandler.getCollisionManager().getCollidngItems(null)) {
             gi.getCollider().update();
         }
     }
@@ -141,6 +150,10 @@ public class GameEngine implements Runnable {
     public void resetRender() throws Exception {
         renderer = new Renderer();
         renderer.init();
+    }
+
+    public void addQueueItem(Runnable run){
+        mainThreadQueue.add(run);
     }
 
 

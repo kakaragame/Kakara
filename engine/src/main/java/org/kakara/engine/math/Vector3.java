@@ -1,6 +1,7 @@
 package org.kakara.engine.math;
 
 import org.joml.Vector3f;
+import org.lwjgl.system.CallbackI;
 
 /**
  * A math class to provide a nice representation of a vector.
@@ -24,12 +25,25 @@ public class Vector3 {
 
     }
 
+    public Vector3(double x, double y, double z) {
+        this.x = (float) x;
+        this.y = (float) y;
+        this.z = (float) z;
+    }
+
     /**
      * Clone the vector
      * @return The cloned vector.
      */
     public Vector3 clone(){
         return new Vector3(x, y, z);
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(!(o instanceof Vector3)) return false;
+        Vector3 vec = (Vector3) o;
+        return vec.x == x && vec.y == y && vec.z == z;
     }
 
     /**

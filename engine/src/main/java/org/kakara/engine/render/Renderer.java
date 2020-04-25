@@ -11,6 +11,8 @@ import org.kakara.engine.item.*;
 import org.kakara.engine.item.Particles.ParticleEmitter;
 import org.kakara.engine.lighting.*;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.renderobjects.RenderChunk;
+import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
 
@@ -18,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
@@ -35,6 +36,7 @@ public class Renderer {
     private Shader skyBoxShaderProgram;
     private Shader depthShaderProgram;
     private Shader particleShaderProgram;
+    private Shader chunkShaderProgram;
 
     private ShadowMap shadowMap;
 
@@ -60,6 +62,7 @@ public class Renderer {
         setupSkyBoxShader();
         setupDepthShader();
         setupParticleShader();
+        setupChunkShader();
     }
 
     public void render(Window window, Camera camera, Scene scene) {
@@ -70,12 +73,68 @@ public class Renderer {
         glViewport(0, 0, window.getWidth(), window.getHeight());
 
         transformation.updateProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
-        transformation.updateViewMatrix(camera);
+        scene.getCamera().updateViewMatrix();
 
 
         renderScene(window, camera, scene);
+        renderChunk(window, camera, scene, false);
         renderParticles(window, camera, scene);
 
+    }
+
+    /**
+     * Render a chunk
+     * @param window
+     * @param camera
+     * @param scene
+     */
+    public void renderChunk(Window window, Camera camera, Scene scene, boolean depthMap){
+        if(!(scene instanceof AbstractGameScene)) return;
+        AbstractGameScene ags = (AbstractGameScene) scene;
+        chunkShaderProgram.bind();
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix();
+        chunkShaderProgram.setUniform("projectionMatrix", projectionMatrix);
+        Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
+        chunkShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+        Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
+
+        Matrix4f viewMatrix = scene.getCamera().getViewMatrix();
+
+        // Render Lighting
+        LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
+        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight(), chunkShaderProgram);
+
+        chunkShaderProgram.setUniform("fog", scene.getFog());
+        chunkShaderProgram.setUniform("shadowMap", 2);
+        chunkShaderProgram.setUniform("textureAtlas", 0);
+        chunkShaderProgram.setUniform("reflectance", 1f);
+
+        List<RenderChunk> renderChunks = ags.getChunkHandler().getRenderChunkList();
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, ags.getTextureAtlas().getTexture().getId());
+        glDisable(GL_CULL_FACE);
+        for(RenderChunk renderChunk : renderChunks){
+            Matrix4f modelMatrix = transformation.buildModelMatrix(renderChunk);
+
+            if (!depthMap) {
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+                Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+                chunkShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+            }
+            Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(modelMatrix, lightViewMatrix);
+            chunkShaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+
+            renderChunk.render();
+        }
+        glEnable(GL_CULL_FACE);
+
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+        chunkShaderProgram.unbind();
     }
 
     public void renderScene(Window window, Camera camera, Scene scene){
@@ -86,29 +145,61 @@ public class Renderer {
         shaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
         Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
 
-        Matrix4f viewMatrix = transformation.getViewMatrix();
+        Matrix4f viewMatrix = scene.getCamera().getViewMatrix();
 
         // Render Lighting
         LightHandler lh = GameHandler.getInstance().getSceneManager().getCurrentScene().getLightHandler();
-        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight());
+        renderLights(viewMatrix, lh.getAmbientLight().toVector(), lh.getDisplayPointLights(), lh.getDisplaySpotLights(), lh.getDirectionalLight(), shaderProgram);
 
         shaderProgram.setUniform("fog", scene.getFog());
         shaderProgram.setUniform("shadowMap", 2);
 
-        Map<Mesh, List<GameItem>> mapMeshes = scene.getItemHandler().getMeshMap();
-        for(Mesh mesh : mapMeshes.keySet()){
-            shaderProgram.setUniform("material", mesh.getMaterial());
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
-            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) ->{ ;
-                Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItem, viewMatrix);
-                shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-                Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(gameItem, lightViewMatrix);
-                shaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
-            });
-        }
+        renderNonInstancedMeshes(scene, false, shaderProgram, viewMatrix, lightViewMatrix);
+
+        renderInstancedMeshes(scene, false, shaderProgram, viewMatrix, lightViewMatrix);
 
         shaderProgram.unbind();
+    }
+
+    private void renderNonInstancedMeshes(Scene scene, boolean depthMap, Shader shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
+        shaderProgram.setUniform("isInstanced", 0);
+
+        // Render each mesh with the associated game Items
+        Map<Mesh, List<GameItem>> mapMeshes = scene.getItemHandler().getNonInstancedMeshMap();
+        for (Mesh mesh : mapMeshes.keySet()) {
+            if (!depthMap) {
+                shader.setUniform("material", mesh.getMaterial());
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+            }
+
+            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) -> {
+                        shaderProgram.setUniform("selectedNonInstanced", ((MeshGameItem) gameItem).isSelected() ? 1f : 0f);
+                        Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+                        if (!depthMap) {
+                            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+                            shaderProgram.setUniform("modelViewNonInstancedMatrix", modelViewMatrix);
+                        }
+                        Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(modelMatrix, lightViewMatrix);
+                        shaderProgram.setUniform("modelLightViewNonInstancedMatrix", modelLightViewMatrix);
+                    }
+            );
+        }
+    }
+
+    private void renderInstancedMeshes(Scene scene, boolean depthMap, Shader shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
+        shaderProgram.setUniform("isInstanced", 1);
+
+        // Render each mesh with the associated game Items
+        Map<InstancedMesh, List<GameItem>> mapMeshes = scene.getItemHandler().getInstancedMeshMap();
+        for (InstancedMesh mesh : mapMeshes.keySet()) {
+            if (!depthMap) {
+                shaderProgram.setUniform("material", mesh.getMaterial());
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+            }
+            mesh.renderListInstanced(mapMeshes.get(mesh), depthMap, transformation, viewMatrix, lightViewMatrix);
+        }
     }
 
     private void renderDepthMap(Window window, Camera camera, Scene scene){
@@ -127,16 +218,13 @@ public class Renderer {
         Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
         DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
-
         depthShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
-        Map<Mesh, List<GameItem>> mapMeshes = scene.getItemHandler().getMeshMap();
-        for (Mesh mesh : mapMeshes.keySet()) {
-            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) -> {
-                        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(gameItem, lightViewMatrix);
-                        depthShaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
-                    }
-            );
-        }
+
+
+        renderNonInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
+
+        renderInstancedMeshes(scene, true, depthShaderProgram, null, lightViewMatrix);
+        renderChunk(window, camera, scene, true);
 
         // Unbind
         depthShaderProgram.unbind();
@@ -146,9 +234,9 @@ public class Renderer {
     /**
      * Handles the rendering of lights.
      */
-    private void renderLights(Matrix4f viewMatrix, Vector3f ambientLight, List<PointLight> pointLightList, List<SpotLight> spotLightList, DirectionalLight directionalLight){
-        shaderProgram.setUniform("ambientLight", ambientLight);
-        shaderProgram.setUniform("specularPower", specularPower);
+    private void renderLights(Matrix4f viewMatrix, Vector3f ambientLight, List<PointLight> pointLightList, List<SpotLight> spotLightList, DirectionalLight directionalLight, Shader program){
+        program.setUniform("ambientLight", ambientLight);
+        program.setUniform("specularPower", specularPower);
 
         // Process Point Lights
         int numLights = pointLightList != null ? pointLightList.size() : 0;
@@ -162,7 +250,7 @@ public class Renderer {
             lightPos.y = aux.y;
             lightPos.z = aux.z;
             currPointLight.setPosition(lightPos.x, lightPos.y, lightPos.z);
-            shaderProgram.setUniform("pointLights", currPointLight, i);
+            program.setUniform("pointLights", currPointLight, i);
         }
 
         // Process Spot Ligths
@@ -181,7 +269,7 @@ public class Renderer {
             lightPos.y = aux.y;
             lightPos.z = aux.z;
 
-            shaderProgram.setUniform("spotLights", currSpotLight, i);
+            program.setUniform("spotLights", currSpotLight, i);
         }
 
         // Get a copy of the directional light object and transform its position to view coordinates
@@ -189,7 +277,7 @@ public class Renderer {
         Vector4f dir = new Vector4f(currDirLight.getDirection().toJoml(), 0);
         dir.mul(viewMatrix);
         currDirLight.setDirection(new Vector3(dir.x, dir.y, dir.z));
-        shaderProgram.setUniform("directionalLight", currDirLight);
+        program.setUniform("directionalLight", currDirLight);
 
     }
 
@@ -205,7 +293,7 @@ public class Renderer {
         Matrix4f projectionMatrix = transformation.getProjectionMatrix();
         skyBoxShaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
-        Matrix4f viewMatrix = transformation.getViewMatrix();
+        Matrix4f viewMatrix = scene.getCamera().getViewMatrix();
         viewMatrix.m30(0);
         viewMatrix.m31(0);
         viewMatrix.m32(0);
@@ -226,7 +314,7 @@ public class Renderer {
         Matrix4f projectionMatrix = transformation.getProjectionMatrix();
         particleShaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
-        Matrix4f viewMatrix = transformation.getViewMatrix();
+        Matrix4f viewMatrix = scene.getCamera().getViewMatrix();
         List<ParticleEmitter> emitters = scene.getParticleHandler().getParticleEmitters();
         int numEmitters = emitters != null ? emitters.size() : 0;
 
@@ -305,7 +393,8 @@ public class Renderer {
         shaderProgram.createFragmentShader(Utils.loadResource("/shaders/sceneFragment.fs"));
         shaderProgram.link();
         shaderProgram.createUniform("projectionMatrix");
-        shaderProgram.createUniform("modelViewMatrix");
+        shaderProgram.createUniform("modelViewNonInstancedMatrix");
+        shaderProgram.createUniform("modelLightViewNonInstancedMatrix");
         shaderProgram.createMaterialUniform("material");
         /*
          * Setup uniforms for lighting
@@ -315,7 +404,39 @@ public class Renderer {
 
         shaderProgram.createUniform("shadowMap");
         shaderProgram.createUniform("orthoProjectionMatrix");
-        shaderProgram.createUniform("modelLightViewMatrix");
+        shaderProgram.createUniform("selectedNonInstanced");
+
+        shaderProgram.createUniform("isInstanced");
+    }
+
+    private void setupChunkShader() throws Exception{
+        chunkShaderProgram = new Shader();
+        chunkShaderProgram.createVertexShader(Utils.loadResource("/shaders/chunkVertex.vs"));
+        chunkShaderProgram.createFragmentShader(Utils.loadResource("/shaders/chunkFragment.fs"));
+        chunkShaderProgram.link();
+
+        chunkShaderProgram.createUniform("projectionMatrix");
+        chunkShaderProgram.createUniform("modelViewMatrix");
+        chunkShaderProgram.createUniform("modelLightViewMatrix");
+//        chunkShaderProgram.createMaterialUniform("material");
+        /*
+         * Setup uniforms for lighting
+         */
+
+        chunkShaderProgram.createFogUniform("fog");
+
+        chunkShaderProgram.createUniform("shadowMap");
+        chunkShaderProgram.createUniform("orthoProjectionMatrix");
+
+        chunkShaderProgram.createUniform("specularPower");
+        chunkShaderProgram.createUniform("ambientLight");
+        chunkShaderProgram.createPointLightListUniform("pointLights", LightHandler.MAX_POINT_LIGHTS);
+        chunkShaderProgram.createSpotLightListUniform("spotLights", LightHandler.MAX_SPOT_LIGHTS);
+        chunkShaderProgram.createDirectionalLightUniform("directionalLight");
+
+        chunkShaderProgram.createUniform("reflectance");
+
+        chunkShaderProgram.createUniform("textureAtlas");
     }
 
     private void setupLightingShader() throws Exception {

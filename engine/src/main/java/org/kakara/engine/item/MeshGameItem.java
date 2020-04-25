@@ -2,6 +2,7 @@ package org.kakara.engine.item;
 
 import org.joml.Quaternionf;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.collision.Collidable;
 import org.kakara.engine.collision.Collider;
 import org.kakara.engine.math.Vector3;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
  * <p>
  * This is a Collidable GameItem. That uses meshes to create an item
  */
-public class MeshGameItem implements Collidable {
+public class MeshGameItem implements GameItem, Collidable {
 
     private Mesh[] meshes;
     private float scale;
@@ -21,6 +22,8 @@ public class MeshGameItem implements Collidable {
     private final UUID uuid;
     private Collider collider;
     private int textPos;
+
+    private boolean selected;
 
     public MeshGameItem() {
         this(new Mesh[0]);
@@ -137,6 +140,10 @@ public class MeshGameItem implements Collidable {
         return rotation;
     }
 
+    public Vector3 getRotationAsVector3() {
+        return new Vector3(getRotation().x, getRotation().y, getRotation().z);
+    }
+
     /**
      * Set the rotation of the Object
      *
@@ -198,16 +205,26 @@ public class MeshGameItem implements Collidable {
         this.meshes = new Mesh[]{mesh};
     }
 
+    @Override
+    public final Vector3 getColPosition() {
+        return getPosition();
+    }
+
+    @Override
+    public float getColScale() {
+        return getScale();
+    }
+
     /**
      * Set the collider for a game item
      *
      * @param collider The instance of the collider.
      * @return The instance of the game item.
      */
-    public GameItem setCollider(Collider collider) {
+    public void setCollider(Collider collider) {
         this.collider = collider;
         collider.onRegister(this);
-        return this;
+        GameHandler.getInstance().getCollisionManager().addCollidingItem(this);
     }
 
     /**
@@ -218,6 +235,16 @@ public class MeshGameItem implements Collidable {
         GameHandler.getInstance().getCollisionManager().removeCollidingItem(this);
     }
 
+    @Override
+    public void colTranslateBy(Vector3 vec) {
+        translateBy(vec);
+    }
+
+    @Override
+    public void setColPosition(Vector3 vec) {
+        setPosition(vec.clone());
+    }
+
     /**
      * Get the currently active collider
      *
@@ -225,6 +252,16 @@ public class MeshGameItem implements Collidable {
      */
     public Collider getCollider() {
         return this.collider;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public void render() {
@@ -248,7 +285,7 @@ public class MeshGameItem implements Collidable {
      * @return The clone of the gameobject.
      */
     public GameItem clone(boolean exact) {
-        Collidable clone = new MeshGameItem(this.meshes);
+        GameItem clone = new MeshGameItem(this.meshes);
         if (exact) {
             clone.setPosition(this.position.x, this.position.y, this.position.z);
             clone.setRotation(this.rotation);
@@ -257,5 +294,39 @@ public class MeshGameItem implements Collidable {
         return clone;
     }
 
+    public void movePosition(float offsetX, float offsetY, float offsetZ) {
+        if (offsetZ != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y)) * -1.0f * offsetZ;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y)) * offsetZ;
+        }
+        if (offsetX != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offsetX;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y - 90)) * offsetX;
+        }
+        position.y += offsetY;
+    }
 
+    public void movePosition(Vector3 offset) {
+        if (offset.z != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y)) * -1.0f * offset.z;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y)) * offset.z;
+        }
+        if (offset.x != 0) {
+            position.x += (float) Math.sin(Math.toRadians(rotation.y - 90)) * -1.0f * offset.x;
+            position.z += (float) Math.cos(Math.toRadians(rotation.y - 90)) * offset.x;
+        }
+        position.y += offset.y;
+    }
+
+    public void moveRotation(float offsetX, float offsetY, float offsetZ) {
+        rotation.x += offsetX;
+        rotation.y += offsetY;
+        rotation.z += offsetZ;
+    }
+
+    public void moveRotation(Vector3 offset) {
+        rotation.x += offset.x;
+        rotation.y += offset.y;
+        rotation.z += offset.z;
+    }
 }

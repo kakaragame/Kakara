@@ -2,27 +2,43 @@ package org.kakara.game.resources;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.kakara.core.GameType;
+import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
-import org.kakara.core.KakaraCore;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.ResourceManager;
 import org.kakara.core.resources.ResourceType;
 import org.kakara.core.resources.TextureResolution;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.*;
 
 public class GameResourceManager implements ResourceManager {
-    private KakaraCore kakaraCore;
+    private GameInstance kakaraCore;
     private File resourceDirectory;
     private static final String BASE_PATH = "/resources/";
+    private Map<Mod, List<String>> textureResources = new HashMap<>();
 
     public GameResourceManager() {
+    }
+
+    @Override
+    public List<Resource> getAllTextures(TextureResolution textureResolution) {
+        System.out.println("textureResources.size() = " + textureResources.size());
+        List<Resource> myTextureResources = new ArrayList<>();
+        for (Map.Entry<Mod, List<String>> modListEntry : textureResources.entrySet()) {
+            for (String s : modListEntry.getValue()) {
+                myTextureResources.add(getTexture(s, textureResolution, modListEntry.getKey()));
+            }
+        }
+        return myTextureResources;
+
     }
 
     @Override
@@ -34,26 +50,40 @@ public class GameResourceManager implements ResourceManager {
         if (file.exists()) return;
         file.getParentFile().mkdirs();
         try {
-            IOUtils.copy(Mod.class.getResourceAsStream(path), new FileWriter(file), Charset.defaultCharset());
+            InputStream io = mod.getClass().getResourceAsStream(path);
+            if (io == null) {
+                throw new MissingResourceException("Unable to locate: " + path, mod.getName(), path);
+            }
+            IOUtils.copy(io, new FileWriter(file), Charset.defaultCharset());
         } catch (IOException e) {
-            KakaraCore.LOGGER.error("Unable to copy file to local", e);
+            Kakara.LOGGER.error("Unable to copy file to local", e);
         }
     }
 
 
     @Override
     public void registerTexture(String s, TextureResolution i, Mod mod) {
-        File directory = new File(getModDir(mod), String.valueOf(i.getResolution()));
+        System.out.println("s = " + s);
+        File directory = new File(getModDir(mod), "texture" + File.separator + String.valueOf(i.getResolution()));
         directory.mkdirs();
-        String path = BASE_PATH + i + s;
-        File file = new File(resourceDirectory, correctPath(s));
+        String path = BASE_PATH + "texture/" + i.getResolution() + "/" + s;
+        File file = new File(directory, correctPath(s));
+        List<String> strings = textureResources.computeIfAbsent(mod, mod1 -> new ArrayList<>());
+        strings.add(s);
+        textureResources.put(mod, strings);
         if (file.exists()) return;
         file.getParentFile().mkdirs();
+
         try {
-            IOUtils.copy(Mod.class.getResourceAsStream(path), new FileWriter(file), Charset.defaultCharset());
+            InputStream io = mod.getClass().getResourceAsStream(path);
+            if (io == null) {
+                throw new MissingResourceException("Unable to locate: " + path, mod.getName(), path);
+            }
+            Files.copy(io, file.toPath());
         } catch (IOException e) {
-            KakaraCore.LOGGER.error("Unable to copy file to local", e);
+            Kakara.LOGGER.error("Unable to copy file to local", e);
         }
+
     }
 
     @Override
@@ -62,25 +92,28 @@ public class GameResourceManager implements ResourceManager {
         if (!resoureFile.exists()) {
             //TODO decide what to do
         }
-        return new Resource(resoureFile);
+        return new Resource(resoureFile, s);
     }
 
 
     @Override
     public Resource getTexture(String s, TextureResolution i, Mod mod) {
-        File directory = new File(new File(getModDir(mod), String.valueOf(i.getResolution())), s);
+        String path = mod.getName().toLowerCase() + "/texture/" + i.getResolution() + "/" + s;
+        System.out.println(path);
+        File directory = new File(resourceDirectory, correctPath(path));
         if (!directory.exists()) {
             if (i == TextureResolution._4) {
                 return getTexture(s, TextureResolution._1024, mod);
             }
             return getTexture(s, TextureResolution.get(i.getResolution() / 2), mod);
         }
-        return new Resource(directory);
+        return new Resource(directory, path);
     }
 
     @Override
-    public void load(KakaraCore kakaraCore) {
+    public void load(GameInstance kakaraCore) {
         this.kakaraCore = kakaraCore;
+        resourceDirectory = new File(kakaraCore.getWorkingDirectory(), "resources");
         resourceDirectory.mkdirs();
     }
 

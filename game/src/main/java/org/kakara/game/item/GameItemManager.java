@@ -1,6 +1,7 @@
 package org.kakara.game.item;
 
-import org.kakara.core.KakaraCore;
+import org.kakara.core.GameInstance;
+import org.kakara.core.NameKey;
 import org.kakara.core.Utils;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemManager;
@@ -10,55 +11,58 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 //TODO Validate Mods provided
 public class GameItemManager implements ItemManager {
-    private KakaraCore kakaraCore;
-    private Map<Item, Mod> items = new HashMap<>();
+    private GameInstance kakaraCore;
+    private List<Item> items = new CopyOnWriteArrayList<>();
 
     @Override
-    public void registerItem(Item item, Mod mod) {
-        items.putIfAbsent(item, mod);
-        //TODO validate Item Resource
+    public void registerItem(Item item) {
+        items.add(item);
     }
 
     @Override
-    public void deregisterItem(Item item, Mod mod) {
-        if (items.get(item) == mod) return;
+    public void deregisterItem(Item item) {
         items.remove(item);
     }
 
     @Override
-    public void deregisterItems(Mod mod) {
-        getItemsByMod(mod).forEach(item -> deregisterItem(item, mod));
-    }
-
-    public List<Item> getItemsByMod(Mod mod) {
-        List<Item> modItems = new ArrayList<>();
-        items.entrySet().stream().filter(itemModEntry -> itemModEntry.getValue() == mod).forEach(itemModEntry -> {
-            modItems.add(itemModEntry.getKey());
-        });
-        return modItems;
+    public List<Item> getItemsByKey(String key) {
+        return items.stream().filter(item -> item.getNameKey().getName().equals(key)).collect(Collectors.toList());
     }
 
     @Override
-    public Map<Item, Mod> getItems() {
-        return new HashMap<>(items);
+    public List<Item> getItems() {
+        return new ArrayList<>(items);
     }
 
     @Override
-    public Item getItem(String item) {
-        if (!Utils.isValidItemPattern(item)) return null;
-        String[] itemSplit = item.split(":");
-        for (Map.Entry<Item, Mod> o : items.entrySet()) {
-            if ((o.getValue().getName().equalsIgnoreCase(itemSplit[0])) && o.getKey().getId().equalsIgnoreCase(itemSplit[1]))
-                return o.getKey();
+    public void deregisterItems(String mod) {
+        for (Item item : getItemsByKey(mod)) {
+            deregisterItem(item);
+        }
+    }
+
+    @Override
+    public Item getItem(NameKey item) {
+        for (Item item1 : items) {
+            if (item1.getNameKey().equals(item)){
+                return item1;
+            }
         }
         return null;
     }
 
     @Override
-    public void load(KakaraCore kakaraCore) {
+    public void load(GameInstance kakaraCore) {
         this.kakaraCore = kakaraCore;
+    }
+
+    @Override
+    public Class<?> getStageClass() {
+        return ItemManager.class;
     }
 }

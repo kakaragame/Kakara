@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 public class TextureCache {
     private static TextureCache instance;
@@ -32,6 +33,9 @@ public class TextureCache {
         Texture texture = texturesMap.get(path);
         if (texture == null) {
             Resource resource = resourceManager.getResource(path);
+            if (resource == null) {
+                throw new MissingResourceException("Unable to locate resource: " + path, path, path);
+            }
             texture = new Texture(resource, currentScene);
 
             texturesMap.put(path, texture);
@@ -41,14 +45,14 @@ public class TextureCache {
 
     /**
      * Remove unused textures from the scene.
+     *
      * @param scene
      */
-    public void cleanup(Scene scene){
+    public void cleanup(Scene scene) {
         Iterator<Map.Entry<String, Texture>> it = texturesMap.entrySet().iterator();
-        while (it.hasNext())
-        {
+        while (it.hasNext()) {
             Map.Entry<String, Texture> text = it.next();
-            if(text.getValue().getCurrentScene() == scene){
+            if (text.getValue().getCurrentScene() == scene) {
                 text.getValue().cleanup();
                 it.remove();
             }

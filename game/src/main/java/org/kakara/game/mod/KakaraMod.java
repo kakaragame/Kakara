@@ -1,6 +1,6 @@
 package org.kakara.game.mod;
 
-import org.kakara.core.KakaraCore;
+import org.kakara.core.GameInstance;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.ModRules;
 import org.kakara.core.mod.ModType;
@@ -43,7 +43,17 @@ public class KakaraMod implements Mod {
     }
 
     @Override
-    public KakaraCore getKakaraCore() {
+    public void preEnable() {
+
+    }
+
+    @Override
+    public void postEnable() {
+
+    }
+
+    @Override
+    public GameInstance getGameInstance() {
         return null;
     }
 }

@@ -82,7 +82,6 @@ public class MainGameScene extends AbstractGameScene {
         } catch (OutOfBoundsException e) {
             e.printStackTrace();
         }
-        ;
     }
 
 

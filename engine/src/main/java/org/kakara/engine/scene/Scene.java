@@ -1,6 +1,7 @@
 package org.kakara.engine.scene;
 
 import org.kakara.engine.Camera;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.ItemHandler;
 import org.kakara.engine.item.Particles.ParticleHandler;
 import org.kakara.engine.item.SkyBox;
@@ -17,7 +18,7 @@ public interface Scene {
     /**
      * Load the graphics
      */
-    void loadGraphics();
+    void loadGraphics(GameHandler gameHandler) throws Exception;
 
 
 

@@ -21,6 +21,8 @@ import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
 import org.kakara.engine.utils.Utils;
 
+import java.io.IOException;
+
 /**
  * Example of how to make a proper UI Scene.
  */
@@ -34,6 +36,18 @@ public class TitleScreenScene extends AbstractMenuScene {
         super(gameHandler);
         this.kakaraTest = kakaraTest;
 
+
+
+
+    }
+
+    @Override
+    public void work() {
+
+    }
+
+    @Override
+    public void loadGraphics(GameHandler handler) throws IOException {
         // Get the resource manager to load in needed files.
         ResourceManager resourceManager = gameHandler.getResourceManager();
 
@@ -198,18 +212,6 @@ public class TitleScreenScene extends AbstractMenuScene {
         setCurserStatus(true);
 
         setBackground(Utils.inputStreamToTexture(Texture.class.getResourceAsStream("/oa.png")));
-
-
-    }
-
-    @Override
-    public void work() {
-
-    }
-
-    @Override
-    public void loadGraphics() {
-
     }
 
     @Override

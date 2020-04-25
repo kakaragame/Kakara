@@ -36,6 +36,7 @@ import org.kakara.engine.utils.Utils;
 import org.kakara.engine.weather.Fog;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +63,21 @@ public class MainGameScene extends AbstractGameScene {
     public MainGameScene(GameHandler gameHandler, KakaraTest test) throws Exception {
         super(gameHandler);
 
+        this.test = test;
+
+    }
+
+    public GameItem getPlayer() {
+        return player;
+    }
+
+    @Override
+    public void work() {
+
+    }
+
+    @Override
+    public void loadGraphics(GameHandler gameHandler) throws Exception {
         angleInc = 0.05f;
         lightAngle = 45;
 
@@ -234,21 +250,6 @@ public class MainGameScene extends AbstractGameScene {
 
 
         this.handler = gameHandler;
-
-    }
-
-    public GameItem getPlayer() {
-        return player;
-    }
-
-    @Override
-    public void work() {
-
-    }
-
-    @Override
-    public void loadGraphics() {
-
     }
 
     @Override
@@ -356,7 +357,7 @@ public class MainGameScene extends AbstractGameScene {
                 RenderBlock block = (RenderBlock) selected;
                 RenderChunk parentChunk = block.getParentChunk();
                 parentChunk.removeBlock(block);
-                parentChunk.regenerateChunk(getTextureAtlas());
+                parentChunk.regenerateChunkAsync(getTextureAtlas());
             }
         }
     }

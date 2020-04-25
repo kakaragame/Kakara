@@ -3,6 +3,8 @@ package org.kakara.engine.scene;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.models.TextureCache;
 
+import java.util.concurrent.CompletableFuture;
+
 public class SceneManager {
     private Scene currentScene;
     private GameHandler handler;
@@ -18,12 +20,13 @@ public class SceneManager {
         scene.unload();
         try {
             handler.getGameEngine().resetRender();
+            scene.loadGraphics(handler);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        scene.loadGraphics();
         currentScene = scene;
     }
+
 
     public void renderCurrentScene() {
         currentScene.render();

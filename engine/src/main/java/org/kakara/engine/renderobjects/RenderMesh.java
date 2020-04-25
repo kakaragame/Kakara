@@ -1,5 +1,6 @@
 package org.kakara.engine.renderobjects;
 
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.renderobjects.renderlayouts.Layout;
 import org.kakara.engine.renderobjects.renderlayouts.MeshLayout;
@@ -9,6 +10,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -30,8 +32,12 @@ public class RenderMesh {
 
     private static final Queue<Runnable> queue = new LinkedList<>();
 
-
     public RenderMesh(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas, boolean async) {
+        this(renderBlocks, textureAtlas, async, null);
+    }
+
+
+    public RenderMesh(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas, boolean async, CompletableFuture<RenderMesh> future) {
         vboIdList = new ArrayList<>();
         vaoId = glGenVertexArrays();
         if(!async){
@@ -99,13 +105,14 @@ public class RenderMesh {
             }
         }else {
             polled = false;
+            RenderMesh instance = this;
             new Thread(new Runnable(){
                 @Override
                 public void run() {
                     MeshLayout layout = setupLayout(renderBlocks, textureAtlas);
                     vertexCount = layout.getIndices().length;
                     finished = true;
-                    queue.add(new Runnable(){
+                    GameHandler.getInstance().getGameEngine().addQueueItem(new Runnable(){
                         @Override
                         public void run() {
                             FloatBuffer posBuffer = null;
@@ -165,6 +172,8 @@ public class RenderMesh {
                                 if (indicesBuffer != null)
                                     MemoryUtil.memFree(indicesBuffer);
                             }
+                            if(future != null)
+                                future.complete(instance);
                         }
                     });
                 }
@@ -188,10 +197,10 @@ public class RenderMesh {
     public void render() {
         if(!finished) return;
 
-        if(!polled){
-            queue.poll().run();
-            polled = true;
-        }
+//        if(!polled){
+//            queue.poll().run();
+//            polled = true;
+//        }
 
         initRender();
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);

@@ -1,7 +1,6 @@
 package org.kakara.engine.renderobjects;
 
 import me.ryandw11.octree.Octree;
-import me.ryandw11.octree.OutOfBoundsException;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.math.Vector3;
@@ -12,6 +11,7 @@ import org.kakara.engine.scene.AbstractGameScene;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class RenderChunk extends MeshGameItem {
@@ -24,19 +24,11 @@ public class RenderChunk extends MeshGameItem {
     public RenderChunk(List<RenderBlock> blocks, TextureAtlas atlas){
         super();
         this.setPosition(new Vector3(0, 0, 0));
-        try {
-            this.octChunk = new Octree<>(0,0,0,17,17,17);
-        } catch (OutOfBoundsException e) {
-            e.printStackTrace();
-        }
+        this.octChunk = new Octree<>(0,0,0,17,17,17);
         this.blocks = blocks;
         for(RenderBlock blck : blocks){
             blck.setParentChunk(this);
-            try {
-                octChunk.insert((int)blck.getPosition().x, (int)blck.getPosition().y, (int)blck.getPosition().z, blck);
-            } catch (OutOfBoundsException e) {
-                e.printStackTrace();
-            }
+            octChunk.insert((int)blck.getPosition().x, (int)blck.getPosition().y, (int)blck.getPosition().z, blck);
         }
         chunkId = UUID.randomUUID();
         regenerateChunk(atlas);
@@ -49,11 +41,7 @@ public class RenderChunk extends MeshGameItem {
     public void addBlock(RenderBlock block){
         block.setParentChunk(this);
         blocks.add(block);
-        try {
-            octChunk.insert(Math.round(block.getPosition().x), Math.round(block.getPosition().y), Math.round(block.getPosition().z), block);
-        } catch (OutOfBoundsException e) {
-            e.printStackTrace();
-        }
+        octChunk.insert(Math.round(block.getPosition().x), Math.round(block.getPosition().y), Math.round(block.getPosition().z), block);
     }
 
     public void removeBlock(RenderBlock block){
@@ -129,11 +117,17 @@ public class RenderChunk extends MeshGameItem {
     }
 
     public void regenerateChunkAsync(TextureAtlas atlas){
-        if(mesh != null){
-            mesh.cleanUp();
-        }
+//        if(mesh != null){
+//            mesh.cleanUp();
+//        }
         List<RenderBlock> visBlocks = calculateVisibleBlocks(blocks);
-        this.mesh = new RenderMesh(visBlocks, atlas, true);
+        CompletableFuture<RenderMesh> completableFuture = new CompletableFuture<>();
+        new RenderMesh(visBlocks, atlas, true, completableFuture);
+        completableFuture.thenAccept(newmesh -> {
+            if(mesh != null)
+                mesh.cleanUp();
+            mesh = newmesh;
+        });
     }
 
 

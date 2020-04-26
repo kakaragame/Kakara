@@ -6,11 +6,19 @@ import org.kakara.core.events.entity.EntityTeleportEvent;
 import org.kakara.core.game.Entity;
 import org.kakara.core.game.entity.PathFinder;
 import org.kakara.core.player.Player;
+import org.kakara.core.player.PlayerEntity;
 import org.kakara.core.world.Location;
 import org.kakara.game.Server;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class ClientPlayer extends ClientOfflinePlayer implements Player {
     private Location location;
+    private PlayerEntity entity;
+    //TODO create a PermissionSet and use that
+    private Set<String> permissions = new HashSet<>();
 
     public ClientPlayer(JsonObject jsonObject, Location location, Server server) {
         super(jsonObject, server);
@@ -45,12 +53,21 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     @Override
     public Entity getEntityType() {
-        return this;
+        return entity;
     }
 
     @Override
-    public PathFinder getPathFinder() {
-        //Players Dont Have a Path Finder
-        return null;
+    public boolean hasPermission(String permission) {
+        return permissions.contains(permission);
+    }
+
+    @Override
+    public void addPermission(String permission) {
+        permissions.add(permission);
+    }
+
+    @Override
+    public void removePermission(String permission) {
+        permissions.remove(permission);
     }
 }

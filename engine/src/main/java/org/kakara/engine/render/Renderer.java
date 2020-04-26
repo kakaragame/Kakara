@@ -91,6 +91,8 @@ public class Renderer {
     public void renderChunk(Window window, Camera camera, Scene scene, boolean depthMap){
         if(!(scene instanceof AbstractGameScene)) return;
         AbstractGameScene ags = (AbstractGameScene) scene;
+        List<RenderChunk> renderChunks = ags.getChunkHandler().getRenderChunkList();
+        if(renderChunks == null) return;
         chunkShaderProgram.bind();
         Matrix4f projectionMatrix = transformation.getProjectionMatrix();
         chunkShaderProgram.setUniform("projectionMatrix", projectionMatrix);
@@ -108,8 +110,6 @@ public class Renderer {
         chunkShaderProgram.setUniform("shadowMap", 2);
         chunkShaderProgram.setUniform("textureAtlas", 0);
         chunkShaderProgram.setUniform("reflectance", 1f);
-
-        List<RenderChunk> renderChunks = ags.getChunkHandler().getRenderChunkList();
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, ags.getTextureAtlas().getTexture().getId());

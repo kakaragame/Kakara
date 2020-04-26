@@ -24,7 +24,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class RenderMesh {
 
-    protected final int vaoId;
+    protected int vaoId;
     protected final List<Integer> vboIdList;
     private int vertexCount;
     private boolean finished;
@@ -39,7 +39,15 @@ public class RenderMesh {
 
     public RenderMesh(List<RenderBlock> renderBlocks, TextureAtlas textureAtlas, boolean async, CompletableFuture<RenderMesh> future) {
         vboIdList = new ArrayList<>();
-        vaoId = glGenVertexArrays();
+        if(!async)
+            vaoId = glGenVertexArrays();
+        if(async)
+            GameHandler.getInstance().getGameEngine().addQueueItem(new Runnable() {
+                @Override
+                public void run() {
+                    vaoId = glGenVertexArrays();
+                }
+            });
         if(!async){
             finished = true;
             polled = true;

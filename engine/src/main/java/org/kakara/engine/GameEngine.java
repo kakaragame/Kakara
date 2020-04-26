@@ -116,7 +116,7 @@ public class GameEngine implements Runnable {
     protected void render() {
         gameHandler.getSceneManager().renderCurrentScene();
         window.update();
-        while(!mainThreadQueue.isEmpty()){
+        if(!mainThreadQueue.isEmpty()){
             mainThreadQueue.poll().run();
         }
     }

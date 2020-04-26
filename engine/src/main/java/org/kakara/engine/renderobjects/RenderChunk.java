@@ -31,7 +31,7 @@ public class RenderChunk extends MeshGameItem {
             octChunk.insert((int)blck.getPosition().x, (int)blck.getPosition().y, (int)blck.getPosition().z, blck);
         }
         chunkId = UUID.randomUUID();
-        regenerateChunk(atlas);
+//        regenerateChunk(atlas);
     }
 
     public List<RenderBlock> getBlocks(){
@@ -133,6 +133,7 @@ public class RenderChunk extends MeshGameItem {
 
     @Override
     public void render(){
+        if(mesh == null) return;
         mesh.render();
     }
 

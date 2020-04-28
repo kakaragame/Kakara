@@ -90,13 +90,6 @@ public class MainMenuScene extends AbstractMenuScene {
                     try {
                         File file = new File("testsave");
                         if (!file.exists()) file.mkdirs();
-                        Save save = new TestSave(file);
-                        //
-                        IntegratedServer intergratedServer = new IntegratedServer(null, save);
-                        //TODO save this somewhere.
-                        new ChunkCollector(save, intergratedServer).start();
-                        MainGameScene mgs = new MainGameScene(gameHandler, intergratedServer, kakaraGame);
-                        gameHandler.getSceneManager().setScene(mgs);
 
                     } catch (Exception ex) {
                         KakaraGame.LOGGER.error("unable to start game", ex);

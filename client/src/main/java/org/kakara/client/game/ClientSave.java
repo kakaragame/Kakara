@@ -6,9 +6,11 @@ import org.kakara.core.world.World;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 public class ClientSave implements Save {
-    private Set<World>
+    private Set<World> worlds;
+
     @Override
     public void prepareWorlds() {
 
@@ -19,8 +21,8 @@ public class ClientSave implements Save {
     }
 
     @Override
-    public List<World> getWorlds() {
-        return null;
+    public Set<World> getWorlds() {
+        return worlds;
     }
 
     @Override

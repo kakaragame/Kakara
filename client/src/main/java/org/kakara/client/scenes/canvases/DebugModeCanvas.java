@@ -23,10 +23,11 @@ public class DebugModeCanvas extends ComponentCanvas {
     private Text chunkLocation;
     private Text numberOfChunksLoaded;
     private String locationFormat = "X: %1$s Y: %2$s Z: %3$s";
-private MainGameScene gameScene;
+    private MainGameScene gameScene;
+
     private DebugModeCanvas(KakaraGame kakaraGame, MainGameScene scene) {
         super(scene);
-gameScene = scene;
+        gameScene = scene;
         this.kakaraGame = kakaraGame;
 
         fps = new Text("60", kakaraGame.getFont());
@@ -66,7 +67,7 @@ gameScene = scene;
         chunkLocation.setText(String.format(locationFormat, l.getX(), l.getY(), l.getZ()));
         fps.setText("FPS: " + Math.round(1 / Time.deltaTime));
 
-        numberOfChunksLoaded.setText("NOC: "+ gameScene.getServer().getPlayerEntity().getLocation().getWorld().getLoadedChunks().length);
+        //numberOfChunksLoaded.setText("NOC: "+ gameScene.getServer().getPlayerEntity().getLocation().getWorld().getLoadedChunks().length);
     }
 
     public void remove() {

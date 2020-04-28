@@ -1,6 +1,5 @@
 package org.kakara.client.scenes;
 
-import org.kakara.client.ChunkCollector;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.core.client.Save;

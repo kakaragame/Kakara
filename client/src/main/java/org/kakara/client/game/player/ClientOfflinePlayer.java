@@ -8,6 +8,7 @@ import org.kakara.core.player.Player;
 import org.kakara.game.Server;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class ClientOfflinePlayer implements OfflinePlayer {
     @NotNull
@@ -51,5 +52,15 @@ public class ClientOfflinePlayer implements OfflinePlayer {
     @Override
     public Player toOnlinePlayer() {
         return null;
+    }
+
+    @Override
+    public void ban(@Nullable String reason) {
+
+    }
+
+    @Override
+    public void ban(long duration, @NotNull TimeUnit timeUnit, @Nullable String reason) {
+
     }
 }

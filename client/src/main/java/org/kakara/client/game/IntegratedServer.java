@@ -24,6 +24,8 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.kakara.client.KakaraGame.LOGGER;
+
 public class IntegratedServer implements Server {
     @NotNull
     private final Save save;
@@ -42,6 +44,13 @@ public class IntegratedServer implements Server {
         playersFolder = new File(save.getSaveFolder(), "players");
         if (!playersFolder.exists()) playersFolder.mkdir();
         this.playerID = playerUUID;
+        LOGGER.info("Loading Mod Classes");
+        List<UnModObject> modsToBeLoaded = Kakara.getModManager().loadModsFile(save.getModsToLoad());
+        LOGGER.info("Enabling Mods");
+        Kakara.getModManager().loadMods(modsToBeLoaded);
+        LOGGER.info("Loading Worlds");
+        save.prepareWorlds();
+
         getOnlinePlayer(playerUUID);
     }
 

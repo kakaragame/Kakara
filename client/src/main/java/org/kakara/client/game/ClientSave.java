@@ -2,16 +2,22 @@ package org.kakara.client.game;
 
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.KakaraGame;
+import org.kakara.client.game.world.ClientWorld;
+import org.kakara.client.utils.ModUtils;
 import org.kakara.core.client.Save;
 import org.kakara.core.client.SaveSettings;
 import org.kakara.core.client.SaveSettingsParser;
 import org.kakara.core.client.parsers.JsonSaveSettingParser;
 import org.kakara.core.exceptions.SaveLoadException;
+import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.modinstance.ModInstance;
 import org.kakara.core.world.World;
+import org.kakara.game.Server;
 
 import java.io.File;
 import java.util.*;
+
+import static org.kakara.client.KakaraGame.LOGGER;
 
 public class ClientSave implements Save {
     @NotNull
@@ -19,11 +25,12 @@ public class ClientSave implements Save {
     @NotNull
     private final SaveSettings saveSettings;
     @NotNull
-    private File saveFolder;
+    private final File saveFolder;
     @NotNull
     private final UUID defaultWorldID;
     //TODO change to service provider
     public static final SaveSettingsParser SAVE_SETTINGS_PARSER = new JsonSaveSettingParser();
+    private Server server;
 
     public ClientSave(@NotNull File saveFolder) throws SaveLoadException {
         this.saveFolder = saveFolder;
@@ -32,9 +39,12 @@ public class ClientSave implements Save {
     }
 
     @Override
-    public void prepareWorlds() {
-        for (String world : saveSettings.getWorlds()) {
+    public void prepareWorlds() throws WorldLoadException {
+        for (String worldName : saveSettings.getWorlds()) {
+            LOGGER.info("Loading " + worldName);
+            ClientWorld world = new ClientWorld(new File(saveFolder, worldName), server);
 
+            worlds.add(world);
         }
     }
 
@@ -75,5 +85,9 @@ public class ClientSave implements Save {
             mods.add(mod.getModFile());
         }
         return mods;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
     }
 }

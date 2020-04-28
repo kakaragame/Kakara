@@ -1,4 +1,4 @@
-package org.kakara.client.game;
+package org.kakara.client.utils;
 
 import org.kakara.core.modinstance.ModInstance;
 

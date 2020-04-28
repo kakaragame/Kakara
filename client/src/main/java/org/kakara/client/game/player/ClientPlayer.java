@@ -17,32 +17,31 @@ import org.kakara.core.player.Toast;
 import org.kakara.core.world.Location;
 import org.kakara.engine.math.Vector3;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @NotNull
-    private final Set<String> permissions = new PermissionSet();
+    private final PermissionSet permissions = new PermissionSet();
     @NotNull
     private Location location;
     @NotNull
     private final Entity entity;
+    private String displayName = getName();
+    private short health = 20;
+    private short hunger = 20;
 
-
-    public ClientPlayer(JsonObject jsonObject, Location location, IntegratedServer integratedServer) {
+    public ClientPlayer(JsonObject jsonObject, @NotNull Location location, IntegratedServer integratedServer) {
         super(jsonObject, integratedServer);
         entity = new PlayerEntity(getName());
         this.location = location;
     }
 
     @Override
-    public void sendMessage(String message) {
-        //TODO send message to player console
-    }
-
-    @Override
+    @NotNull
     public PermissionSet getPermissions() {
-        return null;
+        return permissions;
     }
 
     @Override
@@ -85,44 +84,61 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         return entity;
     }
 
+
+    @Override
+    public void setHealth(short health) {
+        this.health = health;
+    }
+
+    @Override
+    public short getHealth() {
+        return health;
+    }
+
+    @Override
+    public void setHunger(short hunger) {
+        this.hunger = hunger;
+    }
+
+    @Override
+    public short getHunger() {
+        return hunger;
+    }
+
+    @Override
+    public @NotNull String getDisplayName() {
+        return displayName;
+    }
+
+    @Override
+    public void setDisplayName(@NotNull String displayName) {
+        this.displayName = displayName;
+    }
+
+    //TODO the methods below
+    @Override
+    public void kick(@Nullable String reason) {
+
+    }
+
     @Override
     public void sendToast(@NotNull Toast toast) {
 
     }
 
     @Override
-    public void setHealth(short health) {
-
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
     @Override
-    public short getHealth() {
-        return 0;
+    public int hashCode() {
+        return super.hashCode();
     }
 
     @Override
-    public void setHunger(short hunger) {
-
-    }
-
-    @Override
-    public short getHunger() {
-        return 0;
-    }
-
-    @Override
-    public @NotNull String getDisplayName() {
-        return null;
-    }
-
-    @Override
-    public void setDisplayName(@NotNull String displayName) {
-
-    }
-
-    @Override
-    public void kick(@Nullable String reason) {
-
+    public void sendMessage(String message) {
+        //TODO send message to player console
     }
 
     @Override
@@ -135,13 +151,4 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     }
 
-    @Override
-    public void ban(@Nullable String reason) {
-
-    }
-
-    @Override
-    public void ban(long duration, @NotNull TimeUnit timeUnit, @Nullable String reason) {
-
-    }
 }

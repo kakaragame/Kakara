@@ -7,6 +7,8 @@ import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
 import org.kakara.game.Server;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +20,6 @@ public class ClientOfflinePlayer implements OfflinePlayer {
     private final long lastJoinTime;
     @NotNull
     private final Server server;
-
 
 
     public ClientOfflinePlayer(JsonObject jsonObject, Server server) {
@@ -46,14 +47,36 @@ public class ClientOfflinePlayer implements OfflinePlayer {
 
     @Override
     public boolean isOnline() {
-        return false;
+        return server.getOnlinePlayers().stream().anyMatch(player -> player.getUUID().equals(uuid));
     }
 
     @Override
     public Player toOnlinePlayer() {
-        return null;
+        Optional<Player> playerOptional = server.getOnlinePlayers().stream().filter(player -> player.getUUID().equals(uuid)).findFirst();
+        if (playerOptional.isEmpty()) {
+            return null;
+        }
+        return playerOptional.get();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (o instanceof UUID) {
+            return o.equals(uuid);
+        }
+        if (!(o instanceof ClientOfflinePlayer)) return false;
+        ClientOfflinePlayer that = (ClientOfflinePlayer) o;
+        return uuid.equals(that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
+    //TODO methods below
     @Override
     public void ban(@Nullable String reason) {
 
@@ -61,6 +84,7 @@ public class ClientOfflinePlayer implements OfflinePlayer {
 
     @Override
     public void ban(long duration, @NotNull TimeUnit timeUnit, @Nullable String reason) {
-
     }
+
+
 }

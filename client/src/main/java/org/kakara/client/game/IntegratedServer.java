@@ -1,6 +1,8 @@
 package org.kakara.client.game;
 
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
+import org.kakara.client.KakaraGame;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
@@ -17,35 +19,46 @@ import org.kakara.game.Server;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class IntegratedServer implements Server {
-    private Save save;
-    private Player player;
-    public static final int radius = 8;
-    private ExecutorService executorService;
-    private List<Player> players = new ArrayList<>();
-    private File playersFolder;
+    @NotNull
+    private final Save save;
+    @NotNull
+    private UUID playerID;
+    //This will later be a Setting.
+    public static final int RADIUS = 8;
+    private final ExecutorService executorService;
+    private final List<Player> players = new ArrayList<>();
+    private final File playersFolder;
     private boolean running = true;
 
-    public IntegratedServer( Save save) {
+    public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) {
         this.save = save;
         executorService = Executors.newFixedThreadPool(2);
-
+        playersFolder = new File(save.getSaveFolder(), "players");
+        if (!playersFolder.exists()) playersFolder.mkdir();
+        this.playerID = playerUUID;
+        getOnlinePlayer(playerUUID);
     }
 
-    private Player getOnlinePlayer(UUID uuid) {
+    public Player getOnlinePlayer(UUID uuid) {
+        Optional<Player> optional = players.stream().filter(player1 -> player1.getUUID().equals(uuid)).findFirst();
+        if (optional.isPresent()) return optional.get();
         File playerFile = new File(playersFolder, uuid.toString() + ".json");
         if (!playerFile.exists()) {
             createNewPlayer(uuid);
         }
         try {
             JsonObject jsonObject = Utils.getGson().fromJson(new FileReader(playerFile), JsonObject.class);
-            return new ClientPlayer(jsonObject, new Location(save.getDefaultWorld(), 500, 50, 500), this);
+            ClientPlayer player = new ClientPlayer(jsonObject, new Location(save.getDefaultWorld(), 500, 50, 500), this);
+            players.add(player);
+            return player;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            KakaraGame.LOGGER.error("Unable to locate file(I am confused how it go here) ", e);
         }
         return null;
     }
@@ -76,10 +89,6 @@ public class IntegratedServer implements Server {
 
     @Override
     public void loadPlayer(UUID uuid) {
-        playersFolder = new File(save.getSaveFolder(), "players");
-        if (!playersFolder.exists()) playersFolder.mkdir();
-        this.player = getOnlinePlayer(uuid);
-        players.add(player);
 
     }
 
@@ -90,7 +99,8 @@ public class IntegratedServer implements Server {
 
     @Override
     public Player getPlayerEntity() {
-        return player;
+
+        return getOnlinePlayers().stream().filter(player -> player.getUUID().equals(playerID)).findFirst().orElseThrow(RuntimeException::new);
     }
 
     @Override
@@ -119,14 +129,14 @@ public class IntegratedServer implements Server {
 
             return;
         }
-        if (player == null) return;
-        ChunkLocation start = GameUtils.getChunkLocation(player.getLocation());
-        for (int x = (start.getX() - (radius * 16)); x <= (start.getX() + (radius * 16)); x += 16) {
-            for (int y = (start.getY() - (radius * 16)); y <= (start.getY() + (radius * 16)); y += 16) {
-                for (int z = (start.getZ() - (radius * 16)); z <= (start.getZ() + (radius * 16)); z += 16) {
+        if (getPlayerEntity() == null) return;
+        ChunkLocation start = GameUtils.getChunkLocation(getPlayerEntity().getLocation());
+        for (int x = (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
+            for (int y = (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
+                for (int z = (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
                     ChunkLocation chunkLocation = new ChunkLocation(x, y, z);
-                    if (GameUtils.isLocationInsideCurrentLocationRadius(start, chunkLocation, radius)) {
-                        player.getLocation().getWorld().getChunkAt(chunkLocation);
+                    if (GameUtils.isLocationInsideCurrentLocationRadius(start, chunkLocation, RADIUS)) {
+                        getPlayerEntity().getLocation().getWorld().getChunkAt(chunkLocation);
                     }
                 }
             }

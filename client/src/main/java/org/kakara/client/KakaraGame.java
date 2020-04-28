@@ -5,23 +5,16 @@ import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 
 import org.kakara.core.game.GameSettings;
-import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.serializers.messagepack.MPSerializerRegistrar;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.text.Font;
-import org.kakara.game.item.GameItemManager;
-import org.kakara.game.mod.KakaraMod;
-import org.kakara.game.resources.GameResourceManager;
-import org.kakara.game.world.GameWorldGenerationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class KakaraGame implements Game {
     private GameInstance kakaraCore;
@@ -55,7 +48,7 @@ public class KakaraGame implements Game {
         client.getEventManager().load(client);
         client.getModManager().load(client);
         MPSerializerRegistrar.load();
-}
+    }
 
     @Override
     public void start(GameHandler gameHandler) throws Exception {
@@ -63,18 +56,18 @@ public class KakaraGame implements Game {
         this.gameHandler = gameHandler;
         //Load MainMenuScene
         loadMusicManager();
-        loadFont();
         MainMenuScene mainMenuScene = new MainMenuScene(gameHandler, this);
         gameHandler.getSceneManager().setScene(mainMenuScene);
     }
 
-    private void loadFont() {
+    public Font getFont(Scene scene) {
         try {
-            font = new Font("Roboto-Regular", getGameHandler().getResourceManager().getResource("Roboto-Regular.ttf"));
+            return new Font("Roboto-Regular", getGameHandler().getResourceManager().getResource("Roboto-Regular.ttf"), scene);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
+        return null;
     }
 
     private void loadMusicManager() {
@@ -113,7 +106,7 @@ public class KakaraGame implements Game {
     }
 
     public Font getFont() {
-        return font;
+        return getFont(gameHandler.getSceneManager().getCurrentScene());
     }
 
     public int getTPS() {

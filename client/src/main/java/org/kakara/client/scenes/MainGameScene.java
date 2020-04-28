@@ -64,6 +64,8 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
+        System.out.println("PUSH");
+
         if (e.isKeyPressed(GLFW_KEY_F3)) {
             if (debugMode) {
                 debugMode = false;
@@ -73,7 +75,6 @@ public class MainGameScene extends AbstractGameScene {
                 DebugModeCanvas.getInstance(kakaraGame, this).add();
             }
         }
-        System.out.println("PUSH");
         if (e.isKeyPressed(GLFW_KEY_ESCAPE)) {
             System.exit(1);
         }

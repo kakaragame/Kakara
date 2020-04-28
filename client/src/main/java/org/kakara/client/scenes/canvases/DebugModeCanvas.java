@@ -30,22 +30,22 @@ public class DebugModeCanvas extends ComponentCanvas {
         gameScene = scene;
         this.kakaraGame = kakaraGame;
 
-        fps = new Text("60", kakaraGame.getFont());
+        fps = new Text("60", kakaraGame.getFont(scene));
         fps.position = new Vector2(0, 25);
         fps.setTextAlign(TextAlign.CENTER);
         fps.setLineWidth(100);
 
-        location = new Text("X: 0 Y: 0 Z: 0", kakaraGame.getFont());
+        location = new Text("X: 0 Y: 0 Z: 0", kakaraGame.getFont(scene));
         location.position = new Vector2(0, 75);
         location.setTextAlign(TextAlign.CENTER);
         location.setLineWidth(500);
 
-        chunkLocation = new Text("X: 0 Y: 0 Z: 0", kakaraGame.getFont());
+        chunkLocation = new Text("X: 0 Y: 0 Z: 0", kakaraGame.getFont(scene));
         chunkLocation.position = new Vector2(0, 124);
         chunkLocation.setTextAlign(TextAlign.CENTER);
         chunkLocation.setLineWidth(500);
 
-        numberOfChunksLoaded = new Text("0", kakaraGame.getFont());
+        numberOfChunksLoaded = new Text("0", kakaraGame.getFont(scene));
         numberOfChunksLoaded.position = new Vector2(0, 150);
         numberOfChunksLoaded.setTextAlign(TextAlign.CENTER);
         numberOfChunksLoaded.setLineWidth(500);
@@ -66,7 +66,6 @@ public class DebugModeCanvas extends ComponentCanvas {
         ChunkLocation l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));
         chunkLocation.setText(String.format(locationFormat, l.getX(), l.getY(), l.getZ()));
         fps.setText("FPS: " + Math.round(1 / Time.deltaTime));
-
         //numberOfChunksLoaded.setText("NOC: "+ gameScene.getServer().getPlayerEntity().getLocation().getWorld().getLoadedChunks().length);
     }
 

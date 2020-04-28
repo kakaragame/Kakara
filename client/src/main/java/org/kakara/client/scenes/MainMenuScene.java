@@ -56,17 +56,16 @@ public class MainMenuScene extends AbstractMenuScene {
 
     @Override
     public void work() {
-
     }
 
     @Override
     public void loadGraphics(GameHandler handler) {
         setBackground(loadBackgroundTexture());
-        getHUD().addFont(kakaraGame.getFont());
+        //  getHUD().addFont(kakaraGame.getFont());
         ComponentCanvas componentCanvas = new ComponentCanvas(this);
         Texture texture = loadTextTexture();
         // Make some more text for the title screen.
-        Text title = new Text("Kakara", kakaraGame.getFont());
+        Text title = new Text("Kakara", kakaraGame.getFont(this));
         title.setSize(200);
         title.setLineWidth(500);
         title.setPosition(gameHandler.getWindow().getWidth() / 2 - 250, 200);
@@ -112,7 +111,7 @@ public class MainMenuScene extends AbstractMenuScene {
                     }
                 }
             }, HUDClickEvent.class);
-            Text txt = new Text("Play Test!", kakaraGame.getFont());
+            Text txt = new Text("Play Test!", kakaraGame.getFont(this));
             txt.setPosition(0, playButton.scale.y / 2);
             txt.setTextAlign(TextAlign.CENTER);
             txt.setLineWidth(playButton.scale.x);

@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 
 public interface Server {
 
-    DataWatcher getDataWatcher();
 
     void loadPlayer(UUID uuid);
 
@@ -38,4 +37,6 @@ public interface Server {
     ExecutorService getExecutorService();
 
     boolean isRunning();
+
+    void close();
 }

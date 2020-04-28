@@ -2,6 +2,7 @@ package org.kakara.client.scenes;
 
 import org.kakara.client.ChunkCollector;
 import org.kakara.client.KakaraGame;
+import org.kakara.client.game.IntegratedServer;
 import org.kakara.core.client.Save;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.input.MouseClickType;
@@ -16,8 +17,6 @@ import org.kakara.engine.ui.events.HUDHoverEnterEvent;
 import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.TextAlign;
-import org.kakara.game.IntegratedServer;
-import org.kakara.game.client.TestSave;
 
 import java.io.File;
 import java.net.MalformedURLException;

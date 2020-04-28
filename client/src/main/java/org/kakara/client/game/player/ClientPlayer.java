@@ -1,8 +1,9 @@
 package org.kakara.client.game.player;
 
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.MoreUtils;
-import org.kakara.client.game.entity.ClientGameEntity;
+import org.kakara.client.game.IntegratedServer;
 import org.kakara.core.Kakara;
 import org.kakara.core.events.entity.EntityTeleportEvent;
 import org.kakara.core.game.Entity;
@@ -13,7 +14,6 @@ import org.kakara.core.world.Location;
 import org.kakara.engine.math.Vector3;
 
 import java.util.Set;
-import java.util.UUID;
 
 public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @NotNull
@@ -23,8 +23,10 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @NotNull
     private final Entity entity;
 
-    public ClientPlayer(@NotNull Location location) {
-        entity = new PlayerEntity("Player");
+
+    public ClientPlayer(JsonObject jsonObject, Location location, IntegratedServer integratedServer) {
+        super(jsonObject, integratedServer);
+        entity = new PlayerEntity(getName());
         this.location = location;
     }
 

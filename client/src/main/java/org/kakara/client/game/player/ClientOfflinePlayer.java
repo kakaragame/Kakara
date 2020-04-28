@@ -1,23 +1,30 @@
 package org.kakara.client.game.player;
 
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
+import org.kakara.game.Server;
 
 import java.util.UUID;
 
 public class ClientOfflinePlayer implements OfflinePlayer {
     @NotNull
-    private UUID uuid;
+    private final UUID uuid;
     @Nullable
-    private String name;
+    private final String name;
     private final long lastJoinTime;
+    @NotNull
+    private final Server server;
 
-    public ClientOfflinePlayer(@NotNull UUID uuid, @Nullable String name, long lastJoinTime) {
-        this.uuid = uuid;
-        this.name = name;
-        this.lastJoinTime = lastJoinTime;
+
+
+    public ClientOfflinePlayer(JsonObject jsonObject, Server server) {
+        uuid = UUID.fromString(jsonObject.get("uuid").getAsString());
+        name = jsonObject.get("name").getAsString();
+        lastJoinTime = jsonObject.get("lastjointime").getAsLong();
+        this.server = server;
     }
 
     @Override
@@ -26,6 +33,7 @@ public class ClientOfflinePlayer implements OfflinePlayer {
     }
 
     @Override
+    @Nullable
     public String getName() {
         return name;
     }

@@ -14,7 +14,6 @@ public interface Server {
 
     void loadPlayer(UUID uuid);
 
-    void loadWorld();
 
     Player getPlayerEntity();
 

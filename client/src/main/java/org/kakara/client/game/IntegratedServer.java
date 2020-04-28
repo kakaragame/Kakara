@@ -7,6 +7,7 @@ import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
 import org.kakara.core.client.Save;
+import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.mod.UnModObject;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
@@ -49,7 +50,12 @@ public class IntegratedServer implements Server {
         LOGGER.info("Enabling Mods");
         Kakara.getModManager().loadMods(modsToBeLoaded);
         LOGGER.info("Loading Worlds");
-        save.prepareWorlds();
+        try {
+            save.prepareWorlds();
+        } catch (WorldLoadException e) {
+            LOGGER.error("Unable to load worlds",e);
+            //TODO cancel game load
+        }
 
         getOnlinePlayer(playerUUID);
     }
@@ -101,10 +107,7 @@ public class IntegratedServer implements Server {
 
     }
 
-    @Override
-    public void loadWorld() {
-        save.prepareWorlds();
-    }
+
 
     @Override
     public Player getPlayerEntity() {

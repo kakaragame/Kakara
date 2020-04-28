@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class ClientOfflinePlayer implements OfflinePlayer {
     @NotNull
     private final UUID uuid;
-    @Nullable
+    @NotNull
     private final String name;
     private final long lastJoinTime;
     @NotNull
@@ -35,7 +35,7 @@ public class ClientOfflinePlayer implements OfflinePlayer {
     }
 
     @Override
-    @Nullable
+    @NotNull
     public String getName() {
         return name;
     }

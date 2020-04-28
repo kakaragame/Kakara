@@ -127,6 +127,11 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     }
 
     @Override
+    public void sendNotification(@NotNull String message) {
+
+    }
+
+    @Override
     public boolean equals(Object o) {
         return super.equals(o);
     }
@@ -137,7 +142,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(@NotNull String message) {
         //TODO send message to player console
     }
 

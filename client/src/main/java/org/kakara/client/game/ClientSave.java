@@ -1,19 +1,41 @@
 package org.kakara.client.game;
 
+import org.jetbrains.annotations.NotNull;
+import org.kakara.client.KakaraGame;
 import org.kakara.core.client.Save;
 import org.kakara.core.client.SaveSettings;
+import org.kakara.core.client.SaveSettingsParser;
+import org.kakara.core.client.parsers.JsonSaveSettingParser;
+import org.kakara.core.exceptions.SaveLoadException;
+import org.kakara.core.modinstance.ModInstance;
 import org.kakara.core.world.World;
 
 import java.io.File;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ClientSave implements Save {
-    private Set<World> worlds;
+    @NotNull
+    private final Set<World> worlds = new HashSet<>();
+    @NotNull
+    private final SaveSettings saveSettings;
+    @NotNull
+    private File saveFolder;
+    @NotNull
+    private final UUID defaultWorldID;
+    //TODO change to service provider
+    public static final SaveSettingsParser SAVE_SETTINGS_PARSER = new JsonSaveSettingParser();
+
+    public ClientSave(@NotNull File saveFolder) throws SaveLoadException {
+        this.saveFolder = saveFolder;
+        saveSettings = SAVE_SETTINGS_PARSER.fromFile(new File(saveFolder, "save.json"));
+        defaultWorldID = saveSettings.getDefaultWorld();
+    }
 
     @Override
     public void prepareWorlds() {
+        for (String world : saveSettings.getWorlds()) {
 
+        }
     }
 
     public void save() {
@@ -27,21 +49,31 @@ public class ClientSave implements Save {
 
     @Override
     public World getDefaultWorld() {
-        return null;
+        return worlds.stream().filter(world -> world.getUUID().equals(defaultWorldID)).findFirst().orElseThrow(RuntimeException::new);
     }
 
     @Override
     public SaveSettings getSettings() {
-        return null;
+        return saveSettings;
     }
 
     @Override
     public File getSaveFolder() {
-        return null;
+        return saveFolder;
     }
 
     @Override
     public List<File> getModsToLoad() {
-        return null;
+        List<File> mods = new ArrayList<>();
+        for (ModInstance modInstance : saveSettings.getModInstances()) {
+            var mod = ModUtils.prepareModInstance(modInstance);
+            if (!mod.getModFile().exists()) try {
+                throw new SaveLoadException("Unable to locate mod file");
+            } catch (SaveLoadException e) {
+                KakaraGame.LOGGER.error("Unable to locate ModFile", e);
+            }
+            mods.add(mod.getModFile());
+        }
+        return mods;
     }
 }

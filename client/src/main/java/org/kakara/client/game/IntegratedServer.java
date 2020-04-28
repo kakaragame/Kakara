@@ -28,7 +28,7 @@ public class IntegratedServer implements Server {
     @NotNull
     private final Save save;
     @NotNull
-    private UUID playerID;
+    private final UUID playerID;
     //This will later be a Setting.
     public static final int RADIUS = 8;
     private final ExecutorService executorService;

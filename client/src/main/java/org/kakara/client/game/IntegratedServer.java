@@ -41,6 +41,9 @@ public class IntegratedServer implements Server {
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) {
         this.save = save;
+        if (save instanceof ClientSave) {
+            ((ClientSave) save).setServer(this);
+        }
         executorService = Executors.newFixedThreadPool(2);
         playersFolder = new File(save.getSaveFolder(), "players");
         if (!playersFolder.exists()) playersFolder.mkdir();
@@ -49,11 +52,14 @@ public class IntegratedServer implements Server {
         List<UnModObject> modsToBeLoaded = Kakara.getModManager().loadModsFile(save.getModsToLoad());
         LOGGER.info("Enabling Mods");
         Kakara.getModManager().loadMods(modsToBeLoaded);
+        Kakara.getModManager().loadStage(Kakara.getEventManager());
+        Kakara.getModManager().loadStage(Kakara.getItemManager());
+        Kakara.getModManager().loadStage(Kakara.getWorldGenerationManager());
         LOGGER.info("Loading Worlds");
         try {
             save.prepareWorlds();
         } catch (WorldLoadException e) {
-            LOGGER.error("Unable to load worlds",e);
+            LOGGER.error("Unable to load worlds", e);
             //TODO cancel game load
         }
 
@@ -106,7 +112,6 @@ public class IntegratedServer implements Server {
     public void loadPlayer(UUID uuid) {
 
     }
-
 
 
     @Override

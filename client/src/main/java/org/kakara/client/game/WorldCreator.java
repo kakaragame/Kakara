@@ -6,6 +6,7 @@ import org.kakara.core.Utils;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.world.Location;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,38 +22,47 @@ public class WorldCreator {
         return worldName;
     }
 
-    public void setWorldName(String worldName) {
+    public WorldCreator setWorldName(String worldName) {
         this.worldName = worldName;
+        return this;
     }
 
     public UUID getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public WorldCreator setUuid(UUID uuid) {
         this.uuid = uuid;
+        return this;
     }
 
     public NameKey getGenerator() {
         return generator;
     }
 
-    public void setGenerator(NameKey generator) {
+    public WorldCreator setGenerator(NameKey generator) {
         this.generator = generator;
+        return this;
     }
 
     public int getSeed() {
         return seed;
     }
 
-    public void setSeed(int seed) {
+    public WorldCreator setSeed(int seed) {
         this.seed = seed;
+        return this;
     }
 
     public String build(File parentFolder) throws WorldLoadException {
         File worldFolder = new File(parentFolder, worldName);
         worldFolder.mkdir();
         File worldConfig = new File(worldFolder, "world.json");
+        try {
+            worldConfig.createNewFile();
+        } catch (IOException e) {
+            throw new WorldLoadException(e);
+        }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("seed", seed);
         jsonObject.addProperty("name", worldName);
@@ -61,7 +71,9 @@ public class WorldCreator {
         //TODO IDK do something
         jsonObject.add("location", Utils.getGson().toJsonTree(new Location(0, 0, 0)));
         try {
-            Utils.getGson().toJson(jsonObject, new FileWriter(worldConfig));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(worldConfig));
+            bufferedWriter.write(Utils.getGson().toJson(jsonObject));
+            bufferedWriter.close();
         } catch (IOException e) {
             throw new WorldLoadException(e);
         }

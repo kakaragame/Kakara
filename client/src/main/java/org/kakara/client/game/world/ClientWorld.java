@@ -34,11 +34,16 @@ public class ClientWorld implements World {
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
             chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
+            if (chunkGenerator == null) {
+                throw new WorldLoadException("Unable to locate ChunkGenerator: " + object.get("generator").getAsString());
+            }
             seed = object.get("seed").getAsInt();
             random = new Random(seed);
             name = object.get("name").getAsString();
             worldID = UUID.fromString(object.get("id").getAsString());
             worldSpawn = Utils.getGson().fromJson(object.get("location"), Location.class);
+        } catch (WorldLoadException e) {
+            throw e;
         } catch (Exception e) {
             throw new WorldLoadException(e);
         }
@@ -139,7 +144,11 @@ public class ClientWorld implements World {
 
     @Override
     public void loadChunk(@NotNull Chunk chunk) {
+        if (isChunkLoaded(chunk.getLocation())) {
+            return;
+        }
 
+        loadedChunks.add(chunk);
     }
 
     @Override
@@ -149,6 +158,6 @@ public class ClientWorld implements World {
 
     @Override
     public @NotNull Chunk[] getLoadedChunks() {
-        return loadedChunks.toArray(Chunk[]::new);
+        return new ArrayList<>(loadedChunks).toArray(Chunk[]::new);
     }
 }

@@ -1,8 +1,13 @@
 package org.kakara.client.scenes;
 
 import org.kakara.client.KakaraGame;
+import org.kakara.client.SaveCreator;
 import org.kakara.client.game.IntegratedServer;
+import org.kakara.client.game.WorldCreator;
+import org.kakara.core.NameKey;
 import org.kakara.core.client.Save;
+import org.kakara.core.modinstance.ModInstance;
+import org.kakara.core.modinstance.ModInstanceType;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.item.Texture;
@@ -19,6 +24,9 @@ import org.kakara.engine.ui.text.TextAlign;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class MainMenuScene extends AbstractMenuScene {
     private KakaraGame kakaraGame;
@@ -88,9 +96,17 @@ public class MainMenuScene extends AbstractMenuScene {
                     if (!playButton.isVisible()) return;
                     try {
                         File file = new File("testsave");
-                        if (!file.exists()) file.mkdirs();
-
+                        if (file.exists()) file.delete();
+                        SaveCreator saveCreator = new SaveCreator().setName("testsave");
+                        for (File file1 : getModsToLoad()) {
+                            saveCreator.add(new ModInstance(file1.getName(), "", "1.0", null, ModInstanceType.FILE, file1));
+                        }
+                        saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new NameKey("KVanilla:default")));
+                        IntegratedServer integratedServer = new IntegratedServer(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"));
+                        MainGameScene gameScene = new MainGameScene(gameHandler, integratedServer, kakaraGame);
+                        gameHandler.getSceneManager().setScene(gameScene);
                     } catch (Exception ex) {
+                        setCurserStatus(true);
                         KakaraGame.LOGGER.error("unable to start game", ex);
                         // gameHandler.getSceneManager().setScene();
                     }
@@ -105,6 +121,12 @@ public class MainMenuScene extends AbstractMenuScene {
         }
         componentCanvas.add(title);
         add(componentCanvas);
+    }
+
+    public List<File> getModsToLoad() {
+        File dir = new File("test" + File.separator + "mods");
+
+        return Arrays.asList(dir.listFiles((dir1, filename) -> filename.endsWith(".jar")));
     }
 
     @Override

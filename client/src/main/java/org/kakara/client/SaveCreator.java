@@ -1,6 +1,5 @@
 package org.kakara.client;
 
-import com.google.gson.JsonArray;
 import org.kakara.client.game.ClientSave;
 import org.kakara.client.game.WorldCreator;
 import org.kakara.core.client.Save;
@@ -9,7 +8,6 @@ import org.kakara.core.client.SaveSettingsBuilder;
 import org.kakara.core.exceptions.SaveLoadException;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.modinstance.ModInstance;
-import org.kakara.core.world.World;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,27 +18,32 @@ public class SaveCreator {
     private Set<ModInstance> mods = new HashSet<>();
     private Set<WorldCreator> worldSet = new HashSet<>();
 
-    public void setName(String name) {
+    public SaveCreator setName(String name) {
         this.name = name;
+        return this;
     }
 
-    public boolean add(ModInstance modInstance) {
-        return mods.add(modInstance);
+    public SaveCreator add(ModInstance modInstance) {
+        mods.add(modInstance);
+        return this;
     }
 
     //TODO make this actually take more info about the world
-    public boolean add(WorldCreator world) {
-        return worldSet.add(world);
+    public SaveCreator add(WorldCreator world) {
+        worldSet.add(world);
+        return this;
     }
 
     public Save createSave() throws SaveLoadException {
         File saveFolder = new File(name);
+            saveFolder.mkdirs();
+
+        File saveFile = new File(saveFolder, "save.json");
         try {
-            saveFolder.createNewFile();
+            saveFile.createNewFile();
         } catch (IOException e) {
             throw new SaveLoadException(e);
         }
-        File saveFile = new File(saveFolder, "save.json");
         Set<String> worlds = new HashSet<>();
         UUID defaultWorld = null;
         for (WorldCreator worldCreator : worldSet) {

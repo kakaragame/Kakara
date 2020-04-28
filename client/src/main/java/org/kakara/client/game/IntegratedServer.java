@@ -146,6 +146,7 @@ public class IntegratedServer implements Server {
 
             return;
         }
+
         if (getPlayerEntity() == null) return;
         ChunkLocation start = GameUtils.getChunkLocation(getPlayerEntity().getLocation());
         for (int x = (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {

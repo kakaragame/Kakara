@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ClientWorld implements World {
     private final File worldFolder;
-    private final Set<Chunk> loadedChunks = new HashSet<>();
+    private final List<Chunk> loadedChunks = new ArrayList<>();
     private final UUID worldID;
     private final String name;
     private final ChunkGenerator chunkGenerator;
@@ -31,6 +31,7 @@ public class ClientWorld implements World {
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
         this.server = server;
+
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
             chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
@@ -102,10 +103,14 @@ public class ClientWorld implements World {
     public CompletableFuture<Chunk> getChunkAt(ChunkLocation location) {
         CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
         server.getExecutorService().submit(() -> {
-            for (Chunk loadedChunk : loadedChunks) {
-                if (loadedChunk.getLocation().equals(location))
-                    completableFuture.complete(loadedChunk);
+            for (int i = 0; i < loadedChunks.size(); i++) {
+                Chunk chunk = loadedChunks.get(i);
+                if (chunk.getLocation().equals(location)) {
+                    completableFuture.complete(chunk);
+                    return;
+                }
             }
+
             /*try {
                 Chunk chunk1 = clientChunkWriter.getChunk(location);
                 if (chunk1 != null) {

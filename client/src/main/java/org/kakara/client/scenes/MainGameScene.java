@@ -21,7 +21,6 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
-import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.TextureCache;
@@ -87,7 +86,7 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void loadGraphics(GameHandler handler) {
-        getHUD().addFont(kakaraGame.getFont());
+        //getHUD().addFont(kakaraGame.getFont());
         getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
 
         var resourceManager = gameHandler.getResourceManager();
@@ -114,6 +113,7 @@ public class MainGameScene extends AbstractGameScene {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        playerMovement();
 
     }
 
@@ -128,51 +128,61 @@ public class MainGameScene extends AbstractGameScene {
 
 
     public RenderedChunk getChunk(Chunk chunk) {
-
+        if (!renderedChunks.find(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ())) {
+            return null;
+        }
         return renderedChunks.get(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
     }
 
     @Override
     public void update(float interval) {
         server.update();
-
         playerMovement();
+        new Thread(() -> {
+            for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
+                RenderedChunk renderedChunk = getChunk(loadedChunk);
+                ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
-        for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
-            RenderedChunk renderedChunk = getChunk(loadedChunk);
-            ClientChunk clientChunk = (ClientChunk) loadedChunk;
+                if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
+                    if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
+                    renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
+                }
+                if (renderedChunk == null || clientChunk.isUpdatedHappened()) {
+                    if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
+                    renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
+                    if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
+                        ChunkLocation cb = loadedChunk.getLocation();
+                        RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                        rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
 
-            if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
-                renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
-            }
-            if (renderedChunk == null || clientChunk.isUpdatedHappened()) {
-                if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
-                renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
-                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                    ChunkLocation cb = loadedChunk.getLocation();
-                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                    rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
-
-                    for (GameBlock gb : loadedChunk.getGameBlocks()) {
-                        if (gb.getItemStack().getItem() instanceof AirBlock) continue;
-                        Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
-                        vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
-                        RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
-                        rc.addBlock(rb);
-                    }
-                    clientChunk.setUpdatedHappened(false);
-                    rc.regenerateChunk(getTextureAtlas());
-                    getChunkHandler().addChunk(rc);
-                    try {
-                        renderedChunks.insert(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ(), new RenderedChunk(rc.getId(), loadedChunk.getLocation()));
-                    } catch (OutOfBoundsException e) {
-                        e.printStackTrace();
+                        for (GameBlock gb : loadedChunk.getGameBlocks()) {
+                            if (gb.getItemStack().getItem() instanceof AirBlock) continue;
+                            Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
+                            vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
+                            RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
+                            rc.addBlock(rb);
+                        }
+                        clientChunk.setUpdatedHappened(false);
+                        rc.regenerateChunkAsync(getTextureAtlas());
+                        getChunkHandler().addChunk(rc);
+                        try {
+                            if (!renderedChunks.find(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ()))
+                                renderedChunks.insert(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ(), new RenderedChunk(rc.getId(), loadedChunk.getLocation()));
+                        } catch (OutOfBoundsException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
 
-        }
+            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+
     }
 
     private void playerMovement() {
@@ -206,6 +216,8 @@ public class MainGameScene extends AbstractGameScene {
         Location l = player.getLocation();
         gameHandler.getCamera().setPosition(MoreUtils.locationToVector3(l).add(0, 2, 0));
         gameHandler.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
+
+
     }
 
     public Server getServer() {

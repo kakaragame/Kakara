@@ -38,13 +38,14 @@ public class IntegratedServer implements Server {
     private final List<Player> players = new ArrayList<>();
     private final File playersFolder;
     private boolean running = true;
+    private Player player;
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) {
         this.save = save;
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
         }
-        executorService = Executors.newFixedThreadPool(2);
+        executorService = Executors.newFixedThreadPool(5);
         playersFolder = new File(save.getSaveFolder(), "players");
         if (!playersFolder.exists()) playersFolder.mkdir();
         this.playerID = playerUUID;
@@ -63,7 +64,7 @@ public class IntegratedServer implements Server {
             //TODO cancel game load
         }
 
-        getOnlinePlayer(playerUUID);
+        player = getOnlinePlayer(playerUUID);
     }
 
     public Player getOnlinePlayer(UUID uuid) {
@@ -117,7 +118,7 @@ public class IntegratedServer implements Server {
     @Override
     public Player getPlayerEntity() {
 
-        return getOnlinePlayers().stream().filter(player -> player.getUUID().equals(playerID)).findFirst().orElseThrow(RuntimeException::new);
+        return player;
     }
 
     @Override
@@ -159,6 +160,8 @@ public class IntegratedServer implements Server {
                 }
             }
         }
+
+
     }
 
     @Override

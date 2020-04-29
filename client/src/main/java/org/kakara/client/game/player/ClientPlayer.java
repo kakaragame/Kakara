@@ -161,6 +161,6 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     }
 
     public void moveLocation(float x, float y) {
-        location.add(new Location(0, 0, 0, x, y));
+        location = location.add(new Location(0, 0, 0, x, y));
     }
 }

@@ -1,27 +1,34 @@
 package org.kakara.client;
 
 import org.kakara.client.scenes.MainMenuScene;
+import org.kakara.client.scenes.TestUIScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 
 import org.kakara.core.game.GameSettings;
+import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.serializers.messagepack.MPSerializerRegistrar;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.text.Font;
+import org.kakara.game.item.GameItemManager;
+import org.kakara.game.mod.KakaraMod;
+import org.kakara.game.resources.GameResourceManager;
+import org.kakara.game.world.GameWorldGenerationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class KakaraGame implements Game {
     private GameInstance kakaraCore;
     private GameHandler gameHandler;
     private Client client;
     public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
-    private Font font;
 
     public KakaraGame(GameSettings gameSettings) {
         if (gameSettings.isTestMode()) System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
@@ -48,7 +55,7 @@ public class KakaraGame implements Game {
         client.getEventManager().load(client);
         client.getModManager().load(client);
         MPSerializerRegistrar.load();
-    }
+}
 
     @Override
     public void start(GameHandler gameHandler) throws Exception {
@@ -58,16 +65,6 @@ public class KakaraGame implements Game {
         loadMusicManager();
         MainMenuScene mainMenuScene = new MainMenuScene(gameHandler, this);
         gameHandler.getSceneManager().setScene(mainMenuScene);
-    }
-
-    public Font getFont(Scene scene) {
-        try {
-            return new Font("Roboto-Regular", getGameHandler().getResourceManager().getResource("Roboto-Regular.ttf"), scene);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     private void loadMusicManager() {
@@ -103,10 +100,6 @@ public class KakaraGame implements Game {
         //TODO bring back mod unloading
         //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
-    }
-
-    public Font getFont() {
-        return getFont(gameHandler.getSceneManager().getCurrentScene());
     }
 
     public int getTPS() {

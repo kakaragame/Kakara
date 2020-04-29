@@ -1,7 +1,9 @@
 package org.kakara.client;
 
+import org.kakara.client.game.commands.ClientCommandManager;
 import org.kakara.core.GameInstance;
 import org.kakara.core.GameTypes;
+import org.kakara.core.command.CommandManager;
 import org.kakara.core.crafting.CraftingManager;
 import org.kakara.core.data.SerializerManager;
 import org.kakara.core.events.EventManager;
@@ -38,6 +40,7 @@ public class Client implements GameInstance {
     private WorldGenerationManager worldGenerationManager;
     private EventManager eventManager;
     private SerializerManager serializerManager;
+    private CommandManager commandManager;
 
     public Client(KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
@@ -49,6 +52,7 @@ public class Client implements GameInstance {
         resourceManager = new GameResourceManager();
         eventManager = new GameEventManager();
         serializerManager = new SerializerManager();
+        commandManager = new ClientCommandManager();
     }
 
     @Override
@@ -118,6 +122,11 @@ public class Client implements GameInstance {
     @Override
     public SerializerManager getSerializerManager() {
         return serializerManager;
+    }
+
+    @Override
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 
     @Override

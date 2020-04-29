@@ -44,6 +44,13 @@ public class MoreUtils {
         return map;
     }
 
+    public static String[] removeFirst(String[] strings) {
+        List<String> strings1 = new ArrayList<>();
+        for (int i = 1; i < strings.length; i++) {
+            strings1.add(strings[i]);
+        }
+        return strings1.toArray(String[]::new);
+    }
 
     public static int calculateSize(Map<ItemStack, List<Location>> gameBlockMutableIntMap) {
         int i = 0;

@@ -21,14 +21,22 @@ public class ClientCommandManager implements CommandManager {
         String[] split = command.split(" ");
         String commandValue = split[0];
 
-        Optional<Command> command1 = registeredCommands.stream().filter(command2 -> command2.command().equals(new NameKey(commandValue))).findFirst().
-                or(() -> registeredCommands.stream().filter(command2 -> command2.getAliases().contains(commandValue) || command2.command().getName().equals(commandValue)).findFirst());
+        Optional<Command> command1;
+        if (commandValue.contains(":")) {
+            command1 = registeredCommands.stream().filter(command2 -> command2.command().equals(new NameKey(commandValue))).findFirst();
+        } else {
+            command1 = registeredCommands.stream().filter(command2 -> command2.getAliases().contains(commandValue) || command2.command().getName().equals(commandValue)).findFirst();
+        }
+
+        String commandValueFinal = commandValue;
+        if (commandValueFinal.contains(":")) commandValueFinal = commandValueFinal.split(":")[1];
         if (command1.isPresent()) {
-            command1.get().execute(commandValue, MoreUtils.removeFirst(split), command, sender);
+            command1.get().execute(commandValueFinal, MoreUtils.removeFirst(split), command, sender);
         } else {
             //TODO pull from config
             sender.sendMessage("Command Not Found");
         }
+
     }
 
     @Override

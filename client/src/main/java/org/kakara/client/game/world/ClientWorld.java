@@ -17,11 +17,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientWorld implements World {
     private final File worldFolder;
     private final Octree<Chunk> loadedChunks;
-    private final Set<ChunkLocation> loadedChunkLocations = new HashSet<>();
+    private final List<ChunkLocation> loadedChunkLocations = new CopyOnWriteArrayList<>();
     private final UUID worldID;
     private final String name;
     private final ChunkGenerator chunkGenerator;
@@ -167,7 +169,11 @@ public class ClientWorld implements World {
     public List<Chunk> getLoadedChunksList() {
         List<Chunk> chunks = new ArrayList<>();
         for (ChunkLocation location : loadedChunkLocations) {
-            chunks.add(loadedChunks.get(location.getX(), location.getY(), location.getZ()));
+            if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
+                Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
+                if (chunk == null) continue;
+                chunks.add(chunk);
+            }
         }
 
         return chunks;

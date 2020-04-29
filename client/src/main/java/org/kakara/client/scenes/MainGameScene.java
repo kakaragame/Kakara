@@ -2,6 +2,7 @@ package org.kakara.client.scenes;
 
 import me.ryandw11.octree.Octree;
 import me.ryandw11.octree.OutOfBoundsException;
+import org.apache.commons.lang3.Validate;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.RenderedChunk;
@@ -38,6 +39,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -47,6 +50,7 @@ public class MainGameScene extends AbstractGameScene {
     private KakaraGame kakaraGame;
     private Server server;
     private Octree<RenderedChunk> renderedChunks;
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -128,9 +132,7 @@ public class MainGameScene extends AbstractGameScene {
 
 
     public RenderedChunk getChunk(Chunk chunk) {
-        if (!renderedChunks.find(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ())) {
-            return null;
-        }
+        Validate.notNull(chunk, "Chunk is null");
         return renderedChunks.get(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
     }
 
@@ -138,7 +140,7 @@ public class MainGameScene extends AbstractGameScene {
     public void update(float interval) {
         server.update();
         playerMovement();
-        new Thread(() -> {
+        executorService.submit(() -> {
             for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
                 RenderedChunk renderedChunk = getChunk(loadedChunk);
                 ClientChunk clientChunk = (ClientChunk) loadedChunk;
@@ -175,12 +177,7 @@ public class MainGameScene extends AbstractGameScene {
                 }
 
             }
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        });
 
 
     }

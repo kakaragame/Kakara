@@ -5,14 +5,19 @@ import org.kakara.client.scenes.MainGameScene;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.components.Text;
 import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
+
+import java.net.MalformedURLException;
 
 
 public class DebugModeCanvas extends ComponentCanvas {
@@ -30,22 +35,32 @@ public class DebugModeCanvas extends ComponentCanvas {
         gameScene = scene;
         this.kakaraGame = kakaraGame;
 
-        fps = new Text("60", kakaraGame.getFont());
+        ResourceManager resourceManager = GameHandler.getInstance().getResourceManager();
+
+        Font roboto;
+
+        try{
+            roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), scene);
+        }catch (MalformedURLException mue){
+            return;
+        }
+
+        fps = new Text("60", roboto);
         fps.position = new Vector2(0, 25);
         fps.setTextAlign(TextAlign.CENTER);
         fps.setLineWidth(100);
 
-        location = new Text("X: 0 Y: 0 Z: 0", kakaraGame.getFont());
+        location = new Text("X: 0 Y: 0 Z: 0", roboto);
         location.position = new Vector2(0, 75);
         location.setTextAlign(TextAlign.CENTER);
         location.setLineWidth(500);
 
-        chunkLocation = new Text("X: 0 Y: 0 Z: 0", kakaraGame.getFont());
+        chunkLocation = new Text("X: 0 Y: 0 Z: 0", roboto);
         chunkLocation.position = new Vector2(0, 124);
         chunkLocation.setTextAlign(TextAlign.CENTER);
         chunkLocation.setLineWidth(500);
 
-        numberOfChunksLoaded = new Text("0", kakaraGame.getFont());
+        numberOfChunksLoaded = new Text("0", roboto);
         numberOfChunksLoaded.position = new Vector2(0, 150);
         numberOfChunksLoaded.setTextAlign(TextAlign.CENTER);
         numberOfChunksLoaded.setLineWidth(500);

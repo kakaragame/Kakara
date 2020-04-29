@@ -86,7 +86,6 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void loadGraphics(GameHandler handler) {
-        getHUD().addFont(kakaraGame.getFont());
         getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
 
         var resourceManager = gameHandler.getResourceManager();

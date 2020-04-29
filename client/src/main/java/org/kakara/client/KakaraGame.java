@@ -1,6 +1,7 @@
 package org.kakara.client;
 
 import org.kakara.client.scenes.MainMenuScene;
+import org.kakara.client.scenes.TestUIScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 
@@ -28,7 +29,6 @@ public class KakaraGame implements Game {
     private GameHandler gameHandler;
     private Client client;
     public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
-    private Font font;
 
     public KakaraGame(GameSettings gameSettings) {
         if (gameSettings.isTestMode()) System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
@@ -63,18 +63,8 @@ public class KakaraGame implements Game {
         this.gameHandler = gameHandler;
         //Load MainMenuScene
         loadMusicManager();
-        loadFont();
-        MainMenuScene mainMenuScene = new MainMenuScene(gameHandler, this);
-        gameHandler.getSceneManager().setScene(mainMenuScene);
-    }
-
-    private void loadFont() {
-        try {
-            font = new Font("Roboto-Regular", getGameHandler().getResourceManager().getResource("Roboto-Regular.ttf"));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
+//        MainMenuScene mainMenuScene = new MainMenuScene(gameHandler, this);
+        gameHandler.getSceneManager().setScene(new TestUIScene(gameHandler));
     }
 
     private void loadMusicManager() {
@@ -110,10 +100,6 @@ public class KakaraGame implements Game {
         //TODO bring back mod unloading
         //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
-    }
-
-    public Font getFont() {
-        return font;
     }
 
     public int getTPS() {

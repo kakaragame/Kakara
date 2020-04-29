@@ -62,14 +62,13 @@ public class MainMenuScene extends AbstractMenuScene {
     @Override
     public void loadGraphics(GameHandler handler) {
         setBackground(loadBackgroundTexture());
-        getHUD().addFont(kakaraGame.getFont());
         ComponentCanvas componentCanvas = new ComponentCanvas(this);
         Texture texture = loadTextTexture();
         // Make some more text for the title screen.
-        Text title = new Text("Kakara", kakaraGame.getFont());
-        title.setSize(200);
-        title.setLineWidth(500);
-        title.setPosition(gameHandler.getWindow().getWidth() / 2 - 250, 200);
+//        Text title = new Text("Kakara", kakaraGame.getFont());
+//        title.setSize(200);
+//        title.setLineWidth(500);
+//        title.setPosition(gameHandler.getWindow().getWidth() / 2 - 250, 200);
 
 
         if (kakaraGame.getClient().getGameSettings().isTestMode()) {
@@ -112,14 +111,14 @@ public class MainMenuScene extends AbstractMenuScene {
                     }
                 }
             }, HUDClickEvent.class);
-            Text txt = new Text("Play Test!", kakaraGame.getFont());
-            txt.setPosition(0, playButton.scale.y / 2);
-            txt.setTextAlign(TextAlign.CENTER);
-            txt.setLineWidth(playButton.scale.x);
-            playButton.add(txt);
-            componentCanvas.add(playButton);
+//            Text txt = new Text("Play Test!", kakaraGame.getFont());
+//            txt.setPosition(0, playButton.scale.y / 2);
+//            txt.setTextAlign(TextAlign.CENTER);
+//            txt.setLineWidth(playButton.scale.x);
+//            playButton.add(txt);
+//            componentCanvas.add(playButton);
         }
-        componentCanvas.add(title);
+//        componentCanvas.add(title);
         add(componentCanvas);
     }
 

@@ -1,6 +1,7 @@
 package org.kakara.client.game.world;
 
 import com.google.gson.JsonObject;
+import me.ryandw11.octree.Octree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.core.Kakara;
@@ -19,7 +20,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ClientWorld implements World {
     private final File worldFolder;
-    private final List<Chunk> loadedChunks = new ArrayList<>();
+    private final Octree<Chunk> loadedChunks;
+    private final Set<ChunkLocation> loadedChunkLocations = new HashSet<>();
     private final UUID worldID;
     private final String name;
     private final ChunkGenerator chunkGenerator;
@@ -31,6 +33,7 @@ public class ClientWorld implements World {
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
         this.server = server;
+        loadedChunks = new Octree<>(-30000000, -100, -30000000, 30000000, 10000, 30000000);
 
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
@@ -103,13 +106,12 @@ public class ClientWorld implements World {
     public CompletableFuture<Chunk> getChunkAt(ChunkLocation location) {
         CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
         server.getExecutorService().submit(() -> {
-            for (int i = 0; i < loadedChunks.size(); i++) {
-                Chunk chunk = loadedChunks.get(i);
-                if (chunk.getLocation().equals(location)) {
-                    completableFuture.complete(chunk);
-                    return;
-                }
+
+            if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
+                completableFuture.complete(loadedChunks.get(location.getX(), location.getY(), location.getZ()));
+                return;
             }
+
 
             /*try {
                 Chunk chunk1 = clientChunkWriter.getChunk(location);
@@ -134,15 +136,15 @@ public class ClientWorld implements World {
 
     @Override
     public void unloadChunk(Chunk chunk) {
-        loadedChunks.removeIf(chunk1 -> chunk1.getLocation().equals(chunk.getLocation()));
-
+        loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
+        loadedChunkLocations.remove(chunk.getLocation());
     }
 
     @Override
     public void unloadChunks(List<Chunk> chunk) {
         for (Chunk chunk1 : chunk) {
-            System.out.println(chunk1.getLocation());
-            loadedChunks.removeIf(chunk2 -> chunk1.getLocation().equals(chunk1.getLocation()));
+            loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
+            loadedChunkLocations.remove(chunk1.getLocation());
         }
 
     }
@@ -152,17 +154,27 @@ public class ClientWorld implements World {
         if (isChunkLoaded(chunk.getLocation())) {
             return;
         }
-
-        loadedChunks.add(chunk);
+        loadedChunkLocations.add(chunk.getLocation());
+        loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
     }
 
     @Override
     public boolean isChunkLoaded(@NotNull ChunkLocation location) {
-        return loadedChunks.stream().anyMatch(chunk -> chunk.getLocation().equals(location));
+        return loadedChunks.find(location.getX(), location.getY(), location.getZ());
+    }
+
+
+    public List<Chunk> getLoadedChunksList() {
+        List<Chunk> chunks = new ArrayList<>();
+        for (ChunkLocation location : loadedChunkLocations) {
+            chunks.add(loadedChunks.get(location.getX(), location.getY(), location.getZ()));
+        }
+
+        return chunks;
     }
 
     @Override
     public @NotNull Chunk[] getLoadedChunks() {
-        return new ArrayList<>(loadedChunks).toArray(Chunk[]::new);
+        return getLoadedChunksList().toArray(Chunk[]::new);
     }
 }

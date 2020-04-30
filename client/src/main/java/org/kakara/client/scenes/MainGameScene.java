@@ -5,7 +5,6 @@ import me.ryandw11.octree.OutOfBoundsException;
 import org.apache.commons.lang3.Validate;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
-import org.kakara.client.RenderedChunk;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientChunk;
@@ -196,7 +195,6 @@ public class MainGameScene extends AbstractGameScene {
 
             }
         });
-
 
     }
 

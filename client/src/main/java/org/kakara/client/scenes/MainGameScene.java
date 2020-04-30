@@ -10,6 +10,8 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientChunk;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
+import org.kakara.client.scenes.uicomponenets.ChatComponent;
+import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
 import org.kakara.core.events.annotations.EventHandler;
 import org.kakara.core.resources.Resource;
@@ -30,7 +32,12 @@ import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
+import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.ui.properties.HorizontalCenterProperty;
+import org.kakara.engine.ui.properties.VerticalCenterProperty;
+import org.kakara.engine.ui.text.Font;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.items.blocks.AirBlock;
@@ -51,6 +58,7 @@ public class MainGameScene extends AbstractGameScene {
     private Server server;
     private Octree<RenderedChunk> renderedChunks;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ChatComponent chatComponent;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -85,7 +93,7 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void work() {
-        kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
+
     }
 
     @Override
@@ -94,7 +102,7 @@ public class MainGameScene extends AbstractGameScene {
         getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
 
         var resourceManager = gameHandler.getResourceManager();
-
+        kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
         List<RenderTexture> textures = new ArrayList<>();
 
         for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {
@@ -117,7 +125,26 @@ public class MainGameScene extends AbstractGameScene {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        playerMovement();
+        Font roboto = null;
+        try {
+            roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        ComponentCanvas main = new ComponentCanvas(this);
+        chatComponent = new ChatComponent(roboto, false, this);
+        chatComponent.addProperty(new HorizontalCenterProperty());
+        chatComponent.addProperty(new VerticalCenterProperty());
+        chatComponent.addUActionEvent(new ChatSendEvent() {
+            @Override
+            public void onChatSend(String message) {
+                if (message.startsWith("/")) {
+                    Kakara.getCommandManager().executeCommand(message.substring(1), server.getPlayerEntity());
+                }
+            }
+        }, ChatSendEvent.class);
+        main.add(chatComponent);
+        add(main);
 
     }
 
@@ -140,6 +167,13 @@ public class MainGameScene extends AbstractGameScene {
     public void update(float interval) {
         server.update();
         playerMovement();
+        if (chatComponent != null) {
+            if (server instanceof IntegratedServer) {
+                ((IntegratedServer) server).newMessages().forEach(s -> {
+                    chatComponent.addMessage(s);
+                });
+            }
+        }
         executorService.submit(() -> {
             for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
                 RenderedChunk renderedChunk = getChunk(loadedChunk);
@@ -207,9 +241,10 @@ public class MainGameScene extends AbstractGameScene {
         if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
             player.moveLocation(0, 1.1F, 0);
         }
+
         //I NEED HELP!
         MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
-        player.moveLocation((float) mi.getDeltaPosition().x(), (float) mi.getDeltaPosition().y());
+        player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
         Location l = player.getLocation();
         gameHandler.getCamera().setPosition(MoreUtils.locationToVector3(l).add(0, 2, 0));
         gameHandler.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));

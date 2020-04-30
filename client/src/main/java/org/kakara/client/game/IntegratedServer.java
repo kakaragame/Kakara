@@ -3,6 +3,8 @@ package org.kakara.client.game;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.KakaraGame;
+import org.kakara.client.game.commands.KillCommand;
+import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
@@ -16,6 +18,7 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
+import org.kakara.game.mod.KakaraMod;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ public class IntegratedServer implements Server {
     private final File playersFolder;
     private boolean running = true;
     private Player player;
+    private List<String> messages = new ArrayList<>();
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) {
         this.save = save;
@@ -65,6 +69,9 @@ public class IntegratedServer implements Server {
         }
 
         player = getOnlinePlayer(playerUUID);
+        //DONT EVER DO THIS
+        Kakara.getCommandManager().registerCommand(new StatusCommand(new KakaraMod(), this));
+        Kakara.getCommandManager().registerCommand(new KillCommand(new KakaraMod(), this));
     }
 
     public Player getOnlinePlayer(UUID uuid) {
@@ -182,5 +189,16 @@ public class IntegratedServer implements Server {
     public void close() {
         running = false;
 
+    }
+
+    public List<String> newMessages() {
+        List<String> clone = new ArrayList<>(messages);
+        messages = new ArrayList<>();
+        return clone;
+    }
+
+    @Override
+    public void renderMessageToConsole(String message) {
+        messages.add(message);
     }
 }

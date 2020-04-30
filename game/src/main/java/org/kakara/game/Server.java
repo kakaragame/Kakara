@@ -38,4 +38,6 @@ public interface Server {
     boolean isRunning();
 
     void close();
+
+    void renderMessageToConsole(String message);
 }

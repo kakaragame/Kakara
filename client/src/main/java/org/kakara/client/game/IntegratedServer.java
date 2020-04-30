@@ -2,6 +2,7 @@ package org.kakara.client.game;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
+import org.kakara.client.ChunkCleaner;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.game.commands.KillCommand;
 import org.kakara.client.game.commands.StatusCommand;
@@ -43,6 +44,7 @@ public class IntegratedServer implements Server {
     private boolean running = true;
     private Player player;
     private List<String> messages = new ArrayList<>();
+    private ChunkCleaner chunkCleaner;
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) {
         this.save = save;
@@ -67,7 +69,8 @@ public class IntegratedServer implements Server {
             LOGGER.error("Unable to load worlds", e);
             //TODO cancel game load
         }
-
+        chunkCleaner = new ChunkCleaner(this);
+        chunkCleaner.start();
         player = getOnlinePlayer(playerUUID);
         //DONT EVER DO THIS
         Kakara.getCommandManager().registerCommand(new StatusCommand(new KakaraMod(), this));

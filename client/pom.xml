@@ -189,7 +189,7 @@
         <dependency>
             <groupId>org.kakara</groupId>
             <artifactId>engine</artifactId>
-            <version>1.0-SNAPSHOT-pool</version>
+            <version>1.0-SNAPSHOT-pool-bufferop</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

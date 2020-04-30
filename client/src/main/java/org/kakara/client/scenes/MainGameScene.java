@@ -57,7 +57,6 @@ public class MainGameScene extends AbstractGameScene {
     private boolean debugMode = false;
     private KakaraGame kakaraGame;
     private Server server;
-    private Octree<RenderedChunk> renderedChunks;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ChatComponent chatComponent;
 
@@ -66,11 +65,6 @@ public class MainGameScene extends AbstractGameScene {
         setCurserStatus(false);
         this.server = server;
         this.kakaraGame = kakaraGame;
-        try {
-            renderedChunks = new Octree<>(-30000000, -100, -30000000, 30000000, 10000, 30000000);
-        } catch (OutOfBoundsException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -159,11 +153,6 @@ public class MainGameScene extends AbstractGameScene {
     }
 
 
-    public RenderedChunk getChunk(Chunk chunk) {
-        Validate.notNull(chunk, "Chunk is null");
-        return renderedChunks.get(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
-    }
-
     @Override
     public void update(float interval) {
         server.update();
@@ -177,16 +166,15 @@ public class MainGameScene extends AbstractGameScene {
         }
         executorService.submit(() -> {
             for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
-                RenderedChunk renderedChunk = getChunk(loadedChunk);
                 ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
                 if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                    if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
-                    renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
+                    if (clientChunk.getRenderChunkID().isPresent())
+                        getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
                 }
-                if (renderedChunk == null || clientChunk.isUpdatedHappened()) {
-                    if (renderedChunk != null) getChunkHandler().removeChunk(renderedChunk.getRenderChunkID());
-                    renderedChunks.remove(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ());
+                if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
+                    if (clientChunk.getRenderChunkID().isPresent())
+                        getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
                     if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
                         ChunkLocation cb = loadedChunk.getLocation();
                         RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
@@ -202,12 +190,7 @@ public class MainGameScene extends AbstractGameScene {
                         clientChunk.setUpdatedHappened(false);
                         rc.regenerateChunkAsync(getTextureAtlas());
                         getChunkHandler().addChunk(rc);
-                        try {
-                            if (!renderedChunks.find(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ()))
-                                renderedChunks.insert(loadedChunk.getLocation().getX(), loadedChunk.getLocation().getY(), loadedChunk.getLocation().getZ(), new RenderedChunk(rc.getId(), loadedChunk.getLocation()));
-                        } catch (OutOfBoundsException e) {
-                            e.printStackTrace();
-                        }
+                        clientChunk.setRenderChunkID(rc.getId());
                     }
                 }
 

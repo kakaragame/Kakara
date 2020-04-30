@@ -143,7 +143,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        //TODO send message to player console
+        getServer().renderMessageToConsole(message);
     }
 
     @Override

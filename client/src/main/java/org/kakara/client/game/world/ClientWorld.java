@@ -2,6 +2,7 @@ package org.kakara.client.game.world;
 
 import com.google.gson.JsonObject;
 import me.ryandw11.octree.Octree;
+import me.ryandw11.octree.PointExistsException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.core.Kakara;
@@ -17,11 +18,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientWorld implements World {
     private final File worldFolder;
     private final Octree<Chunk> loadedChunks;
-    private final Set<ChunkLocation> loadedChunkLocations = new HashSet<>();
+    private final List<ChunkLocation> loadedChunkLocations = new CopyOnWriteArrayList<>();
     private final UUID worldID;
     private final String name;
     private final ChunkGenerator chunkGenerator;
@@ -107,9 +110,13 @@ public class ClientWorld implements World {
         CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
         server.getExecutorService().submit(() -> {
 
-            if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
-                completableFuture.complete(loadedChunks.get(location.getX(), location.getY(), location.getZ()));
-                return;
+            try {
+                Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
+                if (chunk != null) {
+                    completableFuture.complete(chunk);
+                    return;
+                }
+            } catch (Exception e) {
             }
 
 
@@ -136,26 +143,27 @@ public class ClientWorld implements World {
 
     @Override
     public void unloadChunk(Chunk chunk) {
-        loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
         loadedChunkLocations.remove(chunk.getLocation());
+        loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
     }
 
     @Override
     public void unloadChunks(List<Chunk> chunk) {
         for (Chunk chunk1 : chunk) {
-            loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
             loadedChunkLocations.remove(chunk1.getLocation());
+            loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
         }
 
     }
 
     @Override
     public void loadChunk(@NotNull Chunk chunk) {
-        if (isChunkLoaded(chunk.getLocation())) {
-            return;
+        try {
+            loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
+            loadedChunkLocations.add(chunk.getLocation());
+        } catch (PointExistsException ignored) {
+
         }
-        loadedChunkLocations.add(chunk.getLocation());
-        loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
     }
 
     @Override
@@ -167,7 +175,14 @@ public class ClientWorld implements World {
     public List<Chunk> getLoadedChunksList() {
         List<Chunk> chunks = new ArrayList<>();
         for (ChunkLocation location : loadedChunkLocations) {
-            chunks.add(loadedChunks.get(location.getX(), location.getY(), location.getZ()));
+            //if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
+            try {
+                Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
+                if (chunk == null) continue;
+                chunks.add(chunk);
+            } catch (PointExistsException | NullPointerException ignored) {
+            }
+            //}
         }
 
         return chunks;

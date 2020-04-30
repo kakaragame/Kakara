@@ -86,5 +86,7 @@ public class ClientOfflinePlayer implements OfflinePlayer {
     public void ban(long duration, @NotNull TimeUnit timeUnit, @Nullable String reason) {
     }
 
-
+    public Server getServer() {
+        return server;
+    }
 }

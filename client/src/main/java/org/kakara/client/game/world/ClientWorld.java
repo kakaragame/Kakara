@@ -110,9 +110,13 @@ public class ClientWorld implements World {
         CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
         server.getExecutorService().submit(() -> {
 
-            if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
-                completableFuture.complete(loadedChunks.get(location.getX(), location.getY(), location.getZ()));
-                return;
+            try {
+                Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
+                if (chunk != null) {
+                    completableFuture.complete(chunk);
+                    return;
+                }
+            } catch (Exception e) {
             }
 
 
@@ -154,11 +158,12 @@ public class ClientWorld implements World {
 
     @Override
     public void loadChunk(@NotNull Chunk chunk) {
-        if (isChunkLoaded(chunk.getLocation())) {
-            return;
+        try {
+            loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
+            loadedChunkLocations.add(chunk.getLocation());
+        } catch (PointExistsException ignored) {
+
         }
-        loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
-        loadedChunkLocations.add(chunk.getLocation());
     }
 
     @Override

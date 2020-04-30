@@ -18,5 +18,6 @@ public class StatusCommand extends ModCommand {
     public void execute(String command, String[] arguments, String fullCommand, CommandSender executor) {
         executor.sendMessage("Status");
         executor.sendMessage("Number of Chunks Loaded: "+ server.getPlayerEntity().getLocation().getWorld().getLoadedChunks().length);
+        executor.sendMessage("Loc: "+ server.getPlayerEntity().getLocation().toString());
     }
 }

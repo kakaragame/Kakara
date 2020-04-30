@@ -24,6 +24,7 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
+import org.kakara.engine.item.SkyBox;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.TextureCache;
@@ -121,7 +122,7 @@ public class MainGameScene extends AbstractGameScene {
         TextureAtlas atlas = new TextureAtlas(textures, file.getAbsolutePath(), this);
         setTextureAtlas(atlas);
         try {
-            //setSkyBox(new SkyBox(loadSkyBoxTexture(), true));
+            setSkyBox(new SkyBox(loadSkyBoxTexture(), true));
         } catch (Exception e) {
             e.printStackTrace();
         }

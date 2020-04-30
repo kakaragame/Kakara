@@ -1,8 +1,5 @@
 package org.kakara.client.scenes;
 
-import me.ryandw11.octree.Octree;
-import me.ryandw11.octree.OutOfBoundsException;
-import org.apache.commons.lang3.Validate;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
@@ -20,19 +17,19 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
-import org.kakara.engine.item.SkyBox;
-import org.kakara.engine.item.Texture;
+import org.kakara.engine.item.*;
 import org.kakara.engine.math.Vector3;
+import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.models.TextureCache;
 import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
-import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.properties.HorizontalCenterProperty;
@@ -46,9 +43,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -139,7 +139,19 @@ public class MainGameScene extends AbstractGameScene {
         }, ChatSendEvent.class);
         main.add(chatComponent);
         add(main);
-
+        try {
+            Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
+            MeshGameItem object = new MeshGameItem(mainPlayer);
+            object.setPosition((float) server.getPlayerEntity().getLocation().getX(), (float) server.getPlayerEntity().getLocation().getY(), (float) server.getPlayerEntity().getLocation().getZ());
+            object.setScale(0.3f);
+            object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
+            object.getCollider().setUseGravity(true).setTrigger(false);
+            ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+            getItemHandler().addItem(object);
+            ((ClientPlayer) server.getPlayerEntity()).setGameItemID(object.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private Texture loadSkyBoxTexture() {
@@ -203,35 +215,52 @@ public class MainGameScene extends AbstractGameScene {
         if (debugMode) {
             DebugModeCanvas.getInstance(kakaraGame, this).update();
         }
+
         ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
-        KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
-        if (ki.isKeyPressed(GLFW_KEY_W)) {
-            player.moveLocation(0, 0, -1);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_S)) {
-            player.moveLocation(0, 0, 1);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_A)) {
-            player.moveLocation(-1, 0, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_D)) {
-            player.moveLocation(1, 0, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-            player.moveLocation(0, -1, 0);
-        }
-        if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
-            player.moveLocation(0, 1.1F, 0);
-        }
 
-        //I NEED HELP!
-        MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
-        player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
-        Location l = player.getLocation();
-        gameHandler.getCamera().setPosition(MoreUtils.locationToVector3(l).add(0, 2, 0));
-        gameHandler.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
+        player.getGameItemID().ifPresent(uuid -> {
+            getItemByID(uuid).ifPresent((gameItem) -> {
+                MeshGameItem item = (MeshGameItem) gameItem;
+                KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
+                if (ki.isKeyPressed(GLFW_KEY_W)) {
+                    item.movePosition(0, 0, -1);
+                }
+                if (ki.isKeyPressed(GLFW_KEY_S)) {
+                    item.movePosition(0, 0, 1);
+                }
+                if (ki.isKeyPressed(GLFW_KEY_A)) {
+                    item.movePosition(-1, 0, 0);
+                }
+                if (ki.isKeyPressed(GLFW_KEY_D)) {
+                    item.movePosition(1, 0, 0);
+                }
+                if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+                    item.movePosition(0, -1, 0);
+                }
+                if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
+                    item.movePosition(0, 1.1F, 0);
+                }
+                Location location = player.getLocation();
+                location.setX(item.getPosition().x);
+                location.setY(item.getPosition().y);
+                location.setZ(item.getPosition().z);
+                player.setLocation(location);
+                //I NEED HELP!
+                MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
+                player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
+                gameHandler.getCamera().setPosition(MoreUtils.locationToVector3(location).add(0, 2, 0));
+                Location l = player.getLocation();
+                gameHandler.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
 
+            });
 
+        });
+    }
+
+    private Optional<GameItem> getItemByID(UUID uuid) {
+        AtomicReference<GameItem> gameItemA = new AtomicReference<>();
+        getItemHandler().getNonInstancedMeshMap().forEach((mesh, gameItems) -> gameItems.stream().filter(gameItem -> gameItem.getId().equals(uuid)).findFirst().ifPresent(gameItemA::set));
+        return Optional.ofNullable(gameItemA.get());
     }
 
     public Server getServer() {

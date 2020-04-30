@@ -53,7 +53,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MainGameScene extends AbstractGameScene {
-    private boolean debugMode = false;
+    private boolean debugMode = true;
     private KakaraGame kakaraGame;
     private Server server;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();

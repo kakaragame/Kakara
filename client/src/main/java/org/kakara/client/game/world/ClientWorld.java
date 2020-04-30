@@ -2,6 +2,7 @@ package org.kakara.client.game.world;
 
 import com.google.gson.JsonObject;
 import me.ryandw11.octree.Octree;
+import me.ryandw11.octree.PointExistsException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.core.Kakara;
@@ -138,15 +139,15 @@ public class ClientWorld implements World {
 
     @Override
     public void unloadChunk(Chunk chunk) {
-        loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
         loadedChunkLocations.remove(chunk.getLocation());
+        loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
     }
 
     @Override
     public void unloadChunks(List<Chunk> chunk) {
         for (Chunk chunk1 : chunk) {
-            loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
             loadedChunkLocations.remove(chunk1.getLocation());
+            loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
         }
 
     }
@@ -156,8 +157,8 @@ public class ClientWorld implements World {
         if (isChunkLoaded(chunk.getLocation())) {
             return;
         }
-        loadedChunkLocations.add(chunk.getLocation());
         loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
+        loadedChunkLocations.add(chunk.getLocation());
     }
 
     @Override
@@ -169,11 +170,14 @@ public class ClientWorld implements World {
     public List<Chunk> getLoadedChunksList() {
         List<Chunk> chunks = new ArrayList<>();
         for (ChunkLocation location : loadedChunkLocations) {
-            if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
+            //if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
+            try {
                 Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
                 if (chunk == null) continue;
                 chunks.add(chunk);
+            } catch (PointExistsException | NullPointerException ignored) {
             }
+            //}
         }
 
         return chunks;

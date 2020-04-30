@@ -86,7 +86,7 @@ public class IntegratedServer implements Server {
         }
         try {
             JsonObject jsonObject = Utils.getGson().fromJson(new FileReader(playerFile), JsonObject.class);
-            ClientPlayer player = new ClientPlayer(jsonObject, new Location(save.getDefaultWorld(), 500, 400, 500), this);
+            ClientPlayer player = new ClientPlayer(jsonObject, new Location(save.getDefaultWorld(), 500, 80, 500), this);
             players.add(player);
             return player;
         } catch (FileNotFoundException e) {

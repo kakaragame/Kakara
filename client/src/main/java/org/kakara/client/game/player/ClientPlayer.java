@@ -18,7 +18,9 @@ import org.kakara.core.world.Location;
 import org.kakara.engine.math.Vector3;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class ClientPlayer extends ClientOfflinePlayer implements Player {
@@ -31,6 +33,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     private String displayName = getName();
     private short health = 20;
     private short hunger = 20;
+    private UUID gameItemID;
 
     public ClientPlayer(JsonObject jsonObject, @NotNull Location location, IntegratedServer integratedServer) {
         super(jsonObject, integratedServer);
@@ -162,5 +165,17 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     public void moveLocation(float x, float y) {
         location = location.add(new Location(0, 0, 0, x, y));
+    }
+
+    public Optional<UUID> getGameItemID() {
+        return Optional.ofNullable(gameItemID);
+    }
+
+    public void setGameItemID(UUID gameItemID) {
+        this.gameItemID = gameItemID;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

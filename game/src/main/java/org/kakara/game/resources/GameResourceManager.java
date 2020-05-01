@@ -30,7 +30,6 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public List<Resource> getAllTextures(TextureResolution textureResolution) {
-        System.out.println("textureResources.size() = " + textureResources.size());
         List<Resource> myTextureResources = new ArrayList<>();
         for (Map.Entry<Mod, List<String>> modListEntry : textureResources.entrySet()) {
             for (String s : modListEntry.getValue()) {
@@ -63,7 +62,6 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public void registerTexture(String s, TextureResolution i, Mod mod) {
-        System.out.println("s = " + s);
         File directory = new File(getModDir(mod), "texture" + File.separator + String.valueOf(i.getResolution()));
         directory.mkdirs();
         String path = BASE_PATH + "texture/" + i.getResolution() + "/" + s;
@@ -99,7 +97,6 @@ public class GameResourceManager implements ResourceManager {
     @Override
     public Resource getTexture(String s, TextureResolution i, Mod mod) {
         String path = mod.getName().toLowerCase() + "/texture/" + i.getResolution() + "/" + s;
-        System.out.println(path);
         File directory = new File(resourceDirectory, correctPath(path));
         if (!directory.exists()) {
             if (i == TextureResolution._4) {

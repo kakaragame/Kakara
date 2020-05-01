@@ -1,5 +1,9 @@
 package org.kakara.client.scenes;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
@@ -41,10 +45,8 @@ import org.kakara.game.items.blocks.AirBlock;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,12 +60,19 @@ public class MainGameScene extends AbstractGameScene {
     private Server server;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ChatComponent chatComponent;
+    private LoadingCache<String, RenderTexture> renderTextureCache;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
         setCurserStatus(false);
         this.server = server;
         this.kakaraGame = kakaraGame;
+        renderTextureCache = CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<String, RenderTexture>() {
+            @Override
+            public RenderTexture load(String s) throws Exception {
+                return getResource(s);
+            }
+        });
     }
 
 
@@ -195,7 +204,13 @@ public class MainGameScene extends AbstractGameScene {
                             if (gb.getItemStack().getItem() instanceof AirBlock) continue;
                             Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
                             vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
-                            RenderBlock rb = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(ThreadLocalRandom.current().nextInt(0, 3)), vector3);
+                            RenderBlock rb = null;
+                            try {
+                                rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath()), vector3);
+                            } catch (RuntimeException | ExecutionException e) {
+                                e.printStackTrace();
+                                continue;
+                            }
                             rc.addBlock(rb);
                         }
                         clientChunk.setUpdatedHappened(false);
@@ -208,6 +223,12 @@ public class MainGameScene extends AbstractGameScene {
             }
         });
 
+    }
+
+    private RenderTexture getResource(String texture) {
+        return getTextureAtlas().getTextures().stream().filter(renderTexture -> renderTexture.getResource().getOriginalPath().equals(texture)).findFirst().orElseThrow(() -> {
+            return new RuntimeException("Unable to find " + texture);
+        });
     }
 
     private void playerMovement() {

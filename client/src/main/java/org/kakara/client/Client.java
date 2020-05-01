@@ -62,10 +62,6 @@ public class Client implements GameInstance {
 
     @Override
     public ItemStack createItemStack(Item item) {
-
-        if (item instanceof CustomStackable) {
-            return ((CustomStackable) item).createItemStack();
-        }
         return new GameItemStack(1, item);
     }
 

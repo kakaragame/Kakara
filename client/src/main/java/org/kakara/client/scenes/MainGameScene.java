@@ -245,32 +245,27 @@ public class MainGameScene extends AbstractGameScene {
             getItemByID(uuid).ifPresent((gameItem) -> {
                 MeshGameItem item = (MeshGameItem) gameItem;
                 Camera gameCamera = gameHandler.getCamera();
-                gameCamera.setPosition(item.getPosition().add(0, 2, 0));
-                Vector3 oldLocation = gameCamera.getPosition();
                 KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
                 if (ki.isKeyPressed(GLFW_KEY_W)) {
-                    gameCamera.movePosition(0, 0, -1);
+                    item.movePositionByCamera(0, 0, -1, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_S)) {
-                    gameCamera.movePosition(0, 0, 1);
+                    item.movePositionByCamera(0, 0, 1, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_A)) {
-                    gameCamera.movePosition(-1, 0, 0);
+                    item.movePositionByCamera(-1, 0, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_D)) {
-                    gameCamera.movePosition(1, 0, 0);
+                    item.movePositionByCamera(1, 0, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-                    gameCamera.movePosition(0, -1, 0);
+                    item.movePositionByCamera(0, -1, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
-                    gameCamera.movePosition(0, 1.1F, 0);
+                    item.movePositionByCamera(0, 1.1F, 0, gameCamera);
                 }
                 if(ki.isKeyPressed(GLFW_KEY_G))
                     item.getCollider().setUseGravity(true);
-                Vector3 newLocation = gameCamera.getPosition().clone();
-                gameCamera.setPosition(oldLocation);
-                item.setPosition(newLocation.subtract(0, 2,0));
                 Location location = player.getLocation();
                 location.setX(item.getPosition().x);
                 location.setY(item.getPosition().y);

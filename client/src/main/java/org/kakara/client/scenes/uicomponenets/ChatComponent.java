@@ -73,6 +73,10 @@ public class ChatComponent extends GeneralComponent {
 
         this.historyPanel = histroyArea;
 
+        this.historyPanel.setVisible(alwaysShowHistory);
+        this.historyRectangle.setVisible(alwaysShowHistory);
+
+
         GameHandler.getInstance().getEventManager().registerHandler(this, scene);
     }
 

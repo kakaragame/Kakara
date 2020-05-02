@@ -227,7 +227,7 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     private RenderTexture getResource(String texture) {
-        return getTextureAtlas().getTextures().stream().filter(renderTexture -> renderTexture.getResource().getOriginalPath().equals(GameResourceManager.correctPath(texture))).findFirst().orElseThrow(() -> {
+        return getTextureAtlas().getTextures().stream().filter(renderTexture -> GameResourceManager.correctPath(renderTexture.getResource().getOriginalPath()).equals(GameResourceManager.correctPath(texture))).findFirst().orElseThrow(() -> {
             return new RuntimeException("Unable to find " + GameResourceManager.correctPath(texture));
         });
     }

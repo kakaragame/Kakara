@@ -15,7 +15,7 @@ import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
-import org.kakara.core.events.annotations.EventHandler;
+import org.kakara.engine.events.EventHandler;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.Chunk;
@@ -25,10 +25,15 @@ import org.kakara.core.world.Location;
 import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
+import org.kakara.engine.collision.Collidable;
+import org.kakara.engine.collision.Collider;
 import org.kakara.engine.events.event.KeyPressEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.input.KeyInput;
+import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
+import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.models.TextureCache;
@@ -38,6 +43,7 @@ import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.properties.HorizontalCenterProperty;
 import org.kakara.engine.ui.properties.VerticalCenterProperty;
@@ -47,9 +53,11 @@ import org.kakara.game.Server;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
+import java.awt.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -91,7 +99,7 @@ public class MainGameScene extends AbstractGameScene {
                 DebugModeCanvas.getInstance(kakaraGame, this).add();
             }
         }
-        if (e.isKeyPressed(GLFW_KEY_ESCAPE)) {
+        if (e.isKeyPressed(GLFW_KEY_ESCAPE) && !chatComponent.isFocused()) {
             System.exit(1);
         }
     }
@@ -147,6 +155,12 @@ public class MainGameScene extends AbstractGameScene {
         chatComponent.addUActionEvent((ChatFocusEvent) () -> setCurserStatus(true), ChatFocusEvent.class);
         chatComponent.addUActionEvent((ChatBlurEvent) () -> setCurserStatus(false), ChatBlurEvent.class);
         main.add(chatComponent);
+
+        org.kakara.engine.ui.components.Rectangle indicator = new org.kakara.engine.ui.components.Rectangle(new Vector2(0, 0), new Vector2(5, 5), new RGBA(0, 255, 0, 1));
+        indicator.addProperty(new HorizontalCenterProperty());
+        indicator.addProperty(new VerticalCenterProperty());
+        main.add(indicator);
+
         add(main);
         try {
             Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
@@ -247,19 +261,19 @@ public class MainGameScene extends AbstractGameScene {
                 Camera gameCamera = gameHandler.getCamera();
                 KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
                 if (ki.isKeyPressed(GLFW_KEY_W)) {
-                    item.movePositionByCamera(0, 0, -1, gameCamera);
+                    item.movePositionByCamera(0, 0, -0.3f, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_S)) {
-                    item.movePositionByCamera(0, 0, 1, gameCamera);
+                    item.movePositionByCamera(0, 0, 0.3f, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_A)) {
-                    item.movePositionByCamera(-1, 0, 0, gameCamera);
+                    item.movePositionByCamera(-0.3f, 0, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_D)) {
-                    item.movePositionByCamera(1, 0, 0, gameCamera);
+                    item.movePositionByCamera(0.3f, 0, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-                    item.movePositionByCamera(0, -1, 0, gameCamera);
+                    item.movePositionByCamera(0, -0.3f, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
                     item.movePositionByCamera(0, 1.1F, 0, gameCamera);
@@ -281,6 +295,24 @@ public class MainGameScene extends AbstractGameScene {
             });
 
         });
+    }
+
+    /*
+
+        Block breaking code.
+        Does not do anything with the core code.
+     */
+    @EventHandler
+    public void onMousePress(MouseClickEvent evt){
+        if(evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()){
+            Collidable col = this.selectGameItems(20);
+            if(col instanceof RenderBlock){
+               RenderBlock rb = (RenderBlock) col;
+               RenderChunk parentChunk = rb.getParentChunk();
+               parentChunk.removeBlock(rb);
+               parentChunk.regenerateChunk(getTextureAtlas());
+            }
+        }
     }
 
     private Optional<GameItem> getItemByID(UUID uuid) {

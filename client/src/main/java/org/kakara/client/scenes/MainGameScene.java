@@ -11,6 +11,8 @@ import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientChunk;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.uicomponenets.ChatComponent;
+import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
+import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
 import org.kakara.core.events.annotations.EventHandler;
@@ -136,15 +138,14 @@ public class MainGameScene extends AbstractGameScene {
         }
         ComponentCanvas main = new ComponentCanvas(this);
         chatComponent = new ChatComponent(roboto, false, this);
-        chatComponent.setPosition(0, 150);
-        chatComponent.addUActionEvent(new ChatSendEvent() {
-            @Override
-            public void onChatSend(String message) {
-                if (message.startsWith("/")) {
-                    Kakara.getCommandManager().executeCommand(message.substring(1), server.getPlayerEntity());
-                }
+        chatComponent.setPosition(0, 170);
+        chatComponent.addUActionEvent((ChatSendEvent) message -> {
+            if (message.startsWith("/")) {
+                Kakara.getCommandManager().executeCommand(message.substring(1), server.getPlayerEntity());
             }
         }, ChatSendEvent.class);
+        chatComponent.addUActionEvent((ChatFocusEvent) () -> setCurserStatus(true), ChatFocusEvent.class);
+        chatComponent.addUActionEvent((ChatBlurEvent) () -> setCurserStatus(false), ChatBlurEvent.class);
         main.add(chatComponent);
         add(main);
         try {

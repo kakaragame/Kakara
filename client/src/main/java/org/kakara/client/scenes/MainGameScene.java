@@ -79,8 +79,6 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
-        System.out.println("PUSH");
-
         if (e.isKeyPressed(GLFW_KEY_F3)) {
             if (debugMode) {
                 debugMode = false;

@@ -15,7 +15,6 @@ import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
-import org.kakara.core.events.annotations.EventHandler;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.Chunk;
@@ -25,6 +24,7 @@ import org.kakara.core.world.Location;
 import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
+import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
@@ -78,7 +78,6 @@ public class MainGameScene extends AbstractGameScene {
             }
         });
     }
-
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {

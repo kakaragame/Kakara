@@ -42,6 +42,7 @@ import org.kakara.engine.ui.text.Font;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.items.blocks.AirBlock;
+import org.kakara.game.resources.GameResourceManager;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -206,7 +207,7 @@ public class MainGameScene extends AbstractGameScene {
                             vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
                             RenderBlock rb = null;
                             try {
-                                rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath()), vector3);
+                                rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
                             } catch (RuntimeException | ExecutionException e) {
                                 e.printStackTrace();
                                 continue;

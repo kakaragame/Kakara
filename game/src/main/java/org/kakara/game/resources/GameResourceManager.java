@@ -115,7 +115,7 @@ public class GameResourceManager implements ResourceManager {
     }
 
     //Helper Methods
-    public String correctPath(String s) {
+    public static String correctPath(String s) {
         return s.replace("/", File.separator);
     }
 

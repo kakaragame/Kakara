@@ -20,6 +20,7 @@ import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
+import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.collision.BoxCollider;
 import org.kakara.engine.events.event.KeyPressEvent;
@@ -137,8 +138,7 @@ public class MainGameScene extends AbstractGameScene {
         }
         ComponentCanvas main = new ComponentCanvas(this);
         chatComponent = new ChatComponent(roboto, false, this);
-        chatComponent.addProperty(new HorizontalCenterProperty());
-        chatComponent.addProperty(new VerticalCenterProperty());
+        chatComponent.setPosition(0, 150);
         chatComponent.addUActionEvent(new ChatSendEvent() {
             @Override
             public void onChatSend(String message) {
@@ -155,7 +155,7 @@ public class MainGameScene extends AbstractGameScene {
             object.setPosition((float) server.getPlayerEntity().getLocation().getX(), (float) server.getPlayerEntity().getLocation().getY(), (float) server.getPlayerEntity().getLocation().getZ());
             object.setScale(0.3f);
             object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
-            object.getCollider().setUseGravity(true).setTrigger(false);
+            object.getCollider().setUseGravity(false).setTrigger(false);
             ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
             getItemHandler().addItem(object);
             ((ClientPlayer) server.getPlayerEntity()).setGameItemID(object.getId());
@@ -238,30 +238,40 @@ public class MainGameScene extends AbstractGameScene {
             DebugModeCanvas.getInstance(kakaraGame, this).update();
         }
 
+        if(chatComponent.isFocused()) return;
+
         ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
 
         player.getGameItemID().ifPresent(uuid -> {
             getItemByID(uuid).ifPresent((gameItem) -> {
                 MeshGameItem item = (MeshGameItem) gameItem;
+                Camera gameCamera = gameHandler.getCamera();
+                gameCamera.setPosition(item.getPosition().add(0, 2, 0));
+                Vector3 oldLocation = gameCamera.getPosition();
                 KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
                 if (ki.isKeyPressed(GLFW_KEY_W)) {
-                    item.movePosition(0, 0, -1);
+                    gameCamera.movePosition(0, 0, -1);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_S)) {
-                    item.movePosition(0, 0, 1);
+                    gameCamera.movePosition(0, 0, 1);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_A)) {
-                    item.movePosition(-1, 0, 0);
+                    gameCamera.movePosition(-1, 0, 0);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_D)) {
-                    item.movePosition(1, 0, 0);
+                    gameCamera.movePosition(1, 0, 0);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-                    item.movePosition(0, -1, 0);
+                    gameCamera.movePosition(0, -1, 0);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
-                    item.movePosition(0, 1.1F, 0);
+                    gameCamera.movePosition(0, 1.1F, 0);
                 }
+                if(ki.isKeyPressed(GLFW_KEY_G))
+                    item.getCollider().setUseGravity(true);
+                Vector3 newLocation = gameCamera.getPosition().clone();
+                gameCamera.setPosition(oldLocation);
+                item.setPosition(newLocation.subtract(0, 2,0));
                 Location location = player.getLocation();
                 location.setX(item.getPosition().x);
                 location.setY(item.getPosition().y);

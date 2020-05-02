@@ -64,17 +64,17 @@ public class MainGameScene extends AbstractGameScene {
     private Server server;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ChatComponent chatComponent;
-    private LoadingCache<String, RenderTexture> renderTextureCache;
+    private LoadingCache<ResourceObject, RenderTexture> renderTextureCache;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
         setCurserStatus(false);
         this.server = server;
         this.kakaraGame = kakaraGame;
-        renderTextureCache = CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<String, RenderTexture>() {
+        renderTextureCache = CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<ResourceObject, RenderTexture>() {
             @Override
-            public RenderTexture load(String s) throws Exception {
-                return getResource(s);
+            public RenderTexture load(ResourceObject s) throws Exception {
+                return getResource(Kakara.getResourceManager().getTexture(s.getResource(), TextureResolution._16, s.getMod()).getLocalPath());
             }
         });
     }
@@ -159,6 +159,7 @@ public class MainGameScene extends AbstractGameScene {
             getItemHandler().addItem(object);
             ((ClientPlayer) server.getPlayerEntity()).setGameItemID(object.getId());
         } catch (Exception e) {
+
             e.printStackTrace();
         }
     }
@@ -206,7 +207,7 @@ public class MainGameScene extends AbstractGameScene {
                             vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
                             RenderBlock rb = null;
                             try {
-                                rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
+                                rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(new ResourceObject(gb.getItemStack().getItem().getMod(), gb.getItemStack().getItem().getTexture())), vector3);
                             } catch (RuntimeException | ExecutionException e) {
                                 e.printStackTrace();
                                 continue;
@@ -237,7 +238,7 @@ public class MainGameScene extends AbstractGameScene {
             DebugModeCanvas.getInstance(kakaraGame, this).update();
         }
 
-        if(chatComponent.isFocused()) return;
+        if (chatComponent.isFocused()) return;
 
         ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
 
@@ -264,7 +265,7 @@ public class MainGameScene extends AbstractGameScene {
                 if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
                     item.movePositionByCamera(0, 1.1F, 0, gameCamera);
                 }
-                if(ki.isKeyPressed(GLFW_KEY_G))
+                if (ki.isKeyPressed(GLFW_KEY_G))
                     item.getCollider().setUseGravity(true);
                 Location location = player.getLocation();
                 location.setX(item.getPosition().x);

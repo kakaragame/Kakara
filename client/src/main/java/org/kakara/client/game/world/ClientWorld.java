@@ -36,7 +36,7 @@ public class ClientWorld implements World {
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
         this.server = server;
-        loadedChunks = new Octree<>(-30000000, -100, -30000000, 30000000, 10000, 30000000);
+        loadedChunks = new Octree<>(-10000000, -100, -10000000, 10000000, 10000, 10000000);
 
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));

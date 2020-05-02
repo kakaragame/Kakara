@@ -39,7 +39,7 @@ public class Main {
                     setTestMode(true).setAuthToken(properties.getProperty("auth.token", "")).createClientSettings();
 
         } else {
-            System.out.println("Regular Mode is currently unsupported.");
+            KakaraGame.LOGGER.error("Regular Mode is currently unsupported.");
             return;
         }
 

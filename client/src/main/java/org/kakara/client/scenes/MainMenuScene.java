@@ -131,7 +131,7 @@ public class MainMenuScene extends AbstractMenuScene {
 
         multiPlayer.addUActionEvent((HUDHoverEnterEvent) vector2 -> multiPlayer.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);
         multiPlayer.addUActionEvent((HUDHoverLeaveEvent) vector2 -> multiPlayer.setColor(new RGBA(255, 255, 255, 0.5f)), HUDHoverLeaveEvent.class);
-        multiPlayer.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> System.out.println("Coming Soon TM"), HUDClickEvent.class);
+        multiPlayer.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"), HUDClickEvent.class);
 
         componentCanvas.add(multiPlayer);
 
@@ -140,7 +140,7 @@ public class MainMenuScene extends AbstractMenuScene {
          */
         Texture settings = new Texture(resourceManager.getResource("kakara_settings_gear.png"), this);
         Sprite settingsGear = new Sprite(settings, new Vector2(1030, 670), new Vector2(60, 60));
-        settingsGear.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> System.out.println("Coming Soon TM"), HUDClickEvent.class);
+        settingsGear.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) ->KakaraGame.LOGGER.warn("Coming Soon TM"), HUDClickEvent.class);
         Rectangle settingsHolder = new Rectangle(new Vector2(1040, 680), new Vector2(60, 60), new RGBA(255, 255, 255, 0));
         settingsHolder.addUActionEvent((HUDHoverEnterEvent) vector2 -> settingsHolder.getColor().a = 0.3f, HUDHoverEnterEvent.class);
         settingsHolder.addUActionEvent((HUDHoverLeaveEvent) vector2 -> settingsHolder.getColor().a = 0, HUDHoverLeaveEvent.class);

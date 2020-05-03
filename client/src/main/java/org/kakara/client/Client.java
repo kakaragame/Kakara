@@ -9,6 +9,7 @@ import org.kakara.core.data.SerializerManager;
 import org.kakara.core.events.EventManager;
 import org.kakara.core.game.*;
 import org.kakara.core.game.entity.EntityManager;
+import org.kakara.core.key.KeyBindManager;
 import org.kakara.core.mod.ModManager;
 import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.player.OfflinePlayer;
@@ -92,6 +93,11 @@ public class Client implements GameInstance {
 
     @Override
     public WorldManager getWorldManager() {
+        return null;
+    }
+
+    @Override
+    public KeyBindManager getKeyBindManager() {
         return null;
     }
 

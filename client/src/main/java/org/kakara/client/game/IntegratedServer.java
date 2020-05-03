@@ -19,6 +19,7 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
+import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.mod.KakaraMod;
 
 import java.io.*;
@@ -45,6 +46,7 @@ public class IntegratedServer implements Server {
     private Player player;
     private List<String> messages = new ArrayList<>();
     private ChunkCleaner chunkCleaner;
+    private KakaraMod kakaraMod = new KakaraMod();
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) {
         this.save = save;
@@ -61,6 +63,7 @@ public class IntegratedServer implements Server {
         Kakara.getModManager().loadMods(modsToBeLoaded);
         Kakara.getModManager().loadStage(Kakara.getEventManager());
         Kakara.getModManager().loadStage(Kakara.getItemManager());
+        Kakara.getItemManager().registerItem(new AirBlock(kakaraMod));
         Kakara.getModManager().loadStage(Kakara.getWorldGenerationManager());
         LOGGER.info("Loading Worlds");
         try {

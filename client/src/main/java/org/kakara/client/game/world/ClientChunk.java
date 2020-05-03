@@ -1,11 +1,9 @@
 package org.kakara.client.game.world;
 
 import org.jetbrains.annotations.Nullable;
-import org.kakara.core.world.Chunk;
-import org.kakara.core.world.ChunkBase;
-import org.kakara.core.world.ChunkLocation;
-import org.kakara.core.world.GameBlock;
+import org.kakara.core.world.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +23,21 @@ public class ClientChunk implements Chunk {
     public ClientChunk(ChunkLocation chunkLocation, List<GameBlock> gameBlocks) {
         location = chunkLocation;
         gameBlockList = gameBlocks;
+    }
+
+    public void setGameBlock(GameBlock gameBlock) {
+        List<GameBlock> loop = new ArrayList<>(gameBlockList);
+        for (int i = 0; i < loop.size(); i++) {
+            if (loop.get(i).getLocation().equals(gameBlock.getLocation())) {
+                gameBlockList.set(i, gameBlock);
+                return;
+            }
+        }
+        gameBlockList.add(gameBlock);
+    }
+
+    public Optional<GameBlock> getGameBlock(Location location) {
+        return new ArrayList<>(gameBlockList).stream().filter(gameBlock -> gameBlock.getLocation().equals(location)).findFirst();
     }
 
     public Optional<UUID> getRenderChunkID() {

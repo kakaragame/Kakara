@@ -256,7 +256,7 @@ public class MainGameScene extends AbstractGameScene {
             DebugModeCanvas.getInstance(kakaraGame, this).update();
         }
 
-        if(chatComponent.isFocused()) return;
+        if (chatComponent.isFocused()) return;
 
         ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
 
@@ -283,7 +283,7 @@ public class MainGameScene extends AbstractGameScene {
                 if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
                     item.movePositionByCamera(0, 1.1F, 0, gameCamera);
                 }
-                if(ki.isKeyPressed(GLFW_KEY_G))
+                if (ki.isKeyPressed(GLFW_KEY_G))
                     item.getCollider().setUseGravity(true);
                 Location location = player.getLocation();
                 location.setX(item.getPosition().x);
@@ -308,18 +308,19 @@ public class MainGameScene extends AbstractGameScene {
         Does not do anything with the core code.
      */
     @EventHandler
-    public void onMousePress(MouseClickEvent evt){
-        if(evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()){
+    public void onMousePress(MouseClickEvent evt) {
+        if (evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20);
-            if(col instanceof RenderBlock){
-               RenderBlock rb = (RenderBlock) col;
-               RenderChunk parentChunk = rb.getParentChunk();
-               parentChunk.removeBlock(rb);
-               parentChunk.regenerateChunk(getTextureAtlas());
+            if (col instanceof RenderBlock) {
+                RenderBlock rb = (RenderBlock) col;
+                RenderChunk parentChunk = rb.getParentChunk();
+                parentChunk.removeBlock(rb);
+                parentChunk.regenerateChunk(getTextureAtlas());
+                server.getPlayerEntity().getLocation().getWorld().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem("Kakara:air")), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
             }
-        }else if(evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()){
+        } else if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20);
-            if(col instanceof RenderBlock){
+            if (col instanceof RenderBlock) {
                 RenderBlock rb = (RenderBlock) col;
                 RenderChunk parentChunk = rb.getParentChunk();
 
@@ -330,37 +331,37 @@ public class MainGameScene extends AbstractGameScene {
                 Vector3 closestValue = absoluteBlockPos.clone();
 
                 Vector3 front = absoluteBlockPos.add(1, 0, 0);
-                if(Intersection.intersect((int)front.x, (int)front.y,(int) front.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                if (Intersection.intersect((int) front.x, (int) front.y, (int) front.z, gameHandler.getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(1, 0, 0);
                 }
 
                 Vector3 back = absoluteBlockPos.add(-1, 0, 0);
-                if(Intersection.intersect((int)back.x, (int)back.y,(int) back.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                if (Intersection.intersect((int) back.x, (int) back.y, (int) back.z, gameHandler.getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(-1, 0, 0);
                 }
 
                 Vector3 left = absoluteBlockPos.add(0, 0, 1);
-                if(Intersection.intersect((int)left.x, (int)left.y,(int) left.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                if (Intersection.intersect((int) left.x, (int) left.y, (int) left.z, gameHandler.getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, 0, 1);
                 }
 
                 Vector3 right = absoluteBlockPos.add(0, 0, -1);
-                if(Intersection.intersect((int)right.x, (int)right.y,(int) right.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                if (Intersection.intersect((int) right.x, (int) right.y, (int) right.z, gameHandler.getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, 0, -1);
                 }
 
                 Vector3 up = absoluteBlockPos.add(0, 1, 0);
-                if(Intersection.intersect((int)up.x, (int)up.y,(int) up.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                if (Intersection.intersect((int) up.x, (int) up.y, (int) up.z, gameHandler.getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, 1, 0);
                 }
 
                 Vector3 down = absoluteBlockPos.add(0, -1, 0);
-                if(Intersection.intersect((int)down.x, (int)down.y,(int)down.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                if (Intersection.intersect((int) down.x, (int) down.y, (int) down.z, gameHandler.getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, -1, 0);
                 }
@@ -372,7 +373,7 @@ public class MainGameScene extends AbstractGameScene {
                     List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
                     RenderChunk desiredChunk = rcc.get(0);
                     Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
-                    if(!desiredChunk.getOctChunk().find((int)newBlockLoc.x,(int) newBlockLoc.y, (int)newBlockLoc.z)){
+                    if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
                         RenderBlock rbs = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(0), newBlockLoc);
                         desiredChunk.addBlock(rbs);
                         desiredChunk.regenerateChunkAsync(getTextureAtlas());
@@ -384,7 +385,7 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
-    public Collidable getSecondGameItem(float distance){
+    public Collidable getSecondGameItem(float distance) {
         Collidable selectedGameItem = null;
         float closestDistance = distance;
 
@@ -400,12 +401,12 @@ public class MainGameScene extends AbstractGameScene {
 
         Collidable previous = null;
 
-        for(Collidable collidable : gameHandler.getCollisionManager().getSelectionItems(getCamera().getPosition())){
+        for (Collidable collidable : gameHandler.getCollisionManager().getSelectionItems(getCamera().getPosition())) {
             collidable.setSelected(false);
             min.set(collidable.getColPosition().toJoml());
             max.set(collidable.getColPosition().toJoml());
-            min.add(-collidable.getColScale()/2, -collidable.getColScale()/2, -collidable.getColScale()/2);
-            max.add(collidable.getColScale()/2, collidable.getColScale()/2, collidable.getColScale()/2);
+            min.add(-collidable.getColScale() / 2, -collidable.getColScale() / 2, -collidable.getColScale() / 2);
+            max.add(collidable.getColScale() / 2, collidable.getColScale() / 2, collidable.getColScale() / 2);
             if (Intersectionf.intersectRayAab(getCamera().getPosition().toJoml(), dir, min, max, nearFar) && nearFar.x < closestDistance) {
                 closestDistance = nearFar.x;
                 previous = selectedGameItem;

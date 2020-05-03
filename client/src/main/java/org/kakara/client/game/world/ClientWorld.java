@@ -5,12 +5,14 @@ import me.ryandw11.octree.Octree;
 import me.ryandw11.octree.PointExistsException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kakara.client.Client;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.Block;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.world.*;
+import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 
 import java.io.File;
@@ -76,23 +78,35 @@ public class ClientWorld implements World {
     }
 
     @Override
-    public @NotNull GameBlock getBlockAt(int x, int y, int z) {
-        return null;
+    @NotNull
+    public Optional<GameBlock> getBlockAt(Location location) {
+        Chunk chunk = getChunkNow(GameUtils.getChunkLocation(location));
+        if (chunk instanceof ClientChunk) {
+            return ((ClientChunk) chunk).getGameBlock(location).or(() -> Optional.of(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem("kakara:air")))));
+        }
+        return Optional.empty();
     }
 
     @Override
-    public @NotNull GameBlock getBlockAt(Location location) {
-        return null;
+    @NotNull
+    public Optional<GameBlock> setBlock(@NotNull ItemStack itemStack, @NotNull Location location) {
+        Chunk chunk = getChunkNow(GameUtils.getChunkLocation(location));
+        if (chunk instanceof ClientChunk) {
+            GameBlock gameBlock = new GameBlock(location, itemStack);
+            ((ClientChunk) chunk).setGameBlock(gameBlock);
+        }
+        return Optional.empty();
     }
 
     @Override
-    public @NotNull GameBlock setBlock(@NotNull ItemStack itemStack, @NotNull Location location) {
-        return null;
+    public @NotNull Optional<GameBlock> getBlockAt(int x, int y, int z) {
+        return getBlockAt(new Location(this, x, y, z));
     }
 
+
     @Override
-    public @NotNull GameBlock setBlock(@Nullable Block block, @NotNull Location location) {
-        return null;
+    public @NotNull Optional<GameBlock> setBlock(@Nullable Block block, @NotNull Location location) {
+        return setBlock(Kakara.createItemStack(block), location);
     }
 
     @Override
@@ -105,19 +119,15 @@ public class ClientWorld implements World {
         this.worldSpawn = location;
     }
 
-    @Override
-    public CompletableFuture<Chunk> getChunkAt(ChunkLocation location) {
-        CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
-        server.getExecutorService().submit(() -> {
+    public Chunk getChunkNow(ChunkLocation location) {
 
-            try {
-                Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
-                if (chunk != null) {
-                    completableFuture.complete(chunk);
-                    return;
-                }
-            } catch (Exception e) {
+        try {
+            Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
+            if (chunk != null) {
+                return chunk;
             }
+        } catch (Exception e) {
+        }
 
 
             /*try {
@@ -131,11 +141,18 @@ public class ClientWorld implements World {
                 e.printStackTrace();
                 completableFuture.completeExceptionally(e);
             }*/
-            ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
-            base = chunkGenerator.generateChunk(seed, random, base);
-            Chunk chunk = new ClientChunk(base);
-            loadChunk(chunk);
-            completableFuture.complete(chunk);
+        ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
+        base = chunkGenerator.generateChunk(seed, random, base);
+        Chunk chunk = new ClientChunk(base);
+        loadChunk(chunk);
+        return chunk;
+    }
+
+    @Override
+    public CompletableFuture<Chunk> getChunkAt(ChunkLocation location) {
+        CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
+        server.getExecutorService().submit(() -> {
+            completableFuture.complete(getChunkNow(location));
         });
 
         return completableFuture;

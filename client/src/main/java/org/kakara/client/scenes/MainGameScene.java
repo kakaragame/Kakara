@@ -4,6 +4,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.joml.Intersectionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
@@ -33,6 +36,7 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
+import org.kakara.engine.math.Intersection;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
@@ -63,6 +67,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -312,7 +317,102 @@ public class MainGameScene extends AbstractGameScene {
                parentChunk.removeBlock(rb);
                parentChunk.regenerateChunk(getTextureAtlas());
             }
+        }else if(evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()){
+            Collidable col = this.selectGameItems(20);
+            if(col instanceof RenderBlock){
+                RenderBlock rb = (RenderBlock) col;
+                RenderChunk parentChunk = rb.getParentChunk();
+
+                Vector3 absoluteBlockPos = rb.getPosition().add(parentChunk.getPosition());
+                Vector2 result = new Vector2(0, 0);
+
+                float closestResult = 20;
+                Vector3 closestValue = absoluteBlockPos.clone();
+
+                Vector3 front = absoluteBlockPos.add(1, 0, 0);
+                if(Intersection.intersect((int)front.x, (int)front.y,(int) front.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                    closestResult = result.x;
+                    closestValue = absoluteBlockPos.add(1, 0, 0);
+                }
+
+                Vector3 back = absoluteBlockPos.add(-1, 0, 0);
+                if(Intersection.intersect((int)back.x, (int)back.y,(int) back.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                    closestResult = result.x;
+                    closestValue = absoluteBlockPos.add(-1, 0, 0);
+                }
+
+                Vector3 left = absoluteBlockPos.add(0, 0, 1);
+                if(Intersection.intersect((int)left.x, (int)left.y,(int) left.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                    closestResult = result.x;
+                    closestValue = absoluteBlockPos.add(0, 0, 1);
+                }
+
+                Vector3 right = absoluteBlockPos.add(0, 0, -1);
+                if(Intersection.intersect((int)right.x, (int)right.y,(int) right.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                    closestResult = result.x;
+                    closestValue = absoluteBlockPos.add(0, 0, -1);
+                }
+
+                Vector3 up = absoluteBlockPos.add(0, 1, 0);
+                if(Intersection.intersect((int)up.x, (int)up.y,(int) up.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                    closestResult = result.x;
+                    closestValue = absoluteBlockPos.add(0, 1, 0);
+                }
+
+                Vector3 down = absoluteBlockPos.add(0, -1, 0);
+                if(Intersection.intersect((int)down.x, (int)down.y,(int)down.z, gameHandler.getCamera(), result) && result.x < closestResult){
+                    closestResult = result.x;
+                    closestValue = absoluteBlockPos.add(0, -1, 0);
+                }
+
+                final Vector3 closValue = closestValue;
+                ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
+                server.getPlayerEntity().getLocation().getWorld().getChunkAt(chunkLoc).thenAccept((chunk) -> {
+                    ClientChunk cc = (ClientChunk) chunk;
+                    List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
+                    RenderChunk desiredChunk = rcc.get(0);
+                    Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
+                    if(!desiredChunk.getOctChunk().find((int)newBlockLoc.x,(int) newBlockLoc.y, (int)newBlockLoc.z)){
+                        RenderBlock rbs = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(0), newBlockLoc);
+                        desiredChunk.addBlock(rbs);
+                        desiredChunk.regenerateChunkAsync(getTextureAtlas());
+                    }
+                });
+
+            }
+
         }
+    }
+
+    public Collidable getSecondGameItem(float distance){
+        Collidable selectedGameItem = null;
+        float closestDistance = distance;
+
+        Vector3f dir = new Vector3f();
+
+        dir = getCamera().getViewMatrix().positiveZ(dir).negate();
+
+        Vector3f max = new Vector3f();
+        Vector3f min = new Vector3f();
+        Vector2f nearFar = new Vector2f();
+
+        System.out.print(dir);
+
+        Collidable previous = null;
+
+        for(Collidable collidable : gameHandler.getCollisionManager().getSelectionItems(getCamera().getPosition())){
+            collidable.setSelected(false);
+            min.set(collidable.getColPosition().toJoml());
+            max.set(collidable.getColPosition().toJoml());
+            min.add(-collidable.getColScale()/2, -collidable.getColScale()/2, -collidable.getColScale()/2);
+            max.add(collidable.getColScale()/2, collidable.getColScale()/2, collidable.getColScale()/2);
+            if (Intersectionf.intersectRayAab(getCamera().getPosition().toJoml(), dir, min, max, nearFar) && nearFar.x < closestDistance) {
+                closestDistance = nearFar.x;
+                previous = selectedGameItem;
+                selectedGameItem = collidable;
+            }
+        }
+        return previous;
     }
 
     private Optional<GameItem> getItemByID(UUID uuid) {

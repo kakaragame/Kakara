@@ -14,10 +14,12 @@ import org.kakara.core.game.ItemStack;
 import org.kakara.core.world.*;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
+import org.kakara.game.world.ChunkWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -34,6 +36,7 @@ public class ClientWorld implements World {
     private final Random random;
     private final Server server;
     private Location worldSpawn;
+    private ChunkWriter chunkWriter;
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
@@ -56,6 +59,7 @@ public class ClientWorld implements World {
         } catch (Exception e) {
             throw new WorldLoadException(e);
         }
+        chunkWriter = new ClientChunkWriter(this);
     }
 
     private JsonObject getSettings(File file) throws FileNotFoundException {
@@ -129,18 +133,12 @@ public class ClientWorld implements World {
         } catch (Exception e) {
         }
 
+        Chunk chunk1 = chunkWriter.getChunkByLocation(location);
+        if (chunk1 != null) {
+            loadChunk(chunk1);
+            return chunk1;
+        }
 
-            /*try {
-                Chunk chunk1 = clientChunkWriter.getChunk(location);
-                if (chunk1 != null) {
-                    loadChunk(chunk1);
-                    completableFuture.complete(chunk1);
-                    return;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                completableFuture.completeExceptionally(e);
-            }*/
         ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
         base = chunkGenerator.generateChunk(seed, random, base);
         Chunk chunk = new ClientChunk(base);
@@ -162,6 +160,7 @@ public class ClientWorld implements World {
     public void unloadChunk(Chunk chunk) {
         loadedChunkLocations.remove(chunk.getLocation());
         loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
+        chunkWriter.writeChunk(chunk);
     }
 
     @Override
@@ -170,6 +169,7 @@ public class ClientWorld implements World {
             loadedChunkLocations.remove(chunk1.getLocation());
             loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
         }
+        chunkWriter.writeChunks(chunk);
 
     }
 
@@ -212,5 +212,10 @@ public class ClientWorld implements World {
 
     public File getWorldFolder() {
         return worldFolder;
+    }
+
+    public void saveChunks(List<Chunk> chunksToSave) {
+        chunkWriter.writeChunks(chunksToSave);
+
     }
 }

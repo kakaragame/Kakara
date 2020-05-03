@@ -1,6 +1,8 @@
 package org.kakara.client.game.world;
 
 import org.kakara.core.Kakara;
+import org.kakara.core.exceptions.SaveLoadException;
+import org.kakara.core.utils.CoreFileUtils;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.world.ChunkWriter;
@@ -36,7 +38,9 @@ public class ClientChunkWriter implements ChunkWriter {
     @Override
     public Chunk getChunkByLocation(ChunkLocation chunkLocation) {
         try {
-            Path file = getChunkFile(chunkLocation).toPath();
+            File chunkFile = getChunkFile(chunkLocation);
+            if (!chunkFile.exists()) return null;
+            Path file = chunkFile.toPath();
             byte[] lines = Files.readAllBytes(file);
 
             List<Chunk> chunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
@@ -44,7 +48,7 @@ public class ClientChunkWriter implements ChunkWriter {
                 if (chunk.getLocation() == chunkLocation) return chunk;
             }
         } catch (IOException e) {
-            Kakara.LOGGER.error("Something bad happened with getting a chunk.");
+            Kakara.LOGGER.error("Something bad happened with getting a chunk.", e);
         }
 
         return null;
@@ -54,7 +58,9 @@ public class ClientChunkWriter implements ChunkWriter {
     public List<Chunk> getChunksByLocoation(List<ChunkLocation> locations) {
         Map<Path, List<ChunkLocation>> sortedLocations = new HashMap<>();
         for (ChunkLocation location : locations) {
-            Path path = getChunkFile(location).toPath();
+            File chunkFile = getChunkFile(location);
+            if (!chunkFile.exists()) continue;
+            Path path = chunkFile.toPath();
             List<ChunkLocation> current = sortedLocations.containsKey(path) ? sortedLocations.get(path) : new ArrayList<>();
             current.add(location);
 
@@ -73,7 +79,7 @@ public class ClientChunkWriter implements ChunkWriter {
                     }
                 }
             } catch (IOException e) {
-                Kakara.LOGGER.error("Something bad happened with getting a chunk.");
+                Kakara.LOGGER.error("Something bad happened with getting a chunk.", e);
             }
         });
 
@@ -83,7 +89,21 @@ public class ClientChunkWriter implements ChunkWriter {
     @Override
     public void writeChunk(Chunk chunk) {
         try {
-            Path file = getChunkFile(chunk.getLocation()).toPath();
+            File chunkFile = getChunkFile(chunk.getLocation());
+            if (chunkFile.exists()) {
+                try {
+                    CoreFileUtils.backupAndDelete(chunkFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    chunkFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            Path file = chunkFolder.toPath();
             byte[] lines = Files.readAllBytes(file);
 
             List<Chunk> chunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
@@ -102,7 +122,21 @@ public class ClientChunkWriter implements ChunkWriter {
     public void writeChunks(List<Chunk> chunks) {
         Map<Path, List<Chunk>> sortedChunks = new HashMap<>();
         for (Chunk chunk : chunks) {
-            Path path = getChunkFile(chunk.getLocation()).toPath();
+            File chunkFile = getChunkFile(chunk.getLocation());
+            if (chunkFile.exists()) {
+                try {
+                    CoreFileUtils.backupAndDelete(chunkFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    chunkFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            Path path = chunkFile.toPath();
             List<Chunk> current = sortedChunks.containsKey(path) ? sortedChunks.get(path) : new ArrayList<>();
             current.add(chunk);
 

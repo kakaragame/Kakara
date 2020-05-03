@@ -11,6 +11,7 @@ import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemManager;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.game.entity.EntityManager;
+import org.kakara.core.key.KeyBindManager;
 import org.kakara.core.mod.ModManager;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.resources.ResourceManager;
@@ -59,6 +60,11 @@ public class Server implements GameInstance {
 
     @Override
     public WorldManager getWorldManager() {
+        return null;
+    }
+
+    @Override
+    public KeyBindManager getKeyBindManager() {
         return null;
     }
 

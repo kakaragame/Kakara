@@ -92,7 +92,7 @@ public class ClientChunkWriter implements ChunkWriter {
             File chunkFile = getChunkFile(chunk.getLocation());
             if (chunkFile.exists()) {
                 try {
-                    CoreFileUtils.backupAndDelete(chunkFile);
+                    CoreFileUtils.backup(chunkFile);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -125,7 +125,7 @@ public class ClientChunkWriter implements ChunkWriter {
             File chunkFile = getChunkFile(chunk.getLocation());
             if (chunkFile.exists()) {
                 try {
-                    CoreFileUtils.backupAndDelete(chunkFile);
+                    CoreFileUtils.backup(chunkFile);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

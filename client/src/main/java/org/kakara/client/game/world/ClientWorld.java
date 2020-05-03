@@ -214,6 +214,10 @@ public class ClientWorld implements World {
         return worldFolder;
     }
 
+    public void saveChunks() {
+        saveChunks(getLoadedChunksList());
+    }
+
     public void saveChunks(List<Chunk> chunksToSave) {
         chunkWriter.writeChunks(chunksToSave);
 

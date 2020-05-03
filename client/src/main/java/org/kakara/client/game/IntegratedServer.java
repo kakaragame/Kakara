@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.kakara.client.ChunkCleaner;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.game.commands.KillCommand;
+import org.kakara.client.game.commands.SaveChunk;
 import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.core.Kakara;
@@ -78,6 +79,7 @@ public class IntegratedServer implements Server {
         //DONT EVER DO THIS
         Kakara.getCommandManager().registerCommand(new StatusCommand(kakaraMod, this));
         Kakara.getCommandManager().registerCommand(new KillCommand(kakaraMod, this));
+        Kakara.getCommandManager().registerCommand(new SaveChunk(kakaraMod, this));
     }
 
     public Player getOnlinePlayer(UUID uuid) {

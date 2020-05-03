@@ -173,6 +173,7 @@ public class MainGameScene extends AbstractGameScene {
             object.setPosition((float) server.getPlayerEntity().getLocation().getX(), (float) server.getPlayerEntity().getLocation().getY(), (float) server.getPlayerEntity().getLocation().getZ());
             object.setScale(0.3f);
             object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
+            object.getCollider().setGravity(.10f);
             object.getCollider().setUseGravity(false).setTrigger(false);
             ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
             getItemHandler().addItem(object);
@@ -281,7 +282,7 @@ public class MainGameScene extends AbstractGameScene {
                     item.movePositionByCamera(0, -0.3f, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
-                    item.movePositionByCamera(0, 1.1F, 0, gameCamera);
+                    item.movePositionByCamera(0, 0.5F, 0, gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_G))
                     item.getCollider().setUseGravity(true);

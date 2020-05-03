@@ -76,8 +76,8 @@ public class IntegratedServer implements Server {
         chunkCleaner.start();
         player = getOnlinePlayer(playerUUID);
         //DONT EVER DO THIS
-        Kakara.getCommandManager().registerCommand(new StatusCommand(new KakaraMod(), this));
-        Kakara.getCommandManager().registerCommand(new KillCommand(new KakaraMod(), this));
+        Kakara.getCommandManager().registerCommand(new StatusCommand(kakaraMod, this));
+        Kakara.getCommandManager().registerCommand(new KillCommand(kakaraMod, this));
     }
 
     public Player getOnlinePlayer(UUID uuid) {

@@ -209,4 +209,8 @@ public class ClientWorld implements World {
     public @NotNull Chunk[] getLoadedChunks() {
         return getLoadedChunksList().toArray(Chunk[]::new);
     }
+
+    public File getWorldFolder() {
+        return worldFolder;
+    }
 }

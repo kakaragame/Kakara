@@ -6,6 +6,7 @@ import org.kakara.core.utils.CoreFileUtils;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.world.ChunkWriter;
+import org.msgpack.core.MessageInsufficientBufferException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -107,6 +108,8 @@ public class ClientChunkWriter implements ChunkWriter {
             byte[] lines = Files.readAllBytes(file);
 
             List<Chunk> chunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
+            if (chunks == null) chunks = new ArrayList<>();
+
             chunks.remove(chunk);
             chunks.add(chunk);
 
@@ -146,7 +149,12 @@ public class ClientChunkWriter implements ChunkWriter {
         sortedChunks.forEach((file, currentChunks) -> {
             try {
                 byte[] lines = Files.readAllBytes(file);
-                List<Chunk> fileChunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
+                List<Chunk> fileChunks;
+                try {
+                    fileChunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
+                } catch (MessageInsufficientBufferException e) {
+                    fileChunks = new ArrayList<>();
+                }
 
                 for (Chunk currentChunk : currentChunks) {
                     fileChunks.remove(currentChunk);

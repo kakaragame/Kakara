@@ -1,5 +1,8 @@
 package org.kakara.client.game.world;
 
+import me.ryandw11.ods.Compression;
+import me.ryandw11.ods.ObjectDataStructure;
+import me.ryandw11.ods.tags.ObjectTag;
 import org.kakara.core.Kakara;
 import org.kakara.core.exceptions.SaveLoadException;
 import org.kakara.core.utils.CoreFileUtils;
@@ -38,135 +41,44 @@ public class ClientChunkWriter implements ChunkWriter {
 
     @Override
     public Chunk getChunkByLocation(ChunkLocation chunkLocation) {
-        try {
-            File chunkFile = getChunkFile(chunkLocation);
-            if (!chunkFile.exists()) return null;
-            Path file = chunkFile.toPath();
-            byte[] lines = Files.readAllBytes(file);
+        File chunkFile = getChunkFile(chunkLocation);
+        if (!chunkFile.exists()) return null;
 
-            List<Chunk> chunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
-            for (Chunk chunk : chunks) {
-                if (chunk.getLocation() == chunkLocation) return chunk;
-            }
-        } catch (IOException e) {
-            Kakara.LOGGER.error("Something bad happened with getting a chunk.", e);
-        }
+        ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
+        ChunkTag chunkTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
 
-        return null;
+        if(chunkTag == null)
+            return null;
+        return chunkTag.getChunk();
     }
 
     @Override
-    public List<Chunk> getChunksByLocoation(List<ChunkLocation> locations) {
-        Map<Path, List<ChunkLocation>> sortedLocations = new HashMap<>();
+    public List<Chunk> getChunksByLocation(List<ChunkLocation> locations) {
+        List<Chunk> output = new ArrayList<>();
         for (ChunkLocation location : locations) {
-            File chunkFile = getChunkFile(location);
-            if (!chunkFile.exists()) continue;
-            Path path = chunkFile.toPath();
-            List<ChunkLocation> current = sortedLocations.containsKey(path) ? sortedLocations.get(path) : new ArrayList<>();
-            current.add(location);
-
-            sortedLocations.put(path, current);
+            output.add(getChunkByLocation(location));
         }
-
-        List<Chunk> chunks = new ArrayList<>();
-        sortedLocations.forEach((file, chunkLocations) -> {
-            try {
-                byte[] lines = Files.readAllBytes(file);
-
-                List<Chunk> currentChunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
-                for (Chunk chunk : currentChunks) {
-                    if (chunkLocations.contains(chunk.getLocation())) {
-                        chunks.add(chunk);
-                    }
-                }
-            } catch (IOException e) {
-                Kakara.LOGGER.error("Something bad happened with getting a chunk.", e);
-            }
-        });
-
-        return chunks;
+        return output;
     }
 
     @Override
     public void writeChunk(Chunk chunk) {
-        try {
-            File chunkFile = getChunkFile(chunk.getLocation());
-            if (chunkFile.exists()) {
-                try {
-                    CoreFileUtils.backup(chunkFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    chunkFile.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            Path file = chunkFolder.toPath();
-            byte[] lines = Files.readAllBytes(file);
-
-            List<Chunk> chunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
-            if (chunks == null) chunks = new ArrayList<>();
-
-            chunks.remove(chunk);
-            chunks.add(chunk);
-
-            FileOutputStream stream = new FileOutputStream(file.toFile());
-            stream.write(ChunkFileSerializer.INSTANCE.serialize(chunks));
-            stream.close();
-        } catch (IOException e) {
-            Kakara.LOGGER.error("Something bad happened with getting a chunk.");
-        }
+        File chunkFile = getChunkFile(chunk.getLocation());
+        ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
+        if(ods.find(getChunkKey(chunk.getLocation())))
+            ods.delete(getChunkKey(chunk.getLocation()));
+        ods.append(new ChunkTag(chunk));
     }
 
     @Override
     public void writeChunks(List<Chunk> chunks) {
-        Map<Path, List<Chunk>> sortedChunks = new HashMap<>();
-        for (Chunk chunk : chunks) {
-            File chunkFile = getChunkFile(chunk.getLocation());
-            if (chunkFile.exists()) {
-                try {
-                    CoreFileUtils.backup(chunkFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    chunkFile.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            Path path = chunkFile.toPath();
-            List<Chunk> current = sortedChunks.containsKey(path) ? sortedChunks.get(path) : new ArrayList<>();
-            current.add(chunk);
-
-            sortedChunks.put(path, current);
+        //TODO this will impact speed. Improve this later.
+        for(Chunk chunk : chunks){
+            writeChunk(chunk);
         }
+    }
 
-        sortedChunks.forEach((file, currentChunks) -> {
-            try {
-                byte[] lines = Files.readAllBytes(file);
-                List<Chunk> fileChunks;
-                try {
-                    fileChunks = ChunkFileSerializer.INSTANCE.deserialize(lines);
-                } catch (MessageInsufficientBufferException e) {
-                    fileChunks = new ArrayList<>();
-                }
-
-                for (Chunk currentChunk : currentChunks) {
-                    fileChunks.remove(currentChunk);
-                    fileChunks.add(currentChunk);
-                }
-
-                FileOutputStream stream = new FileOutputStream(file.toFile());
-                stream.write(ChunkFileSerializer.INSTANCE.serialize(chunks));
-                stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+    private String getChunkKey(ChunkLocation loc){
+        return loc.getX() + "-" + loc.getY() + "-" + loc.getZ();
     }
 }

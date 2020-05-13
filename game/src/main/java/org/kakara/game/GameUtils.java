@@ -10,7 +10,7 @@ public class GameUtils {
         int y = (int) (l.getY() - l.getY() % 16);
         int z = (int) (l.getZ() - l.getZ() % 16);
 
-        return new ChunkLocation(x, y, z, l.getWorld());
+        return new ChunkLocation(l.getWorld().isPresent() ? l.getWorld().get() : null, x, y, z);
     }
 
     public static boolean isLocationInsideCurrentLocationRadius(ChunkLocation centerPoint, ChunkLocation location, int radius) {

@@ -82,7 +82,7 @@ public class ClientWorld implements World {
     public Optional<GameBlock> getBlockAt(Location location) {
         Chunk chunk = getChunkNow(GameUtils.getChunkLocation(location));
         if (chunk instanceof ClientChunk) {
-            return ((ClientChunk) chunk).getGameBlock(location).or(() -> Optional.of(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem("kakara:air")))));
+            return ((ClientChunk) chunk).getGameBlock(location).or(() -> Optional.of(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem("kakara:air").get()))));
         }
         return Optional.empty();
     }
@@ -142,7 +142,11 @@ public class ClientWorld implements World {
                 completableFuture.completeExceptionally(e);
             }*/
         ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
-        base = chunkGenerator.generateChunk(seed, random, base);
+        try {
+            base = chunkGenerator.generateChunk(seed, random, base);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Chunk chunk = new ClientChunk(base);
         loadChunk(chunk);
         return chunk;

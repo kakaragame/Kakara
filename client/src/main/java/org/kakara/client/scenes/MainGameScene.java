@@ -205,7 +205,7 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
         executorService.submit(() -> {
-            for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().getLoadedChunks()) {
+            for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().get().getLoadedChunks()) {
                 ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
                 if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
@@ -317,7 +317,7 @@ public class MainGameScene extends AbstractGameScene {
                 RenderChunk parentChunk = rb.getParentChunk();
                 parentChunk.removeBlock(rb);
                 parentChunk.regenerateChunk(getTextureAtlas());
-                server.getPlayerEntity().getLocation().getWorld().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem("Kakara:air")), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
+                server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem("Kakara:air").get()), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
             }
         } else if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20);
@@ -369,7 +369,7 @@ public class MainGameScene extends AbstractGameScene {
 
                 final Vector3 closValue = closestValue;
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
-                server.getPlayerEntity().getLocation().getWorld().getChunkAt(chunkLoc).thenAccept((chunk) -> {
+                server.getPlayerEntity().getLocation().getWorld().get().getChunkAt(chunkLoc).thenAccept((chunk) -> {
                     ClientChunk cc = (ClientChunk) chunk;
                     List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
                     RenderChunk desiredChunk = rcc.get(0);

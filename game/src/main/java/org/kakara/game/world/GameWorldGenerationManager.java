@@ -1,10 +1,11 @@
 package org.kakara.game.world;
 
+import org.jetbrains.annotations.NotNull;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 import org.kakara.core.NameKey;
-import org.kakara.core.world.ChunkGenerator;
 import org.kakara.core.world.WorldGenerationManager;
+import org.kakara.core.world.WorldGenerator;
 import org.kakara.core.world.region.Region;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
 public class GameWorldGenerationManager implements WorldGenerationManager {
     private GameInstance kakaraCore;
     private List<Region> regions = new ArrayList<>();
-    private List<ChunkGenerator> generators = new ArrayList<>();
+    private List<WorldGenerator> generators = new ArrayList<>();
 
     @Override
     public void registerRegion(Region region) {
@@ -21,14 +22,15 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
     }
 
     @Override
-    public void registerChunkGenerator(ChunkGenerator chunkGenerator) {
-        generators.add(chunkGenerator);
+    public void registerChunkGenerator(@NotNull WorldGenerator worldGenerator) {
+        generators.add(worldGenerator);
+
     }
 
     @Override
-    public ChunkGenerator getGenerator(NameKey nameKey) {
-        for (ChunkGenerator generator : generators) {
-            if (generator.getNameKey().equals(nameKey)){
+    public WorldGenerator getGenerator(NameKey nameKey) {
+        for (WorldGenerator generator : generators) {
+            if (generator.getNameKey().equals(nameKey)) {
                 return generator;
             }
         }
@@ -41,7 +43,7 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
     }
 
     @Override
-    public List<ChunkGenerator> getChunkGenerators() {
+    public List<WorldGenerator> getChunkGenerators() {
         return generators;
     }
 

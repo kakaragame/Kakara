@@ -29,7 +29,7 @@ public class ClientWorld implements World {
     private final List<ChunkLocation> loadedChunkLocations = new CopyOnWriteArrayList<>();
     private final UUID worldID;
     private final String name;
-    private final ChunkGenerator chunkGenerator;
+    private final WorldGenerator chunkGenerator;
     private final int seed;
     private final Random random;
     private final Server server;
@@ -141,9 +141,9 @@ public class ClientWorld implements World {
                 e.printStackTrace();
                 completableFuture.completeExceptionally(e);
             }*/
-        ChunkBase base = new ChunkBase(location, new ArrayList<>(), null);
+        ChunkBase base = null;
         try {
-            base = chunkGenerator.generateChunk(seed, random, base);
+            base = chunkGenerator.generateChunk(seed, random);
         } catch (Exception e) {
             e.printStackTrace();
         }

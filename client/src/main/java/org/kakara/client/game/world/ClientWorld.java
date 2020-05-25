@@ -143,7 +143,7 @@ public class ClientWorld implements World {
             }*/
         ChunkBase base = null;
         try {
-            base = chunkGenerator.generateChunk(seed, random);
+            base = chunkGenerator.generateChunk(seed, random, this, location.getX(), location.getY(), location.getZ());
         } catch (Exception e) {
             e.printStackTrace();
         }

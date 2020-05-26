@@ -6,6 +6,9 @@ import me.ryandw11.octree.PointExistsException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.Client;
+import org.kakara.client.KakaraGame;
+import org.kakara.client.game.world.io.ChunkIO;
+import org.kakara.client.game.world.io.GroupedChunkIO;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
 import org.kakara.core.exceptions.WorldLoadException;
@@ -18,10 +21,12 @@ import org.kakara.game.Server;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class ClientWorld implements World {
     private final File worldFolder;
@@ -34,12 +39,14 @@ public class ClientWorld implements World {
     private final Random random;
     private final Server server;
     private Location worldSpawn;
+    private ChunkIO chunkIO = null;
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
         this.server = server;
         loadedChunks = new Octree<>(-10000000, -100, -10000000, 10000000, 10000, 10000000);
-
+        //TODO replace null with instance of ChunkWriter
+        //this.chunkIO = new GroupedChunkIO(this, null);
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
             chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
@@ -128,19 +135,19 @@ public class ClientWorld implements World {
             }
         } catch (Exception e) {
         }
-
-
-            /*try {
-                Chunk chunk1 = clientChunkWriter.getChunk(location);
-                if (chunk1 != null) {
-                    loadChunk(chunk1);
-                    completableFuture.complete(chunk1);
-                    return;
+        if (chunkIO != null) {
+            try {
+                List<Chunk> chunks = chunkIO.get(Collections.singletonList(location)).get();
+                if (!chunks.isEmpty()) {
+                    chunks.forEach(this::loadChunk);
+                    return chunks.get(0);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                completableFuture.completeExceptionally(e);
-            }*/
+            } catch (InterruptedException | ExecutionException e) {
+                KakaraGame.LOGGER.warn("ChunkIO failure", e);
+            }
+        } else {
+            KakaraGame.LOGGER.warn("No ChunkIO found");
+        }
         ChunkBase base = null;
         try {
             base = chunkGenerator.generateChunk(seed, random, this, location.getX(), location.getY(), location.getZ());
@@ -166,6 +173,7 @@ public class ClientWorld implements World {
     public void unloadChunk(Chunk chunk) {
         loadedChunkLocations.remove(chunk.getLocation());
         loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
+        if (chunkIO != null) chunkIO.write(Collections.singletonList(chunk));
     }
 
     @Override
@@ -174,6 +182,7 @@ public class ClientWorld implements World {
             loadedChunkLocations.remove(chunk1.getLocation());
             loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
         }
+        if (chunkIO != null) chunkIO.write(chunk);
 
     }
 

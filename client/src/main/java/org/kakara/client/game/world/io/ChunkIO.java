@@ -16,4 +16,6 @@ public abstract class ChunkIO extends Thread {
     }
 
     public abstract CompletableFuture<List<Chunk>> get(List<ChunkLocation> chunkLocations);
+
+    public abstract CompletableFuture<List<ChunkLocation>> write(List<Chunk> chunkLocations);
 }

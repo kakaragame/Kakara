@@ -1,7 +1,6 @@
 package org.kakara.client.game.world.io;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.kakara.client.game.world.ClientWorld;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
@@ -36,9 +35,10 @@ public class GroupedChunkIO extends ChunkIO {
                     if (chunkRequest instanceof ReadChunkRequest) {
                         reads.addAll(((ReadChunkRequest) chunkRequest).getChunkLocations());
                     } else if (chunkRequest instanceof WriteChunkRequest) {
-                        //TODO later
+                        writes.addAll(((WriteChunkRequest) chunkRequest).getChunks());
                     }
                 }
+                chunkWriter.writeChunks(writes);
                 List<Chunk> chunksFound = chunkWriter.getChunksByLocation(reads);
                 for (ChunkRequest chunkRequest : request.getRight()) {
                     ReadChunkRequest readChunkRequest = (ReadChunkRequest) chunkRequest;
@@ -60,6 +60,23 @@ public class GroupedChunkIO extends ChunkIO {
         for (Map.Entry<ChunkLocation, List<ChunkLocation>> entry : locations.entrySet()) {
             ChunkLocation key = entry.getKey();
             List<ChunkLocation> chunkLocations1 = entry.getValue();
+            for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
+                if (request.getLeft().equals(key)) {
+                    request.getRight().add(chunkRequest);
+                }
+            }
+        }
+        return completableFuture;
+    }
+
+    @Override
+    public CompletableFuture<List<ChunkLocation>> write(List<Chunk> chunkLocations) {
+        CompletableFuture<List<ChunkLocation>> completableFuture = new CompletableFuture<>();
+        ChunkRequest chunkRequest = new WriteChunkRequest(chunkLocations, completableFuture);
+        Map<ChunkLocation, List<Chunk>> locations = ChunkIOUtils.sortByChunk(chunkLocations);
+        for (Map.Entry<ChunkLocation, List<Chunk>> entry : locations.entrySet()) {
+            ChunkLocation key = entry.getKey();
+            List<Chunk> chunkLocations1 = entry.getValue();
             for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
                 if (request.getLeft().equals(key)) {
                     request.getRight().add(chunkRequest);

@@ -60,10 +60,19 @@ public class GroupedChunkIO extends ChunkIO {
         for (Map.Entry<ChunkLocation, List<ChunkLocation>> entry : locations.entrySet()) {
             ChunkLocation key = entry.getKey();
             List<ChunkLocation> chunkLocations1 = entry.getValue();
+            boolean found = false;
             for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
                 if (request.getLeft().equals(key)) {
                     request.getRight().add(chunkRequest);
+                    found = true;
                 }
+            }
+            //Creates a new Pair
+
+            if (!found) {
+                List<ChunkRequest> requestsList = new ArrayList<>();
+                requestsList.add(chunkRequest);
+                requests.offer(Pair.of(key, requestsList));
             }
         }
         return completableFuture;
@@ -77,10 +86,18 @@ public class GroupedChunkIO extends ChunkIO {
         for (Map.Entry<ChunkLocation, List<Chunk>> entry : locations.entrySet()) {
             ChunkLocation key = entry.getKey();
             List<Chunk> chunkLocations1 = entry.getValue();
+            boolean found = false;
             for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
                 if (request.getLeft().equals(key)) {
                     request.getRight().add(chunkRequest);
+                    found = true;
                 }
+            }
+            //Creates a new Pair
+            if (!found) {
+                List<ChunkRequest> requestsList = new ArrayList<>();
+                requestsList.add(chunkRequest);
+                requests.offer(Pair.of(key, requestsList));
             }
         }
         return completableFuture;

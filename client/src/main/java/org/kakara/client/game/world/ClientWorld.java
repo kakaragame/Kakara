@@ -46,7 +46,7 @@ public class ClientWorld implements World {
         this.server = server;
         loadedChunks = new Octree<>(-10000000, -100, -10000000, 10000000, 10000, 10000000);
         //TODO replace null with instance of ChunkWriter
-        //this.chunkIO = new GroupedChunkIO(this, null);
+        this.chunkIO = new GroupedChunkIO(this, new ClientChunkWriter(this));
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
             chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
@@ -229,5 +229,13 @@ public class ClientWorld implements World {
 
     public boolean isLoaded() {
         return true;
+    }
+
+    public void saveChunks(List<Chunk> chunksToSave) {
+        if (chunkIO != null) chunkIO.write(chunksToSave);
+    }
+
+    public void saveChunks() {
+        saveChunks(getLoadedChunksList());
     }
 }

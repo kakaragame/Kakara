@@ -30,7 +30,7 @@ public class ChunkCleaner extends Thread {
                 KakaraGame.LOGGER.error("InterruptedException", e);
             }
             ChunkLocation location = GameUtils.getChunkLocation(server.getPlayerEntity().getLocation());
-            ClientWorld world = (ClientWorld) server.getPlayerEntity().getLocation().getWorld();
+            ClientWorld world = (ClientWorld) server.getPlayerEntity().getLocation().getWorld().get();
             List<Chunk> chunksToUnload = new ArrayList<>();
             List<Chunk> chunksToSave = new ArrayList<>();
 

@@ -222,7 +222,7 @@
         <dependency>
             <groupId>com.github.ryandw11</groupId>
             <artifactId>ODS</artifactId>
-            <version>05aecb798e</version>
+            <version>-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

@@ -217,4 +217,8 @@ public class ClientWorld implements World {
     public File getWorldFolder() {
         return worldFolder;
     }
+
+    public boolean isLoaded() {
+        return true;
+    }
 }

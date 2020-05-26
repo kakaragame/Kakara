@@ -20,7 +20,7 @@ public interface ChunkWriter {
      * @param locations the locations to find
      * @return the chunks no value if not found
      */
-    List<Chunk> getChunksByLocoation(List<ChunkLocation> locations);
+    List<Chunk> getChunksByLocation(List<ChunkLocation> locations);
 
     /**
      * writes a single chunk to its correct file
@@ -35,4 +35,5 @@ public interface ChunkWriter {
      * @param chunks the chunks to save
      */
     void writeChunks(List<Chunk> chunks);
+
 }

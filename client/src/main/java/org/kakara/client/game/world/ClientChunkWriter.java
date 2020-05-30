@@ -42,13 +42,13 @@ public class ClientChunkWriter implements ChunkWriter {
     @Override
     public Chunk getChunkByLocation(ChunkLocation chunkLocation) {
         File chunkFile = getChunkFile(chunkLocation);
-        if (!chunkFile.exists()) return null;
+        if (!chunkFile.exists()) return new NullChunk(chunkLocation);
 
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
         ChunkTag chunkTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
 
         if(chunkTag == null)
-            return null;
+            return new NullChunk(chunkLocation);
         return chunkTag.getChunk();
     }
 

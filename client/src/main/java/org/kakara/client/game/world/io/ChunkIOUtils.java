@@ -13,7 +13,9 @@ public class ChunkIOUtils {
     public static Map<ChunkLocation, List<ChunkLocation>> sort(List<ChunkLocation> locationList) {
         Map<ChunkLocation, List<ChunkLocation>> values = new HashMap<>();
         for (ChunkLocation location : locationList) {
-            values.getOrDefault(GameUtils.getChunkFileLocation(location), new ArrayList<>()).add(location);
+            ChunkLocation chunkLocation = GameUtils.getChunkFileLocation(location);
+            values.computeIfAbsent(chunkLocation, k -> new ArrayList<>());
+            values.get(chunkLocation).add(location);
         }
         return values;
     }

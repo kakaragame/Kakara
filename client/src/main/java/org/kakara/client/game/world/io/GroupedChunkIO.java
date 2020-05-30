@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class GroupedChunkIO extends ChunkIO {
         super(clientWorld);
         this.chunkWriter = chunkWriter;
         requests = new LinkedBlockingDeque<>();
+        start();
     }
 
     @Override
@@ -42,7 +44,12 @@ public class GroupedChunkIO extends ChunkIO {
                 List<Chunk> chunksFound = chunkWriter.getChunksByLocation(reads);
                 for (ChunkRequest chunkRequest : request.getRight()) {
                     ReadChunkRequest readChunkRequest = (ReadChunkRequest) chunkRequest;
-                    List<Chunk> chunks = chunksFound.stream().filter(chunk -> readChunkRequest.getChunkLocations().contains(chunk.getLocation())).collect(Collectors.toList());
+                    List<Chunk> chunks = new ArrayList<>();
+                    for (Chunk chunk : chunksFound) {
+                        if (readChunkRequest.getChunkLocations().contains(chunk.getLocation())) {
+                            chunks.add(chunk);
+                        }
+                    }
                     ((ReadChunkRequest) chunkRequest).respond(request.getLeft(), chunks);
                 }
             } catch (InterruptedException e) {
@@ -56,24 +63,37 @@ public class GroupedChunkIO extends ChunkIO {
     public CompletableFuture<List<Chunk>> get(List<ChunkLocation> chunkLocations) {
         CompletableFuture<List<Chunk>> completableFuture = new CompletableFuture<>();
         ChunkRequest chunkRequest = new ReadChunkRequest(chunkLocations, completableFuture);
-        Map<ChunkLocation, List<ChunkLocation>> locations = ChunkIOUtils.sort(chunkLocations);
-        for (Map.Entry<ChunkLocation, List<ChunkLocation>> entry : locations.entrySet()) {
-            ChunkLocation key = entry.getKey();
-            List<ChunkLocation> chunkLocations1 = entry.getValue();
-            boolean found = false;
-            for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
-                if (request.getLeft().equals(key)) {
-                    request.getRight().add(chunkRequest);
-                    found = true;
+        System.out.println("chunkLocations = " + chunkLocations.size());
+        try {
+            Map<ChunkLocation, List<ChunkLocation>> locations = ChunkIOUtils.sort(chunkLocations);
+            System.out.println(locations.size());
+            for (Map.Entry<ChunkLocation, List<ChunkLocation>> entry : locations.entrySet()) {
+                ChunkLocation key = entry.getKey();
+                List<ChunkLocation> chunkLocations1 = entry.getValue();
+                boolean found = false;
+                System.out.println("One");
+                for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
+                    System.out.println("Two");
+                    if (request.getLeft().equals(key)) {
+                        request.getRight().add(chunkRequest);
+                        found = true;
+                    }
+                }
+                //Creates a new Pair
+
+                if (!found) {
+                    System.out.println("Not FOund");
+                    List<ChunkRequest> requestsList = new CopyOnWriteArrayList<>();
+                    requestsList.add(chunkRequest);
+                    requests.offer(Pair.of(key, requestsList));
+                } else {
+                    System.out.println("Found");
                 }
             }
-            //Creates a new Pair
-
-            if (!found) {
-                List<ChunkRequest> requestsList = new ArrayList<>();
-                requestsList.add(chunkRequest);
-                requests.offer(Pair.of(key, requestsList));
-            }
+        }catch (Exception e){
+            System.out.println("No");
+            e.printStackTrace();
+            completableFuture.completeExceptionally(e);
         }
         return completableFuture;
     }

@@ -46,7 +46,6 @@ public class ClientWorld implements World {
         this.server = server;
         loadedChunks = new Octree<>(-10000000, -100, -10000000, 10000000, 10000, 10000000);
         //TODO replace null with instance of ChunkWriter
-        this.chunkIO = new GroupedChunkIO(this, new ClientChunkWriter(this));
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
             chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
@@ -58,6 +57,7 @@ public class ClientWorld implements World {
             name = object.get("name").getAsString();
             worldID = UUID.fromString(object.get("id").getAsString());
             worldSpawn = Utils.getGson().fromJson(object.get("location"), Location.class);
+            this.chunkIO = new GroupedChunkIO(this, new ClientChunkWriter(this));
         } catch (WorldLoadException e) {
             throw e;
         } catch (Exception e) {
@@ -155,6 +155,7 @@ public class ClientWorld implements World {
             e.printStackTrace();
         }
         Chunk chunk = new ClientChunk(base);
+        System.out.println("chunk.getGameBlocks().size() = " + chunk.getGameBlocks().size());
         loadChunk(chunk);
         return chunk;
     }
@@ -188,6 +189,7 @@ public class ClientWorld implements World {
 
     @Override
     public void loadChunk(@NotNull Chunk chunk) {
+        System.out.println("chunk.getGameBlocks() = " + chunk.getGameBlocks().size());
         try {
             loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
             loadedChunkLocations.add(chunk.getLocation());

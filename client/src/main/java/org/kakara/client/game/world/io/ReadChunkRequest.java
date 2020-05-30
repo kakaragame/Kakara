@@ -1,5 +1,6 @@
 package org.kakara.client.game.world.io;
 
+import org.kakara.client.game.world.NullChunk;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.GameUtils;
@@ -27,12 +28,21 @@ public class ReadChunkRequest implements ChunkRequest {
         for (ChunkLocation chunkLocation : this.chunkLocations) {
             groupedChunkLocations.add(GameUtils.getChunkFileLocation(chunkLocation));
         }
+
         return response.keySet().size() == groupedChunkLocations.size();
     }
 
     public void respond() {
+        System.out.println("Responding");
         List<Chunk> chunks = new ArrayList<>();
-        response.values().forEach(chunks::addAll);
+        for (List<Chunk> chunkList : response.values()) {
+            chunkList.forEach(chunk -> {
+                if (!(chunk instanceof NullChunk)) {
+                    chunks.add(chunk);
+                }
+            });
+        }
+        System.out.println("chunks.size() = " + chunks.size());
         completableFuture.complete(chunks);
     }
 

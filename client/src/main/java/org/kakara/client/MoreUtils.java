@@ -26,12 +26,8 @@ public class MoreUtils {
     }
 
     public static org.kakara.engine.resources.Resource coreResourceToEngineResource(Resource resource, KakaraGame kakaraGame) {
-        try {
-            return kakaraGame.getGameHandler().getResourceManager().getResource(resource.getLocalPath());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return kakaraGame.getGameHandler().getResourceManager().getResource(resource.getLocalPath());
+
     }
 
     public static Map<ItemStack, List<Location>> sortByType(List<ChunkBase> mehChunks) {

@@ -13,9 +13,10 @@ import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Panel;
-import org.kakara.engine.ui.components.Rectangle;
-import org.kakara.engine.ui.components.Text;
-import org.kakara.engine.ui.properties.VerticalCenterProperty;
+
+import org.kakara.engine.ui.components.shapes.Rectangle;
+import org.kakara.engine.ui.components.text.Text;
+import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.utils.Time;
 
@@ -61,7 +62,7 @@ public class ChatComponent extends GeneralComponent {
         textArea.setPosition(0, 500);
 
         textAreaText = new Text("Press T to type...", font);
-        textAreaText.addProperty(new VerticalCenterProperty());
+        textAreaText.addConstraint(new VerticalCenterConstraint());
         textAreaText.setLineWidth(500);
         textAreaText.setSize(20);
         textAreaText.setPosition(textAreaText.getPosition().add(10, 0));
@@ -77,7 +78,7 @@ public class ChatComponent extends GeneralComponent {
         this.historyRectangle.setVisible(alwaysShowHistory);
 
 
-        GameHandler.getInstance().getEventManager().registerHandler(this, scene);
+        GameHandler.getInstance().getCurrentScene().getEventManager().registerHandler(this);
     }
 
     /**

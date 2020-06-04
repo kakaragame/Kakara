@@ -9,8 +9,8 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.resources.ResourceManager;
-import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.components.Text;
+;
+import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
@@ -37,13 +37,8 @@ public class DebugModeCanvas extends ComponentCanvas {
 
         ResourceManager resourceManager = GameHandler.getInstance().getResourceManager();
 
-        Font roboto;
+        Font  roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), scene);
 
-        try{
-            roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), scene);
-        }catch (MalformedURLException mue){
-            return;
-        }
 
         fps = new Text("60", roboto);
         fps.position = new Vector2(0, 25);
@@ -76,7 +71,7 @@ public class DebugModeCanvas extends ComponentCanvas {
     }
 
     public void update() {
-        Vector3 v = kakaraGame.getGameHandler().getCamera().getPosition();
+        Vector3 v = gameScene.getCamera().getPosition();
         location.setText(String.format(locationFormat, v.x, v.y, v.z));
         ChunkLocation l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));
         chunkLocation.setText(String.format(locationFormat, l.getX(), l.getY(), l.getZ()));

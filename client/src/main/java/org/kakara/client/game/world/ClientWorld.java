@@ -48,6 +48,7 @@ public class ClientWorld implements World {
         //TODO replace null with instance of ChunkWriter
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
+            System.out.println(Kakara.getWorldGenerationManager().getChunkGenerators().size());
             chunkGenerator = Kakara.getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
             if (chunkGenerator == null) {
                 throw new WorldLoadException("Unable to locate ChunkGenerator: " + object.get("generator").getAsString());
@@ -155,6 +156,7 @@ public class ClientWorld implements World {
             e.printStackTrace();
         }
         Chunk chunk = new ClientChunk(base);
+        System.out.println("location = " + location.toString());
         System.out.println("chunk.getGameBlocks().size() = " + chunk.getGameBlocks().size());
         loadChunk(chunk);
         return chunk;

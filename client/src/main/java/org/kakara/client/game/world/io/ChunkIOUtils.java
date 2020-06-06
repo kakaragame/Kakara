@@ -11,12 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ChunkIOUtils {
-    public static Map<ChunkLocation, List<ChunkLocation>> sort(List<ChunkLocation> locationList) {
-        Map<ChunkLocation, List<ChunkLocation>> values = new HashMap<>();
+    public static ArrayListMultimap<ChunkLocation, ChunkLocation> sort(List<ChunkLocation> locationList) {
+        ArrayListMultimap<ChunkLocation, ChunkLocation> values = ArrayListMultimap.create();
         for (ChunkLocation location : locationList) {
             ChunkLocation chunkLocation = GameUtils.getChunkFileLocation(location);
-            values.computeIfAbsent(chunkLocation, k -> new ArrayList<>());
-            values.get(chunkLocation).add(location);
+            values.put(chunkLocation, location);
         }
         return values;
     }

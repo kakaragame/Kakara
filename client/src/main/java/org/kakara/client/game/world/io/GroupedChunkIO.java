@@ -65,10 +65,9 @@ public class GroupedChunkIO extends ChunkIO {
         CompletableFuture<List<Chunk>> completableFuture = new CompletableFuture<>();
         ChunkRequest chunkRequest = new ReadChunkRequest(chunkLocations, completableFuture);
         try {
-            Map<ChunkLocation, List<ChunkLocation>> locations = ChunkIOUtils.sort(chunkLocations);
-            for (Map.Entry<ChunkLocation, List<ChunkLocation>> entry : locations.entrySet()) {
-                ChunkLocation key = entry.getKey();
-                List<ChunkLocation> chunkLocations1 = entry.getValue();
+            ArrayListMultimap<ChunkLocation, ChunkLocation>  locations = ChunkIOUtils.sort(chunkLocations);
+            for (ChunkLocation key : locations.keySet()) {
+
                 boolean found = false;
                 for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
                     if (request.getLeft().equals(key)) {
@@ -77,7 +76,6 @@ public class GroupedChunkIO extends ChunkIO {
                     }
                 }
                 //Creates a new Pair
-
                 if (!found) {
                     List<ChunkRequest> requestsList = new CopyOnWriteArrayList<>();
                     requestsList.add(chunkRequest);

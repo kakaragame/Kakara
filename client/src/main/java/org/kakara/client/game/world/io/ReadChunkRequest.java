@@ -33,7 +33,6 @@ public class ReadChunkRequest implements ChunkRequest {
     }
 
     public void respond() {
-        System.out.println("Responding");
         List<Chunk> chunks = new ArrayList<>();
         for (List<Chunk> chunkList : response.values()) {
             chunkList.forEach(chunk -> {
@@ -42,7 +41,6 @@ public class ReadChunkRequest implements ChunkRequest {
                 }
             });
         }
-        System.out.println("chunks.size() = " + chunks.size());
         completableFuture.complete(chunks);
     }
 

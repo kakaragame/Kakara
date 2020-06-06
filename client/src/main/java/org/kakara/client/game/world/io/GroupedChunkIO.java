@@ -63,17 +63,13 @@ public class GroupedChunkIO extends ChunkIO {
     public CompletableFuture<List<Chunk>> get(List<ChunkLocation> chunkLocations) {
         CompletableFuture<List<Chunk>> completableFuture = new CompletableFuture<>();
         ChunkRequest chunkRequest = new ReadChunkRequest(chunkLocations, completableFuture);
-        System.out.println("chunkLocations = " + chunkLocations.size());
         try {
             Map<ChunkLocation, List<ChunkLocation>> locations = ChunkIOUtils.sort(chunkLocations);
-            System.out.println(locations.size());
             for (Map.Entry<ChunkLocation, List<ChunkLocation>> entry : locations.entrySet()) {
                 ChunkLocation key = entry.getKey();
                 List<ChunkLocation> chunkLocations1 = entry.getValue();
                 boolean found = false;
-                System.out.println("One");
                 for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
-                    System.out.println("Two");
                     if (request.getLeft().equals(key)) {
                         request.getRight().add(chunkRequest);
                         found = true;
@@ -82,16 +78,13 @@ public class GroupedChunkIO extends ChunkIO {
                 //Creates a new Pair
 
                 if (!found) {
-                    System.out.println("Not FOund");
                     List<ChunkRequest> requestsList = new CopyOnWriteArrayList<>();
                     requestsList.add(chunkRequest);
                     requests.offer(Pair.of(key, requestsList));
                 } else {
-                    System.out.println("Found");
                 }
             }
         }catch (Exception e){
-            System.out.println("No");
             e.printStackTrace();
             completableFuture.completeExceptionally(e);
         }

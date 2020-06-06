@@ -1,5 +1,6 @@
 package org.kakara.client.game.world.io;
 
+import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.kakara.client.game.world.ClientWorld;
 import org.kakara.core.world.Chunk;
@@ -93,12 +94,13 @@ public class GroupedChunkIO extends ChunkIO {
 
     @Override
     public CompletableFuture<List<ChunkLocation>> write(List<Chunk> chunkLocations) {
+        System.out.println("Call: "+chunkLocations.size());
         CompletableFuture<List<ChunkLocation>> completableFuture = new CompletableFuture<>();
+        System.out.println("Call1");
         ChunkRequest chunkRequest = new WriteChunkRequest(chunkLocations, completableFuture);
-        Map<ChunkLocation, List<Chunk>> locations = ChunkIOUtils.sortByChunk(chunkLocations);
-        for (Map.Entry<ChunkLocation, List<Chunk>> entry : locations.entrySet()) {
-            ChunkLocation key = entry.getKey();
-            List<Chunk> chunkLocations1 = entry.getValue();
+        System.out.println("Call2");
+        ArrayListMultimap<ChunkLocation, Chunk> locations = ChunkIOUtils.sortByChunk(chunkLocations);
+        for (ChunkLocation key : locations.keySet()) {
             boolean found = false;
             for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
                 if (request.getLeft().equals(key)) {
@@ -111,6 +113,7 @@ public class GroupedChunkIO extends ChunkIO {
                 List<ChunkRequest> requestsList = new ArrayList<>();
                 requestsList.add(chunkRequest);
                 requests.offer(Pair.of(key, requestsList));
+                System.out.println("Adding");
             }
         }
         return completableFuture;

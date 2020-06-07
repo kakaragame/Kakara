@@ -1,7 +1,7 @@
 package org.kakara.game.items.blocks;
 
 import org.kakara.core.annotations.Hardness;
-import org.kakara.core.annotations.Id;
+import org.kakara.core.annotations.Key;
 import org.kakara.core.annotations.Name;
 import org.kakara.core.annotations.Texture;
 import org.kakara.core.events.entity.StepOnEvent;
@@ -11,7 +11,7 @@ import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.game.ModBlock;
 
 @Name("Air")
-@Id("air")
+@Key("air")
 //Not to be rendered. It exists solely. So you can set a block to air.
 public class AirBlock extends ModBlock {
     public AirBlock(Mod mod) {

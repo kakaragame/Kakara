@@ -53,6 +53,11 @@ public class KakaraMod implements Mod {
     }
 
     @Override
+    public String getUppercaseName() {
+        return "KAKARA";
+    }
+
+    @Override
     public GameInstance getGameInstance() {
         return null;
     }

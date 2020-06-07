@@ -165,7 +165,7 @@ public class MainMenuScene extends AbstractMenuScene {
             for (File file1 : getModsToLoad()) {
                 saveCreator.add(new ModInstance(file1.getName(), "", "1.0", null, ModInstanceType.FILE, file1));
             }
-            saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new NameKey("KVanilla:default")));
+            saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new NameKey("KVANILLA:DEFAULT")));
             IntegratedServer integratedServer = new IntegratedServer(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"));
             MainGameScene gameScene = new MainGameScene(gameHandler, integratedServer, kakaraGame);
             gameHandler.getSceneManager().setScene(gameScene);

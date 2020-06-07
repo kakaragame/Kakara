@@ -1,7 +1,7 @@
 package org.kakara.game.items.blocks;
 
 import org.kakara.core.annotations.Hardness;
-import org.kakara.core.annotations.Id;
+import org.kakara.core.annotations.Key;
 import org.kakara.core.annotations.Name;
 import org.kakara.core.annotations.Texture;
 import org.kakara.core.events.entity.StepOnEvent;
@@ -12,7 +12,7 @@ import org.kakara.core.mod.game.ModBlock;
 
 @Texture("blocks/yeet.png")
 @Name("Yeet!")
-@Id("yeet")
+@Key("yeet")
 @Hardness(0f)
 public class YeetBlock extends ModBlock {
     public YeetBlock(Mod mod) {

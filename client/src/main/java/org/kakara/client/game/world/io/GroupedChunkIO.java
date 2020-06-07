@@ -44,6 +44,7 @@ public class GroupedChunkIO extends ChunkIO {
                 chunkWriter.writeChunks(writes);
                 List<Chunk> chunksFound = chunkWriter.getChunksByLocation(reads);
                 for (ChunkRequest chunkRequest : request.getRight()) {
+                    if (!(chunkRequest instanceof ReadChunkRequest)) continue;
                     ReadChunkRequest readChunkRequest = (ReadChunkRequest) chunkRequest;
                     List<Chunk> chunks = new ArrayList<>();
                     for (Chunk chunk : chunksFound) {
@@ -65,7 +66,7 @@ public class GroupedChunkIO extends ChunkIO {
         CompletableFuture<List<Chunk>> completableFuture = new CompletableFuture<>();
         ChunkRequest chunkRequest = new ReadChunkRequest(chunkLocations, completableFuture);
         try {
-            ArrayListMultimap<ChunkLocation, ChunkLocation>  locations = ChunkIOUtils.sort(chunkLocations);
+            ArrayListMultimap<ChunkLocation, ChunkLocation> locations = ChunkIOUtils.sort(chunkLocations);
             for (ChunkLocation key : locations.keySet()) {
 
                 boolean found = false;
@@ -83,7 +84,7 @@ public class GroupedChunkIO extends ChunkIO {
                 } else {
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             completableFuture.completeExceptionally(e);
         }
@@ -92,7 +93,7 @@ public class GroupedChunkIO extends ChunkIO {
 
     @Override
     public CompletableFuture<List<ChunkLocation>> write(List<Chunk> chunkLocations) {
-        System.out.println("Call: "+chunkLocations.size());
+        System.out.println("Call: " + chunkLocations.size());
         CompletableFuture<List<ChunkLocation>> completableFuture = new CompletableFuture<>();
         System.out.println("Call1");
         ChunkRequest chunkRequest = new WriteChunkRequest(chunkLocations, completableFuture);

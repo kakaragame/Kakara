@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.kakara.core</groupId>
             <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT-ods</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

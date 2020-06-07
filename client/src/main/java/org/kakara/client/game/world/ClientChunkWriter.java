@@ -69,7 +69,6 @@ public class ClientChunkWriter implements ChunkWriter {
 
     @Override
     public void writeChunk(Chunk chunk) {
-        System.out.println("Hello");
         File chunkFile = getChunkFile(chunk.getLocation());
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
         if(ods.find(getChunkKey(chunk.getLocation())))

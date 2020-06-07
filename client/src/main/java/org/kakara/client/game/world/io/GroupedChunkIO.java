@@ -93,11 +93,8 @@ public class GroupedChunkIO extends ChunkIO {
 
     @Override
     public CompletableFuture<List<ChunkLocation>> write(List<Chunk> chunkLocations) {
-        System.out.println("Call: " + chunkLocations.size());
         CompletableFuture<List<ChunkLocation>> completableFuture = new CompletableFuture<>();
-        System.out.println("Call1");
         ChunkRequest chunkRequest = new WriteChunkRequest(chunkLocations, completableFuture);
-        System.out.println("Call2");
         ArrayListMultimap<ChunkLocation, Chunk> locations = ChunkIOUtils.sortByChunk(chunkLocations);
         for (ChunkLocation key : locations.keySet()) {
             boolean found = false;
@@ -112,7 +109,6 @@ public class GroupedChunkIO extends ChunkIO {
                 List<ChunkRequest> requestsList = new ArrayList<>();
                 requestsList.add(chunkRequest);
                 requests.offer(Pair.of(key, requestsList));
-                System.out.println("Adding");
             }
         }
         return completableFuture;

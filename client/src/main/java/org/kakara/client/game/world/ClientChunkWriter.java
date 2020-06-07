@@ -45,7 +45,13 @@ public class ClientChunkWriter implements ChunkWriter {
         if (!chunkFile.exists()) return new NullChunk(chunkLocation);
 
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
-        ChunkTag chunkTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
+        ObjectTag objectTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
+
+        ChunkTag chunkTag;
+        if(objectTag instanceof  ChunkTag)
+            chunkTag = (ChunkTag) objectTag;
+        else
+            return new NullChunk(chunkLocation);
 
         if(chunkTag == null)
             return new NullChunk(chunkLocation);

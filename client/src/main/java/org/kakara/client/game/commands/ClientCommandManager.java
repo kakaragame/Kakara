@@ -25,7 +25,7 @@ public class ClientCommandManager implements CommandManager {
         if (commandValue.contains(":")) {
             command1 = registeredCommands.stream().filter(command2 -> command2.command().equals(new NameKey(commandValue))).findFirst();
         } else {
-            command1 = registeredCommands.stream().filter(command2 -> command2.getAliases().contains(commandValue) || command2.command().getKey().equals(commandValue)).findFirst();
+            command1 = registeredCommands.stream().filter(command2 -> command2.getAliases().contains(commandValue) || command2.command().getKey().equalsIgnoreCase(commandValue)).findFirst();
         }
 
         String commandValueFinal = commandValue;

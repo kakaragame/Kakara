@@ -78,7 +78,7 @@ public class ChatComponent extends GeneralComponent {
         this.historyRectangle.setVisible(alwaysShowHistory);
 
 
-        GameHandler.getInstance().getCurrentScene().getEventManager().registerHandler(this);
+        scene.getEventManager().registerHandler(this);
     }
 
     /**

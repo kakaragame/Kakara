@@ -122,7 +122,6 @@ public class MainGameScene extends AbstractGameScene {
         getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
 
         var resourceManager = gameHandler.getResourceManager();
-        getEventManager().registerHandler(this);
         List<RenderTexture> textures = new ArrayList<>();
 
         for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {

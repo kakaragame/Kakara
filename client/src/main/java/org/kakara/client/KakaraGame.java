@@ -64,8 +64,6 @@ public class KakaraGame implements Game {
         this.gameHandler = gameHandler;
         //Load MainMenuScene
         loadMusicManager();
-        MainMenuScene mainMenuScene = new MainMenuScene(gameHandler, this);
-        gameHandler.getSceneManager().setScene(mainMenuScene);
     }
 
     @Override

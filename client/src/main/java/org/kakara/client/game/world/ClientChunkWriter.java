@@ -36,7 +36,7 @@ public class ClientChunkWriter implements ChunkWriter {
         int y = (int) Math.floor(location.getY() / 64D);
         int z = (int) Math.floor(location.getZ() / 64D);
 
-        return new File(chunkFolder, String.format("_%s_%s_%s_.json", x, y, z));
+        return new File(chunkFolder, String.format("_%s_%s_%s_.kchunk", x, y, z));
     }
 
     @Override

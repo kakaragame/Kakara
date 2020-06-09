@@ -36,6 +36,7 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
+import org.kakara.engine.item.mesh.Mesh;
 import org.kakara.engine.math.Intersection;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
@@ -48,16 +49,17 @@ import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
+import org.kakara.engine.ui.components.shapes.Rectangle;
+import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
+import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.items.ComponentCanvas;
-import org.kakara.engine.ui.properties.HorizontalCenterProperty;
-import org.kakara.engine.ui.properties.VerticalCenterProperty;
+
 import org.kakara.engine.ui.text.Font;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
-import java.awt.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
@@ -120,16 +122,13 @@ public class MainGameScene extends AbstractGameScene {
         getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
 
         var resourceManager = gameHandler.getResourceManager();
-        kakaraGame.getGameHandler().getEventManager().registerHandler(this, this);
         List<RenderTexture> textures = new ArrayList<>();
 
         for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {
-            try {
+
                 RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.getLocalPath()));
                 textures.add(txt1);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+
         }
         File file = new File(Kakara.getWorkingDirectory(), "tmp");
         if (!file.exists()) {
@@ -143,12 +142,8 @@ public class MainGameScene extends AbstractGameScene {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Font roboto = null;
-        try {
-            roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
+
         ComponentCanvas main = new ComponentCanvas(this);
         chatComponent = new ChatComponent(roboto, false, this);
         chatComponent.setPosition(0, 170);
@@ -161,9 +156,9 @@ public class MainGameScene extends AbstractGameScene {
         chatComponent.addUActionEvent((ChatBlurEvent) () -> setCurserStatus(false), ChatBlurEvent.class);
         main.add(chatComponent);
 
-        org.kakara.engine.ui.components.Rectangle indicator = new org.kakara.engine.ui.components.Rectangle(new Vector2(0, 0), new Vector2(5, 5), new RGBA(0, 255, 0, 1));
-        indicator.addProperty(new HorizontalCenterProperty());
-        indicator.addProperty(new VerticalCenterProperty());
+        Rectangle indicator = new Rectangle(new Vector2(0, 0), new Vector2(5, 5), new RGBA(0, 255, 0, 1));
+        indicator.addConstraint(new HorizontalCenterConstraint());
+        indicator.addConstraint(new VerticalCenterConstraint());
         main.add(indicator);
 
         add(main);
@@ -264,7 +259,7 @@ public class MainGameScene extends AbstractGameScene {
         player.getGameItemID().ifPresent(uuid -> {
             getItemByID(uuid).ifPresent((gameItem) -> {
                 MeshGameItem item = (MeshGameItem) gameItem;
-                Camera gameCamera = gameHandler.getCamera();
+                Camera gameCamera = getCamera();
                 KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
                 if (ki.isKeyPressed(GLFW_KEY_W)) {
                     item.movePositionByCamera(0, 0, -0.3f, gameCamera);
@@ -294,9 +289,9 @@ public class MainGameScene extends AbstractGameScene {
                 //I NEED HELP!
                 MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
                 player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
-                gameHandler.getCamera().setPosition(MoreUtils.locationToVector3(location).add(0, 2, 0));
+                getCamera().setPosition(MoreUtils.locationToVector3(location).add(0, 2, 0));
                 Location l = player.getLocation();
-                gameHandler.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
+                getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
 
             });
 
@@ -332,37 +327,37 @@ public class MainGameScene extends AbstractGameScene {
                 Vector3 closestValue = absoluteBlockPos.clone();
 
                 Vector3 front = absoluteBlockPos.add(1, 0, 0);
-                if (Intersection.intersect((int) front.x, (int) front.y, (int) front.z, gameHandler.getCamera(), result) && result.x < closestResult) {
+                if (Intersection.intersect((int) front.x, (int) front.y, (int) front.z, getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(1, 0, 0);
                 }
 
                 Vector3 back = absoluteBlockPos.add(-1, 0, 0);
-                if (Intersection.intersect((int) back.x, (int) back.y, (int) back.z, gameHandler.getCamera(), result) && result.x < closestResult) {
+                if (Intersection.intersect((int) back.x, (int) back.y, (int) back.z, getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(-1, 0, 0);
                 }
 
                 Vector3 left = absoluteBlockPos.add(0, 0, 1);
-                if (Intersection.intersect((int) left.x, (int) left.y, (int) left.z, gameHandler.getCamera(), result) && result.x < closestResult) {
+                if (Intersection.intersect((int) left.x, (int) left.y, (int) left.z, getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, 0, 1);
                 }
 
                 Vector3 right = absoluteBlockPos.add(0, 0, -1);
-                if (Intersection.intersect((int) right.x, (int) right.y, (int) right.z, gameHandler.getCamera(), result) && result.x < closestResult) {
+                if (Intersection.intersect((int) right.x, (int) right.y, (int) right.z, getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, 0, -1);
                 }
 
                 Vector3 up = absoluteBlockPos.add(0, 1, 0);
-                if (Intersection.intersect((int) up.x, (int) up.y, (int) up.z, gameHandler.getCamera(), result) && result.x < closestResult) {
+                if (Intersection.intersect((int) up.x, (int) up.y, (int) up.z, getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, 1, 0);
                 }
 
                 Vector3 down = absoluteBlockPos.add(0, -1, 0);
-                if (Intersection.intersect((int) down.x, (int) down.y, (int) down.z, gameHandler.getCamera(), result) && result.x < closestResult) {
+                if (Intersection.intersect((int) down.x, (int) down.y, (int) down.z, getCamera(), result) && result.x < closestResult) {
                     closestResult = result.x;
                     closestValue = absoluteBlockPos.add(0, -1, 0);
                 }
@@ -402,7 +397,7 @@ public class MainGameScene extends AbstractGameScene {
 
         Collidable previous = null;
 
-        for (Collidable collidable : gameHandler.getCollisionManager().getSelectionItems(getCamera().getPosition())) {
+        for (Collidable collidable : getCollisionManager().getSelectionItems(getCamera().getPosition())) {
             collidable.setSelected(false);
             min.set(collidable.getColPosition().toJoml());
             max.set(collidable.getColPosition().toJoml());

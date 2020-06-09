@@ -14,16 +14,17 @@ import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractMenuScene;
 import org.kakara.engine.ui.RGBA;
-import org.kakara.engine.ui.components.Rectangle;
 import org.kakara.engine.ui.components.Sprite;
-import org.kakara.engine.ui.components.Text;
+import org.kakara.engine.ui.components.shapes.Rectangle;
+import org.kakara.engine.ui.components.text.Text;
+import org.kakara.engine.ui.constraints.GridConstraint;
+import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
+import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.events.HUDClickEvent;
 import org.kakara.engine.ui.events.HUDHoverEnterEvent;
 import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
 import org.kakara.engine.ui.items.ComponentCanvas;
-import org.kakara.engine.ui.properties.GridProperty;
-import org.kakara.engine.ui.properties.HorizontalCenterProperty;
-import org.kakara.engine.ui.properties.VerticalCenterProperty;
+
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
 
@@ -65,7 +66,7 @@ public class MainMenuScene extends AbstractMenuScene {
         title.setLineWidth(100*6+5);
         title.setColor(new RGBA(255, 255, 255, 1));
         title.setPosition(0, 250);
-        title.addProperty(new HorizontalCenterProperty());
+        title.addConstraint(new HorizontalCenterConstraint());
         componentCanvas.add(title);
 
         //TODO Get actual version number.
@@ -74,7 +75,7 @@ public class MainMenuScene extends AbstractMenuScene {
         versionNumber.setLineWidth(19*6+5);
         versionNumber.setColor(new RGBA(255, 255, 255, 1));
         versionNumber.setPosition(title.getPosition().x, 300);
-        versionNumber.addProperty(new GridProperty(12, 30, 3, 11));
+        versionNumber.addConstraint(new GridConstraint(12, 30, 3, 11));
         componentCanvas.add(versionNumber);
 
         /*
@@ -83,13 +84,13 @@ public class MainMenuScene extends AbstractMenuScene {
 
         if(!kakaraGame.getClient().getGameSettings().isTestMode()){
             Rectangle singlePlayer = new Rectangle(new Vector2(0, 370), new Vector2(500, 60), new RGBA(255, 255, 255, 0.5f));
-            singlePlayer.addProperty(new HorizontalCenterProperty());
+            singlePlayer.addConstraint(new HorizontalCenterConstraint());
             Text singlePlayerText = new Text("Error: Kakara is not in test mode", roboto);
             singlePlayerText.setSize(40);
             singlePlayerText.setLineWidth(500);
             singlePlayerText.setTextAlign(TextAlign.CENTER | TextAlign.MIDDLE);
-            singlePlayerText.addProperty(new VerticalCenterProperty());
-            singlePlayerText.addProperty(new HorizontalCenterProperty());
+            singlePlayerText.addConstraint(new VerticalCenterConstraint());
+            singlePlayerText.addConstraint(new HorizontalCenterConstraint());
             singlePlayer.add(singlePlayerText);
             componentCanvas.add(singlePlayer);
             add(componentCanvas);
@@ -100,13 +101,13 @@ public class MainMenuScene extends AbstractMenuScene {
          * The single player button.
          */
         Rectangle singlePlayer = new Rectangle(new Vector2(0, 370), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
-        singlePlayer.addProperty(new HorizontalCenterProperty());
+        singlePlayer.addConstraint(new HorizontalCenterConstraint());
         Text singlePlayerText = new Text("SINGLEPLAYER", roboto);
         singlePlayerText.setSize(40);
         singlePlayerText.setLineWidth(300);
         singlePlayerText.setTextAlign(TextAlign.CENTER | TextAlign.MIDDLE);
-        singlePlayerText.addProperty(new VerticalCenterProperty());
-        singlePlayerText.addProperty(new HorizontalCenterProperty());
+        singlePlayerText.addConstraint(new VerticalCenterConstraint());
+        singlePlayerText.addConstraint(new HorizontalCenterConstraint());
         singlePlayer.add(singlePlayerText);
 
         singlePlayer.addUActionEvent((HUDHoverEnterEvent) vector2 -> singlePlayer.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);
@@ -120,13 +121,13 @@ public class MainMenuScene extends AbstractMenuScene {
          * The multi player button.
          */
         Rectangle multiPlayer = new Rectangle(new Vector2(0, 500), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
-        multiPlayer.addProperty(new HorizontalCenterProperty());
+        multiPlayer.addConstraint(new HorizontalCenterConstraint());
         Text multiPlayerText = new Text("MULTIPLAYER", roboto);
         multiPlayerText.setSize(40);
         multiPlayerText.setLineWidth(300);
         multiPlayerText.setTextAlign(TextAlign.CENTER | TextAlign.MIDDLE);
-        multiPlayerText.addProperty(new VerticalCenterProperty());
-        multiPlayerText.addProperty(new HorizontalCenterProperty());
+        multiPlayerText.addConstraint(new VerticalCenterConstraint());
+        multiPlayerText.addConstraint(new HorizontalCenterConstraint());
         multiPlayer.add(multiPlayerText);
 
         multiPlayer.addUActionEvent((HUDHoverEnterEvent) vector2 -> multiPlayer.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);

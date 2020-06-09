@@ -1,7 +1,7 @@
 package org.kakara.client;
 
+import org.kakara.client.scenes.MainGameScene;
 import org.kakara.client.scenes.MainMenuScene;
-import org.kakara.client.scenes.TestUIScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 
@@ -10,6 +10,7 @@ import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.serializers.messagepack.MPSerializerRegistrar;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.mod.KakaraMod;
@@ -55,7 +56,7 @@ public class KakaraGame implements Game {
         client.getEventManager().load(client);
         client.getModManager().load(client);
         MPSerializerRegistrar.load();
-}
+    }
 
     @Override
     public void start(GameHandler gameHandler) throws Exception {
@@ -63,8 +64,11 @@ public class KakaraGame implements Game {
         this.gameHandler = gameHandler;
         //Load MainMenuScene
         loadMusicManager();
-        MainMenuScene mainMenuScene = new MainMenuScene(gameHandler, this);
-        gameHandler.getSceneManager().setScene(mainMenuScene);
+    }
+
+    @Override
+    public Scene firstScene(GameHandler gameHandler) throws Exception {
+        return new MainMenuScene(gameHandler, this);
     }
 
     private void loadMusicManager() {

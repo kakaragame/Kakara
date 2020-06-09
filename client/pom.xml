@@ -189,7 +189,7 @@
         <dependency>
             <groupId>org.kakara</groupId>
             <artifactId>engine</artifactId>
-            <version>1.0-RC1-SNAPSHOT</version>
+            <version>1.0-SNAPSHOT-er1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

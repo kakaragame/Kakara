@@ -36,6 +36,7 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
+import org.kakara.engine.item.mesh.Mesh;
 import org.kakara.engine.math.Intersection;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;

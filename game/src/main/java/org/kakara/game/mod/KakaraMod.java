@@ -1,12 +1,26 @@
 package org.kakara.game.mod;
 
 import org.kakara.core.GameInstance;
+import org.kakara.core.Kakara;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.ModRules;
 import org.kakara.core.mod.ModType;
 import org.slf4j.Logger;
 
 public class KakaraMod implements Mod {
+    private static KakaraMod instance;
+private GameInstance gameInstance;
+    public KakaraMod(GameInstance gameInstance) {
+        this.gameInstance = gameInstance;
+        if (instance != null) throw new RuntimeException("Kakara has already been initialized");
+        instance = this;
+    }
+
+    public static KakaraMod getInstance() {
+        if (instance == null) throw new RuntimeException("Kakara is Not Ready");
+        return instance;
+    }
+
     @Override
     public String getName() {
         return "Kakara";
@@ -39,7 +53,7 @@ public class KakaraMod implements Mod {
 
     @Override
     public Logger getLogger() {
-        return null;
+        return Kakara.LOGGER;
     }
 
     @Override
@@ -59,6 +73,6 @@ public class KakaraMod implements Mod {
 
     @Override
     public GameInstance getGameInstance() {
-        return null;
+        return gameInstance;
     }
 }

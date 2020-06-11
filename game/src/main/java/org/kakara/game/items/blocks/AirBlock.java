@@ -1,23 +1,17 @@
 package org.kakara.game.items.blocks;
 
-import org.kakara.core.annotations.Hardness;
-import org.kakara.core.annotations.Key;
-import org.kakara.core.annotations.Name;
-import org.kakara.core.annotations.Texture;
+import org.kakara.core.NameKey;
 import org.kakara.core.events.entity.StepOnEvent;
 import org.kakara.core.events.player.PlaceEvent;
 import org.kakara.core.events.player.click.ClickEvent;
+import org.kakara.core.game.Block;
 import org.kakara.core.mod.Mod;
-import org.kakara.core.mod.game.ModBlock;
+import org.kakara.game.NameKeyUtils;
+import org.kakara.game.mod.KakaraMod;
 
-@Name("Air")
-@Key("air")
 //Not to be rendered. It exists solely. So you can set a block to air.
-public class AirBlock extends ModBlock {
-    public AirBlock(Mod mod) {
-        super(mod);
-    }
-
+public class AirBlock implements Block {
+public static final String KEY = "AIR";
     @Override
     public void onStep(StepOnEvent event) {
 
@@ -28,18 +22,44 @@ public class AirBlock extends ModBlock {
 
     }
 
-
-
-
     @Override
     public float getHardness() {
         return 0;
     }
 
+    @Override
+    public String getName() {
+        return "air";
+    }
+
+    @Override
+    public int getId() {
+        return 0;
+    }
 
     @Override
     public String getTexture() {
-        return "";
+        return null;
+    }
+
+    @Override
+    public String getModel() {
+        return null;
+    }
+
+    @Override
+    public NameKey getNameKey() {
+        return NameKeyUtils.newKakaraNameKey(KEY);
+    }
+
+    @Override
+    public String getKey() {
+        return KEY;
+    }
+
+    @Override
+    public Mod getMod() {
+        return KakaraMod.getInstance();
     }
 
     @Override

@@ -165,6 +165,7 @@ public class MainGameScene extends AbstractGameScene {
         try {
             Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
             MeshGameItem object = new MeshGameItem(mainPlayer);
+            object.setVisible(false);
             object.setPosition((float) server.getPlayerEntity().getLocation().getX(), (float) server.getPlayerEntity().getLocation().getY(), (float) server.getPlayerEntity().getLocation().getZ());
             object.setScale(0.3f);
             object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
@@ -259,6 +260,7 @@ public class MainGameScene extends AbstractGameScene {
         player.getGameItemID().ifPresent(uuid -> {
             getItemByID(uuid).ifPresent((gameItem) -> {
                 MeshGameItem item = (MeshGameItem) gameItem;
+
                 Camera gameCamera = getCamera();
                 KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
                 if (ki.isKeyPressed(GLFW_KEY_W)) {
@@ -312,7 +314,7 @@ public class MainGameScene extends AbstractGameScene {
                 RenderChunk parentChunk = rb.getParentChunk();
                 parentChunk.removeBlock(rb);
                 parentChunk.regenerateChunk(getTextureAtlas());
-                server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem("Kakara:air").get()), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
+                server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
             }
         } else if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20);

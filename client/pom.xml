@@ -70,6 +70,10 @@
             <id>kakara-repo</id>
             <url>https://repo.kingtux.me/storages/maven/kakara</url>
         </repository>
+        <repository>
+            <id>ryandw11</id>
+            <url>https://repo.kingtux.me/storages/maven/ryandw11</url>
+        </repository>
 
     </repositories>
 
@@ -211,8 +215,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.ryandw11</groupId>
@@ -220,9 +224,9 @@
             <version>master-104a60aa59-1</version>
         </dependency>
         <dependency>
-            <groupId>com.github.ryandw11</groupId>
-            <artifactId>ODS</artifactId>
-            <version>4db289ebdc</version>
+            <groupId>me.ryandw11</groupId>
+            <artifactId>ods</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

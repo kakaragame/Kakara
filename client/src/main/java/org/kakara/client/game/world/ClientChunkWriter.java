@@ -2,7 +2,9 @@ package org.kakara.client.game.world;
 
 import me.ryandw11.ods.Compression;
 import me.ryandw11.ods.ObjectDataStructure;
+import me.ryandw11.ods.exception.ODSException;
 import me.ryandw11.ods.tags.ObjectTag;
+import org.kakara.client.KakaraGame;
 import org.kakara.core.Kakara;
 import org.kakara.core.exceptions.SaveLoadException;
 import org.kakara.core.utils.CoreFileUtils;
@@ -45,15 +47,20 @@ public class ClientChunkWriter implements ChunkWriter {
         if (!chunkFile.exists()) return new NullChunk(chunkLocation);
 
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
-        ObjectTag objectTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
-
+        ObjectTag objectTag=null;
+        try {
+            objectTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
+        } catch (ODSException e) {
+            KakaraGame.LOGGER.error("Unable to get chunk", e);
+            //TODO Cancel World Load
+        }
         ChunkTag chunkTag;
-        if(objectTag instanceof  ChunkTag)
+        if (objectTag instanceof ChunkTag)
             chunkTag = (ChunkTag) objectTag;
         else
             return new NullChunk(chunkLocation);
 
-        if(chunkTag == null)
+        if (chunkTag == null)
             return new NullChunk(chunkLocation);
         return chunkTag.getChunk();
     }
@@ -71,7 +78,7 @@ public class ClientChunkWriter implements ChunkWriter {
     public void writeChunk(Chunk chunk) {
         File chunkFile = getChunkFile(chunk.getLocation());
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
-        if(ods.find(getChunkKey(chunk.getLocation())))
+        if (ods.find(getChunkKey(chunk.getLocation())))
             ods.delete(getChunkKey(chunk.getLocation()));
         ods.append(new ChunkTag(chunk));
     }
@@ -79,12 +86,12 @@ public class ClientChunkWriter implements ChunkWriter {
     @Override
     public void writeChunks(List<Chunk> chunks) {
         //TODO this will impact speed. Improve this later.
-        for(Chunk chunk : chunks){
+        for (Chunk chunk : chunks) {
             writeChunk(chunk);
         }
     }
 
-    private String getChunkKey(ChunkLocation loc){
+    private String getChunkKey(ChunkLocation loc) {
         return loc.getX() + "-" + loc.getY() + "-" + loc.getZ();
     }
 }

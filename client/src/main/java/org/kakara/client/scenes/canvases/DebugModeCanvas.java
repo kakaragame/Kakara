@@ -20,7 +20,7 @@ import org.kakara.game.GameUtils;
 import java.net.MalformedURLException;
 
 
-public class DebugModeCanvas extends ComponentCanvas {
+public class DebugModeCanvas extends ActivateableCanvas {
     private static DebugModeCanvas instance;
     private KakaraGame kakaraGame;
     private Text fps;
@@ -37,7 +37,7 @@ public class DebugModeCanvas extends ComponentCanvas {
 
         ResourceManager resourceManager = GameHandler.getInstance().getResourceManager();
 
-        Font  roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), scene);
+        Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), scene);
 
 
         fps = new Text("60", roboto);
@@ -63,6 +63,7 @@ public class DebugModeCanvas extends ComponentCanvas {
 
     }
 
+
     public static DebugModeCanvas getInstance(KakaraGame kakaraGame, MainGameScene scene) {
         if (instance == null) {
             instance = new DebugModeCanvas(kakaraGame, scene);
@@ -85,6 +86,11 @@ public class DebugModeCanvas extends ComponentCanvas {
         removeComponent(location);
         removeComponent(chunkLocation);
         removeComponent(numberOfChunksLoaded);
+    }
+
+    @Override
+    void close() {
+        instance = null;
     }
 
     public void add() {

@@ -13,6 +13,7 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientChunk;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
+import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.client.scenes.uicomponenets.ChatComponent;
 import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
@@ -74,7 +75,6 @@ import java.util.stream.Collectors;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MainGameScene extends AbstractGameScene {
-    private boolean debugMode = true;
     private KakaraGame kakaraGame;
     private Server server;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -86,7 +86,7 @@ public class MainGameScene extends AbstractGameScene {
         setCurserStatus(false);
         this.server = server;
         this.kakaraGame = kakaraGame;
-        renderTextureCache = CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<String, RenderTexture>() {
+        renderTextureCache = CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<>() {
             @Override
             public RenderTexture load(String s) throws Exception {
                 return getResource(s);
@@ -98,16 +98,10 @@ public class MainGameScene extends AbstractGameScene {
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
         if (e.isKeyPressed(GLFW_KEY_F3)) {
-            if (debugMode) {
-                debugMode = false;
-                DebugModeCanvas.getInstance(kakaraGame, this).remove();
-            } else {
-                debugMode = true;
-                DebugModeCanvas.getInstance(kakaraGame, this).add();
-            }
+            DebugModeCanvas.getInstance(kakaraGame, this).switchStatus();
         }
         if (e.isKeyPressed(GLFW_KEY_ESCAPE) && !chatComponent.isFocused()) {
-            System.exit(1);
+            PauseMenuCanvas.getInstance(kakaraGame, this).switchStatus();
         }
     }
 
@@ -120,14 +114,15 @@ public class MainGameScene extends AbstractGameScene {
     public void loadGraphics(GameHandler handler) {
         //getHUD().addFont(kakaraGame.getFont());
         getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
+        getHUD().addItem(PauseMenuCanvas.getInstance(kakaraGame, this));
 
         var resourceManager = gameHandler.getResourceManager();
         List<RenderTexture> textures = new ArrayList<>();
 
         for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {
 
-                RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.getLocalPath()));
-                textures.add(txt1);
+            RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.getLocalPath()));
+            textures.add(txt1);
 
         }
         File file = new File(Kakara.getWorkingDirectory(), "tmp");
@@ -191,8 +186,10 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float interval) {
+
         server.update();
         playerMovement();
+
         if (chatComponent != null) {
             if (server instanceof IntegratedServer) {
                 ((IntegratedServer) server).newMessages().forEach(s -> {
@@ -249,9 +246,13 @@ public class MainGameScene extends AbstractGameScene {
 
     private void playerMovement() {
 
-        if (debugMode) {
+        if (DebugModeCanvas.getInstance(kakaraGame, this).isActivated()) {
             DebugModeCanvas.getInstance(kakaraGame, this).update();
         }
+        if (server instanceof IntegratedServer) {
+            if (PauseMenuCanvas.getInstance(kakaraGame, this).isActivated()) return;
+        }
+        PauseMenuCanvas.getInstance(kakaraGame, this).update();
 
         if (chatComponent.isFocused()) return;
 

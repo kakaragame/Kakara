@@ -13,12 +13,16 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientChunk;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
+import org.kakara.client.scenes.canvases.HotBarCanvas;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.client.scenes.uicomponenets.ChatComponent;
 import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
+import org.kakara.core.NameKey;
+import org.kakara.core.game.ItemStack;
+import org.kakara.engine.GameEngine;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
@@ -68,7 +72,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -80,6 +83,9 @@ public class MainGameScene extends AbstractGameScene {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ChatComponent chatComponent;
     private LoadingCache<String, RenderTexture> renderTextureCache;
+
+    // TODO improve this
+    private HotBarCanvas hotBarCanvas;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -139,6 +145,9 @@ public class MainGameScene extends AbstractGameScene {
         }
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
 
+        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderTextureCache);
+        hotBarCanvas.show();
+
         ComponentCanvas main = new ComponentCanvas(this);
         chatComponent = new ChatComponent(roboto, false, this);
         chatComponent.setPosition(0, 170);
@@ -157,6 +166,8 @@ public class MainGameScene extends AbstractGameScene {
         main.add(indicator);
 
         add(main);
+        add(hotBarCanvas);
+        add(hotBarCanvas.getObjectCanvas());
         try {
             Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
             MeshGameItem object = new MeshGameItem(mainPlayer);
@@ -368,15 +379,23 @@ public class MainGameScene extends AbstractGameScene {
                 final Vector3 closValue = closestValue;
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
                 server.getPlayerEntity().getLocation().getWorld().get().getChunkAt(chunkLoc).thenAccept((chunk) -> {
+                    gameHandler.getGameEngine().addQueueItem(() -> {
                     ClientChunk cc = (ClientChunk) chunk;
                     List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
                     RenderChunk desiredChunk = rcc.get(0);
                     Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
                     if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
-                        RenderBlock rbs = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(0), newBlockLoc);
-                        desiredChunk.addBlock(rbs);
-                        desiredChunk.regenerateChunkAsync(getTextureAtlas());
+                        ItemStack is = Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVanilla", "stone")).get());
+//                        server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem("KVanilla:stone").get()), new Location( newBlockLoc.x,  newBlockLoc.y,  newBlockLoc.z));
+
+
+                            RenderTexture txt = hotBarCanvas.getCurrentItem();
+                            RenderBlock rbs = new RenderBlock(new BlockLayout(), txt, newBlockLoc);
+                            desiredChunk.addBlock(rbs);
+                            desiredChunk.regenerateChunkAsync(getTextureAtlas());
+
                     }
+                    });
                 });
 
             }

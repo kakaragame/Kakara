@@ -96,13 +96,20 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public Resource getTexture(String s, TextureResolution i, Mod mod) {
+        return getTexture(s, i, mod, new ResourceCheckList());
+    }
+
+    public Resource getTexture(String s, TextureResolution i, Mod mod, ResourceCheckList resourceCheckList) {
+
         String path = mod.getName().toLowerCase() + "/texture/" + i.getResolution() + "/" + s;
         File directory = new File(resourceDirectory, correctPath(path));
         if (!directory.exists()) {
+            resourceCheckList.checked(i);
+            if (resourceCheckList.hasAllBeenChecked()) return null;
             if (i == TextureResolution._4) {
-                return getTexture(s, TextureResolution._1024, mod);
+                return getTexture(s, TextureResolution._2048, mod, resourceCheckList);
             }
-            return getTexture(s, TextureResolution.get(i.getResolution() / 2), mod);
+            return getTexture(s, TextureResolution.get(i.getResolution() / 2), mod, resourceCheckList);
         }
         return new Resource(directory, path);
     }

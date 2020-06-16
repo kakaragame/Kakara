@@ -11,6 +11,7 @@ import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
+import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.game.world.ClientChunk;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
@@ -145,7 +146,7 @@ public class MainGameScene extends AbstractGameScene {
         }
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
 
-        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderTextureCache);
+        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderTextureCache, (PlayerContentInventory) server.getPlayerEntity().getInventory());
         hotBarCanvas.show();
 
         ComponentCanvas main = new ComponentCanvas(this);

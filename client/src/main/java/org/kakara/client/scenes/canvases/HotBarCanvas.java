@@ -1,6 +1,7 @@
 package org.kakara.client.scenes.canvases;
 
 import com.google.common.cache.LoadingCache;
+import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.core.Kakara;
 import org.kakara.core.NameKey;
 import org.kakara.core.game.ItemStack;
@@ -24,6 +25,7 @@ import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
 import org.kakara.engine.ui.objectcanvas.UIObject;
+import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
 import java.util.concurrent.ExecutionException;
@@ -39,22 +41,21 @@ public class HotBarCanvas extends ComponentCanvas {
     private final RGBA selected = new RGBA(255, 255, 255, 0.4f);
     private final RGBA normal = new RGBA(0, 0, 0, 0.4f);
 
-    private final ItemStack[] items = {getItem(new NameKey("KVanilla", "stone")), getItem(new NameKey("KVanilla", "dirt")),
-            getItem(new NameKey("KVanilla", "grassy_dirt"))};
+    private PlayerContentInventory contentInventory;
 
     private ObjectCanvas objectCanvas;
     private LoadingCache<String, RenderTexture> renderTextureCache;
 
-    public HotBarCanvas(Scene scene, TextureAtlas atlas, LoadingCache<String, RenderTexture> renderTextureCache) {
+    public HotBarCanvas(Scene scene, TextureAtlas atlas, LoadingCache<String, RenderTexture> renderTextureCache, PlayerContentInventory contentInventory) {
         super(scene);
-
+        this.contentInventory = contentInventory;
         scene.getEventManager().registerHandler(this);
 
         this.renderTextureCache = renderTextureCache;
 
         mainPanel = new Panel();
 
-        for(int i = 0; i < 5; i++){
+        for (int i = 0; i < 5; i++) {
             Rectangle rect = new Rectangle();
             rect.setScale(50, 50);
             rect.setColor(normal);
@@ -69,10 +70,12 @@ public class HotBarCanvas extends ComponentCanvas {
 
         add(mainPanel);
 
-        try{
+        try {
             ObjectCanvas objectCanvas = new ObjectCanvas(scene);
-            for(int i = 0; i < 3; i++){
-                RenderTexture txt = getTexture(items[i]);
+            for (int i = 0; i < 3; i++) {
+                ItemStack itemStack = contentInventory.getHotBarContents()[i];
+                if (itemStack.getItem() instanceof AirBlock) continue;
+                RenderTexture txt = getTexture(itemStack);
 
                 AtlasMesh mesh = new AtlasMesh(txt, atlas, new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                 UIObject uiObject = new UIObject(mesh);
@@ -87,13 +90,13 @@ public class HotBarCanvas extends ComponentCanvas {
             }
 
             this.objectCanvas = objectCanvas;
-        }catch (ExecutionException ee){
+        } catch (ExecutionException ee) {
             ee.printStackTrace();
         }
 
     }
 
-    private ItemStack getItem(NameKey key){
+    private ItemStack getItem(NameKey key) {
         return Kakara.createItemStack(Kakara.getItemManager().getItem(key).get());
     }
 
@@ -101,26 +104,25 @@ public class HotBarCanvas extends ComponentCanvas {
         return renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 
-    public RenderTexture getCurrentItem(){
-        try{
-            return getTexture(items[selectedIndex]);
-        }
-        catch(ExecutionException ee){
+    public RenderTexture getCurrentItem() {
+        try {
+            return getTexture(contentInventory.getHotBarContents()[selectedIndex]);
+        } catch (ExecutionException ee) {
             ee.printStackTrace();
             return null;
         }
     }
 
     @EventHandler
-    public void onKeyHit(KeyPressEvent evt){
+    public void onKeyHit(KeyPressEvent evt) {
         int number;
-        try{
+        try {
             number = Integer.parseInt(evt.getKeyName());
-        }catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             return;
         }
 
-        if(number < 0 || number > 6) return;
+        if (number < 0 || number > 6) return;
 
         number--;
 
@@ -129,15 +131,15 @@ public class HotBarCanvas extends ComponentCanvas {
         rects[number].setColor(selected);
     }
 
-    public void show(){
+    public void show() {
         mainPanel.setVisible(true);
     }
 
-    public void hide(){
+    public void hide() {
         mainPanel.setVisible(false);
     }
 
-    public ObjectCanvas getObjectCanvas(){
+    public ObjectCanvas getObjectCanvas() {
         return objectCanvas;
     }
 

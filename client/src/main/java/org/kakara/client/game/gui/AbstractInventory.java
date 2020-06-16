@@ -42,6 +42,14 @@ public abstract class AbstractInventory implements Inventory {
         contents.set(index, itemStack);
     }
 
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public List<ItemStack> getListContent() {
+        return contents;
+    }
+
     @NotNull
     @Override
     public Iterator<ItemStack> iterator() {

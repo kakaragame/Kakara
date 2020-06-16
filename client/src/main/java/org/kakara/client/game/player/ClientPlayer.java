@@ -34,11 +34,13 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     private short health = 20;
     private short hunger = 20;
     private UUID gameItemID;
+    private PlayerContentInventory contentInventory;
 
     public ClientPlayer(JsonObject jsonObject, @NotNull Location location, IntegratedServer integratedServer) {
         super(jsonObject, integratedServer);
         entity = new PlayerEntity(getName());
         this.location = location;
+        contentInventory= new PlayerContentInventory(36);
     }
 
     @Override
@@ -151,7 +153,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     @Override
     public @NotNull Inventory getInventory() {
-        return null;
+        return contentInventory;
     }
 
     @Override

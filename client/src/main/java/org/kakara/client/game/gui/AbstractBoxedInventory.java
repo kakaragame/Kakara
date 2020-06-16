@@ -10,14 +10,14 @@ public abstract class AbstractBoxedInventory extends AbstractInventory implement
     public AbstractBoxedInventory(int capacity) {
         super(capacity);
         if ((capacity % rowSize()) != 0) {
-            throw new RuntimeException("Capacity must be divisible by "+rowSize());
+            throw new RuntimeException("Capacity must be divisible by " + rowSize());
         }
     }
 
     abstract int rowSize();
 
     public static int pointToIndex(Point point, int rowSize) {
-        return (point.x * rowSize) + point.y;
+        return (point.y - 1) * rowSize + point.x - 1;
     }
 
     @Override

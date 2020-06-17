@@ -51,7 +51,7 @@ public class ClientChunkWriter implements ChunkWriter {
         try {
             objectTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
         } catch (ODSException e) {
-            KakaraGame.LOGGER.error("Unable to get chunk", e);
+            KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
             //TODO Cancel World Load
         }
         ChunkTag chunkTag;

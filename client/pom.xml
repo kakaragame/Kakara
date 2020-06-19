@@ -74,7 +74,10 @@
             <id>ryandw11</id>
             <url>https://repo.kingtux.me/storages/maven/ryandw11</url>
         </repository>
-
+        <repository>
+            <id>Ryandw11</id>
+            <url>https://repo.thevideogamevillage.com/repository/maven-releases/</url>
+        </repository>
     </repositories>
 
     <profiles>
@@ -219,9 +222,9 @@
             <artifactId>commons-collections4</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.ryandw11</groupId>
+            <groupId>me.ryandw11</groupId>
             <artifactId>Octree</artifactId>
-            <version>master-104a60aa59-1</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>me.ryandw11</groupId>

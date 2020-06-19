@@ -71,12 +71,12 @@
             <url>https://repo.kingtux.me/storages/maven/kakara</url>
         </repository>
         <repository>
-            <id>ryandw11</id>
-            <url>https://repo.kingtux.me/storages/maven/ryandw11</url>
-        </repository>
-        <repository>
             <id>Ryandw11</id>
             <url>https://repo.thevideogamevillage.com/repository/maven-releases/</url>
+        </repository>
+        <repository>
+            <id>Ryandw11-SNAPSHOT</id>
+            <url>https://repo.thevideogamevillage.com/repository/maven-snapshots/</url>
         </repository>
     </repositories>
 

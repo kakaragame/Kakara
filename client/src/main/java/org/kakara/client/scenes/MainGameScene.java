@@ -47,6 +47,7 @@ import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
+import org.kakara.engine.renderobjects.mesh.MeshType;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
@@ -227,7 +228,7 @@ public class MainGameScene extends AbstractGameScene {
                             rc.addBlock(rb);
                         }
                         clientChunk.setUpdatedHappened(false);
-                        rc.regenerateChunkAsync(getTextureAtlas());
+                        rc.regenerateChunk(getTextureAtlas(), MeshType.ASYNC);
                         getChunkHandler().addChunk(rc);
                         clientChunk.setRenderChunkID(rc.getId());
                     }
@@ -314,7 +315,7 @@ public class MainGameScene extends AbstractGameScene {
                 RenderBlock rb = (RenderBlock) col;
                 RenderChunk parentChunk = rb.getParentChunk();
                 parentChunk.removeBlock(rb);
-                parentChunk.regenerateChunk(getTextureAtlas());
+                parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                 server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
             }
         } else if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
@@ -375,7 +376,7 @@ public class MainGameScene extends AbstractGameScene {
                     if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
                         RenderBlock rbs = new RenderBlock(new BlockLayout(), getTextureAtlas().getTextures().get(0), newBlockLoc);
                         desiredChunk.addBlock(rbs);
-                        desiredChunk.regenerateChunkAsync(getTextureAtlas());
+                        desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     }
                 });
 

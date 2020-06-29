@@ -52,6 +52,7 @@ import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
+import org.kakara.engine.renderobjects.mesh.MeshType;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
@@ -239,7 +240,7 @@ public class MainGameScene extends AbstractGameScene {
                             rc.addBlock(rb);
                         }
                         clientChunk.setUpdatedHappened(false);
-                        rc.regenerateChunkAsync(getTextureAtlas());
+                        rc.regenerateChunk(getTextureAtlas(), MeshType.ASYNC);
                         getChunkHandler().addChunk(rc);
                         clientChunk.setRenderChunkID(rc.getId());
                     }
@@ -326,7 +327,7 @@ public class MainGameScene extends AbstractGameScene {
                 RenderBlock rb = (RenderBlock) col;
                 RenderChunk parentChunk = rb.getParentChunk();
                 parentChunk.removeBlock(rb);
-                parentChunk.regenerateChunk(getTextureAtlas());
+                parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                 server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
             }
         } else if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
@@ -381,21 +382,21 @@ public class MainGameScene extends AbstractGameScene {
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
                 server.getPlayerEntity().getLocation().getWorld().get().getChunkAt(chunkLoc).thenAccept((chunk) -> {
                     gameHandler.getGameEngine().addQueueItem(() -> {
-                    ClientChunk cc = (ClientChunk) chunk;
-                    List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
-                    RenderChunk desiredChunk = rcc.get(0);
-                    Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
-                    if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
-                        ItemStack is = Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVanilla", "stone")).get());
+                        ClientChunk cc = (ClientChunk) chunk;
+                        List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
+                        RenderChunk desiredChunk = rcc.get(0);
+                        Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
+                        if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
+                            ItemStack is = Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVanilla", "stone")).get());
 //                        server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem("KVanilla:stone").get()), new Location( newBlockLoc.x,  newBlockLoc.y,  newBlockLoc.z));
 
 
                             RenderTexture txt = hotBarCanvas.getCurrentItem();
                             RenderBlock rbs = new RenderBlock(new BlockLayout(), txt, newBlockLoc);
                             desiredChunk.addBlock(rbs);
-                            desiredChunk.regenerateChunkAsync(getTextureAtlas());
+                            desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
 
-                    }
+                        }
                     });
                 });
 

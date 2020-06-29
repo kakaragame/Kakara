@@ -40,7 +40,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         super(jsonObject, integratedServer);
         entity = new PlayerEntity(getName());
         this.location = location;
-        contentInventory= new PlayerContentInventory(36);
+        contentInventory= new PlayerContentInventory();
     }
 
     @Override

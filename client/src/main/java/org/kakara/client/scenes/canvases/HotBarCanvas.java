@@ -105,12 +105,19 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     public RenderTexture getCurrentItem() {
+        if (contentInventory.getHotBarContents()[selectedIndex] instanceof AirBlock) {
+            return null;
+        }
         try {
             return getTexture(contentInventory.getHotBarContents()[selectedIndex]);
         } catch (ExecutionException ee) {
             ee.printStackTrace();
             return null;
         }
+    }
+
+    public ItemStack getCurrentItemStack() {
+        return contentInventory.getHotBarContents()[selectedIndex];
     }
 
     @EventHandler

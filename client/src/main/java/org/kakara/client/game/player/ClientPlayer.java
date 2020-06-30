@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.core.Kakara;
+import org.kakara.core.NameKey;
 import org.kakara.core.events.entity.EntityTeleportEvent;
 import org.kakara.core.game.Entity;
 import org.kakara.core.gui.Inventory;
@@ -40,7 +41,8 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         super(jsonObject, integratedServer);
         entity = new PlayerEntity(getName());
         this.location = location;
-        contentInventory= new PlayerContentInventory();
+        contentInventory = new PlayerContentInventory();
+        contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVANILLA","DIRT")).get()), 1);
     }
 
     @Override

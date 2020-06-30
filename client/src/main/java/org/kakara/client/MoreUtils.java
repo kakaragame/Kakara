@@ -26,6 +26,14 @@ public class MoreUtils {
         return new Vector3(c.getX(), c.getY(), c.getZ());
     }
 
+    public static Location vector3ToLocation(Vector3 c, World world) {
+        return new Location(world, c.getX(), c.getY(), c.getZ());
+    }
+
+    public static Location vector3ToLocation(Vector3 c) {
+        return new Location(c.getX(), c.getY(), c.getZ());
+    }
+
     public static org.kakara.engine.resources.Resource coreResourceToEngineResource(Resource resource, KakaraGame kakaraGame) {
         return kakaraGame.getGameHandler().getResourceManager().getResource(resource.getLocalPath());
 

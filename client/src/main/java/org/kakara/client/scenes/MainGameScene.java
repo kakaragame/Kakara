@@ -13,6 +13,7 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.game.world.ClientChunk;
+import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
@@ -380,29 +381,34 @@ public class MainGameScene extends AbstractGameScene {
 
                 final Vector3 closValue = closestValue;
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
-                server.getPlayerEntity().getLocation().getWorld().get().getChunkAt(chunkLoc).thenAccept((chunk) -> {
-                    gameHandler.getGameEngine().addQueueItem(() -> {
-                        ClientChunk cc = (ClientChunk) chunk;
-                        List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
-                        RenderChunk desiredChunk = rcc.get(0);
-                        Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
-                        if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
-                            ItemStack is = Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVanilla", "stone")).get());
-//                        server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem("KVanilla:stone").get()), new Location( newBlockLoc.x,  newBlockLoc.y,  newBlockLoc.z));
+                Chunk chunk = ((ClientWorld) server.getPlayerEntity().getLocation().getWorld().get()).getChunkNow(chunkLoc);
 
+                ClientChunk cc = (ClientChunk) chunk;
+                List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
+                RenderChunk desiredChunk = rcc.get(0);
+                Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
+                if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
+                    //IGNORE Air
+                    if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
+                    RenderBlock rbs = null;
+                    try {
+                        rbs = new RenderBlock(new BlockLayout(),
+                                renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
-                            RenderTexture txt = hotBarCanvas.getCurrentItem();
-                            RenderBlock rbs = new RenderBlock(new BlockLayout(), txt, newBlockLoc);
-                            desiredChunk.addBlock(rbs);
-                            desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                    desiredChunk.addBlock(rbs);
+                    desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
+                    //THIS might work?
+                    cc.setGameBlock(new GameBlock(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunk.getLocation().getWorld().get()), hotBarCanvas.getCurrentItemStack()));
+                }
 
-                        }
-                    });
-                });
 
             }
 
         }
+
     }
 
     public Collidable getSecondGameItem(float distance) {

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.ChunkCleaner;
 import org.kakara.client.KakaraGame;
+import org.kakara.client.MoreUtils;
 import org.kakara.client.game.commands.KillCommand;
 import org.kakara.client.game.commands.SaveChunk;
 import org.kakara.client.game.commands.StatusCommand;
@@ -53,7 +54,7 @@ public class IntegratedServer implements Server {
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
         }
-        executorService = Executors.newFixedThreadPool(5);
+        executorService = Executors.newFixedThreadPool(MoreUtils.getPoolSize());
         playersFolder = new File(save.getSaveFolder(), "players");
         if (!playersFolder.exists()) playersFolder.mkdir();
         this.playerID = playerUUID;

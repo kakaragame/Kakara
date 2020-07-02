@@ -243,7 +243,9 @@ public class MainGameScene extends AbstractGameScene {
                             rc.addBlock(rb);
                         }
                         clientChunk.setUpdatedHappened(false);
-                        rc.regenerateChunk(getTextureAtlas(), MeshType.ASYNC);
+                        server.getExecutorService().submit(() -> {
+                            rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                        });
                         getChunkHandler().addChunk(rc);
                         clientChunk.setRenderChunkID(rc.getId());
                     }
@@ -418,7 +420,8 @@ public class MainGameScene extends AbstractGameScene {
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     //THIS might work?
-//                    cc.setGameBlock(new GameBlock(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunk.getLocation().getWorld().get()), hotBarCanvas.getCurrentItemStack()));
+                    cc.setGameBlock(new GameBlock(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), server.getPlayerEntity().getLocation().getWorld().get()), hotBarCanvas.getCurrentItemStack()));
+
                 }
 
 

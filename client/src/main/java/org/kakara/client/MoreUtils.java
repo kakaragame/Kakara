@@ -74,4 +74,14 @@ public class MoreUtils {
         }
         return itemStacks;
     }
+
+    public static int getPoolSize() {
+        if (System.getProperty("kakara.pool.size", "0").equals("0")) {
+            int suggested = Runtime.getRuntime().availableProcessors() / 2;
+            if (suggested < 4) {
+                return 4;
+            }
+        }
+        return Integer.parseInt(System.getProperty("kakara.pool.size"));
+    }
 }

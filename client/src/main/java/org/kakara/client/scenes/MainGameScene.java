@@ -34,9 +34,9 @@ import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.collision.BoxCollider;
-import org.kakara.engine.collision.Collidable;
-import org.kakara.engine.collision.Collider;
+import org.kakara.engine.physics.collision.BoxCollider;
+import org.kakara.engine.physics.collision.Collidable;
+import org.kakara.engine.physics.collision.Collider;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.input.KeyInput;
@@ -63,6 +63,7 @@ import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.items.ComponentCanvas;
 
 import org.kakara.engine.ui.text.Font;
+import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.items.blocks.AirBlock;
@@ -118,6 +119,8 @@ public class MainGameScene extends AbstractGameScene {
     public void work() {
 
     }
+
+    MeshGameItem test;
 
     @Override
     public void loadGraphics(GameHandler handler) {
@@ -176,12 +179,11 @@ public class MainGameScene extends AbstractGameScene {
             MeshGameItem object = new MeshGameItem(mainPlayer);
             object.setVisible(false);
             object.setPosition((float) server.getPlayerEntity().getLocation().getX(), (float) server.getPlayerEntity().getLocation().getY(), (float) server.getPlayerEntity().getLocation().getZ());
-            object.setScale(0.3f);
-            object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(1, 1.5f, 1)));
-            object.getCollider().setGravity(.10f);
-            object.getCollider().setUseGravity(false).setTrigger(false);
-            ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
-            getItemHandler().addItem(object);
+//            object.setScale(0.3f);
+            object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f)));
+//            ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
+            add(object);
+            test = object;
             ((ClientPlayer) server.getPlayerEntity()).setGameItemID(object.getId());
         } catch (Exception e) {
             e.printStackTrace();
@@ -260,6 +262,9 @@ public class MainGameScene extends AbstractGameScene {
         });
     }
 
+    boolean playerInJump = false;
+    float lastYPos = 0;
+
     private void playerMovement() {
 
         if (DebugModeCanvas.getInstance(kakaraGame, this).isActivated()) {
@@ -277,29 +282,40 @@ public class MainGameScene extends AbstractGameScene {
         player.getGameItemID().ifPresent(uuid -> {
             getItemByID(uuid).ifPresent((gameItem) -> {
                 MeshGameItem item = (MeshGameItem) gameItem;
+                item.setVelocityX(0);
+                item.setVelocityZ(0);
 
                 Camera gameCamera = getCamera();
                 KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
                 if (ki.isKeyPressed(GLFW_KEY_W)) {
-                    item.movePositionByCamera(0, 0, -0.3f, gameCamera);
+                    item.setVelocityByCamera(new Vector3(0, item.getVelocity().y, -7), gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_S)) {
-                    item.movePositionByCamera(0, 0, 0.3f, gameCamera);
+                    item.setVelocityByCamera(new Vector3(0, item.getVelocity().y, 7), gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_A)) {
-                    item.movePositionByCamera(-0.3f, 0, 0, gameCamera);
+                    item.setVelocityByCamera(new Vector3(-7, item.getVelocity().y, 0), gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_D)) {
-                    item.movePositionByCamera(0.3f, 0, 0, gameCamera);
+                    item.setVelocityByCamera(new Vector3(7, item.getVelocity().y, 0), gameCamera);
                 }
                 if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
                     item.movePositionByCamera(0, -0.3f, 0, gameCamera);
                 }
-                if (ki.isKeyPressed(GLFW_KEY_SPACE)) {
-                    item.movePositionByCamera(0, 0.5F, 0, gameCamera);
+                if (ki.isKeyPressed(GLFW_KEY_SPACE) && !playerInJump) {
+                    playerInJump = true;
+                    lastYPos = item.getPosition().y;
+                    item.setVelocityY(4);
+                }
+                if(playerInJump){
+                    item.movePositionByCamera(0, 0.3F, 0, gameCamera);
+                    if(item.getPosition().y > lastYPos + 3){
+                        playerInJump = false;
+                        item.setVelocityY(-9.18f);
+                    }
                 }
                 if (ki.isKeyPressed(GLFW_KEY_G))
-                    item.getCollider().setUseGravity(true);
+                    item.setVelocityY(-9.18f);
                 Location location = player.getLocation();
                 location.setX(item.getPosition().x);
                 location.setY(item.getPosition().y);
@@ -308,7 +324,7 @@ public class MainGameScene extends AbstractGameScene {
                 //I NEED HELP!
                 MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
                 player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
-                getCamera().setPosition(MoreUtils.locationToVector3(location).add(0, 2, 0));
+                getCamera().setPosition(MoreUtils.locationToVector3(location).add(0, 1, 0));
                 Location l = player.getLocation();
                 getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
 
@@ -324,8 +340,9 @@ public class MainGameScene extends AbstractGameScene {
      */
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
+        UUID playerID = ((ClientPlayer)server.getPlayerEntity()).getGameItemID().get();
         if (evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()) {
-            Collidable col = this.selectGameItems(20);
+            Collidable col = this.selectGameItems(20, playerID);
             if (col instanceof RenderBlock) {
                 RenderBlock rb = (RenderBlock) col;
                 RenderChunk parentChunk = rb.getParentChunk();
@@ -334,7 +351,7 @@ public class MainGameScene extends AbstractGameScene {
                 server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
             }
         } else if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
-            Collidable col = this.selectGameItems(20);
+            Collidable col = this.selectGameItems(20, playerID);
             if (col instanceof RenderBlock) {
                 RenderBlock rb = (RenderBlock) col;
                 RenderChunk parentChunk = rb.getParentChunk();
@@ -404,6 +421,7 @@ public class MainGameScene extends AbstractGameScene {
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     //THIS might work?
                     cc.setGameBlock(new GameBlock(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), server.getPlayerEntity().getLocation().getWorld().get()), hotBarCanvas.getCurrentItemStack()));
+
                 }
 
 

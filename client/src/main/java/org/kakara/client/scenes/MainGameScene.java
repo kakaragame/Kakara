@@ -1,6 +1,5 @@
 package org.kakara.client.scenes;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -22,9 +21,7 @@ import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
-import org.kakara.core.NameKey;
-import org.kakara.core.game.ItemStack;
-import org.kakara.engine.GameEngine;
+import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
@@ -36,7 +33,6 @@ import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.Collidable;
-import org.kakara.engine.physics.collision.Collider;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.input.KeyInput;
@@ -63,7 +59,6 @@ import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.items.ComponentCanvas;
 
 import org.kakara.engine.ui.text.Font;
-import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.items.blocks.AirBlock;
@@ -90,6 +85,7 @@ public class MainGameScene extends AbstractGameScene {
 
     // TODO improve this
     private HotBarCanvas hotBarCanvas;
+    private MeshGameItem blockSelector;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -188,6 +184,13 @@ public class MainGameScene extends AbstractGameScene {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Mesh m = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
+        m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png").getByteBuffer())));
+        m.setWireframe(true);
+        this.blockSelector = new MeshGameItem(m);
+        this.blockSelector.setScale(1.01f);
+        add(this.blockSelector);
     }
 
     private Texture loadSkyBoxTexture() {
@@ -328,15 +331,19 @@ public class MainGameScene extends AbstractGameScene {
                 Location l = player.getLocation();
                 getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
 
+                // Handle the block selector.
+                this.blockSelector.setPosition(item.getPosition().x, -10, item.getPosition().z);
+                Collidable objectFound = this.selectGameItems(20, uuid);
+                if(objectFound != null)
+                    this.blockSelector.setPosition(objectFound.getColPosition());
             });
 
         });
     }
 
     /*
-
         Block breaking code.
-        Does not do anything with the core code.
+        Does not do anything with the core code. (That is half true now)
      */
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
@@ -429,37 +436,6 @@ public class MainGameScene extends AbstractGameScene {
 
         }
 
-    }
-
-    public Collidable getSecondGameItem(float distance) {
-        Collidable selectedGameItem = null;
-        float closestDistance = distance;
-
-        Vector3f dir = new Vector3f();
-
-        dir = getCamera().getViewMatrix().positiveZ(dir).negate();
-
-        Vector3f max = new Vector3f();
-        Vector3f min = new Vector3f();
-        Vector2f nearFar = new Vector2f();
-
-        System.out.print(dir);
-
-        Collidable previous = null;
-
-        for (Collidable collidable : getCollisionManager().getSelectionItems(getCamera().getPosition())) {
-            collidable.setSelected(false);
-            min.set(collidable.getColPosition().toJoml());
-            max.set(collidable.getColPosition().toJoml());
-            min.add(-collidable.getColScale() / 2, -collidable.getColScale() / 2, -collidable.getColScale() / 2);
-            max.add(collidable.getColScale() / 2, collidable.getColScale() / 2, collidable.getColScale() / 2);
-            if (Intersectionf.intersectRayAab(getCamera().getPosition().toJoml(), dir, min, max, nearFar) && nearFar.x < closestDistance) {
-                closestDistance = nearFar.x;
-                previous = selectedGameItem;
-                selectedGameItem = collidable;
-            }
-        }
-        return previous;
     }
 
     private Optional<GameItem> getItemByID(UUID uuid) {

@@ -164,13 +164,12 @@ public class IntegratedServer implements Server {
         }
 
         if (getPlayerEntity() == null) return;
-        ChunkLocation start = GameUtils.getChunkLocation(getPlayerEntity().getLocation());
-        for (int x = (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
-            for (int y = (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
-                for (int z = (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
-                    ChunkLocation chunkLocation = new ChunkLocation(x, y, z);
-                    if (GameUtils.isLocationInsideCurrentLocationRadius(start, chunkLocation, RADIUS)) {
-                        getPlayerEntity().getLocation().getWorld().get().getChunkAt(chunkLocation);
+        Location start = getPlayerEntity().getLocation();
+        for (int x = (int) (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
+            for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
+                for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
+                    if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
+                        getPlayerEntity().getLocation().getWorld().get().getChunkAt(x, y, z);
                     }
                 }
             }

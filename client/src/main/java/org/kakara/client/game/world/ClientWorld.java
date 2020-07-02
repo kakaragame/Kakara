@@ -159,11 +159,54 @@ public class ClientWorld implements World {
         return chunk;
     }
 
+    public Chunk getChunkNow(int x, int y, int z) {
+
+        try {
+            Chunk chunk = loadedChunks.get(x, y, z);
+            if (chunk != null) {
+                return chunk;
+            }
+        } catch (Exception e) {
+        }
+        if (chunkIO != null) {
+            try {
+                List<Chunk> chunks = chunkIO.get(Collections.singletonList(new ChunkLocation(x, y, z))).get();
+                if (!chunks.isEmpty()) {
+                    chunks.forEach(this::loadChunk);
+                    return chunks.get(0);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                KakaraGame.LOGGER.warn("ChunkIO failure", e);
+            }
+        } else {
+            KakaraGame.LOGGER.warn("No ChunkIO found");
+        }
+        ChunkBase base = null;
+        try {
+            base = chunkGenerator.generateChunk(seed, random, this, x, y, z);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Chunk chunk = new ClientChunk(base);
+        loadChunk(chunk);
+        return chunk;
+    }
+
     @Override
     public CompletableFuture<Chunk> getChunkAt(ChunkLocation location) {
         CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
         server.getExecutorService().submit(() -> {
             completableFuture.complete(getChunkNow(location));
+        });
+
+        return completableFuture;
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Chunk> getChunkAt(int x, int y, int z) {
+        CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
+        server.getExecutorService().submit(() -> {
+            completableFuture.complete(getChunkNow(x, y, z));
         });
 
         return completableFuture;

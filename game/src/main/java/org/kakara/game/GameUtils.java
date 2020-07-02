@@ -21,6 +21,14 @@ public class GameUtils {
                 Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius * 16), 2);
     }
 
+    public static boolean isLocationInsideCurrentLocationRadius(int cX, int cY, int cZ, int lX, int lY, int lZ, int radius) {
+        //(x-cx)^2 + (y-cy)^2 + (z-cz)^2 < r^2
+        //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?
+        return (Math.pow((cX - lX), 2)) +
+                Math.pow((cY - lY), 2) +
+                Math.pow((cZ - lZ),2) <= Math.pow((radius * 16), 2);
+    }
+
     public static ChunkLocation getChunkFileLocation(ChunkLocation location) {
         int x = (int) Math.floor(location.getX() / 64);
         int y = (int) Math.floor(location.getY() / 64);

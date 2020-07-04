@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 public class ClientWorld implements World {
     private final File worldFolder;
     private final Octree<Chunk> loadedChunks;
+    private final Octree<Boolean> chunksBeingActivlyLoaded;
     private final List<ChunkLocation> loadedChunkLocations = new CopyOnWriteArrayList<>();
     private final UUID worldID;
     private final String name;
@@ -45,6 +46,7 @@ public class ClientWorld implements World {
         this.worldFolder = worldFolder;
         this.server = server;
         loadedChunks = new Octree<>(-10000000, -100, -10000000, 10000000, 10000, 10000000);
+        chunksBeingActivlyLoaded = new Octree<>(-10000000, -100, -10000000, 10000000, 10000, 10000000);
         //TODO replace null with instance of ChunkWriter
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
@@ -135,6 +137,7 @@ public class ClientWorld implements World {
             }
         } catch (Exception e) {
         }
+        chunksBeingActivlyLoaded.insert(location.getX(), location.getY(), location.getZ(), true);
         if (chunkIO != null) {
             try {
                 List<Chunk> chunks = chunkIO.get(Collections.singletonList(location)).get();
@@ -168,6 +171,7 @@ public class ClientWorld implements World {
             }
         } catch (Exception e) {
         }
+        chunksBeingActivlyLoaded.insert(x, y, z, true);
         if (chunkIO != null) {
             try {
                 List<Chunk> chunks = chunkIO.get(Collections.singletonList(new ChunkLocation(x, y, z))).get();
@@ -212,6 +216,7 @@ public class ClientWorld implements World {
         return completableFuture;
     }
 
+
     @Override
     public void unloadChunk(Chunk chunk) {
         loadedChunkLocations.remove(chunk.getLocation());
@@ -234,9 +239,20 @@ public class ClientWorld implements World {
         try {
             loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
             loadedChunkLocations.add(chunk.getLocation());
+            chunksBeingActivlyLoaded.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
         } catch (PointExistsException ignored) {
 
         }
+    }
+
+    public void loadChunkForRendering(int x, int y, int z) {
+        if (isChunkLoaded(x, y, z)) {
+            return;
+        }
+        if (chunksBeingActivlyLoaded.find(x, y, z)) {
+            return;
+        }
+        getChunkAt(x, y, z);
     }
 
     @Override
@@ -244,6 +260,10 @@ public class ClientWorld implements World {
         return loadedChunks.find(location.getX(), location.getY(), location.getZ());
     }
 
+    @Override
+    public boolean isChunkLoaded(int x, int y, int z) {
+        return loadedChunks.find(x, y, z);
+    }
 
     public List<Chunk> getLoadedChunksList() {
         List<Chunk> chunks = new ArrayList<>();

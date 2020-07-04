@@ -127,9 +127,9 @@ public class MainGameScene extends AbstractGameScene {
         var resourceManager = gameHandler.getResourceManager();
         List<RenderTexture> textures = new ArrayList<>();
 
-        for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {
+        for (org.kakara.core.resources.Texture resource : Kakara.getResourceManager().getAllTextures()) {
 
-            RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.getLocalPath()));
+            RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.get().getLocalPath()));
             textures.add(txt1);
 
         }
@@ -310,9 +310,9 @@ public class MainGameScene extends AbstractGameScene {
                     lastYPos = item.getPosition().y;
                     item.setVelocityY(4);
                 }
-                if(playerInJump){
+                if (playerInJump) {
                     item.movePositionByCamera(0, 0.3F, 0, gameCamera);
-                    if(item.getPosition().y > lastYPos + 3){
+                    if (item.getPosition().y > lastYPos + 3) {
                         playerInJump = false;
                         item.setVelocityY(-9.18f);
                     }
@@ -334,7 +334,7 @@ public class MainGameScene extends AbstractGameScene {
                 // Handle the block selector.
                 this.blockSelector.setPosition(item.getPosition().x, -10, item.getPosition().z);
                 Collidable objectFound = this.selectGameItems(20, uuid);
-                if(objectFound != null)
+                if (objectFound != null)
                     this.blockSelector.setPosition(objectFound.getColPosition());
             });
 
@@ -347,7 +347,7 @@ public class MainGameScene extends AbstractGameScene {
      */
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
-        UUID playerID = ((ClientPlayer)server.getPlayerEntity()).getGameItemID().get();
+        UUID playerID = ((ClientPlayer) server.getPlayerEntity()).getGameItemID().get();
         if (evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20, playerID);
             if (col instanceof RenderBlock) {

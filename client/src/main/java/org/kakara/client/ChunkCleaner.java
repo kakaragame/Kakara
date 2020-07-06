@@ -34,7 +34,7 @@ public class ChunkCleaner extends Thread {
             List<Chunk> chunksToUnload = new ArrayList<>();
             List<Chunk> chunksToSave = new ArrayList<>();
 
-            for (Chunk loadedChunk : world.getLoadedChunks()) {
+            for (Chunk loadedChunk : world.getChunks()) {
                 if (!GameUtils.isLocationInsideCurrentLocationRadius(location, loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
                     chunksToUnload.add(loadedChunk);
                 } else {

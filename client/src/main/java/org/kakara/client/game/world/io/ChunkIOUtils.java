@@ -2,6 +2,7 @@ package org.kakara.client.game.world.io;
 
 import com.google.common.collect.ArrayListMultimap;
 import org.kakara.core.world.Chunk;
+import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.GameUtils;
 
@@ -20,10 +21,10 @@ public class ChunkIOUtils {
         return values;
     }
 
-    public static ArrayListMultimap<ChunkLocation, Chunk> sortByChunk(List<Chunk> chunks) {
+    public static ArrayListMultimap<ChunkLocation, ChunkContent> sortByChunk(List<ChunkContent> chunks) {
 
-        ArrayListMultimap<ChunkLocation, Chunk> values = ArrayListMultimap.create();
-        for (Chunk chunk : chunks) {
+        ArrayListMultimap<ChunkLocation, ChunkContent> values = ArrayListMultimap.create();
+        for (ChunkContent chunk : chunks) {
             values.put(GameUtils.getChunkFileLocation(chunk.getLocation()), chunk);
         }
         return values;

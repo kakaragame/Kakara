@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.kakara.client.game.world.ClientWorld;
 import org.kakara.core.world.Chunk;
+import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.world.ChunkWriter;
 
@@ -33,7 +34,7 @@ public class GroupedChunkIO extends ChunkIO {
             try {
                 Pair<ChunkLocation, List<ChunkRequest>> request = requests.take();
                 List<ChunkLocation> reads = new ArrayList<>();
-                List<Chunk> writes = new ArrayList<>();
+                List<ChunkContent> writes = new ArrayList<>();
                 for (ChunkRequest chunkRequest : request.getRight()) {
                     if (chunkRequest instanceof ReadChunkRequest) {
                         reads.addAll(((ReadChunkRequest) chunkRequest).getChunkLocations());
@@ -42,12 +43,12 @@ public class GroupedChunkIO extends ChunkIO {
                     }
                 }
                 chunkWriter.writeChunks(writes);
-                List<Chunk> chunksFound = chunkWriter.getChunksByLocation(reads);
+                List<ChunkContent> chunksFound = chunkWriter.getChunksByLocation(reads);
                 for (ChunkRequest chunkRequest : request.getRight()) {
                     if (!(chunkRequest instanceof ReadChunkRequest)) continue;
                     ReadChunkRequest readChunkRequest = (ReadChunkRequest) chunkRequest;
-                    List<Chunk> chunks = new ArrayList<>();
-                    for (Chunk chunk : chunksFound) {
+                    List<ChunkContent> chunks = new ArrayList<>();
+                    for (ChunkContent chunk : chunksFound) {
                         if (readChunkRequest.getChunkLocations().contains(chunk.getLocation())) {
                             chunks.add(chunk);
                         }
@@ -62,8 +63,8 @@ public class GroupedChunkIO extends ChunkIO {
 
 
     @Override
-    public CompletableFuture<List<Chunk>> get(List<ChunkLocation> chunkLocations) {
-        CompletableFuture<List<Chunk>> completableFuture = new CompletableFuture<>();
+    public CompletableFuture<List<ChunkContent>> get(List<ChunkLocation> chunkLocations) {
+        CompletableFuture<List<ChunkContent>> completableFuture = new CompletableFuture<>();
         ChunkRequest chunkRequest = new ReadChunkRequest(chunkLocations, completableFuture);
         try {
             ArrayListMultimap<ChunkLocation, ChunkLocation> locations = ChunkIOUtils.sort(chunkLocations);
@@ -92,10 +93,10 @@ public class GroupedChunkIO extends ChunkIO {
     }
 
     @Override
-    public CompletableFuture<List<ChunkLocation>> write(List<Chunk> chunkLocations) {
+    public CompletableFuture<List<ChunkLocation>> write(List<ChunkContent> chunkLocations) {
         CompletableFuture<List<ChunkLocation>> completableFuture = new CompletableFuture<>();
         ChunkRequest chunkRequest = new WriteChunkRequest(chunkLocations, completableFuture);
-        ArrayListMultimap<ChunkLocation, Chunk> locations = ChunkIOUtils.sortByChunk(chunkLocations);
+        ArrayListMultimap<ChunkLocation, ChunkContent> locations = ChunkIOUtils.sortByChunk(chunkLocations);
         for (ChunkLocation key : locations.keySet()) {
             boolean found = false;
             for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {

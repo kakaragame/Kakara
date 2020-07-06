@@ -7,23 +7,13 @@ import me.ryandw11.ods.exception.ODSException;
 import me.ryandw11.ods.tags.ObjectTag;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.game.world.io.ChunkIOUtils;
-import org.kakara.core.Kakara;
-import org.kakara.core.exceptions.SaveLoadException;
-import org.kakara.core.utils.CoreFileUtils;
 import org.kakara.core.world.Chunk;
+import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.world.ChunkWriter;
-import org.msgpack.core.MessageInsufficientBufferException;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ClientChunkWriter implements ChunkWriter {
     private final ClientWorld world;
@@ -52,9 +42,9 @@ public class ClientChunkWriter implements ChunkWriter {
     }
 
     @Override
-    public Chunk getChunkByLocation(ChunkLocation chunkLocation) {
+    public ChunkContent getChunkByLocation(ChunkLocation chunkLocation) {
         File chunkFile = getChunkFile(chunkLocation);
-        if (!chunkFile.exists()) return new NullChunk(chunkLocation);
+        if (!chunkFile.exists()) return new ChunkContent(chunkLocation);
 
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
         ObjectTag objectTag = null;
@@ -64,26 +54,26 @@ public class ClientChunkWriter implements ChunkWriter {
             KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
             //TODO Cancel World Load
         }
-        ChunkTag chunkTag;
-        if (objectTag instanceof ChunkTag)
-            chunkTag = (ChunkTag) objectTag;
+        ChunkContentTag chunkContentTag;
+        if (objectTag instanceof ChunkContentTag)
+            chunkContentTag = (ChunkContentTag) objectTag;
         else
-            return new NullChunk(chunkLocation);
+            return new ChunkContent(chunkLocation);
 
-        if (chunkTag == null)
-            return new NullChunk(chunkLocation);
-        return chunkTag.getChunk();
+        if (chunkContentTag == null)
+            return new ChunkContent(chunkLocation);
+        return chunkContentTag.getChunk();
     }
 
     @Override
-    public List<Chunk> getChunksByLocation(List<ChunkLocation> locations) {
-        List<Chunk> output = new ArrayList<>();
+    public List<ChunkContent> getChunksByLocation(List<ChunkLocation> locations) {
+        List<ChunkContent> output = new ArrayList<>();
         for (Map.Entry<ChunkLocation, Collection<ChunkLocation>> chunkLocationCollectionEntry : ChunkIOUtils.sort(locations).asMap().entrySet()) {
             ChunkLocation chunkLocation = chunkLocationCollectionEntry.getKey();
             File chunkFile = getChunkFileFromChunkFileLocation(chunkLocation);
             if (!chunkFile.exists()) {
                 chunkLocationCollectionEntry.getValue().forEach(chunkLocation1 -> {
-                    output.add(new NullChunk(chunkLocation1));
+                    output.add(new ChunkContent(chunkLocation));
                 });
                 continue;
             }
@@ -97,39 +87,39 @@ public class ClientChunkWriter implements ChunkWriter {
                     KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
                     //TODO Cancel World Load
                 }
-                ChunkTag chunkTag = null;
-                if (objectTag instanceof ChunkTag) {
-                    chunkTag = (ChunkTag) objectTag;
+                ChunkContentTag chunkContentTag = null;
+                if (objectTag instanceof ChunkContentTag) {
+                    chunkContentTag = (ChunkContentTag) objectTag;
                 } else {
-                    output.add(new NullChunk(chunkLocation));
+                    output.add(new ChunkContent(chunkLocation));
                     continue;
                 }
-                output.add(chunkTag.getChunk());
+                output.add(chunkContentTag.getChunk());
             }
         }
         return output;
     }
 
     @Override
-    public void writeChunk(Chunk chunk) {
+    public void writeChunk(ChunkContent chunk) {
         File chunkFile = getChunkFile(chunk.getLocation());
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
         if (ods.find(getChunkKey(chunk.getLocation())))
             ods.delete(getChunkKey(chunk.getLocation()));
-        ods.append(new ChunkTag(chunk));
+        ods.append(new ChunkContentTag(chunk));
     }
 
     @Override
-    public void writeChunks(List<Chunk> chunks) {
-        for (Map.Entry<ChunkLocation, Collection<Chunk>> entry : ChunkIOUtils.sortByChunk(chunks).asMap().entrySet()) {
+    public void writeChunks(List<ChunkContent> chunks) {
+        for (Map.Entry<ChunkLocation, Collection<ChunkContent>> entry : ChunkIOUtils.sortByChunk(chunks).asMap().entrySet()) {
             File chunkFile = getChunkFile(entry.getKey());
             ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
-            for (Chunk chunk : entry.getValue()) {
+            for (ChunkContent chunk : entry.getValue()) {
                 if (ods.find(getChunkKey(chunk.getLocation())))
                     ods.delete(getChunkKey(chunk.getLocation()));
             }
             List<Tag<?>> chunkTags = new ArrayList<>();
-            entry.getValue().forEach(chunk -> chunkTags.add(new ChunkTag(chunk)));
+            entry.getValue().forEach(chunk -> chunkTags.add(new ChunkContentTag(chunk)));
             ods.appendAll(chunkTags);
         }
     }

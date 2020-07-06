@@ -170,7 +170,7 @@ public class IntegratedServer implements Server {
             for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
                 for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
                     if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
-                        ((ClientWorld) getPlayerEntity().getLocation().getWorld().get()).getChunkAt(x, y, z);
+                        ((ClientWorld) getPlayerEntity().getLocation().getWorld().get()).loadChunkAsync(x, y, z);
                     }
                 }
             }

@@ -207,4 +207,17 @@ public class ClientWorld implements World {
     public void saveChunks(List<Chunk> chunksToSave) {
 
     }
+
+    public void loadChunkAsync(int x, int y, int z) {
+        server.getExecutorService().submit(() -> {
+            if (chunkSet.containsChunk(x, y, z)) {
+                Chunk chunk = chunkSet.get(x, y, z);
+                if (chunk != null)
+                    return;
+            }
+            ClientChunk chunk = new ClientChunk(new ChunkLocation(x, y, z));
+            chunkSet.add(chunk);
+            loadChunk(chunk);
+        });
+    }
 }

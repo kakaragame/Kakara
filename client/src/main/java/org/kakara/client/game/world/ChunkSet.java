@@ -46,12 +46,10 @@ public class ChunkSet implements Set<Chunk> {
     public Set<Chunk> getChunks() {
         Set<Chunk> chunks = new HashSet<>();
         for (ChunkLocation location : locations) {
-            try {
+            if (chunkOctree.find(location.getX(), location.getY(), location.getZ())) {
                 Chunk chunk = chunkOctree.get(location.getX(), location.getY(), location.getZ());
                 if (chunk == null) continue;
                 chunks.add(chunk);
-            } catch (PointExistsException | NullPointerException ignored) {
-                ignored.printStackTrace();
             }
         }
 

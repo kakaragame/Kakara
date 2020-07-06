@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class ClientWorld implements World {
     private final File worldFolder;
@@ -129,16 +130,40 @@ public class ClientWorld implements World {
     @Override
     public @NotNull Chunk getChunkAt(ChunkLocation location) {
         if (chunkSet.containsChunk(location)) {
-            return chunkSet.get(location);
+            Chunk chunk = chunkSet.get(location);
+            if (chunk != null)
+                return chunk;
         }
         ClientChunk chunk = new ClientChunk(location);
         chunkSet.add(chunk);
-        loadChunk(chunk);
-        return null;
+        server.getExecutorService().submit(() -> {
+            loadChunk(chunk);
+        });
+        return chunk;
     }
 
     private void loadChunk(ClientChunk chunk) {
+        if (chunk.getStatus() != Status.UNLOADED) {
+            return;
+        }
+        chunk.setStatus(Status.LOADING);
+        chunkIO.get(List.of(chunk.getLocation())).thenAccept(chunkContents -> {
+            server.getExecutorService().submit(() -> {
+                if (chunkContents.size() == 1) {
+                    chunk.load(chunkContents.get(0));
+                } else {
+                    ChunkBase base = null;
+                    try {
+                        base = chunkGenerator.generateChunk(seed, random, this, chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
 
+                    chunk.load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
+                }
+            });
+        });
     }
 
     @Override

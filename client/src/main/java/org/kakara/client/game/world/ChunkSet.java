@@ -3,6 +3,7 @@ package org.kakara.client.game.world;
 import me.ryandw11.octree.Octree;
 import me.ryandw11.octree.PointExistsException;
 import org.jetbrains.annotations.NotNull;
+import org.kakara.core.Kakara;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 
@@ -50,6 +51,7 @@ public class ChunkSet implements Set<Chunk> {
                 if (chunk == null) continue;
                 chunks.add(chunk);
             } catch (PointExistsException | NullPointerException ignored) {
+                ignored.printStackTrace();
             }
         }
 
@@ -122,14 +124,6 @@ public class ChunkSet implements Set<Chunk> {
     }
 
 
-    public ChunkLocation set(int index, ChunkLocation element) {
-        return locations.set(index, element);
-    }
-
-    public void add(int index, ChunkLocation element) {
-        locations.add(index, element);
-    }
-
 
     @Override
     public Spliterator<Chunk> spliterator() {
@@ -161,7 +155,7 @@ public class ChunkSet implements Set<Chunk> {
     }
 
     public boolean containsChunk(ChunkLocation location) {
-        return chunkOctree.find(location.getX(), location.getY(), location.getZ());
+        return containsChunk(location.getX(), location.getY(), location.getZ());
     }
 
     public boolean containsChunk(int x, int y, int z) {

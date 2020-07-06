@@ -5,10 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 import org.kakara.core.mod.Mod;
-import org.kakara.core.resources.Resource;
-import org.kakara.core.resources.ResourceManager;
-import org.kakara.core.resources.ResourceType;
-import org.kakara.core.resources.TextureResolution;
+import org.kakara.core.resources.*;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -23,21 +20,15 @@ public class GameResourceManager implements ResourceManager {
     private GameInstance kakaraCore;
     private File resourceDirectory;
     private static final String BASE_PATH = "/resources/";
-    private Map<Mod, List<String>> textureResources = new HashMap<>();
+    private Set<Texture> textures = new HashSet<>();
 
     public GameResourceManager() {
     }
 
-    @Override
-    public List<Resource> getAllTextures(TextureResolution textureResolution) {
-        List<Resource> myTextureResources = new ArrayList<>();
-        for (Map.Entry<Mod, List<String>> modListEntry : textureResources.entrySet()) {
-            for (String s : modListEntry.getValue()) {
-                myTextureResources.add(getTexture(s, textureResolution, modListEntry.getKey()));
-            }
-        }
-        return myTextureResources;
 
+    @Override
+    public Set<Texture> getAllTextures() {
+        return textures;
     }
 
     @Override
@@ -66,9 +57,13 @@ public class GameResourceManager implements ResourceManager {
         directory.mkdirs();
         String path = BASE_PATH + "texture/" + i.getResolution() + "/" + s;
         File file = new File(directory, correctPath(s));
-        List<String> strings = textureResources.computeIfAbsent(mod, mod1 -> new ArrayList<>());
-        strings.add(s);
-        textureResources.put(mod, strings);
+
+        Texture texture = getTexture(s, mod).orElseGet(() -> {
+            Texture texture1 = new Texture(s, mod);
+            textures.add(texture1);
+            return texture1;
+        });
+        texture.addResolution(i, new Resource(file, mod.getName().toLowerCase() + "/texture/" + i.getResolution() + "/" + s));
         if (file.exists()) return;
         file.getParentFile().mkdirs();
 
@@ -96,7 +91,15 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public Resource getTexture(String s, TextureResolution i, Mod mod) {
-        return getTexture(s, i, mod, new ResourceCheckList());
+        if (getTexture(s, mod).isPresent()) {
+            return getTexture(s, mod).get().getByResolution(i);
+        }
+        return null;
+    }
+
+    @Override
+    public Optional<Texture> getTexture(String path, Mod mod) {
+        return textures.stream().filter(texture -> texture.getPath().equals(path) && texture.getMod().equals(mod)).findFirst();
     }
 
     public Resource getTexture(String s, TextureResolution i, Mod mod, ResourceCheckList resourceCheckList) {

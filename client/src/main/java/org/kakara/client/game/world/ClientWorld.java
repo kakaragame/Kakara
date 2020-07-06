@@ -24,8 +24,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ClientWorld implements World {
     private final File worldFolder;
-    private final ChunkSet chunkSet;
-
+    //private final ChunkSet chunkSet;
+    private final Map<ChunkLocation, Chunk> chunkMap = new HashMap<>();
     private final UUID worldID;
     private final String name;
     private final WorldGenerator chunkGenerator;
@@ -38,7 +38,7 @@ public class ClientWorld implements World {
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
         this.server = server;
-        chunkSet = new ChunkSet(-10000000, -100, -10000000, 10000000, 10000, 10000000);
+        //chunkSet = new ChunkSet(-10000000, -100, -10000000, 10000000, 10000, 10000000);
 
         //TODO replace null with instance of ChunkWriter
         try {
@@ -66,7 +66,7 @@ public class ClientWorld implements World {
 
     @Override
     public @NotNull Set<Chunk> getChunks() {
-        return chunkSet.getChunks();
+        return new HashSet<>(chunkMap.values());
     }
 
     @Override
@@ -127,30 +127,16 @@ public class ClientWorld implements World {
         this.worldSpawn = location;
     }
 
-    @Override
-    public @NotNull Chunk getChunkAt(int x, int y, int z) {
-        if (chunkSet.containsChunk(x, y, z)) {
-            Chunk chunk = chunkSet.get(x, y, z);
-            if (chunk != null)
-                return chunk;
-        }
-        ClientChunk chunk = new ClientChunk(new ChunkLocation(x, y, z));
-        chunkSet.add(chunk);
-        server.getExecutorService().submit(() -> {
-            loadChunk(chunk);
-        });
-        return chunk;
-    }
 
     @Override
     public @NotNull Chunk getChunkAt(ChunkLocation location) {
-        if (chunkSet.containsChunk(location)) {
-            Chunk chunk = chunkSet.get(location);
+        if (chunkMap.containsKey(location)) {
+            Chunk chunk = chunkMap.get(location);
             if (chunk != null)
                 return chunk;
         }
         ClientChunk chunk = new ClientChunk(location);
-        chunkSet.add(chunk);
+        chunkMap.put(location, chunk);
         server.getExecutorService().submit(() -> {
             loadChunk(chunk);
         });
@@ -210,13 +196,14 @@ public class ClientWorld implements World {
 
     public void loadChunkAsync(int x, int y, int z) {
         server.getExecutorService().submit(() -> {
-            if (chunkSet.containsChunk(x, y, z)) {
-                Chunk chunk = chunkSet.get(x, y, z);
+            ChunkLocation chunkLocation = new ChunkLocation(x, y, z);
+            if (chunkMap.containsKey(chunkLocation)) {
+                Chunk chunk = chunkMap.get(chunkLocation);
                 if (chunk != null)
                     return;
             }
             ClientChunk chunk = new ClientChunk(new ChunkLocation(x, y, z));
-            chunkSet.add(chunk);
+            chunkMap.put(chunkLocation, chunk);
             loadChunk(chunk);
         });
     }

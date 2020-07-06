@@ -128,9 +128,9 @@ public class MainGameScene extends AbstractGameScene {
         var resourceManager = gameHandler.getResourceManager();
         List<RenderTexture> textures = new ArrayList<>();
 
-        for (Resource resource : Kakara.getResourceManager().getAllTextures(TextureResolution._16)) {
+        for (org.kakara.core.resources.Texture resource : Kakara.getResourceManager().getAllTextures()) {
 
-            RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.getLocalPath()));
+            RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.get().getLocalPath()));
             textures.add(txt1);
 
         }

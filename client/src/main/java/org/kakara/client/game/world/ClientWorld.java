@@ -128,6 +128,21 @@ public class ClientWorld implements World {
     }
 
     @Override
+    public @NotNull Chunk getChunkAt(int x, int y, int z) {
+        if (chunkSet.containsChunk(x, y, z)) {
+            Chunk chunk = chunkSet.get(x, y, z);
+            if (chunk != null)
+                return chunk;
+        }
+        ClientChunk chunk = new ClientChunk(new ChunkLocation(x, y, z));
+        chunkSet.add(chunk);
+        server.getExecutorService().submit(() -> {
+            loadChunk(chunk);
+        });
+        return chunk;
+    }
+
+    @Override
     public @NotNull Chunk getChunkAt(ChunkLocation location) {
         if (chunkSet.containsChunk(location)) {
             Chunk chunk = chunkSet.get(location);

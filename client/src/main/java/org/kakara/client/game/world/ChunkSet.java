@@ -72,8 +72,12 @@ public class ChunkSet implements Set<Chunk> {
 
     @Override
     public boolean add(Chunk chunk) {
-        chunkOctree.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
-        locations.add(chunk.getLocation());
+        try {
+            chunkOctree.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
+            locations.add(chunk.getLocation());
+        } catch (StackOverflowError e) {
+            System.out.println("Here " + chunk.getLocation().toString());
+        }
         return true;
     }
 
@@ -96,6 +100,7 @@ public class ChunkSet implements Set<Chunk> {
 
     public boolean addAll(@NotNull Collection<? extends Chunk> c) {
         c.forEach(chunk -> {
+
             chunkOctree.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
             locations.add(chunk.getLocation());
         });
@@ -122,7 +127,6 @@ public class ChunkSet implements Set<Chunk> {
         });
         locations.clear();
     }
-
 
 
     @Override

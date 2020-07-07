@@ -97,11 +97,12 @@ public class ClientWorld implements World {
     public Optional<GameBlock> setBlock(@NotNull ItemStack itemStack, @NotNull Location location) {
         Chunk chunk = getChunkAt(GameUtils.getChunkLocation(location));
         if (chunk.getStatus() != Status.LOADED) {
-            throw new RuntimeException("TBH I am not sure what I want to do with this yet");
+            throw new RuntimeException("TBH I am not sure what I want to do with this yet, "+ chunk.getStatus());
         }
         if (chunk instanceof ClientChunk) {
             GameBlock gameBlock = new GameBlock(location, itemStack);
             ((ClientChunk) chunk).setGameBlock(gameBlock);
+            return Optional.of(gameBlock);
         }
         return Optional.empty();
     }
@@ -130,11 +131,11 @@ public class ClientWorld implements World {
 
     @Override
     public @NotNull Chunk getChunkAt(ChunkLocation location) {
-        if (chunkMap.containsKey(location)) {
-            Chunk chunk = chunkMap.get(location);
-            if (chunk != null)
-                return chunk;
-        }
+        Chunk chunkFound = chunkMap.get(location);
+        if (chunkFound != null) {
+            System.out.println("chunkFound = " + chunkFound.getLocation());
+            return chunkFound;
+        }else System.out.println("location.toString() = " + location.toString());
         ClientChunk chunk = new ClientChunk(location);
         chunkMap.put(location, chunk);
         server.getExecutorService().submit(() -> {
@@ -151,7 +152,7 @@ public class ClientWorld implements World {
         chunkIO.get(List.of(chunk.getLocation())).thenAccept(chunkContents -> {
             server.getExecutorService().submit(() -> {
                 if (chunkContents.size() == 1) {
-                    chunk.load(chunkContents.get(0));
+                    ((ClientChunk) chunkMap.get(chunk.getLocation())).load(chunkContents.get(0));
                 } else {
                     ChunkBase base = null;
                     try {
@@ -161,7 +162,7 @@ public class ClientWorld implements World {
                         return;
                     }
 
-                    chunk.load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
+                    ((ClientChunk) chunkMap.get(chunk.getLocation())).load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
                 }
             });
         });

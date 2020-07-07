@@ -133,9 +133,8 @@ public class ClientWorld implements World {
     public @NotNull Chunk getChunkAt(ChunkLocation location) {
         Chunk chunkFound = chunkMap.get(location);
         if (chunkFound != null) {
-            System.out.println("chunkFound = " + chunkFound.getLocation());
             return chunkFound;
-        }else System.out.println("location.toString() = " + location.toString());
+        }
         ClientChunk chunk = new ClientChunk(location);
         chunkMap.put(location, chunk);
         server.getExecutorService().submit(() -> {
@@ -195,17 +194,4 @@ public class ClientWorld implements World {
 
     }
 
-    public void loadChunkAsync(int x, int y, int z) {
-        server.getExecutorService().submit(() -> {
-            ChunkLocation chunkLocation = new ChunkLocation(x, y, z);
-            if (chunkMap.containsKey(chunkLocation)) {
-                Chunk chunk = chunkMap.get(chunkLocation);
-                if (chunk != null)
-                    return;
-            }
-            ClientChunk chunk = new ClientChunk(new ChunkLocation(x, y, z));
-            chunkMap.put(chunkLocation, chunk);
-            loadChunk(chunk);
-        });
-    }
 }

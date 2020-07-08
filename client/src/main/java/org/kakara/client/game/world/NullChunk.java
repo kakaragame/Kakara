@@ -1,6 +1,7 @@
 package org.kakara.client.game.world;
 
 import org.jetbrains.annotations.NotNull;
+import org.kakara.core.Status;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
@@ -8,10 +9,12 @@ import org.kakara.core.world.GameBlock;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public class NullChunk implements Chunk {
     private ChunkLocation chunkLocation;
+
     public NullChunk(ChunkLocation chunkLocation) {
-    this.chunkLocation = chunkLocation;
+        this.chunkLocation = chunkLocation;
     }
 
     @Override
@@ -22,5 +25,10 @@ public class NullChunk implements Chunk {
     @Override
     public @NotNull ChunkLocation getLocation() {
         return chunkLocation;
+    }
+
+    @Override
+    public Status getStatus() {
+        return null;
     }
 }

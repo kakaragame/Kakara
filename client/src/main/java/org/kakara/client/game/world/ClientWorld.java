@@ -1,15 +1,13 @@
 package org.kakara.client.game.world;
 
 import com.google.gson.JsonObject;
-import me.ryandw11.octree.Octree;
-import me.ryandw11.octree.PointExistsException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.Client;
-import org.kakara.client.KakaraGame;
 import org.kakara.client.game.world.io.ChunkIO;
 import org.kakara.client.game.world.io.GroupedChunkIO;
 import org.kakara.core.Kakara;
+import org.kakara.core.Status;
 import org.kakara.core.Utils;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.Block;
@@ -21,17 +19,14 @@ import org.kakara.game.Server;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class ClientWorld implements World {
     private final File worldFolder;
-    private final Octree<Chunk> loadedChunks;
-    private final List<ChunkLocation> loadedChunkLocations = new CopyOnWriteArrayList<>();
+    //private final ChunkSet chunkSet;
+    private final Map<ChunkLocation, Chunk> chunkMap = new HashMap<>();
     private final UUID worldID;
     private final String name;
     private final WorldGenerator chunkGenerator;
@@ -44,7 +39,8 @@ public class ClientWorld implements World {
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
         this.server = server;
-        loadedChunks = new Octree<>(-10000000, -100, -10000000, 10000000, 10000, 10000000);
+        //chunkSet = new ChunkSet(-10000000, -100, -10000000, 10000000, 10000, 10000000);
+
         //TODO replace null with instance of ChunkWriter
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
@@ -70,8 +66,8 @@ public class ClientWorld implements World {
     }
 
     @Override
-    public @NotNull Chunk[] getChunks() {
-        return getLoadedChunks();
+    public @NotNull Set<Chunk> getChunks() {
+        return new HashSet<>(chunkMap.values());
     }
 
     @Override
@@ -87,7 +83,10 @@ public class ClientWorld implements World {
     @Override
     @NotNull
     public Optional<GameBlock> getBlockAt(Location location) {
-        Chunk chunk = getChunkNow(GameUtils.getChunkLocation(location));
+        Chunk chunk = getChunkAt(GameUtils.getChunkLocation(location));
+        if (chunk.getStatus() != Status.LOADED) {
+            throw new RuntimeException("TBH I am not sure what I want to do with this yet");
+        }
         if (chunk instanceof ClientChunk) {
             return ((ClientChunk) chunk).getGameBlock(location).or(() -> Optional.of(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem("kakara:air").get()))));
         }
@@ -97,10 +96,14 @@ public class ClientWorld implements World {
     @Override
     @NotNull
     public Optional<GameBlock> setBlock(@NotNull ItemStack itemStack, @NotNull Location location) {
-        Chunk chunk = getChunkNow(GameUtils.getChunkLocation(location));
+        Chunk chunk = getChunkAt(GameUtils.getChunkLocation(location));
+        if (chunk.getStatus() != Status.LOADED) {
+            throw new RuntimeException("TBH I am not sure what I want to do with this yet, " + chunk.getStatus());
+        }
         if (chunk instanceof ClientChunk) {
             GameBlock gameBlock = new GameBlock(location, itemStack);
             ((ClientChunk) chunk).setGameBlock(gameBlock);
+            return Optional.of(gameBlock);
         }
         return Optional.empty();
     }
@@ -126,145 +129,62 @@ public class ClientWorld implements World {
         this.worldSpawn = location;
     }
 
-    public Chunk getChunkNow(ChunkLocation location) {
 
-        try {
-            Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
-            if (chunk != null) {
-                return chunk;
-            }
-        } catch (Exception e) {
+    @Override
+    public @NotNull Chunk getChunkAt(ChunkLocation location) {
+        Chunk chunkFound = chunkMap.get(location);
+        if (chunkFound != null) {
+            return chunkFound;
         }
-        if (chunkIO != null) {
-            try {
-                List<Chunk> chunks = chunkIO.get(Collections.singletonList(location)).get();
-                if (!chunks.isEmpty()) {
-                    chunks.forEach(this::loadChunk);
-                    return chunks.get(0);
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                KakaraGame.LOGGER.warn("ChunkIO failure", e);
-            }
-        } else {
-            KakaraGame.LOGGER.warn("No ChunkIO found");
-        }
-        ChunkBase base = null;
-        try {
-            base = chunkGenerator.generateChunk(seed, random, this, location.getX(), location.getY(), location.getZ());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Chunk chunk = new ClientChunk(base);
-        loadChunk(chunk);
+        ClientChunk chunk = new ClientChunk(location);
+        chunkMap.put(location, chunk);
+        server.getExecutorService().submit(() -> {
+            loadChunk(chunk);
+        });
         return chunk;
     }
 
-    public Chunk getChunkNow(int x, int y, int z) {
-
-        try {
-            Chunk chunk = loadedChunks.get(x, y, z);
-            if (chunk != null) {
-                return chunk;
-            }
-        } catch (Exception e) {
+    private void loadChunk(ClientChunk chunk) {
+        if (chunk.getStatus() != Status.UNLOADED) {
+            return;
         }
-        if (chunkIO != null) {
-            try {
-                List<Chunk> chunks = chunkIO.get(Collections.singletonList(new ChunkLocation(x, y, z))).get();
-                if (!chunks.isEmpty()) {
-                    chunks.forEach(this::loadChunk);
-                    return chunks.get(0);
+        chunk.setStatus(Status.LOADING);
+        chunkIO.get(List.of(chunk.getLocation())).thenAccept(chunkContents -> {
+            server.getExecutorService().submit(() -> {
+                if (chunkContents.size() == 1) {
+                    ((ClientChunk) chunkMap.get(chunk.getLocation())).load(chunkContents.get(0));
+                } else {
+                    ChunkBase base = null;
+                    try {
+                        base = chunkGenerator.generateChunk(seed, random, this, chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    ((ClientChunk) chunkMap.get(chunk.getLocation())).load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                KakaraGame.LOGGER.warn("ChunkIO failure", e);
-            }
-        } else {
-            KakaraGame.LOGGER.warn("No ChunkIO found");
-        }
-        ChunkBase base = null;
-        try {
-            base = chunkGenerator.generateChunk(seed, random, this, x, y, z);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Chunk chunk = new ClientChunk(base);
-        loadChunk(chunk);
-        return chunk;
-    }
-
-    @Override
-    public CompletableFuture<Chunk> getChunkAt(ChunkLocation location) {
-        CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
-        server.getExecutorService().submit(() -> {
-            completableFuture.complete(getChunkNow(location));
+            });
         });
-
-        return completableFuture;
     }
 
     @Override
-    public @NotNull CompletableFuture<Chunk> getChunkAt(int x, int y, int z) {
-        CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
-        server.getExecutorService().submit(() -> {
-            completableFuture.complete(getChunkNow(x, y, z));
-        });
-
-        return completableFuture;
+    public void unloadChunk(@NotNull Chunk chunk) {
+        unloadChunks(List.of(chunk));
     }
 
     @Override
-    public void unloadChunk(Chunk chunk) {
-        loadedChunkLocations.remove(chunk.getLocation());
-        loadedChunks.remove(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
-        if (chunkIO != null) chunkIO.write(Collections.singletonList(chunk));
-    }
-
-    @Override
-    public void unloadChunks(List<Chunk> chunk) {
-        for (Chunk chunk1 : chunk) {
-            loadedChunkLocations.remove(chunk1.getLocation());
-            loadedChunks.remove(chunk1.getLocation().getX(), chunk1.getLocation().getY(), chunk1.getLocation().getZ());
+    public void unloadChunks(@NotNull List<Chunk> chunks) {
+        List<ChunkContent> contents = new ArrayList<>();
+        for (Chunk chunk : chunks) {
+            ClientChunk cChunk = (ClientChunk) chunk;
+            cChunk.setStatus(Status.UNLOADING);
+            contents.add(cChunk.getContents());
+            chunkMap.remove(chunk.getLocation());
         }
-        if (chunkIO != null) chunkIO.write(chunk);
-
+        chunkIO.write(contents);
     }
 
-    @Override
-    public void loadChunk(@NotNull Chunk chunk) {
-        try {
-            loadedChunks.insert(chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ(), chunk);
-            loadedChunkLocations.add(chunk.getLocation());
-        } catch (PointExistsException ignored) {
-
-        }
-    }
-
-    @Override
-    public boolean isChunkLoaded(@NotNull ChunkLocation location) {
-        return loadedChunks.find(location.getX(), location.getY(), location.getZ());
-    }
-
-
-    public List<Chunk> getLoadedChunksList() {
-        List<Chunk> chunks = new ArrayList<>();
-        for (ChunkLocation location : loadedChunkLocations) {
-            //if (loadedChunks.find(location.getX(), location.getY(), location.getZ())) {
-            try {
-                Chunk chunk = loadedChunks.get(location.getX(), location.getY(), location.getZ());
-                if (chunk == null) continue;
-                chunks.add(chunk);
-            } catch (PointExistsException | NullPointerException ignored) {
-            }
-            //}
-        }
-
-        return chunks;
-    }
-
-    @Override
-    public @NotNull Chunk[] getLoadedChunks() {
-        return getLoadedChunksList().toArray(Chunk[]::new);
-    }
 
     public File getWorldFolder() {
         return worldFolder;
@@ -274,11 +194,18 @@ public class ClientWorld implements World {
         return true;
     }
 
-    public void saveChunks(List<Chunk> chunksToSave) {
-        if (chunkIO != null) chunkIO.write(chunksToSave);
+    public void saveChunks() {
+        saveChunks(new ArrayList<>(chunkMap.values()));
     }
 
-    public void saveChunks() {
-        saveChunks(getLoadedChunksList());
+    public void saveChunks(List<Chunk> chunksToSave) {
+        List<ChunkContent> contents = new ArrayList<>();
+
+        for (Chunk chunk : chunksToSave) {
+            ClientChunk cChunk = (ClientChunk) chunk;
+            contents.add(cChunk.getContents());
+        }
+        chunkIO.write(contents);
     }
+
 }

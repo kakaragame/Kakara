@@ -9,6 +9,7 @@ import org.kakara.client.game.commands.KillCommand;
 import org.kakara.client.game.commands.SaveChunk;
 import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
+import org.kakara.client.game.world.ClientWorld;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
 import org.kakara.core.client.Save;
@@ -165,11 +166,12 @@ public class IntegratedServer implements Server {
 
         if (getPlayerEntity() == null) return;
         Location start = getPlayerEntity().getLocation();
+
         for (int x = (int) (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
             for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
                 for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
                     if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
-                        getPlayerEntity().getLocation().getWorld().get().getChunkAt(x, y, z);
+                        ((ClientWorld) getPlayerEntity().getLocation().getWorld().get()).getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
                     }
                 }
             }

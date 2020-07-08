@@ -1,12 +1,15 @@
 package org.kakara.client.game.world;
 
 import org.jetbrains.annotations.Nullable;
+import org.kakara.client.KakaraGame;
+import org.kakara.core.Status;
 import org.kakara.core.world.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class ClientChunk implements Chunk {
     private ChunkLocation location;
@@ -14,11 +17,12 @@ public class ClientChunk implements Chunk {
     private boolean updatedHappened = true;
     @Nullable
     private UUID renderChunkID;
+    private Status status = Status.UNLOADED;
 
-    public ClientChunk(ChunkBase base) {
-        location = new ChunkLocation(base.getX(), base.getY(), base.getZ());
-        gameBlockList = base.getGameBlocks();
+    public ClientChunk(ChunkLocation location) {
+        this.location = location;
     }
+
 
     public ClientChunk(ChunkLocation chunkLocation, List<GameBlock> gameBlocks) {
         location = chunkLocation;
@@ -58,11 +62,29 @@ public class ClientChunk implements Chunk {
         return location;
     }
 
+    @Override
+    public Status getStatus() {
+        return status;
+    }
+
+    public void load(ChunkContent base) {
+        gameBlockList = base.getGameBlocks();
+        status = Status.LOADED;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public boolean isUpdatedHappened() {
         return updatedHappened;
     }
 
     public void setUpdatedHappened(boolean updatedHappened) {
         this.updatedHappened = updatedHappened;
+    }
+
+    public ChunkContent getContents() {
+        return new ChunkContent(gameBlockList, location);
     }
 }

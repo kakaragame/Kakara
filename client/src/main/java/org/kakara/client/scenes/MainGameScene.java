@@ -21,6 +21,7 @@ import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
+import org.kakara.core.Status;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.core.resources.Resource;
@@ -205,8 +206,8 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float interval) {
-
         server.update();
+
         playerMovement();
 
         if (chatComponent != null) {
@@ -217,7 +218,8 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
         executorService.submit(() -> {
-            for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().get().getLoadedChunks()) {
+            for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().get().getChunks()) {
+                if (loadedChunk.getStatus() != Status.LOADED) continue;
                 ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
                 if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
@@ -333,9 +335,12 @@ public class MainGameScene extends AbstractGameScene {
 
                 // Handle the block selector.
                 this.blockSelector.setPosition(item.getPosition().x, -10, item.getPosition().z);
-                Collidable objectFound = this.selectGameItems(20, uuid);
-                if (objectFound != null)
-                    this.blockSelector.setPosition(objectFound.getColPosition());
+                try {
+                    Collidable objectFound = this.selectGameItems(20, uuid);
+                    if (objectFound != null)
+                        this.blockSelector.setPosition(objectFound.getColPosition());
+                } catch (NullPointerException ignored) {
+                }
             });
 
         });
@@ -407,8 +412,8 @@ public class MainGameScene extends AbstractGameScene {
 
                 final Vector3 closValue = closestValue;
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
-                Chunk chunk = ((ClientWorld) server.getPlayerEntity().getLocation().getWorld().get()).getChunkNow(chunkLoc);
-
+                Chunk chunk = ((ClientWorld) server.getPlayerEntity().getLocation().getWorld().get()).getChunkAt(chunkLoc);
+                if (chunk.getStatus() != Status.LOADED) return;
                 ClientChunk cc = (ClientChunk) chunk;
                 List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
                 RenderChunk desiredChunk = rcc.get(0);

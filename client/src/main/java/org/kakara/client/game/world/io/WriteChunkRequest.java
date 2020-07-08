@@ -1,6 +1,7 @@
 package org.kakara.client.game.world.io;
 
 import org.kakara.core.world.Chunk;
+import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.GameUtils;
 
@@ -9,16 +10,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class WriteChunkRequest implements ChunkRequest {
-    private final List<Chunk> chunks;
+    private final List<ChunkContent> chunks;
     private final CompletableFuture<List<ChunkLocation>> completableFuture;
     private final List<ChunkLocation> response = new ArrayList<>();
 
-    public WriteChunkRequest(List<Chunk> chunkLocation, CompletableFuture<List<ChunkLocation>> completableFuture) {
+    public WriteChunkRequest(List<ChunkContent> chunkLocation, CompletableFuture<List<ChunkLocation>> completableFuture) {
         this.chunks = chunkLocation;
         this.completableFuture = completableFuture;
     }
 
-    public List<Chunk> getChunks() {
+    public List<ChunkContent> getChunks() {
         return chunks;
     }
 
@@ -33,7 +34,7 @@ public class WriteChunkRequest implements ChunkRequest {
 
     public boolean needsToRespond() {
         Set<ChunkLocation> groupedChunkLocations = new HashSet<>();
-        for (Chunk chunk : this.chunks) {
+        for (ChunkContent chunk : this.chunks) {
             groupedChunkLocations.add(GameUtils.getChunkFileLocation(chunk.getLocation()));
         }
         return response.size() == groupedChunkLocations.size();
@@ -41,7 +42,7 @@ public class WriteChunkRequest implements ChunkRequest {
 
     public void respond() {
 
-        completableFuture.complete(chunks.stream().map(Chunk::getLocation).collect(Collectors.toList()));
+        completableFuture.complete(chunks.stream().map(ChunkContent::getLocation).collect(Collectors.toList()));
     }
 
 }

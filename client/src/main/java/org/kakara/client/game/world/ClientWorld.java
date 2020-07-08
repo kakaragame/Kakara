@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class ClientWorld implements World {
     private final File worldFolder;
@@ -97,7 +98,7 @@ public class ClientWorld implements World {
     public Optional<GameBlock> setBlock(@NotNull ItemStack itemStack, @NotNull Location location) {
         Chunk chunk = getChunkAt(GameUtils.getChunkLocation(location));
         if (chunk.getStatus() != Status.LOADED) {
-            throw new RuntimeException("TBH I am not sure what I want to do with this yet, "+ chunk.getStatus());
+            throw new RuntimeException("TBH I am not sure what I want to do with this yet, " + chunk.getStatus());
         }
         if (chunk instanceof ClientChunk) {
             GameBlock gameBlock = new GameBlock(location, itemStack);
@@ -169,12 +170,19 @@ public class ClientWorld implements World {
 
     @Override
     public void unloadChunk(@NotNull Chunk chunk) {
-
+        unloadChunks(List.of(chunk));
     }
 
     @Override
-    public void unloadChunks(@NotNull List<Chunk> chunk) {
-
+    public void unloadChunks(@NotNull List<Chunk> chunks) {
+        List<ChunkContent> contents = new ArrayList<>();
+        for (Chunk chunk : chunks) {
+            ClientChunk cChunk = (ClientChunk) chunk;
+            cChunk.setStatus(Status.UNLOADING);
+            contents.add(cChunk.getContents());
+            chunkMap.remove(chunk.getLocation());
+        }
+        chunkIO.write(contents);
     }
 
 
@@ -187,11 +195,17 @@ public class ClientWorld implements World {
     }
 
     public void saveChunks() {
-
+        saveChunks(new ArrayList<>(chunkMap.values()));
     }
 
     public void saveChunks(List<Chunk> chunksToSave) {
+        List<ChunkContent> contents = new ArrayList<>();
 
+        for (Chunk chunk : chunksToSave) {
+            ClientChunk cChunk = (ClientChunk) chunk;
+            contents.add(cChunk.getContents());
+        }
+        chunkIO.write(contents);
     }
 
 }

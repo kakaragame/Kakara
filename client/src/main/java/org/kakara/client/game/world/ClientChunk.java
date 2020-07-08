@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class ClientChunk implements Chunk {
     private ChunkLocation location;
@@ -81,5 +82,9 @@ public class ClientChunk implements Chunk {
 
     public void setUpdatedHappened(boolean updatedHappened) {
         this.updatedHappened = updatedHappened;
+    }
+
+    public ChunkContent getContents() {
+        return new ChunkContent(gameBlockList, location);
     }
 }

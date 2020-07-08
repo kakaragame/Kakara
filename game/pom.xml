@@ -42,13 +42,20 @@
             <id>kakara-repo</id>
             <url>https://repo.kingtux.me/storages/maven/kakara</url>
         </repository>
-
+        <repository>
+            <id>Ryandw11</id>
+            <url>https://repo.thevideogamevillage.com/repository/maven-releases/</url>
+        </repository>
+        <repository>
+            <id>Ryandw11-SNAPSHOT</id>
+            <url>https://repo.thevideogamevillage.com/repository/maven-snapshots/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
             <groupId>org.kakara.core</groupId>
             <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-PR-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

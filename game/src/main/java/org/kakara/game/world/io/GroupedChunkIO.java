@@ -1,28 +1,25 @@
-package org.kakara.client.game.world.io;
+package org.kakara.game.world.io;
 
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.lang3.tuple.Pair;
-import org.kakara.client.game.world.ClientWorld;
-import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
-import org.kakara.game.world.ChunkWriter;
+import org.kakara.core.world.ChunkWriter;
+import org.kakara.game.world.GameWorld;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.stream.Collectors;
 
 public class GroupedChunkIO extends ChunkIO {
     private BlockingQueue<Pair<ChunkLocation, List<ChunkRequest>>> requests;
     private ChunkWriter chunkWriter;
 
-    public GroupedChunkIO(ClientWorld clientWorld, ChunkWriter chunkWriter) {
-        super(clientWorld);
+    public GroupedChunkIO(GameWorld gameWorld, ChunkWriter chunkWriter) {
+        super(gameWorld);
         this.chunkWriter = chunkWriter;
         requests = new LinkedBlockingDeque<>();
         start();
@@ -30,7 +27,7 @@ public class GroupedChunkIO extends ChunkIO {
 
     @Override
     public void run() {
-        while (clientWorld.isLoaded()) {
+        while (gameWorld.isLoaded()) {
             try {
                 Pair<ChunkLocation, List<ChunkRequest>> request = requests.take();
                 List<ChunkLocation> reads = new ArrayList<>();

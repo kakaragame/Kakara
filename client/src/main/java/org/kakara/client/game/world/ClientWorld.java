@@ -4,8 +4,7 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.Client;
-import org.kakara.client.game.world.io.ChunkIO;
-import org.kakara.client.game.world.io.GroupedChunkIO;
+
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.Utils;
@@ -15,6 +14,10 @@ import org.kakara.core.game.ItemStack;
 import org.kakara.core.world.*;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
+import org.kakara.game.world.ClientChunkWriter;
+import org.kakara.game.world.GameWorld;
+import org.kakara.game.world.io.ChunkIO;
+import org.kakara.game.world.io.GroupedChunkIO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +26,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class ClientWorld implements World {
+public class ClientWorld extends GameWorld {
     private final File worldFolder;
     //private final ChunkSet chunkSet;
     private final Map<ChunkLocation, Chunk> chunkMap = new HashMap<>();

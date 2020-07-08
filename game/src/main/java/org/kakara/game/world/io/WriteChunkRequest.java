@@ -1,11 +1,13 @@
-package org.kakara.client.game.world.io;
+package org.kakara.game.world.io;
 
-import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.GameUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 

@@ -227,11 +227,6 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>me.ryandw11</groupId>
-            <artifactId>ods</artifactId>
-            <version>1.0-MEM-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>19.0.0</version>

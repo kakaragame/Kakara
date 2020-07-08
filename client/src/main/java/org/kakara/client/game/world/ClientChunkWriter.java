@@ -82,7 +82,7 @@ public class ClientChunkWriter implements ChunkWriter {
             for (ChunkLocation chunkLocation1 : chunkLocationCollectionEntry.getValue()) {
                 ObjectTag objectTag = null;
                 try {
-                    objectTag = ods.get(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
+                    objectTag = ods.get(getTagName(chunkLocation1));
                 } catch (ODSException e) {
                     KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
                     //TODO Cancel World Load
@@ -100,13 +100,15 @@ public class ClientChunkWriter implements ChunkWriter {
         return output;
     }
 
+    public String getTagName(ChunkLocation chunkLocation) {
+        return String.format("%d-%d-%d", chunkLocation.getX(), chunkLocation.getY(), chunkLocation.getZ());
+    }
+
     @Override
     public void writeChunk(ChunkContent chunk) {
         File chunkFile = getChunkFile(chunk.getLocation());
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
-        if (ods.find(getChunkKey(chunk.getLocation())))
-            ods.delete(getChunkKey(chunk.getLocation()));
-        ods.append(new ChunkContentTag(chunk));
+        ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
     }
 
     @Override
@@ -115,12 +117,8 @@ public class ClientChunkWriter implements ChunkWriter {
             File chunkFile = getChunkFile(entry.getKey());
             ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
             for (ChunkContent chunk : entry.getValue()) {
-                if (ods.find(getChunkKey(chunk.getLocation())))
-                    ods.delete(getChunkKey(chunk.getLocation()));
+                ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
             }
-            List<Tag<?>> chunkTags = new ArrayList<>();
-            entry.getValue().forEach(chunk -> chunkTags.add(new ChunkContentTag(chunk)));
-            ods.appendAll(chunkTags);
         }
     }
 

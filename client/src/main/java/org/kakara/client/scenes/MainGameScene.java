@@ -206,8 +206,8 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float interval) {
-
         server.update();
+
         playerMovement();
 
         if (chatComponent != null) {
@@ -335,9 +335,12 @@ public class MainGameScene extends AbstractGameScene {
 
                 // Handle the block selector.
                 this.blockSelector.setPosition(item.getPosition().x, -10, item.getPosition().z);
-                Collidable objectFound = this.selectGameItems(20, uuid);
-                if (objectFound != null)
-                    this.blockSelector.setPosition(objectFound.getColPosition());
+                try {
+                    Collidable objectFound = this.selectGameItems(20, uuid);
+                    if (objectFound != null)
+                        this.blockSelector.setPosition(objectFound.getColPosition());
+                } catch (NullPointerException ignored) {
+                }
             });
 
         });

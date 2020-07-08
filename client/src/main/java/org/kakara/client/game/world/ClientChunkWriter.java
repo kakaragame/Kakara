@@ -13,6 +13,7 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.world.ChunkWriter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class ClientChunkWriter implements ChunkWriter {
@@ -107,8 +108,19 @@ public class ClientChunkWriter implements ChunkWriter {
     @Override
     public void writeChunk(ChunkContent chunk) {
         File chunkFile = getChunkFile(chunk.getLocation());
+
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
-        ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
+        if (!chunkFile.exists()) {
+            try {
+                chunkFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ods.save(List.of(new ChunkContentTag(chunk)));
+        } else {
+            ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
+
+        }
     }
 
     @Override
@@ -116,8 +128,28 @@ public class ClientChunkWriter implements ChunkWriter {
         for (Map.Entry<ChunkLocation, Collection<ChunkContent>> entry : ChunkIOUtils.sortByChunk(chunks).asMap().entrySet()) {
             File chunkFile = getChunkFile(entry.getKey());
             ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
-            for (ChunkContent chunk : entry.getValue()) {
-                ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
+            if (!chunkFile.exists()) {
+                try {
+                    //NEW File
+                    chunkFile.createNewFile();
+                    List<Tag<?>> tags = new ArrayList<>();
+                    for (ChunkContent chunk : entry.getValue()) {
+                        tags.add(new ChunkContentTag(chunk));
+                    }
+                    ods.save(tags);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                for (ChunkContent chunk : entry.getValue()) {
+                    try {
+                        ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
+
+                    } catch (ODSException e) {
+                        e.printStackTrace();
+                        e.getIOException().printStackTrace();
+                    }
+                }
             }
         }
     }

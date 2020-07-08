@@ -49,7 +49,7 @@ public class ClientChunkWriter implements ChunkWriter {
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
         ObjectTag objectTag = null;
         try {
-            objectTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
+            objectTag = ods.get(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
         } catch (ODSException e) {
             KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
             //TODO Cancel World Load
@@ -82,7 +82,7 @@ public class ClientChunkWriter implements ChunkWriter {
             for (ChunkLocation chunkLocation1 : chunkLocationCollectionEntry.getValue()) {
                 ObjectTag objectTag = null;
                 try {
-                    objectTag = ods.getObject(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
+                    objectTag = ods.get(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
                 } catch (ODSException e) {
                     KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
                     //TODO Cancel World Load

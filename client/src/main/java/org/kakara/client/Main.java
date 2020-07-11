@@ -9,6 +9,7 @@ import org.kakara.core.client.ClientSettingsBuilder;
 import org.kakara.core.world.Location;
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.gui.WindowIcon;
 import org.kakara.game.GameUtils;
 import org.lwjgl.system.Configuration;
 
@@ -53,5 +54,6 @@ public class Main {
 
         GameEngine gameEngine = new GameEngine("Kakara", 1080, 720, true, kakaraGame);
         gameEngine.run();
+
     }
 }

@@ -9,6 +9,7 @@ import org.kakara.core.client.Save;
 import org.kakara.core.modinstance.ModInstance;
 import org.kakara.core.modinstance.ModInstanceType;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.gui.WindowIcon;
 import org.kakara.engine.item.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
@@ -49,6 +50,8 @@ public class MainMenuScene extends AbstractMenuScene {
 
     @Override
     public void loadGraphics(GameHandler handler) throws Exception{
+        gameHandler.getWindow().setIcon(new WindowIcon(gameHandler.getResourceManager().getResource("icon.png")));
+
         ResourceManager resourceManager = gameHandler.getResourceManager();
         setBackground(new Texture(resourceManager.getResource("kakara_background.png"), this));
 

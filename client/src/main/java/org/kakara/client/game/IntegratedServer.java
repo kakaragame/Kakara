@@ -9,7 +9,6 @@ import org.kakara.client.game.commands.KillCommand;
 import org.kakara.client.game.commands.SaveChunk;
 import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
-import org.kakara.client.game.world.ClientWorld;
 import org.kakara.core.Kakara;
 import org.kakara.core.Utils;
 import org.kakara.core.client.Save;
@@ -18,7 +17,6 @@ import org.kakara.core.mod.UnModObject;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
 import org.kakara.core.world.Chunk;
-import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
@@ -52,10 +50,12 @@ public class IntegratedServer extends Thread implements Server {
     private List<String> messages = new ArrayList<>();
     private ChunkCleaner chunkCleaner;
     private final Time time = new Time();
+    private Runnable sceneTickUpdate;
 
-    public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) throws ServerLoadException {
+    public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID, Runnable sceneTickUpdate) throws ServerLoadException {
         super("Kakara-IntegratedServer");
         this.save = save;
+        this.sceneTickUpdate = sceneTickUpdate;
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
         }
@@ -184,6 +184,7 @@ public class IntegratedServer extends Thread implements Server {
     @Override
     public void update() {
 
+        if (sceneTickUpdate != null) sceneTickUpdate.run();
         if (getPlayerEntity() == null) return;
         Location start = getPlayerEntity().getLocation();
 
@@ -191,7 +192,7 @@ public class IntegratedServer extends Thread implements Server {
             for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
                 for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
                     if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
-                         getPlayerEntity().getLocation().getWorld().get().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
+                        getPlayerEntity().getLocation().getWorld().get().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
                     }
                 }
             }
@@ -229,6 +230,10 @@ public class IntegratedServer extends Thread implements Server {
     @Override
     public void renderMessageToConsole(String message) {
         messages.add(message);
+    }
+
+    public void setSceneTickUpdate(Runnable sceneTickUpdate) {
+        this.sceneTickUpdate = sceneTickUpdate;
     }
 
     @Override

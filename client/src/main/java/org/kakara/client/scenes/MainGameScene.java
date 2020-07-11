@@ -95,9 +95,14 @@ public class MainGameScene extends AbstractGameScene {
         renderTextureCache = CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<>() {
             @Override
             public RenderTexture load(String s) throws Exception {
-                return getResource(s);
+                return getResource(GameResourceManager.correctPath(s));
             }
         });
+        if (server instanceof IntegratedServer) {
+            ((IntegratedServer) server).setSceneTickUpdate(() -> {
+                gameSceneUpdate();
+            });
+        }
     }
 
 
@@ -238,7 +243,9 @@ public class MainGameScene extends AbstractGameScene {
                         vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
                         RenderBlock rb = null;
                         try {
-                            rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
+                            rb = new RenderBlock(new BlockLayout(),
+                                    renderTextureCache.get
+                                            ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
                         } catch (RuntimeException | ExecutionException e) {
                             e.printStackTrace();
                             continue;
@@ -317,27 +324,7 @@ public class MainGameScene extends AbstractGameScene {
                         item.setVelocityY(-9.18f);
                     }
                 }
-                if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
-                    Collidable col = this.selectGameItems(20, player.getGameItemID().get());
-                    if (col instanceof RenderBlock) {
-                        RenderBlock rb = (RenderBlock) col;
-                        RenderChunk parentChunk = rb.getParentChunk();
-                        Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
-                        if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
-                            breakingBlock = new BreakingBlock(location);
-                            return;
-                        } else {
-                            if (breakingBlock.breakBlock(0.05d)) {
-                                parentChunk.removeBlock(rb);
-                                parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                                server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
-                                breakingBlock = null;
-                            }
-                            if (breakingBlock != null)
-                                System.out.println("Breaking Percentage " + (breakingBlock.getPercentage()));
-                        }
-                    }
-                }
+
                 if (ki.isKeyPressed(GLFW_KEY_G))
                     item.setVelocityY(-9.18f);
                 Location location = player.getLocation();
@@ -463,4 +450,30 @@ public class MainGameScene extends AbstractGameScene {
         return server;
     }
 
+    public void gameSceneUpdate() {
+        if (server.getPlayerEntity() == null || chatComponent == null) return;
+        ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
+        if (player.getGameItemID().isEmpty()) return;
+        if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
+            Collidable col = this.selectGameItems(20, player.getGameItemID().get());
+            if (col instanceof RenderBlock) {
+                RenderBlock rb = (RenderBlock) col;
+                RenderChunk parentChunk = rb.getParentChunk();
+                Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
+                if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
+                    breakingBlock = new BreakingBlock(location);
+                    return;
+                } else {
+                    if (breakingBlock.breakBlock(0.005d)) {
+                        parentChunk.removeBlock(rb);
+                        parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                        server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                        breakingBlock = null;
+                    }
+                    if (breakingBlock != null)
+                        System.out.println("Breaking Percentage " + (breakingBlock.getPercentage()));
+                }
+            }
+        }
+    }
 }

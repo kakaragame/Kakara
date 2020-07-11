@@ -20,6 +20,7 @@ import org.kakara.core.player.Player;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
+import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.ServerLoadException;
@@ -36,7 +37,7 @@ import java.util.concurrent.Executors;
 
 import static org.kakara.client.KakaraGame.LOGGER;
 
-public class IntegratedServer implements Server {
+public class IntegratedServer extends Thread implements Server {
     @NotNull
     private final Save save;
     @NotNull
@@ -50,8 +51,10 @@ public class IntegratedServer implements Server {
     private Player player;
     private List<String> messages = new ArrayList<>();
     private ChunkCleaner chunkCleaner;
+    private final Time time = new Time();
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) throws ServerLoadException {
+        super("Kakara-IntegratedServer");
         this.save = save;
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
@@ -81,6 +84,7 @@ public class IntegratedServer implements Server {
         Kakara.getCommandManager().registerCommand(new StatusCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new KillCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new SaveChunk(KakaraMod.getInstance(), this));
+        start();
     }
 
     public Player getOnlinePlayer(UUID uuid) {
@@ -155,14 +159,30 @@ public class IntegratedServer implements Server {
     }
 
     @Override
-    public void update() {
-        if (!running) {
-            if (save instanceof ClientSave) {
-                ((ClientSave) save).save();
+    public void run() {
+        //Yes I stole this from Engine
+        float elapsedTime;
+        float accumulator = 0f;
+        float interval = 1f / 20;
+
+        while (running) {
+            elapsedTime = time.getElapsedTime();
+            Time.deltaTime = elapsedTime;
+            accumulator += elapsedTime;
+
+            while (accumulator >= interval) {
+                update();
+                accumulator -= interval;
             }
 
-            return;
         }
+        if (save instanceof ClientSave) {
+            ((ClientSave) save).save();
+        }
+    }
+
+    @Override
+    public void update() {
 
         if (getPlayerEntity() == null) return;
         Location start = getPlayerEntity().getLocation();
@@ -171,7 +191,7 @@ public class IntegratedServer implements Server {
             for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
                 for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
                     if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
-                        ((ClientWorld) getPlayerEntity().getLocation().getWorld().get()).getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
+                         getPlayerEntity().getLocation().getWorld().get().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
                     }
                 }
             }

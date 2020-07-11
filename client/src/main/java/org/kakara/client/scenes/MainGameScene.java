@@ -80,7 +80,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class MainGameScene extends AbstractGameScene {
     private KakaraGame kakaraGame;
     private Server server;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ChatComponent chatComponent;
     private LoadingCache<String, RenderTexture> renderTextureCache;
     private BreakingBlock breakingBlock = null;
@@ -206,7 +205,7 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float interval) {
-        server.update();
+        //server.update();
 
         playerMovement();
 
@@ -217,47 +216,46 @@ public class MainGameScene extends AbstractGameScene {
                 });
             }
         }
-        executorService.submit(() -> {
-            for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().get().getChunks()) {
-                if (loadedChunk.getStatus() != Status.LOADED) continue;
-                ClientChunk clientChunk = (ClientChunk) loadedChunk;
+        for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().get().getChunks()) {
+            if (loadedChunk.getStatus() != Status.LOADED) continue;
+            ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
-                if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                    if (clientChunk.getRenderChunkID().isPresent())
-                        getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
-                }
-                if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
-                    if (clientChunk.getRenderChunkID().isPresent())
-                        getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
-                    if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                        ChunkLocation cb = loadedChunk.getLocation();
-                        RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                        rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
-
-                        for (GameBlock gb : loadedChunk.getGameBlocks()) {
-                            if (gb.getItemStack().getItem() instanceof AirBlock) continue;
-                            Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
-                            vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
-                            RenderBlock rb = null;
-                            try {
-                                rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
-                            } catch (RuntimeException | ExecutionException e) {
-                                e.printStackTrace();
-                                continue;
-                            }
-                            rc.addBlock(rb);
-                        }
-                        clientChunk.setUpdatedHappened(false);
-                        server.getExecutorService().submit(() -> {
-                            rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
-                        });
-                        getChunkHandler().addChunk(rc);
-                        clientChunk.setRenderChunkID(rc.getId());
-                    }
-                }
-
+            if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
+                if (clientChunk.getRenderChunkID().isPresent())
+                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
             }
-        });
+            if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
+                if (clientChunk.getRenderChunkID().isPresent())
+                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
+                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
+                    ChunkLocation cb = loadedChunk.getLocation();
+                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                    rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+
+                    for (GameBlock gb : loadedChunk.getGameBlocks()) {
+                        if (gb.getItemStack().getItem() instanceof AirBlock) continue;
+                        Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
+                        vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
+                        RenderBlock rb = null;
+                        try {
+                            rb = new RenderBlock(new BlockLayout(), renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
+                        } catch (RuntimeException | ExecutionException e) {
+                            e.printStackTrace();
+                            continue;
+                        }
+                        rc.addBlock(rb);
+                    }
+                    clientChunk.setUpdatedHappened(false);
+                    server.getExecutorService().submit(() -> {
+                        rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                    });
+                    getChunkHandler().addChunk(rc);
+                    clientChunk.setRenderChunkID(rc.getId());
+                }
+            }
+
+        }
+
 
     }
 
@@ -373,7 +371,6 @@ public class MainGameScene extends AbstractGameScene {
      */
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
-
         UUID playerID = ((ClientPlayer) server.getPlayerEntity()).getGameItemID().get();
         if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20, playerID);

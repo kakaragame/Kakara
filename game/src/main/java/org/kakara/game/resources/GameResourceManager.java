@@ -20,7 +20,7 @@ public class GameResourceManager implements ResourceManager {
     private GameInstance kakaraCore;
     private File resourceDirectory;
     private static final String BASE_PATH = "/resources/";
-    private Set<Texture> textures = new HashSet<>();
+    private Map<Integer, Texture> textures = new HashMap<>();
 
     public GameResourceManager() {
     }
@@ -28,7 +28,7 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public Set<Texture> getAllTextures() {
-        return textures;
+        return new HashSet<>(textures.values());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class GameResourceManager implements ResourceManager {
 
         Texture texture = getTexture(s, mod).orElseGet(() -> {
             Texture texture1 = new Texture(s, mod);
-            textures.add(texture1);
+            textures.put(texture1.hashCode(), texture1);
             return texture1;
         });
         texture.addResolution(i, new Resource(file, mod.getName().toLowerCase() + "/texture/" + i.getResolution() + "/" + s));
@@ -99,7 +99,7 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public Optional<Texture> getTexture(String path, Mod mod) {
-        return textures.stream().filter(texture -> texture.getPath().equals(path) && texture.getMod().equals(mod)).findFirst();
+        return Optional.ofNullable(textures.get(Objects.hash(path, mod)));
     }
 
     public Resource getTexture(String s, TextureResolution i, Mod mod, ResourceCheckList resourceCheckList) {

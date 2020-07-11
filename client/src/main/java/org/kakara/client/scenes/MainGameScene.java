@@ -81,23 +81,18 @@ public class MainGameScene extends AbstractGameScene {
     private KakaraGame kakaraGame;
     private Server server;
     private ChatComponent chatComponent;
-    private Map<String, RenderTexture> renderTextureCache;
     private BreakingBlock breakingBlock = null;
     // TODO improve this
     private HotBarCanvas hotBarCanvas;
     private MeshGameItem blockSelector;
+    private final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
         setCurserStatus(false);
         this.server = server;
         this.kakaraGame = kakaraGame;
-        renderTextureCache = new CachingHashMap<>(new CacheLoader<String, RenderTexture>() {
-            @Override
-            public RenderTexture load(String s) throws Exception {
-                return getResource(GameResourceManager.correctPath(s));
-            }
-        });
+
         if (server instanceof IntegratedServer) {
             ((IntegratedServer) server).setSceneTickUpdate(() -> {
                 gameSceneUpdate();
@@ -152,7 +147,7 @@ public class MainGameScene extends AbstractGameScene {
         }
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
 
-        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderTextureCache, (PlayerContentInventory) server.getPlayerEntity().getInventory());
+        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderResourceManager, (PlayerContentInventory) server.getPlayerEntity().getInventory());
         hotBarCanvas.show();
 
         ComponentCanvas main = new ComponentCanvas(this);
@@ -244,7 +239,7 @@ public class MainGameScene extends AbstractGameScene {
                         RenderBlock rb = null;
                         try {
                             rb = new RenderBlock(new BlockLayout(),
-                                    renderTextureCache.get
+                                    renderResourceManager.get
                                             ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
                         } catch (RuntimeException e) {
                             e.printStackTrace();
@@ -266,11 +261,6 @@ public class MainGameScene extends AbstractGameScene {
 
     }
 
-    private RenderTexture getResource(String texture) {
-        return getTextureAtlas().getTextures().stream().filter(renderTexture -> GameResourceManager.correctPath(renderTexture.getResource().getOriginalPath()).equals(GameResourceManager.correctPath(texture))).findFirst().orElseThrow(() -> {
-            return new RuntimeException("Unable to find " + GameResourceManager.correctPath(texture));
-        });
-    }
 
     boolean playerInJump = false;
     float lastYPos = 0;
@@ -420,7 +410,7 @@ public class MainGameScene extends AbstractGameScene {
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
                     RenderBlock rbs = null;
                     rbs = new RenderBlock(new BlockLayout(),
-                            renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
+                            renderResourceManager.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
 
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);

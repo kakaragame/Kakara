@@ -2,6 +2,7 @@ package org.kakara.client.scenes.canvases;
 
 import com.google.common.cache.LoadingCache;
 import org.kakara.client.game.player.PlayerContentInventory;
+import org.kakara.client.scenes.RenderResourceManager;
 import org.kakara.core.Kakara;
 import org.kakara.core.NameKey;
 import org.kakara.core.game.ItemStack;
@@ -32,22 +33,16 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class HotBarCanvas extends ComponentCanvas {
-
     private Panel mainPanel;
-
     private Rectangle[] rects = new Rectangle[5];
-
     private int selectedIndex = 0;
-
     private final RGBA selected = new RGBA(255, 255, 255, 0.4f);
     private final RGBA normal = new RGBA(0, 0, 0, 0.4f);
-
     private PlayerContentInventory contentInventory;
-
     private ObjectCanvas objectCanvas;
-    private Map<String, RenderTexture> renderTextureCache;
+    private final RenderResourceManager renderTextureCache;
 
-    public HotBarCanvas(Scene scene, TextureAtlas atlas, Map<String, RenderTexture> renderTextureCache, PlayerContentInventory contentInventory) {
+    public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory) {
         super(scene);
         this.contentInventory = contentInventory;
         scene.getEventManager().registerHandler(this);

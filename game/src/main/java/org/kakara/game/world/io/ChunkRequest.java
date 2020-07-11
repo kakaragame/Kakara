@@ -1,4 +1,4 @@
-package org.kakara.client.game.world.io;
+package org.kakara.game.world.io;
 
 public interface ChunkRequest {
     public enum Type {

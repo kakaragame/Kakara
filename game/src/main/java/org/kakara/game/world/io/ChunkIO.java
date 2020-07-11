@@ -1,19 +1,18 @@
-package org.kakara.client.game.world.io;
+package org.kakara.game.world.io;
 
-import org.kakara.client.game.world.ClientWorld;
-import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
+import org.kakara.game.world.GameWorld;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class ChunkIO extends Thread {
-    protected ClientWorld clientWorld;
+    protected GameWorld gameWorld;
 
-    public ChunkIO(ClientWorld clientWorld) {
+    public ChunkIO(GameWorld clientWorld) {
         super(clientWorld.getName() + "-io");
-        this.clientWorld = clientWorld;
+        this.gameWorld = clientWorld;
     }
 
     public abstract CompletableFuture<List<ChunkContent>> get(List<ChunkLocation> chunkLocations);

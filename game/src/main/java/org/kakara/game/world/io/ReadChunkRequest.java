@@ -1,7 +1,5 @@
-package org.kakara.client.game.world.io;
+package org.kakara.game.world.io;
 
-import org.kakara.client.game.world.NullChunk;
-import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.game.GameUtils;

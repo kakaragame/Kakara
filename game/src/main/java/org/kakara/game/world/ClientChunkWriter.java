@@ -1,26 +1,29 @@
-package org.kakara.client.game.world;
+package org.kakara.game.world;
 
 import me.ryandw11.ods.Compression;
 import me.ryandw11.ods.ObjectDataStructure;
 import me.ryandw11.ods.Tag;
 import me.ryandw11.ods.exception.ODSException;
 import me.ryandw11.ods.tags.ObjectTag;
-import org.kakara.client.KakaraGame;
-import org.kakara.client.game.world.io.ChunkIOUtils;
-import org.kakara.core.world.Chunk;
+import org.kakara.core.Kakara;
+import org.kakara.core.serializers.ods.ChunkContentTag;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
-import org.kakara.game.world.ChunkWriter;
+import org.kakara.core.world.ChunkWriter;
+import org.kakara.game.world.io.ChunkIOUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class ClientChunkWriter implements ChunkWriter {
-    private final ClientWorld world;
+    private final GameWorld world;
     private final File chunkFolder;
 
-    public ClientChunkWriter(ClientWorld world) {
+    public ClientChunkWriter(GameWorld world) {
         this.world = world;
         chunkFolder = new File(world.getWorldFolder(), "chunks");
         if (!chunkFolder.exists()) chunkFolder.mkdir();
@@ -52,7 +55,7 @@ public class ClientChunkWriter implements ChunkWriter {
         try {
             objectTag = ods.get(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
         } catch (ODSException e) {
-            KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
+            Kakara.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
             //TODO Cancel World Load
         }
         ChunkContentTag chunkContentTag;
@@ -85,7 +88,7 @@ public class ClientChunkWriter implements ChunkWriter {
                 try {
                     objectTag = ods.get(getTagName(chunkLocation1));
                 } catch (ODSException e) {
-                    KakaraGame.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
+                    Kakara.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
                     //TODO Cancel World Load
                 }
                 ChunkContentTag chunkContentTag = null;

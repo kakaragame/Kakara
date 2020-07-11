@@ -28,6 +28,7 @@ import org.kakara.engine.ui.objectcanvas.UIObject;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class HotBarCanvas extends ComponentCanvas {
@@ -44,9 +45,9 @@ public class HotBarCanvas extends ComponentCanvas {
     private PlayerContentInventory contentInventory;
 
     private ObjectCanvas objectCanvas;
-    private LoadingCache<String, RenderTexture> renderTextureCache;
+    private Map<String, RenderTexture> renderTextureCache;
 
-    public HotBarCanvas(Scene scene, TextureAtlas atlas, LoadingCache<String, RenderTexture> renderTextureCache, PlayerContentInventory contentInventory) {
+    public HotBarCanvas(Scene scene, TextureAtlas atlas, Map<String, RenderTexture> renderTextureCache, PlayerContentInventory contentInventory) {
         super(scene);
         this.contentInventory = contentInventory;
         scene.getEventManager().registerHandler(this);

@@ -1,7 +1,5 @@
-package org.kakara.client;
+package org.kakara.client.game;
 
-import org.kakara.client.game.ClientSave;
-import org.kakara.client.game.WorldCreator;
 import org.kakara.core.client.Save;
 import org.kakara.core.client.SaveSettings;
 import org.kakara.core.client.SaveSettingsBuilder;

@@ -68,6 +68,7 @@ public class DebugModeCanvas extends ActivateableCanvas {
     }
 
     public void update() {
+        if (!isActivated()) return;
         Vector3 v = gameScene.getCamera().getPosition();
         location.setText(String.format(locationFormat, v.x, v.y, v.z));
         ChunkLocation l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));

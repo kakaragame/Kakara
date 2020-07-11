@@ -7,12 +7,10 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.game.world.ClientChunk;
-import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.scenes.BreakingBlock;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
-import org.kakara.client.scenes.maingamescene.RenderResourceManager;
 import org.kakara.client.scenes.uicomponenets.ChatComponent;
 import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
@@ -27,17 +25,14 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.Collidable;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.item.*;
 import org.kakara.engine.item.mesh.Mesh;
-import org.kakara.engine.math.Intersection;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
-import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.models.TextureCache;
 import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.renderobjects.RenderChunk;
@@ -45,6 +40,7 @@ import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.mesh.MeshType;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
+import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.shapes.Rectangle;
@@ -63,7 +59,6 @@ import java.net.MalformedURLException;
 import java.util.*;
 import java.util.List;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -76,8 +71,9 @@ public class MainGameScene extends AbstractGameScene {
     protected HotBarCanvas hotBarCanvas;
     protected MeshGameItem blockSelector;
     protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
-    protected PlayerMovement movement = new PlayerMovement(this);
-    protected SceneUtils sceneUtils = new SceneUtils(this);
+    protected final PlayerMovement movement = new PlayerMovement(this);
+    protected final SceneUtils sceneUtils = new SceneUtils(this);
+    protected final GameChunkManager gameChunkManager = new GameChunkManager(this);
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -96,11 +92,9 @@ public class MainGameScene extends AbstractGameScene {
 
     }
 
-    MeshGameItem test;
 
     @Override
     public void loadGraphics(GameHandler handler) {
-        //getHUD().addFont(kakaraGame.getFont());
         getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
         getHUD().addItem(PauseMenuCanvas.getInstance(kakaraGame, this));
 
@@ -108,7 +102,6 @@ public class MainGameScene extends AbstractGameScene {
         List<RenderTexture> textures = new ArrayList<>();
 
         for (org.kakara.core.resources.Texture resource : Kakara.getResourceManager().getAllTextures()) {
-
             RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.get().getLocalPath()));
             textures.add(txt1);
 
@@ -155,16 +148,7 @@ public class MainGameScene extends AbstractGameScene {
         add(hotBarCanvas);
         add(hotBarCanvas.getObjectCanvas());
         try {
-            Mesh[] mainPlayer = StaticModelLoader.load(resourceManager.getResource("player/steve.obj"), "/player", this, resourceManager);
-            MeshGameItem object = new MeshGameItem(mainPlayer);
-            object.setVisible(false);
-            object.setPosition((float) server.getPlayerEntity().getLocation().getX(), (float) server.getPlayerEntity().getLocation().getY(), (float) server.getPlayerEntity().getLocation().getZ());
-//            object.setScale(0.3f);
-            object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f)));
-//            ((BoxCollider) object.getCollider()).setOffset(new Vector3(0, 0.7f, 0));
-            add(object);
-            test = object;
-            ((ClientPlayer) server.getPlayerEntity()).setGameItemID(object.getId());
+            ((ClientPlayer) server.getPlayerEntity()).setGameItemID(sceneUtils.createPlayerObject());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -189,8 +173,7 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float interval) {
-        //server.update();
-
+        DebugModeCanvas.getInstance(kakaraGame, this).update();
         movement.playerMovement();
 
         if (chatComponent != null) {
@@ -198,44 +181,9 @@ public class MainGameScene extends AbstractGameScene {
                 ((IntegratedServer) server).newMessages().forEach(s -> chatComponent.addMessage(s));
             }
         }
-        if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
-        for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().get().getChunks()) {
-            if (loadedChunk.getStatus() != Status.LOADED) continue;
-            ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
-            if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                if (clientChunk.getRenderChunkID().isPresent())
-                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
-            }
-            if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
-                if (clientChunk.getRenderChunkID().isPresent())
-                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
-                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                    ChunkLocation cb = loadedChunk.getLocation();
-                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                    rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
 
-                    for (GameBlock gb : loadedChunk.getGameBlocks()) {
-                        if (gb.getItemStack().getItem() instanceof AirBlock) continue;
-                        Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
-                        vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
-                        RenderBlock rb = new RenderBlock(new BlockLayout(),
-                                renderResourceManager.get
-                                        ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
-
-                        rc.addBlock(rb);
-                    }
-                    clientChunk.setUpdatedHappened(false);
-                    server.getExecutorService().submit(() -> {
-                        rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
-                    });
-                    getChunkHandler().addChunk(rc);
-                    clientChunk.setRenderChunkID(rc.getId());
-                }
-            }
-
-        }
-
+        gameChunkManager.update();
 
     }
 
@@ -295,11 +243,9 @@ public class MainGameScene extends AbstractGameScene {
 
     }
 
-
-    public Server getServer() {
-        return server;
-    }
-
+    /**
+     * Update from the integrated server
+     */
     public void gameSceneUpdate() {
         if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
         if (server.getPlayerEntity() == null || chatComponent == null) return;
@@ -325,5 +271,13 @@ public class MainGameScene extends AbstractGameScene {
                 }
             }
         }
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public ResourceManager getResourceManager() {
+        return gameHandler.getResourceManager();
     }
 }

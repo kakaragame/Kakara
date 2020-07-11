@@ -74,6 +74,10 @@ public class ClientWorld extends GameWorld {
         return new HashSet<>(chunkMap.values());
     }
 
+    public Collection<Chunk> getValue() {
+        return chunkMap.values();
+    }
+
     @Override
     public @NotNull UUID getUUID() {
         return worldID;

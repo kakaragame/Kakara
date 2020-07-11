@@ -1,7 +1,7 @@
 package org.kakara.client.scenes;
 
 import org.kakara.client.KakaraGame;
-import org.kakara.client.SaveCreator;
+import org.kakara.client.game.SaveCreator;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.WorldCreator;
 import org.kakara.client.scenes.maingamescene.MainGameScene;

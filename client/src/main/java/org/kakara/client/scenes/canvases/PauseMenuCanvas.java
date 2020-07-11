@@ -69,7 +69,7 @@ public class PauseMenuCanvas extends ActivateableCanvas {
     @Override
     void add() {
         add(quit);
-add(resume);
+        add(resume);
         scene.setCurserStatus(true);
     }
 

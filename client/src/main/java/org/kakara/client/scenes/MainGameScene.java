@@ -83,7 +83,7 @@ public class MainGameScene extends AbstractGameScene {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private ChatComponent chatComponent;
     private LoadingCache<String, RenderTexture> renderTextureCache;
-
+    private BreakingBlock breakingBlock = null;
     // TODO improve this
     private HotBarCanvas hotBarCanvas;
     private MeshGameItem blockSelector;
@@ -319,6 +319,27 @@ public class MainGameScene extends AbstractGameScene {
                         item.setVelocityY(-9.18f);
                     }
                 }
+                if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
+                    Collidable col = this.selectGameItems(20, player.getGameItemID().get());
+                    if (col instanceof RenderBlock) {
+                        RenderBlock rb = (RenderBlock) col;
+                        RenderChunk parentChunk = rb.getParentChunk();
+                        Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
+                        if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
+                            breakingBlock = new BreakingBlock(location);
+                            return;
+                        } else {
+                            if (breakingBlock.breakBlock(0.05d)) {
+                                parentChunk.removeBlock(rb);
+                                parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
+                                server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                                breakingBlock = null;
+                            }
+                            if (breakingBlock != null)
+                                System.out.println("Breaking Percentage " + (breakingBlock.getPercentage()));
+                        }
+                    }
+                }
                 if (ki.isKeyPressed(GLFW_KEY_G))
                     item.setVelocityY(-9.18f);
                 Location location = player.getLocation();
@@ -352,17 +373,9 @@ public class MainGameScene extends AbstractGameScene {
      */
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
+
         UUID playerID = ((ClientPlayer) server.getPlayerEntity()).getGameItemID().get();
-        if (evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()) {
-            Collidable col = this.selectGameItems(20, playerID);
-            if (col instanceof RenderBlock) {
-                RenderBlock rb = (RenderBlock) col;
-                RenderChunk parentChunk = rb.getParentChunk();
-                parentChunk.removeBlock(rb);
-                parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z));
-            }
-        } else if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
+        if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20, playerID);
             if (col instanceof RenderBlock) {
                 RenderBlock rb = (RenderBlock) col;

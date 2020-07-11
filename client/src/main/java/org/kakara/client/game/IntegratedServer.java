@@ -22,6 +22,7 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
+import org.kakara.game.ServerLoadException;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.mod.KakaraMod;
 
@@ -50,7 +51,7 @@ public class IntegratedServer implements Server {
     private List<String> messages = new ArrayList<>();
     private ChunkCleaner chunkCleaner;
 
-    public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) {
+    public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID) throws ServerLoadException {
         this.save = save;
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
@@ -71,8 +72,7 @@ public class IntegratedServer implements Server {
         try {
             save.prepareWorlds();
         } catch (WorldLoadException e) {
-            LOGGER.error("Unable to load worlds", e);
-            //TODO cancel game load
+            throw new ServerLoadException(e);
         }
         chunkCleaner = new ChunkCleaner(this);
         chunkCleaner.start();
@@ -209,5 +209,10 @@ public class IntegratedServer implements Server {
     @Override
     public void renderMessageToConsole(String message) {
         messages.add(message);
+    }
+
+    @Override
+    public void errorClose(Exception e) {
+
     }
 }

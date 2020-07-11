@@ -8,4 +8,6 @@ public abstract class GameWorld implements World {
     public abstract boolean isLoaded();
 
     public abstract File getWorldFolder();
+
+    public abstract void errorClose();
 }

@@ -38,6 +38,7 @@ public class ClientWorld extends GameWorld {
     private final Server server;
     private Location worldSpawn;
     private ChunkIO chunkIO = null;
+    private Status status = Status.LOADED;
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
@@ -193,8 +194,22 @@ public class ClientWorld extends GameWorld {
         return worldFolder;
     }
 
+    @Override
+    public void errorClose() {
+        chunkIO.interrupt();
+        status = Status.UNLOADED;
+        List<ChunkContent> contents = new ArrayList<>();
+        for (Chunk chunk : getChunks()) {
+            ClientChunk cChunk = (ClientChunk) chunk;
+            contents.add(cChunk.getContents());
+        }
+        chunkIO.write(contents);
+        server.errorClose(new WorldLoadException());
+
+    }
+
     public boolean isLoaded() {
-        return true;
+        return status == Status.LOADED;
     }
 
     public void saveChunks() {

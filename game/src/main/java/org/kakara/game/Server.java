@@ -1,5 +1,6 @@
 package org.kakara.game;
 
+import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.Entity;
 import org.kakara.core.player.Player;
 import org.kakara.core.world.Chunk;
@@ -40,4 +41,6 @@ public interface Server {
     void close();
 
     void renderMessageToConsole(String message);
+
+    void errorClose(Exception e);
 }

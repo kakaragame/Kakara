@@ -5,6 +5,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.ChunkWriter;
+import org.kakara.core.world.exceptions.ChunkLoadException;
+import org.kakara.core.world.exceptions.ChunkWriteException;
 import org.kakara.game.world.GameWorld;
 
 import java.util.ArrayList;
@@ -16,10 +18,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class GroupedChunkIO extends ChunkIO {
     private BlockingQueue<Pair<ChunkLocation, List<ChunkRequest>>> requests;
-    private ChunkWriter chunkWriter;
 
     public GroupedChunkIO(GameWorld gameWorld, ChunkWriter chunkWriter) {
-        super(gameWorld);
+        super(gameWorld,chunkWriter);
         this.chunkWriter = chunkWriter;
         requests = new LinkedBlockingDeque<>();
         start();
@@ -54,6 +55,12 @@ public class GroupedChunkIO extends ChunkIO {
                 }
             } catch (InterruptedException e) {
                 interrupt();
+            } catch (ChunkWriteException e) {
+                e.printStackTrace();
+                //TODO IDK
+            } catch (ChunkLoadException e) {
+                e.printStackTrace();
+                gameWorld.errorClose();
             }
         }
     }

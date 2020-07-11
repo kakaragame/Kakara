@@ -10,6 +10,8 @@ import org.kakara.core.serializers.ods.ChunkContentTag;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.ChunkWriter;
+import org.kakara.core.world.exceptions.ChunkLoadException;
+import org.kakara.core.world.exceptions.ChunkWriteException;
 import org.kakara.game.world.io.ChunkIOUtils;
 
 import java.io.File;
@@ -46,7 +48,7 @@ public class ClientChunkWriter implements ChunkWriter {
     }
 
     @Override
-    public ChunkContent getChunkByLocation(ChunkLocation chunkLocation) {
+    public ChunkContent getChunkByLocation(ChunkLocation chunkLocation) throws ChunkLoadException {
         File chunkFile = getChunkFile(chunkLocation);
         if (!chunkFile.exists()) return new ChunkContent(chunkLocation);
 
@@ -55,8 +57,7 @@ public class ClientChunkWriter implements ChunkWriter {
         try {
             objectTag = ods.get(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
         } catch (ODSException e) {
-            Kakara.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
-            //TODO Cancel World Load
+            throw new ChunkLoadException(chunkLocation, chunkFile, e);
         }
         ChunkContentTag chunkContentTag;
         if (objectTag instanceof ChunkContentTag)
@@ -70,7 +71,7 @@ public class ClientChunkWriter implements ChunkWriter {
     }
 
     @Override
-    public List<ChunkContent> getChunksByLocation(List<ChunkLocation> locations) {
+    public List<ChunkContent> getChunksByLocation(List<ChunkLocation> locations) throws ChunkLoadException {
         List<ChunkContent> output = new ArrayList<>();
         for (Map.Entry<ChunkLocation, Collection<ChunkLocation>> chunkLocationCollectionEntry : ChunkIOUtils.sort(locations).asMap().entrySet()) {
             ChunkLocation chunkLocation = chunkLocationCollectionEntry.getKey();
@@ -88,8 +89,7 @@ public class ClientChunkWriter implements ChunkWriter {
                 try {
                     objectTag = ods.get(getTagName(chunkLocation1));
                 } catch (ODSException e) {
-                    Kakara.LOGGER.error("Unable to get chunk: " + chunkLocation.toString(), e);
-                    //TODO Cancel World Load
+                    throw new ChunkLoadException(chunkLocation1, chunkFile, e);
                 }
                 ChunkContentTag chunkContentTag = null;
                 if (objectTag instanceof ChunkContentTag) {
@@ -109,7 +109,7 @@ public class ClientChunkWriter implements ChunkWriter {
     }
 
     @Override
-    public void writeChunk(ChunkContent chunk) {
+    public void writeChunk(ChunkContent chunk) throws ChunkWriteException {
         File chunkFile = getChunkFile(chunk.getLocation());
 
         ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
@@ -117,17 +117,24 @@ public class ClientChunkWriter implements ChunkWriter {
             try {
                 chunkFile.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new ChunkWriteException(chunk.getLocation(), chunkFile, e);
             }
-            ods.save(List.of(new ChunkContentTag(chunk)));
+            try {
+                ods.save(List.of(new ChunkContentTag(chunk)));
+            } catch (Exception e) {
+                throw new ChunkWriteException(chunk.getLocation(), chunkFile, e);
+            }
         } else {
-            ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
-
+            try {
+                ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
+            } catch (Exception e) {
+                throw new ChunkWriteException(chunk.getLocation(), chunkFile, e);
+            }
         }
     }
 
     @Override
-    public void writeChunks(List<ChunkContent> chunks) {
+    public void writeChunks(List<ChunkContent> chunks) throws ChunkWriteException {
         for (Map.Entry<ChunkLocation, Collection<ChunkContent>> entry : ChunkIOUtils.sortByChunk(chunks).asMap().entrySet()) {
             File chunkFile = getChunkFile(entry.getKey());
             ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
@@ -141,16 +148,14 @@ public class ClientChunkWriter implements ChunkWriter {
                     }
                     ods.save(tags);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new ChunkWriteException(entry.getKey(), chunkFile, e);
                 }
             } else {
                 for (ChunkContent chunk : entry.getValue()) {
                     try {
                         ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
-
                     } catch (ODSException e) {
-                        e.printStackTrace();
-                        e.getIOException().printStackTrace();
+                        throw new ChunkWriteException(chunk.getLocation(), chunkFile, e);
                     }
                 }
             }

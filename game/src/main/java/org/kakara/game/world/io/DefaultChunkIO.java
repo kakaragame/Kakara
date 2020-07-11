@@ -12,11 +12,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class DefaultChunkIO extends ChunkIO {
     private BlockingQueue<ChunkRequest> requests;
-    private ChunkWriter chunkWriter;
 
     public DefaultChunkIO(GameWorld gameWorld, ChunkWriter chunkWriter) {
-        super(gameWorld);
-        this.chunkWriter = chunkWriter;
+        super(gameWorld,chunkWriter);
         requests = new LinkedBlockingDeque<>();
         start();
     }

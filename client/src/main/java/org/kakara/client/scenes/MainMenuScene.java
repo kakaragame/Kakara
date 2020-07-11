@@ -4,6 +4,7 @@ import org.kakara.client.KakaraGame;
 import org.kakara.client.SaveCreator;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.WorldCreator;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.NameKey;
 import org.kakara.core.modinstance.ModInstance;
 import org.kakara.core.modinstance.ModInstanceType;

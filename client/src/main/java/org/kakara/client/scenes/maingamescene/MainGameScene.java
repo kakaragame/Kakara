@@ -1,11 +1,6 @@
-package org.kakara.client.scenes;
+package org.kakara.client.scenes.maingamescene;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import org.joml.Intersectionf;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
@@ -13,9 +8,11 @@ import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.game.world.ClientChunk;
 import org.kakara.client.game.world.ClientWorld;
+import org.kakara.client.scenes.BreakingBlock;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
+import org.kakara.client.scenes.maingamescene.RenderResourceManager;
 import org.kakara.client.scenes.uicomponenets.ChatComponent;
 import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
@@ -24,21 +21,17 @@ import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
-import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
-import org.kakara.engine.Camera;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.Collidable;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
-import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseClickType;
-import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.item.*;
 import org.kakara.engine.item.mesh.Mesh;
 import org.kakara.engine.math.Intersection;
@@ -69,23 +62,22 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MainGameScene extends AbstractGameScene {
-    private KakaraGame kakaraGame;
-    private Server server;
-    private ChatComponent chatComponent;
-    private BreakingBlock breakingBlock = null;
-    // TODO improve this
-    private HotBarCanvas hotBarCanvas;
-    private MeshGameItem blockSelector;
-    private final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
+    protected final KakaraGame kakaraGame;
+    protected final Server server;
+    protected ChatComponent chatComponent;
+    protected BreakingBlock breakingBlock = null;
+    protected HotBarCanvas hotBarCanvas;
+    protected MeshGameItem blockSelector;
+    protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
+    protected PlayerMovement movement = new PlayerMovement(this);
+    protected SceneUtils sceneUtils = new SceneUtils(this);
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -94,22 +86,10 @@ public class MainGameScene extends AbstractGameScene {
         this.kakaraGame = kakaraGame;
 
         if (server instanceof IntegratedServer) {
-            ((IntegratedServer) server).setSceneTickUpdate(() -> {
-                gameSceneUpdate();
-            });
+            ((IntegratedServer) server).setSceneTickUpdate(this::gameSceneUpdate);
         }
     }
 
-
-    @EventHandler
-    public void onKeyPress(KeyPressEvent e) {
-        if (e.isKeyPressed(GLFW_KEY_F3)) {
-            DebugModeCanvas.getInstance(kakaraGame, this).switchStatus();
-        }
-        if (e.isKeyPressed(GLFW_KEY_ESCAPE) && !chatComponent.isFocused()) {
-            PauseMenuCanvas.getInstance(kakaraGame, this).switchStatus();
-        }
-    }
 
     @Override
     public void work() {
@@ -135,7 +115,11 @@ public class MainGameScene extends AbstractGameScene {
         }
         File file = new File(Kakara.getWorkingDirectory(), "tmp");
         if (!file.exists()) {
-            file.mkdir();
+            if (!file.mkdir()) {
+                //I am pretty lazy
+                Kakara.LOGGER.error("Unable to create tmp folder");
+                return;
+            }
         }
         file.deleteOnExit();
         TextureAtlas atlas = new TextureAtlas(textures, file.getAbsolutePath(), this);
@@ -207,15 +191,14 @@ public class MainGameScene extends AbstractGameScene {
     public void update(float interval) {
         //server.update();
 
-        playerMovement();
+        movement.playerMovement();
 
         if (chatComponent != null) {
             if (server instanceof IntegratedServer) {
-                ((IntegratedServer) server).newMessages().forEach(s -> {
-                    chatComponent.addMessage(s);
-                });
+                ((IntegratedServer) server).newMessages().forEach(s -> chatComponent.addMessage(s));
             }
         }
+        if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
         for (Chunk loadedChunk : server.getPlayerEntity().getLocation().getWorld().get().getChunks()) {
             if (loadedChunk.getStatus() != Status.LOADED) continue;
             ClientChunk clientChunk = (ClientChunk) loadedChunk;
@@ -236,15 +219,10 @@ public class MainGameScene extends AbstractGameScene {
                         if (gb.getItemStack().getItem() instanceof AirBlock) continue;
                         Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
                         vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
-                        RenderBlock rb = null;
-                        try {
-                            rb = new RenderBlock(new BlockLayout(),
-                                    renderResourceManager.get
-                                            ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
-                        } catch (RuntimeException e) {
-                            e.printStackTrace();
-                            continue;
-                        }
+                        RenderBlock rb = new RenderBlock(new BlockLayout(),
+                                renderResourceManager.get
+                                        ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
+
                         rc.addBlock(rb);
                     }
                     clientChunk.setUpdatedHappened(false);
@@ -262,90 +240,16 @@ public class MainGameScene extends AbstractGameScene {
     }
 
 
-    boolean playerInJump = false;
-    float lastYPos = 0;
-
-    private void playerMovement() {
-
-        if (DebugModeCanvas.getInstance(kakaraGame, this).isActivated()) {
-            DebugModeCanvas.getInstance(kakaraGame, this).update();
+    @EventHandler
+    public void onKeyPress(KeyPressEvent e) {
+        if (e.isKeyPressed(GLFW_KEY_F3)) {
+            DebugModeCanvas.getInstance(kakaraGame, this).switchStatus();
         }
-        if (server instanceof IntegratedServer) {
-            if (PauseMenuCanvas.getInstance(kakaraGame, this).isActivated()) return;
+        if (e.isKeyPressed(GLFW_KEY_ESCAPE) && !chatComponent.isFocused()) {
+            PauseMenuCanvas.getInstance(kakaraGame, this).switchStatus();
         }
-        PauseMenuCanvas.getInstance(kakaraGame, this).update();
-
-        if (chatComponent.isFocused()) return;
-
-        ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
-
-        player.getGameItemID().ifPresent(uuid -> {
-            getItemByID(uuid).ifPresent((gameItem) -> {
-                MeshGameItem item = (MeshGameItem) gameItem;
-                item.setVelocityX(0);
-                item.setVelocityZ(0);
-
-                Camera gameCamera = getCamera();
-                KeyInput ki = kakaraGame.getGameHandler().getKeyInput();
-                if (ki.isKeyPressed(GLFW_KEY_W)) {
-                    item.setVelocityByCamera(new Vector3(0, item.getVelocity().y, -7), gameCamera);
-                }
-                if (ki.isKeyPressed(GLFW_KEY_S)) {
-                    item.setVelocityByCamera(new Vector3(0, item.getVelocity().y, 7), gameCamera);
-                }
-                if (ki.isKeyPressed(GLFW_KEY_A)) {
-                    item.setVelocityByCamera(new Vector3(-7, item.getVelocity().y, 0), gameCamera);
-                }
-                if (ki.isKeyPressed(GLFW_KEY_D)) {
-                    item.setVelocityByCamera(new Vector3(7, item.getVelocity().y, 0), gameCamera);
-                }
-                if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-                    item.movePositionByCamera(0, -0.3f, 0, gameCamera);
-                }
-                if (ki.isKeyPressed(GLFW_KEY_SPACE) && !playerInJump) {
-                    playerInJump = true;
-                    lastYPos = item.getPosition().y;
-                    item.setVelocityY(4);
-                }
-                if (playerInJump) {
-                    item.movePositionByCamera(0, 0.3F, 0, gameCamera);
-                    if (item.getPosition().y > lastYPos + 3) {
-                        playerInJump = false;
-                        item.setVelocityY(-9.18f);
-                    }
-                }
-
-                if (ki.isKeyPressed(GLFW_KEY_G))
-                    item.setVelocityY(-9.18f);
-                Location location = player.getLocation();
-                location.setX(item.getPosition().x);
-                location.setY(item.getPosition().y);
-                location.setZ(item.getPosition().z);
-                player.setLocation(location);
-                //I NEED HELP!
-                MouseInput mi = kakaraGame.getGameHandler().getMouseInput();
-                player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
-                getCamera().setPosition(MoreUtils.locationToVector3(location).add(0, 1, 0));
-                Location l = player.getLocation();
-                getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
-
-                // Handle the block selector.
-                this.blockSelector.setPosition(item.getPosition().x, -10, item.getPosition().z);
-                try {
-                    Collidable objectFound = this.selectGameItems(20, uuid);
-                    if (objectFound != null)
-                        this.blockSelector.setPosition(objectFound.getColPosition());
-                } catch (NullPointerException ignored) {
-                }
-            });
-
-        });
     }
 
-    /*
-        Block breaking code.
-        Does not do anything with the core code. (That is half true now)
-     */
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
         UUID playerID = ((ClientPlayer) server.getPlayerEntity()).getGameItemID().get();
@@ -356,60 +260,25 @@ public class MainGameScene extends AbstractGameScene {
                 RenderChunk parentChunk = rb.getParentChunk();
 
                 Vector3 absoluteBlockPos = rb.getPosition().add(parentChunk.getPosition());
-                Vector2 result = new Vector2(0, 0);
 
-                float closestResult = 20;
-                Vector3 closestValue = absoluteBlockPos.clone();
-
-                Vector3 front = absoluteBlockPos.add(1, 0, 0);
-                if (Intersection.intersect((int) front.x, (int) front.y, (int) front.z, getCamera(), result) && result.x < closestResult) {
-                    closestResult = result.x;
-                    closestValue = absoluteBlockPos.add(1, 0, 0);
-                }
-
-                Vector3 back = absoluteBlockPos.add(-1, 0, 0);
-                if (Intersection.intersect((int) back.x, (int) back.y, (int) back.z, getCamera(), result) && result.x < closestResult) {
-                    closestResult = result.x;
-                    closestValue = absoluteBlockPos.add(-1, 0, 0);
-                }
-
-                Vector3 left = absoluteBlockPos.add(0, 0, 1);
-                if (Intersection.intersect((int) left.x, (int) left.y, (int) left.z, getCamera(), result) && result.x < closestResult) {
-                    closestResult = result.x;
-                    closestValue = absoluteBlockPos.add(0, 0, 1);
-                }
-
-                Vector3 right = absoluteBlockPos.add(0, 0, -1);
-                if (Intersection.intersect((int) right.x, (int) right.y, (int) right.z, getCamera(), result) && result.x < closestResult) {
-                    closestResult = result.x;
-                    closestValue = absoluteBlockPos.add(0, 0, -1);
-                }
-
-                Vector3 up = absoluteBlockPos.add(0, 1, 0);
-                if (Intersection.intersect((int) up.x, (int) up.y, (int) up.z, getCamera(), result) && result.x < closestResult) {
-                    closestResult = result.x;
-                    closestValue = absoluteBlockPos.add(0, 1, 0);
-                }
-
-                Vector3 down = absoluteBlockPos.add(0, -1, 0);
-                if (Intersection.intersect((int) down.x, (int) down.y, (int) down.z, getCamera(), result) && result.x < closestResult) {
-                    closestResult = result.x;
-                    closestValue = absoluteBlockPos.add(0, -1, 0);
-                }
-
-                final Vector3 closValue = closestValue;
+                final Vector3 closestValue = ObjectPickingUtils.closestValue(absoluteBlockPos, getCamera());
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
-                Chunk chunk = ((ClientWorld) server.getPlayerEntity().getLocation().getWorld().get()).getChunkAt(chunkLoc);
+                if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
+                Chunk chunk = (server.getPlayerEntity().getLocation().getWorld().get()).getChunkAt(chunkLoc);
                 if (chunk.getStatus() != Status.LOADED) return;
                 ClientChunk cc = (ClientChunk) chunk;
-                List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> rc.getId() == cc.getRenderChunkID().get()).collect(Collectors.toList());
+                List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> {
+                    if (cc.getRenderChunkID().isPresent()) {
+                        return rc.getId() == cc.getRenderChunkID().get();
+                    }
+                    return false;
+                }).collect(Collectors.toList());
                 RenderChunk desiredChunk = rcc.get(0);
-                Vector3 newBlockLoc = closValue.subtract(desiredChunk.getPosition());
+                Vector3 newBlockLoc = closestValue.subtract(desiredChunk.getPosition());
                 if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
-                    //IGNORE Air
+                    //IGNORE Airs
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
-                    RenderBlock rbs = null;
-                    rbs = new RenderBlock(new BlockLayout(),
+                    RenderBlock rbs = new RenderBlock(new BlockLayout(),
                             renderResourceManager.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
 
                     desiredChunk.addBlock(rbs);
@@ -426,17 +295,13 @@ public class MainGameScene extends AbstractGameScene {
 
     }
 
-    private Optional<GameItem> getItemByID(UUID uuid) {
-        AtomicReference<GameItem> gameItemA = new AtomicReference<>();
-        getItemHandler().getNonInstancedMeshMap().forEach((mesh, gameItems) -> gameItems.stream().filter(gameItem -> gameItem.getId().equals(uuid)).findFirst().ifPresent(gameItemA::set));
-        return Optional.ofNullable(gameItemA.get());
-    }
 
     public Server getServer() {
         return server;
     }
 
     public void gameSceneUpdate() {
+        if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
         if (server.getPlayerEntity() == null || chatComponent == null) return;
         ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
@@ -448,7 +313,6 @@ public class MainGameScene extends AbstractGameScene {
                 Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
                 if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
                     breakingBlock = new BreakingBlock(location);
-                    return;
                 } else {
                     if (breakingBlock.breakBlock(0.005d)) {
                         parentChunk.removeBlock(rb);

@@ -1,6 +1,7 @@
-package org.kakara.client.scenes;
+package org.kakara.client.scenes.maingamescene;
 
 import com.google.common.cache.CacheLoader;
+import org.kakara.client.scenes.CachingHashMap;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.game.resources.GameResourceManager;
 

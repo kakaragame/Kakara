@@ -74,6 +74,7 @@ public class MainGameScene extends AbstractGameScene {
     protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
     protected final GameChunkManager gameChunkManager = new GameChunkManager(this);
+    protected RenderTexture breakingTexture;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -106,6 +107,8 @@ public class MainGameScene extends AbstractGameScene {
             textures.add(txt1);
 
         }
+        breakingTexture = new RenderTexture(resourceManager.getResource("breaking/breaking.png"));
+        textures.add(breakingTexture);
         File file = new File(Kakara.getWorkingDirectory(), "tmp");
         if (!file.exists()) {
             if (!file.mkdir()) {
@@ -265,9 +268,10 @@ public class MainGameScene extends AbstractGameScene {
                         parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
                         server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
                         breakingBlock = null;
+                    } else {
+                        rb.setOverlay(breakingTexture);
+                        parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
                     }
-                    if (breakingBlock != null)
-                        System.out.println("Breaking Percentage " + (breakingBlock.getPercentage()));
                 }
             }
         }

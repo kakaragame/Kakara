@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
 
 import static org.kakara.client.CommandArguments.*;
@@ -25,7 +26,6 @@ import static org.kakara.client.CommandArguments.*;
 public class Main {
 
     public static void main(String[] args) throws ParseException, IOException {
-
         File testFile = new File("test" + File.separator + "test.properties");
         ClientSettings clientSettings = null;
         if (testFile.exists()) {
@@ -56,4 +56,6 @@ public class Main {
         gameEngine.run();
 
     }
+
+
 }

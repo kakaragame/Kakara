@@ -2,6 +2,7 @@ package org.kakara.client.scenes.maingamescene;
 
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.player.ClientPlayer;
+import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.core.world.Location;
 import org.kakara.engine.Camera;
 import org.kakara.engine.input.KeyInput;
@@ -25,7 +26,7 @@ public class PlayerMovement {
     protected void playerMovement() {
 
         if (mainGameScene.chatComponent.isFocused()) return;
-
+        if (PauseMenuCanvas.getInstance(mainGameScene.kakaraGame, mainGameScene).isActivated()) return;
         ClientPlayer player = (ClientPlayer) mainGameScene.server.getPlayerEntity();
 
         player.getGameItemID().ifPresent(uuid -> mainGameScene.sceneUtils.getItemByID(uuid).ifPresent((gameItem) -> {

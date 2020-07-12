@@ -1,28 +1,17 @@
 package org.kakara.client;
 
-import org.kakara.client.scenes.MainGameScene;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 
 import org.kakara.core.game.GameSettings;
-import org.kakara.core.mod.game.GameModManager;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.text.Font;
-import org.kakara.game.item.GameItemManager;
-import org.kakara.game.mod.KakaraMod;
-import org.kakara.game.resources.GameResourceManager;
-import org.kakara.game.world.GameWorldGenerationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class KakaraGame implements Game {
     private GameInstance kakaraCore;

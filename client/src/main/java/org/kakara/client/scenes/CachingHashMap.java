@@ -4,6 +4,12 @@ import com.google.common.cache.CacheLoader;
 
 import java.util.HashMap;
 
+/**
+ * This is a Hashmap with a loading feature.
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class CachingHashMap<K, V> extends HashMap<K, V> {
     private final CacheLoader<K, V> cacheLoader;
 

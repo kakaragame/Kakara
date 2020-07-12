@@ -1,8 +1,7 @@
 package org.kakara.client.scenes.canvases;
 
 import org.kakara.client.KakaraGame;
-import org.kakara.client.scenes.MainGameScene;
-import org.kakara.core.world.Chunk;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
 import org.kakara.engine.GameHandler;
@@ -11,13 +10,10 @@ import org.kakara.engine.math.Vector3;
 import org.kakara.engine.resources.ResourceManager;
 ;
 import org.kakara.engine.ui.components.text.Text;
-import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.ui.text.TextAlign;
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
-
-import java.net.MalformedURLException;
 
 
 public class DebugModeCanvas extends ActivateableCanvas {
@@ -72,6 +68,7 @@ public class DebugModeCanvas extends ActivateableCanvas {
     }
 
     public void update() {
+        if (!isActivated()) return;
         Vector3 v = gameScene.getCamera().getPosition();
         location.setText(String.format(locationFormat, v.x, v.y, v.z));
         ChunkLocation l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));

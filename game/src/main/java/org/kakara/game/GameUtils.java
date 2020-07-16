@@ -6,11 +6,7 @@ import org.kakara.core.world.Location;
 
 public class GameUtils {
     public static ChunkLocation getChunkLocation(Location l) {
-        int x = (int) (l.getX() - l.getX() % 16);
-        int y = (int) (l.getY() - l.getY() % 16);
-        int z = (int) (l.getZ() - l.getZ() % 16);
-
-        return new ChunkLocation(l.getWorld().isPresent() ? l.getWorld().get() : null, x, y, z);
+        return new ChunkLocation(l.getNullableWorld(),  (int) (l.getX() - l.getX() % 16),  (int) (l.getY() - l.getY() % 16), (int) (l.getZ() - l.getZ() % 16));
     }
 
     public static boolean isLocationInsideCurrentLocationRadius(ChunkLocation centerPoint, ChunkLocation location, int radius) {

@@ -51,6 +51,7 @@ public class IntegratedServer extends Thread implements Server {
     private ChunkCleaner chunkCleaner;
     private final Time time = new Time();
     private Runnable sceneTickUpdate;
+    private Location lastLocation;
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID, Runnable sceneTickUpdate) throws ServerLoadException {
         super("Kakara-IntegratedServer");
@@ -85,6 +86,7 @@ public class IntegratedServer extends Thread implements Server {
         Kakara.getCommandManager().registerCommand(new KillCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new SaveChunk(KakaraMod.getInstance(), this));
         start();
+        lastLocation = player.getLocation();
     }
 
     public Player getOnlinePlayer(UUID uuid) {
@@ -187,12 +189,14 @@ public class IntegratedServer extends Thread implements Server {
         if (sceneTickUpdate != null) sceneTickUpdate.run();
         if (getPlayerEntity() == null) return;
         Location start = getPlayerEntity().getLocation();
-
+        if (lastLocation.equals(start)) return;
+        lastLocation = start;
+        if (start.getNullableWorld() == null) return;
         for (int x = (int) (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
             for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
                 for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
                     if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
-                        getPlayerEntity().getLocation().getWorld().get().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
+                        start.getNullableWorld().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
                     }
                 }
             }

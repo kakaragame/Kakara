@@ -185,9 +185,9 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
 
-
+        long l = System.currentTimeMillis();
         gameChunkManager.update();
-
+        System.out.println(l - System.currentTimeMillis());
     }
 
 
@@ -262,15 +262,18 @@ public class MainGameScene extends AbstractGameScene {
                 Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
                 if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
                     breakingBlock = new BreakingBlock(location);
+                    //rb.setOverlay(breakingTexture);
+                    //parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
                 } else {
                     if (breakingBlock.breakBlock(0.005d)) {
+                        System.out.println("Breaking");
+
+                        long start = System.nanoTime();
                         parentChunk.removeBlock(rb);
                         parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
-                        server.getPlayerEntity().getLocation().getWorld().get().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                        System.out.println(start - System.nanoTime());
+                        //server.getPlayerEntity().getLocation().getNullableWorld().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
                         breakingBlock = null;
-                    } else {
-                        rb.setOverlay(breakingTexture);
-                        parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
                     }
                 }
             }

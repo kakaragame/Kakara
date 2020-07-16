@@ -24,12 +24,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ClientWorld extends GameWorld {
     private final File worldFolder;
     //private final ChunkSet chunkSet;
-    private final Map<ChunkLocation, Chunk> chunkMap = new HashMap<>();
+    private final Map<ChunkLocation, Chunk> chunkMap = new ConcurrentHashMap<>();
     private final UUID worldID;
     private final String name;
     private final WorldGenerator chunkGenerator;
@@ -73,6 +74,9 @@ public class ClientWorld extends GameWorld {
     public @NotNull Set<Chunk> getChunks() {
         return new HashSet<>(chunkMap.values());
     }
+    public @NotNull Collection<Chunk> getChunksNow() {
+        return chunkMap.values();
+    }
 
     public Collection<Chunk> getValue() {
         return chunkMap.values();
@@ -111,7 +115,7 @@ public class ClientWorld extends GameWorld {
         if (chunk instanceof ClientChunk) {
             GameBlock gameBlock = new GameBlock(location, itemStack);
             ((ClientChunk) chunk).setGameBlock(gameBlock);
-            return Optional.of(gameBlock);
+            chunkMap.put(chunk.getLocation(), chunk);
         }
         return Optional.empty();
     }

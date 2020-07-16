@@ -34,10 +34,13 @@ public class ClientChunk implements Chunk {
         for (int i = 0; i < loop.size(); i++) {
             if (loop.get(i).getLocation().equals(gameBlock.getLocation())) {
                 gameBlockList.set(i, gameBlock);
+                updatedHappened = true;
                 return;
             }
         }
         gameBlockList.add(gameBlock);
+        updatedHappened = true;
+
     }
 
     public Optional<GameBlock> getGameBlock(Location location) {

@@ -17,15 +17,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 import static org.kakara.client.CommandArguments.*;
 
 public class Main {
 
     public static void main(String[] args) throws ParseException, IOException {
+
         File testFile = new File("test" + File.separator + "test.properties");
         ClientSettings clientSettings = null;
         if (testFile.exists()) {
@@ -44,6 +43,7 @@ public class Main {
             return;
         }
 
+
         KakaraGame kakaraGame;
         try {
             kakaraGame = new KakaraGame(clientSettings);
@@ -56,6 +56,7 @@ public class Main {
         gameEngine.run();
 
     }
+
 
 
 }

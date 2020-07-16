@@ -6,6 +6,7 @@ import org.kakara.client.ChunkCleaner;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.commands.KillCommand;
+import org.kakara.client.game.commands.RegenerateCommand;
 import org.kakara.client.game.commands.SaveChunk;
 import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
@@ -79,12 +80,15 @@ public class IntegratedServer extends Thread implements Server {
             throw new ServerLoadException(e);
         }
         chunkCleaner = new ChunkCleaner(this);
-        chunkCleaner.start();
+//        chunkCleaner.start();
+        //ODS issue I dont care about right now
+
         player = getOnlinePlayer(playerUUID);
         //DONT EVER DO THIS
         Kakara.getCommandManager().registerCommand(new StatusCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new KillCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new SaveChunk(KakaraMod.getInstance(), this));
+        Kakara.getCommandManager().registerCommand(new RegenerateCommand(KakaraMod.getInstance(), this));
         start();
         lastLocation = player.getLocation();
     }

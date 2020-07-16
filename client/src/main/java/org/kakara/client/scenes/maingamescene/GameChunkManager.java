@@ -3,6 +3,7 @@ package org.kakara.client.scenes.maingamescene;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.world.ClientChunk;
+import org.kakara.client.game.world.ClientWorld;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.resources.TextureResolution;
@@ -32,7 +33,7 @@ public class GameChunkManager {
     public void update() {
         if (scene.server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
 
-        for (Chunk loadedChunk : scene.server.getPlayerEntity().getLocation().getWorld().get().getChunks()) {
+        for (Chunk loadedChunk : ((ClientWorld)scene.server.getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()) {
             if (loadedChunk.getStatus() != Status.LOADED) continue;
             ClientChunk clientChunk = (ClientChunk) loadedChunk;
 
@@ -49,7 +50,7 @@ public class GameChunkManager {
                     rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
 
                     for (GameBlock gb : loadedChunk.getGameBlocks()) {
-                        if (gb.getItemStack().getItem() instanceof AirBlock) continue;
+                        if (gb.getItemStack().getItem().getId() == 0) continue;
                         Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
                         vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
                         RenderBlock rb = new RenderBlock(new BlockLayout(),
@@ -59,9 +60,9 @@ public class GameChunkManager {
                         rc.addBlock(rb);
                     }
                     clientChunk.setUpdatedHappened(false);
-                    scene.server.getExecutorService().submit(() -> {
-                        rc.regenerateChunk(scene.getTextureAtlas(), MeshType.MULTITHREAD);
-                    });
+                    //scene.server.getExecutorService().submit(() -> {
+                        rc.regenerateChunk(scene.getTextureAtlas(), MeshType.SYNC);
+                    //});
                     scene.getChunkHandler().addChunk(rc);
                     clientChunk.setRenderChunkID(rc.getId());
                 }

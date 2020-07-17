@@ -1,5 +1,7 @@
 package org.kakara.game;
 
+import org.kakara.core.Status;
+import org.kakara.core.Statusable;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.Entity;
 import org.kakara.core.player.Player;
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-public interface Server {
+public interface Server extends Statusable {
 
 
     void loadPlayer(UUID uuid);
@@ -37,6 +39,7 @@ public interface Server {
     ExecutorService getExecutorService();
 
     boolean isRunning();
+
 
     void close();
 

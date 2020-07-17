@@ -18,8 +18,10 @@ public class KakaraGame implements Game {
     private GameHandler gameHandler;
     private Client client;
     public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
+    private static KakaraGame kakaraGame;
 
     public KakaraGame(GameSettings gameSettings) {
+        kakaraGame = this;
         if (gameSettings.isTestMode()) System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
 
         client = new Client(this, gameSettings);
@@ -91,6 +93,10 @@ public class KakaraGame implements Game {
         //TODO bring back mod unloading
         //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
+    }
+
+    public static KakaraGame getInstance() {
+        return kakaraGame;
     }
 
     public int getTPS() {

@@ -26,9 +26,9 @@ public class GameUtils {
     }
 
     public static ChunkLocation getChunkFileLocation(ChunkLocation location) {
-        int x = (int) Math.floor(location.getX() / 64);
-        int y = (int) Math.floor(location.getY() / 64);
-        int z = (int) Math.floor(location.getZ() / 64);
+        int x = (int) Math.floor(location.getX() / 64D);
+        int y = (int) Math.floor(location.getY() / 64D);
+        int z = (int) Math.floor(location.getZ() / 64D);
         return new ChunkLocation(x, y, z);
     }
 }

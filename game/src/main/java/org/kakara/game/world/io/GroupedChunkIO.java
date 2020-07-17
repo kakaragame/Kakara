@@ -2,6 +2,7 @@ package org.kakara.game.world.io;
 
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.kakara.core.Status;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.ChunkWriter;
@@ -20,7 +21,7 @@ public class GroupedChunkIO extends ChunkIO {
     private BlockingQueue<Pair<ChunkLocation, List<ChunkRequest>>> requests;
 
     public GroupedChunkIO(GameWorld gameWorld, ChunkWriter chunkWriter) {
-        super(gameWorld,chunkWriter);
+        super(gameWorld, chunkWriter);
         this.chunkWriter = chunkWriter;
         requests = new LinkedBlockingDeque<>();
         start();
@@ -54,7 +55,7 @@ public class GroupedChunkIO extends ChunkIO {
                     ((ReadChunkRequest) chunkRequest).respond(request.getLeft(), chunks);
                 }
             } catch (InterruptedException e) {
-                interrupt();
+                break;
             } catch (ChunkWriteException e) {
                 e.printStackTrace();
                 //TODO IDK
@@ -62,6 +63,34 @@ public class GroupedChunkIO extends ChunkIO {
                 e.printStackTrace();
                 gameWorld.errorClose();
             }
+        }
+    }
+
+    public static <T> List<T> removeDuplicates(List<T> list) {
+        List<T> newList = new ArrayList<T>();
+        for (T element : list) {
+            if (!newList.contains(element)) {
+                newList.add(element);
+            }
+        }
+        return newList;
+    }
+
+    private void saveAll() {
+        List<ChunkContent> writes = new ArrayList<>();
+
+        for (Pair<ChunkLocation, List<ChunkRequest>> request : requests) {
+            for (ChunkRequest chunkRequest : request.getRight()) {
+                if (chunkRequest instanceof WriteChunkRequest) {
+                    writes.addAll(((WriteChunkRequest) chunkRequest).getChunks());
+                }
+            }
+        }
+        writes = removeDuplicates(writes);
+        try {
+            chunkWriter.writeChunks(writes);
+        } catch (ChunkWriteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -117,5 +146,13 @@ public class GroupedChunkIO extends ChunkIO {
             }
         }
         return completableFuture;
+    }
+
+    @Override
+    public void close() {
+        status = Status.UNLOADING;
+        this.interrupt();
+        saveAll();
+        status = Status.UNLOADED;
     }
 }

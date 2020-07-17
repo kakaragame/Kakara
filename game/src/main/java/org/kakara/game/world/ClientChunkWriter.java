@@ -12,6 +12,7 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.ChunkWriter;
 import org.kakara.core.world.exceptions.ChunkLoadException;
 import org.kakara.core.world.exceptions.ChunkWriteException;
+import org.kakara.game.GameUtils;
 import org.kakara.game.world.io.ChunkIOUtils;
 
 import java.io.File;
@@ -32,11 +33,7 @@ public class ClientChunkWriter implements ChunkWriter {
     }
 
     private File getChunkFile(ChunkLocation location) {
-        int x = (int) Math.floor(location.getX() / 64D);
-        int y = (int) Math.floor(location.getY() / 64D);
-        int z = (int) Math.floor(location.getZ() / 64D);
-
-        return new File(chunkFolder, String.format("_%s_%s_%s_.kchunk", x, y, z));
+        return getChunkFileFromChunkFileLocation(GameUtils.getChunkFileLocation(location));
     }
 
     private File getChunkFileFromChunkFileLocation(ChunkLocation location) {
@@ -136,7 +133,7 @@ public class ClientChunkWriter implements ChunkWriter {
     @Override
     public void writeChunks(List<ChunkContent> chunks) throws ChunkWriteException {
         for (Map.Entry<ChunkLocation, Collection<ChunkContent>> entry : ChunkIOUtils.sortByChunk(chunks).asMap().entrySet()) {
-            File chunkFile = getChunkFile(entry.getKey());
+            File chunkFile = getChunkFileFromChunkFileLocation(entry.getKey());
             ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
             if (!chunkFile.exists()) {
                 try {
@@ -151,7 +148,9 @@ public class ClientChunkWriter implements ChunkWriter {
                     throw new ChunkWriteException(entry.getKey(), chunkFile, e);
                 }
             } else {
+
                 for (ChunkContent chunk : entry.getValue()) {
+                    if (chunk.isNullChunk()) continue;
                     try {
                         ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
                     } catch (ODSException e) {

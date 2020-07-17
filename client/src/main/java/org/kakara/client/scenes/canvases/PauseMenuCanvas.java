@@ -1,7 +1,12 @@
 package org.kakara.client.scenes.canvases;
 
 import org.kakara.client.KakaraGame;
+import org.kakara.client.scenes.LoadingScene;
+import org.kakara.client.scenes.MainMenuScene;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.GameInstance;
+import org.kakara.core.Status;
+import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
@@ -56,6 +61,22 @@ public class PauseMenuCanvas extends ActivateableCanvas {
 
         quit.addUActionEvent((HUDHoverEnterEvent) vector2 -> quit.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);
         quit.addUActionEvent((HUDHoverLeaveEvent) vector2 -> quit.setColor(new RGBA(255, 255, 255, 0.5f)), HUDHoverLeaveEvent.class);
+        quit.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> {
+            MainGameScene mainGameScene = (MainGameScene) scene;
+            LoadingScene loadingScene = new LoadingScene(GameHandler.getInstance(), mainGameScene.getServer(), Status.UNLOADED, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        System.out.println("HEY");
+                        GameHandler.getInstance().getSceneManager().setScene(KakaraGame.getInstance().firstScene(GameHandler.getInstance()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            GameHandler.getInstance().getSceneManager().setScene(loadingScene);
+            mainGameScene.getServer().close();
+        }, HUDClickEvent.class);
         quit.add(quitGameText);
     }
 

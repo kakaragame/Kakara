@@ -10,7 +10,9 @@ import org.kakara.client.game.commands.RegenerateCommand;
 import org.kakara.client.game.commands.SaveChunk;
 import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
+import org.kakara.client.game.world.ClientWorld;
 import org.kakara.core.Kakara;
+import org.kakara.core.Status;
 import org.kakara.core.Utils;
 import org.kakara.core.client.Save;
 import org.kakara.core.exceptions.WorldLoadException;
@@ -33,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.kakara.client.KakaraGame.LOGGER;
 
@@ -53,6 +56,7 @@ public class IntegratedServer extends Thread implements Server {
     private final Time time = new Time();
     private Runnable sceneTickUpdate;
     private Location lastLocation;
+    private Status status = Status.LOADED;
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID, Runnable sceneTickUpdate) throws ServerLoadException {
         super("Kakara-IntegratedServer");
@@ -224,8 +228,21 @@ public class IntegratedServer extends Thread implements Server {
     }
 
     @Override
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
     public void close() {
         running = false;
+        save.getWorlds().forEach(world -> {
+            executorService.submit(((ClientWorld) world)::close);
+        });
+        executorService.submit(()->{
+            status = Status.UNLOADED;
+            System.out.println("status = " + status);
+        });
+        executorService.shutdown();
 
     }
 

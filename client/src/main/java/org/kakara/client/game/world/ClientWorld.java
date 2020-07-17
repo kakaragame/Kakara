@@ -74,6 +74,7 @@ public class ClientWorld extends GameWorld {
     public @NotNull Set<Chunk> getChunks() {
         return new HashSet<>(chunkMap.values());
     }
+
     public @NotNull Collection<Chunk> getChunksNow() {
         return chunkMap.values();
     }
@@ -200,6 +201,12 @@ public class ClientWorld extends GameWorld {
 
     public File getWorldFolder() {
         return worldFolder;
+    }
+
+    public void close() {
+        status = Status.UNLOADED;
+        unloadChunks(new ArrayList<>(getChunksNow()));
+        chunkIO.close();
     }
 
     @Override

@@ -262,8 +262,8 @@ public class MainGameScene extends AbstractGameScene {
                 Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
                 if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
                     breakingBlock = new BreakingBlock(location);
-                    //rb.setOverlay(breakingTexture);
-                    //parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                    rb.setOverlay(breakingTexture);
+                    parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
                     if (breakingBlock.breakBlock(0.005d)) {
                         System.out.println("Breaking");
@@ -286,5 +286,11 @@ public class MainGameScene extends AbstractGameScene {
 
     public ResourceManager getResourceManager() {
         return gameHandler.getResourceManager();
+    }
+
+    public void close() {
+        PauseMenuCanvas.getInstance(kakaraGame, this).close();
+        DebugModeCanvas.getInstance(kakaraGame, this).close();
+
     }
 }

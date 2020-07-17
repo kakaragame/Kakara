@@ -186,9 +186,13 @@ public class IntegratedServer extends Thread implements Server {
             }
 
         }
-        if (save instanceof ClientSave) {
-            ((ClientSave) save).save();
-        }
+        executorService.shutdown();
+        save.getWorlds().forEach(world -> {
+            ((ClientWorld) world).close();
+        });
+
+        status = Status.UNLOADED;
+
     }
 
     @Override
@@ -235,15 +239,6 @@ public class IntegratedServer extends Thread implements Server {
     @Override
     public void close() {
         running = false;
-        save.getWorlds().forEach(world -> {
-            executorService.submit(((ClientWorld) world)::close);
-        });
-        executorService.submit(()->{
-            status = Status.UNLOADED;
-            System.out.println("status = " + status);
-        });
-        executorService.shutdown();
-
     }
 
     public List<String> newMessages() {

@@ -144,7 +144,7 @@ public class ClientChunkWriter implements ChunkWriter {
                         tags.add(new ChunkContentTag(chunk));
                     }
                     ods.save(tags);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new ChunkWriteException(entry.getKey(), chunkFile, e);
                 }
             } else {
@@ -154,6 +154,7 @@ public class ClientChunkWriter implements ChunkWriter {
                     try {
                         ods.set(getTagName(chunk.getLocation()), new ChunkContentTag(chunk));
                     } catch (ODSException e) {
+                        e.getIOException().printStackTrace();
                         throw new ChunkWriteException(chunk.getLocation(), chunkFile, e);
                     }
                 }

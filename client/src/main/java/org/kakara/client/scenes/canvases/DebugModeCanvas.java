@@ -86,7 +86,7 @@ public class DebugModeCanvas extends ActivateableCanvas {
     }
 
     @Override
-    void close() {
+    public void close() {
         instance = null;
     }
 

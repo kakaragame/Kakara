@@ -90,4 +90,8 @@ public class ClientSave implements Save {
     public void setServer(Server server) {
         this.server = server;
     }
+
+    public void removeWorld(World world) {
+        worlds.remove(world);
+    }
 }

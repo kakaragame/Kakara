@@ -34,5 +34,5 @@ public abstract class ActivateableCanvas extends ComponentCanvas {
 
     abstract public void update();
 
-    abstract void close();
+    abstract public void close();
 }

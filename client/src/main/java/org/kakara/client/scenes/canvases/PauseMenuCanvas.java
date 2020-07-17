@@ -75,6 +75,7 @@ public class PauseMenuCanvas extends ActivateableCanvas {
                 }
             });
             GameHandler.getInstance().getSceneManager().setScene(loadingScene);
+            mainGameScene.close();
             mainGameScene.getServer().close();
         }, HUDClickEvent.class);
         quit.add(quitGameText);
@@ -108,7 +109,7 @@ public class PauseMenuCanvas extends ActivateableCanvas {
     }
 
     @Override
-    void close() {
+    public void close() {
         instance = null;
     }
 }

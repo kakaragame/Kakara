@@ -204,9 +204,10 @@ public class ClientWorld extends GameWorld {
     }
 
     public void close() {
-        status = Status.UNLOADED;
+        status = Status.UNLOADING;
         unloadChunks(new ArrayList<>(getChunksNow()));
         chunkIO.close();
+        status = Status.UNLOADED;
     }
 
     @Override

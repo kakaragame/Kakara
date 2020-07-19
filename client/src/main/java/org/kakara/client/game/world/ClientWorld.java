@@ -144,6 +144,7 @@ public class ClientWorld extends GameWorld {
 
     @Override
     public @NotNull Chunk getChunkAt(ChunkLocation location) {
+        location.setWorld(this);
         Chunk chunkFound = chunkMap.get(location);
         if (chunkFound != null) {
             return chunkFound;
@@ -164,7 +165,7 @@ public class ClientWorld extends GameWorld {
         chunkIO.get(List.of(chunk.getLocation())).thenAccept(chunkContents -> {
             server.getExecutorService().submit(() -> {
                 try {
-                    if (chunkContents.size()==1 && !chunkContents.get(0).isNullChunk()) {
+                    if (chunkContents.size() == 1 && !chunkContents.get(0).isNullChunk()) {
                         ((ClientChunk) chunkMap.get(chunk.getLocation())).load(chunkContents.get(0));
                     } else {
                         ChunkBase base = null;
@@ -177,7 +178,7 @@ public class ClientWorld extends GameWorld {
 
                         ((ClientChunk) chunkMap.get(chunk.getLocation())).load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });

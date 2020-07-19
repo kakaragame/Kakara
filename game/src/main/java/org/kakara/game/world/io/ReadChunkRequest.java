@@ -23,23 +23,16 @@ public class ReadChunkRequest implements ChunkRequest {
     }
 
     public boolean needsToRespond() {
-        Set<ChunkLocation> groupedChunkLocations = new HashSet<>();
-        for (ChunkLocation chunkLocation : this.chunkLocations) {
-            groupedChunkLocations.add(GameUtils.getChunkFileLocation(chunkLocation));
-        }
-
+        Set<ChunkLocation> groupedChunkLocations = new HashSet<>(this.chunkLocations);
         return response.keySet().size() == groupedChunkLocations.size();
     }
 
     public void respond() {
         List<ChunkContent> chunks = new ArrayList<>();
         for (List<ChunkContent> chunkList : response.values()) {
-            chunkList.forEach(chunk -> {
-                if (!chunk.isNullChunk()) {
-                    chunks.add(chunk);
-                }
-            });
+            chunks.addAll(chunkList);
         }
+        System.out.println("chunks.size() = " + chunks.size());
         completableFuture.complete(chunks);
     }
 

@@ -67,7 +67,6 @@ public class PauseMenuCanvas extends ActivateableCanvas {
                 @Override
                 public void run() {
                     try {
-                        System.out.println("HEY");
                         GameHandler.getInstance().getSceneManager().setScene(KakaraGame.getInstance().firstScene(GameHandler.getInstance()));
                     } catch (Exception e) {
                         e.printStackTrace();

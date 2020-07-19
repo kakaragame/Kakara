@@ -213,7 +213,7 @@ public class MainGameScene extends AbstractGameScene {
                 Vector3 absoluteBlockPos = rb.getPosition().add(parentChunk.getPosition());
 
                 final Vector3 closestValue = ObjectPickingUtils.closestValue(absoluteBlockPos, getCamera());
-                ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(closestValue.x, closestValue.y, closestValue.z));
+                ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(server.getPlayerEntity().getLocation().getNullableWorld(), closestValue.x, closestValue.y, closestValue.z));
                 if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
                 Chunk chunk = (server.getPlayerEntity().getLocation().getWorld().get()).getChunkAt(chunkLoc);
                 if (chunk.getStatus() != Status.LOADED) return;
@@ -235,7 +235,7 @@ public class MainGameScene extends AbstractGameScene {
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     //THIS might work?
-                    cc.setGameBlock(new GameBlock(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), server.getPlayerEntity().getLocation().getWorld().get()), hotBarCanvas.getCurrentItemStack()));
+                    chunkLoc.getNullableWorld().setBlock(hotBarCanvas.getCurrentItemStack(), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
 
                 }
 

@@ -56,15 +56,10 @@ public class ClientChunkWriter implements ChunkWriter {
         } catch (ODSException e) {
             throw new ChunkLoadException(chunkLocation, chunkFile, e);
         }
-        ChunkContentTag chunkContentTag;
-        if (objectTag instanceof ChunkContentTag)
-            chunkContentTag = (ChunkContentTag) objectTag;
-        else
-            return new ChunkContent(chunkLocation);
 
-        if (chunkContentTag == null)
+        if (objectTag == null)
             return new ChunkContent(chunkLocation);
-        return chunkContentTag.getChunk();
+        return ChunkContentTag.getChunk(objectTag);
     }
 
     @Override
@@ -88,14 +83,12 @@ public class ClientChunkWriter implements ChunkWriter {
                 } catch (ODSException e) {
                     throw new ChunkLoadException(chunkLocation1, chunkFile, e);
                 }
-                ChunkContentTag chunkContentTag = null;
-                if (objectTag instanceof ChunkContentTag) {
-                    chunkContentTag = (ChunkContentTag) objectTag;
-                } else {
-                    output.add(new ChunkContent(chunkLocation));
+                if (objectTag == null) {
+                    output.add(new ChunkContent(chunkLocation1));
                     continue;
                 }
-                output.add(chunkContentTag.getChunk());
+                ChunkContent chunkContent = ChunkContentTag.getChunk(objectTag);
+                output.add(chunkContent);
             }
         }
         return output;
@@ -139,7 +132,7 @@ public class ClientChunkWriter implements ChunkWriter {
                 try {
                     //NEW File
                     chunkFile.createNewFile();
-                    List<Tag<?>> tags = new ArrayList<>();
+                    List<ChunkContentTag> tags = new ArrayList<>();
                     for (ChunkContent chunk : entry.getValue()) {
                         tags.add(new ChunkContentTag(chunk));
                     }

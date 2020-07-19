@@ -116,7 +116,6 @@ public class ClientWorld extends GameWorld {
         if (chunk instanceof ClientChunk) {
             GameBlock gameBlock = new GameBlock(location, itemStack);
             ((ClientChunk) chunk).setGameBlock(gameBlock);
-            chunkMap.put(chunk.getLocation(), chunk);
         }
         return Optional.empty();
     }
@@ -164,18 +163,22 @@ public class ClientWorld extends GameWorld {
         chunk.setStatus(Status.LOADING);
         chunkIO.get(List.of(chunk.getLocation())).thenAccept(chunkContents -> {
             server.getExecutorService().submit(() -> {
-                if (chunkContents.size() == 1) {
-                    ((ClientChunk) chunkMap.get(chunk.getLocation())).load(chunkContents.get(0));
-                } else {
-                    ChunkBase base = null;
-                    try {
-                        base = chunkGenerator.generateChunk(seed, random, this, chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return;
-                    }
+                try {
+                    if (chunkContents.size()==1 && !chunkContents.get(0).isNullChunk()) {
+                        ((ClientChunk) chunkMap.get(chunk.getLocation())).load(chunkContents.get(0));
+                    } else {
+                        ChunkBase base = null;
+                        try {
+                            base = chunkGenerator.generateChunk(seed, random, this, chunk.getLocation().getX(), chunk.getLocation().getY(), chunk.getLocation().getZ());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return;
+                        }
 
-                    ((ClientChunk) chunkMap.get(chunk.getLocation())).load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
+                        ((ClientChunk) chunkMap.get(chunk.getLocation())).load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             });
         });

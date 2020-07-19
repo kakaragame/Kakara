@@ -177,7 +177,6 @@ public class IntegratedServer extends Thread implements Server {
 
         while (running) {
             elapsedTime = time.getElapsedTime();
-            Time.deltaTime = elapsedTime;
             accumulator += elapsedTime;
 
             while (accumulator >= interval) {

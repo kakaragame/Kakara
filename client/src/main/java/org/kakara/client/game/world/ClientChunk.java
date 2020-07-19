@@ -43,6 +43,10 @@ public class ClientChunk implements Chunk {
 
     }
 
+    public World getWorld() {
+        return location.getNullableWorld();
+    }
+
     public Optional<GameBlock> getGameBlock(Location location) {
         return new ArrayList<>(gameBlockList).stream().filter(gameBlock -> gameBlock.getLocation().equals(location)).findFirst();
     }

@@ -1,29 +1,19 @@
 package org.kakara.client;
 
 
-import com.google.gson.Gson;
-import org.apache.commons.cli.*;
-import org.kakara.core.Utils;
+import org.apache.commons.cli.ParseException;
 import org.kakara.core.client.ClientSettings;
 import org.kakara.core.client.ClientSettingsBuilder;
-import org.kakara.core.world.Location;
 import org.kakara.engine.GameEngine;
-import org.kakara.engine.GameHandler;
-import org.kakara.engine.gui.WindowIcon;
-import org.kakara.game.GameUtils;
-import org.lwjgl.system.Configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
-
-import static org.kakara.client.CommandArguments.*;
+import java.util.Properties;
 
 public class Main {
 
-    public static void main(String[] args) throws ParseException, IOException {
+    public static void main(String[] args) throws IOException {
 
         File testFile = new File("test" + File.separator + "test.properties");
         ClientSettings clientSettings = null;
@@ -52,7 +42,8 @@ public class Main {
             return;
         }
 
-        GameEngine gameEngine = new GameEngine("Kakara", 1080, 720, true, kakaraGame);
+        // TODO add in a ability to select vSync mode.
+        GameEngine gameEngine = new GameEngine("Kakara", 1080, 720, false, kakaraGame);
         gameEngine.run();
 
     }

@@ -20,7 +20,6 @@ public interface Server extends Statusable {
 
     Player getPlayerEntity();
 
-    List<Chunk> chunksToRender();
 
     List<Player> getOnlinePlayers();
 
@@ -39,7 +38,6 @@ public interface Server extends Statusable {
     ExecutorService getExecutorService();
 
     boolean isRunning();
-
 
     void close();
 

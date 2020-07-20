@@ -147,18 +147,12 @@ public class IntegratedServer extends Thread implements Server {
 
     }
 
-
     @Override
     public Player getPlayerEntity() {
 
         return player;
     }
 
-    @Override
-    public List<Chunk> chunksToRender() {
-        //TODO do coolMath
-        return null;
-    }
 
     @Override
     public List<Player> getOnlinePlayers() {
@@ -219,6 +213,7 @@ public class IntegratedServer extends Thread implements Server {
 
     }
 
+    @NotNull
     public Save getSave() {
         return save;
     }

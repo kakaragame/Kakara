@@ -7,6 +7,7 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.game.world.ClientChunk;
+import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.scenes.BreakingBlock;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
@@ -185,9 +186,9 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
 
-        long l = System.currentTimeMillis();
-        gameChunkManager.update();
-        System.out.println(l - System.currentTimeMillis());
+//        long l = System.currentTimeMillis();
+//        gameChunkManager.update();
+//        System.out.println(l - System.currentTimeMillis());
     }
 
 
@@ -252,6 +253,88 @@ public class MainGameScene extends AbstractGameScene {
     public void gameSceneUpdate() {
         if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
         if (server.getPlayerEntity() == null || chatComponent == null) return;
+
+        if(server.getPlayerEntity().getLocation().getNullableWorld() == null) return;
+
+        for(Chunk loadedChunk : ((ClientWorld)server.getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()){
+            if (loadedChunk.getStatus() != Status.LOADED) continue;
+            ClientChunk clientChunk = (ClientChunk) loadedChunk;
+            if(!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)){
+                if (clientChunk.getRenderChunkID().isPresent())
+                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
+//                System.out.println("Chunk Unloaded.");
+
+                // Maybe: TODO The operation should be done below instead of in the ChunkCleaner
+                server.getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
+                continue;
+            }
+
+            ChunkLocation playerLocation = GameUtils.getChunkLocation(server.getPlayerEntity().getLocation());
+
+            if(GameUtils.isLocationOnPerimeter(playerLocation, clientChunk.getLocation(), IntegratedServer.RADIUS * 16)) continue;
+
+            ChunkLocation nextLocation = loadedChunk.getLocation().add(16, 0, 0);
+
+            if(playerLocation.getNullableWorld() == null){
+                System.out.println("WTF>");
+                continue;
+            }
+
+            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(-16, 0, 0);
+            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, 16, 0);
+            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, -16, 0);
+            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, 0, 16);
+            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, 0, -16);
+            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS* 16)){
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+
+            if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
+                if (clientChunk.getRenderChunkID().isPresent())
+                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
+                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS* 16)) {
+                    ChunkLocation cb = loadedChunk.getLocation();
+                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                    rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+
+                    for (GameBlock gb : loadedChunk.getGameBlocks()) {
+                        if (gb.getItemStack().getItem().getId() == 0) continue;
+                        Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
+                        vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
+                        RenderBlock rb = new RenderBlock(new BlockLayout(),
+                                renderResourceManager.get
+                                        ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
+
+                        rc.addBlock(rb);
+                    }
+                    clientChunk.setUpdatedHappened(false);
+                    //scene.server.getExecutorService().submit(() -> {
+                    rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                    //});
+                    getChunkHandler().addChunk(rc);
+                    clientChunk.setRenderChunkID(rc.getId());
+                }
+            }
+
+        }
+
+
+        // Honestly, This shouldn't be here:
         ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {

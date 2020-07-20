@@ -31,5 +31,11 @@ public class GameUtils {
         int z = (int) Math.floor(location.getZ() / 64D);
         return new ChunkLocation(x, y, z);
     }
+
+    public static boolean isLocationOnPerimeter(ChunkLocation centerPoint, ChunkLocation location, int radius){
+        return (Math.pow((centerPoint.getX() - location.getX()), 2) +
+                Math.pow((centerPoint.getY() - location.getY()), 2) +
+                Math.pow((centerPoint.getZ() - location.getZ()), 2)) == Math.pow((radius * 16), 2);
+    }
 }
 

@@ -265,7 +265,7 @@ public class MainGameScene extends AbstractGameScene {
 //                System.out.println("Chunk Unloaded.");
 
                 // Maybe: TODO The operation should be done below instead of in the ChunkCleaner
-                server.getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
+//                server.getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
                 continue;
             }
 

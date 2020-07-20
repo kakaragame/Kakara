@@ -134,6 +134,7 @@ public class ClientChunkWriter implements ChunkWriter {
                     chunkFile.createNewFile();
                     List<ChunkContentTag> tags = new ArrayList<>();
                     for (ChunkContent chunk : entry.getValue()) {
+                        if (chunk.isNullChunk()) continue;
                         tags.add(new ChunkContentTag(chunk));
                     }
                     ods.save(tags);

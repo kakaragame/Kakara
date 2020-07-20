@@ -196,15 +196,13 @@ public class MainGameScene extends AbstractGameScene {
                 Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
                 if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
                     if (breakingBlock != null) {
-                        System.out.println(1);
                         ChunkLocation chunkLocation = GameUtils.getChunkLocation(breakingBlock.getBlockLocation());
                         Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(MoreUtils.chunkLocationToVector3(chunkLocation))).findFirst();
                         chunk.ifPresent(renderChunk -> {
-                            System.out.println(2);
                             Vector3 renderBlockLocation = MoreUtils.gbLocationToRBLocation(location, chunkLocation);
                             Optional<RenderBlock> oldRBOptional = renderChunk.getBlocks().stream().filter(renderBlock -> renderBlock.getPosition().equals(renderBlockLocation)).findFirst();
                             oldRBOptional.ifPresent(renderBlock -> {
-                                System.out.println(3);
+                                //This code executes but does not work
                                 renderBlock.setOverlay(null);
                                 renderChunk.regenerateOverlayTextures(getTextureAtlas());
                             });
@@ -214,12 +212,8 @@ public class MainGameScene extends AbstractGameScene {
                     rb.setOverlay(breakingTexture);
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
-                    System.out.println(breakingBlock.getPercentage());
                     if (breakingBlock.breakBlock(2d * Time.deltaTime)) {
-
-                        // TODO make this work
                         ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
-                        System.out.println("((IntegratedServer)server).getSave().getWorlds().stream().findFirst().get().getBlockAt(location).get().getItemStack().getItem().getNameKey() = " + ((IntegratedServer) server).getSave().getWorlds().stream().findFirst().get().getBlockAt(location).get().getItemStack().getItem().getNameKey());
                         parentChunk.removeBlock(rb);
                         parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                         breakingBlock = null;
@@ -273,7 +267,6 @@ public class MainGameScene extends AbstractGameScene {
 
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                    //THIS might work?
                     ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(hotBarCanvas.getCurrentItemStack(), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
 
                 }

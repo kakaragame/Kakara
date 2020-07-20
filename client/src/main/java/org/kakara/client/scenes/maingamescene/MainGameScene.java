@@ -75,7 +75,6 @@ public class MainGameScene extends AbstractGameScene {
     protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
     protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
-    protected final GameChunkManager gameChunkManager = new GameChunkManager(this);
     protected RenderTexture breakingTexture;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
@@ -201,11 +200,11 @@ public class MainGameScene extends AbstractGameScene {
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
                     System.out.println(breakingBlock.getPercentage());
-                    if (breakingBlock.breakBlock(2d * Time.getDeltaTime())) {
+                    if (breakingBlock.breakBlock(2d * Time.deltaTime)) {
                         parentChunk.removeBlock(rb);
                         parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                         // TODO make this work
-//                        server.getPlayerEntity().getLocation().getNullableWorld().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                        //server.getPlayerEntity().getLocation().getNullableWorld().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
                         breakingBlock = null;
                     }
                 }

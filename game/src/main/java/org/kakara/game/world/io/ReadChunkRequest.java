@@ -32,7 +32,6 @@ public class ReadChunkRequest implements ChunkRequest {
         for (List<ChunkContent> chunkList : response.values()) {
             chunks.addAll(chunkList);
         }
-        System.out.println("chunks.size() = " + chunks.size());
         completableFuture.complete(chunks);
     }
 

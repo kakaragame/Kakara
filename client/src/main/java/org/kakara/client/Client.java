@@ -39,6 +39,7 @@ public class Client implements GameInstance {
     private WorldGenerationManager worldGenerationManager;
     private EventManager eventManager;
     private CommandManager commandManager;
+    private WorldManager worldManager;
 
     public Client(KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
@@ -87,9 +88,13 @@ public class Client implements GameInstance {
         return craftingManager;
     }
 
+    public void setWorldManager(WorldManager worldManager) {
+        this.worldManager = worldManager;
+    }
+
     @Override
     public WorldManager getWorldManager() {
-        return null;
+        return worldManager;
     }
 
     @Override

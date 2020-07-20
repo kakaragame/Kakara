@@ -3,6 +3,7 @@ package org.kakara.client.game;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.ChunkCleaner;
+import org.kakara.client.Client;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.commands.KillCommand;
@@ -11,6 +12,7 @@ import org.kakara.client.game.commands.SaveChunk;
 import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientWorld;
+import org.kakara.client.game.world.ClientWorldManager;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.Utils;
@@ -65,6 +67,7 @@ public class IntegratedServer extends Thread implements Server {
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
         }
+        ((Client) Kakara.getGameInstance()).setWorldManager(new ClientWorldManager(this));
         executorService = Executors.newFixedThreadPool(MoreUtils.getPoolSize());
         playersFolder = new File(save.getSaveFolder(), "players");
         if (!playersFolder.exists()) playersFolder.mkdir();
@@ -216,6 +219,10 @@ public class IntegratedServer extends Thread implements Server {
         }
 
 
+    }
+
+    public Save getSave() {
+        return save;
     }
 
     @Override

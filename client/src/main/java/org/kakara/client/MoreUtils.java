@@ -3,10 +3,7 @@ package org.kakara.client;
 import org.kakara.core.Kakara;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.resources.Resource;
-import org.kakara.core.world.ChunkBase;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
-import org.kakara.core.world.World;
+import org.kakara.core.world.*;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.resources.ResourceManager;
 
@@ -83,5 +80,16 @@ public class MoreUtils {
             }
         }
         return Integer.parseInt(System.getProperty("kakara.pool.size"));
+    }
+
+    public static Vector3 chunkLocationToVector3(ChunkLocation c) {
+
+        return new Vector3(c.getX(), c.getY(), c.getZ());
+    }
+
+    public static Vector3 gbLocationToRBLocation(Location location, ChunkLocation chunkLocation) {
+        Vector3 vector3 = locationToVector3(location);
+        vector3 = vector3.subtract(chunkLocation.getX(), chunkLocation.getY(), chunkLocation.getZ());
+        return vector3;
     }
 }

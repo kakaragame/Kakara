@@ -120,6 +120,17 @@ public class ClientWorld extends GameWorld {
         return Optional.empty();
     }
 
+    public void placeBlock(@NotNull ItemStack itemStack, @NotNull Location location) {
+        Chunk chunk = getChunkAt(GameUtils.getChunkLocation(location));
+        if (chunk.getStatus() != Status.LOADED) {
+            throw new RuntimeException("TBH I am not sure what I want to do with this yet, " + chunk.getStatus());
+        }
+        if (chunk instanceof ClientChunk) {
+            GameBlock gameBlock = new GameBlock(location, itemStack);
+            ((ClientChunk) chunk).placeBlock(gameBlock);
+        }
+    }
+
     @Override
     public @NotNull Optional<GameBlock> getBlockAt(int x, int y, int z) {
         return getBlockAt(new Location(this, x, y, z));

@@ -30,17 +30,20 @@ public class ClientChunk implements Chunk {
     }
 
     public void setGameBlock(GameBlock gameBlock) {
+        placeBlock(gameBlock);
+        updatedHappened = true;
+
+    }
+
+    public void placeBlock(GameBlock gameBlock) {
         List<GameBlock> loop = new ArrayList<>(gameBlockList);
         for (int i = 0; i < loop.size(); i++) {
             if (loop.get(i).getLocation().equals(gameBlock.getLocation())) {
                 gameBlockList.set(i, gameBlock);
-                updatedHappened = true;
                 return;
             }
         }
         gameBlockList.add(gameBlock);
-        updatedHappened = true;
-
     }
 
     public World getWorld() {
@@ -94,4 +97,6 @@ public class ClientChunk implements Chunk {
     public ChunkContent getContents() {
         return new ChunkContent(gameBlockList, location);
     }
+
+
 }

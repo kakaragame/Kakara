@@ -195,16 +195,33 @@ public class MainGameScene extends AbstractGameScene {
                 RenderChunk parentChunk = rb.getParentChunk();
                 Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
                 if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
+                    if (breakingBlock != null) {
+                        System.out.println(1);
+                        ChunkLocation chunkLocation = GameUtils.getChunkLocation(breakingBlock.getBlockLocation());
+                        Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(MoreUtils.chunkLocationToVector3(chunkLocation))).findFirst();
+                        chunk.ifPresent(renderChunk -> {
+                            System.out.println(2);
+                            Vector3 renderBlockLocation = MoreUtils.gbLocationToRBLocation(location, chunkLocation);
+                            Optional<RenderBlock> oldRBOptional = renderChunk.getBlocks().stream().filter(renderBlock -> renderBlock.getPosition().equals(renderBlockLocation)).findFirst();
+                            oldRBOptional.ifPresent(renderBlock -> {
+                                System.out.println(3);
+                                renderBlock.setOverlay(null);
+                                renderChunk.regenerateOverlayTextures(getTextureAtlas());
+                            });
+                        });
+                    }
                     breakingBlock = new BreakingBlock(location);
                     rb.setOverlay(breakingTexture);
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
                     System.out.println(breakingBlock.getPercentage());
                     if (breakingBlock.breakBlock(2d * Time.deltaTime)) {
+
+                        // TODO make this work
+                        ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                        System.out.println("((IntegratedServer)server).getSave().getWorlds().stream().findFirst().get().getBlockAt(location).get().getItemStack().getItem().getNameKey() = " + ((IntegratedServer) server).getSave().getWorlds().stream().findFirst().get().getBlockAt(location).get().getItemStack().getItem().getNameKey());
                         parentChunk.removeBlock(rb);
                         parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                        // TODO make this work
-                        //server.getPlayerEntity().getLocation().getNullableWorld().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
                         breakingBlock = null;
                     }
                 }
@@ -257,7 +274,7 @@ public class MainGameScene extends AbstractGameScene {
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     //THIS might work?
-                    chunkLoc.getNullableWorld().setBlock(hotBarCanvas.getCurrentItemStack(), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
+                    ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(hotBarCanvas.getCurrentItemStack(), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
 
                 }
 
@@ -275,12 +292,12 @@ public class MainGameScene extends AbstractGameScene {
         if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
         if (server.getPlayerEntity() == null || chatComponent == null) return;
 
-        if(server.getPlayerEntity().getLocation().getNullableWorld() == null) return;
+        if (server.getPlayerEntity().getLocation().getNullableWorld() == null) return;
 
-        for(Chunk loadedChunk : ((ClientWorld)server.getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()){
+        for (Chunk loadedChunk : ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()) {
             if (loadedChunk.getStatus() != Status.LOADED) continue;
             ClientChunk clientChunk = (ClientChunk) loadedChunk;
-            if(!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)){
+            if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
                 if (clientChunk.getRenderChunkID().isPresent())
                     getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
 //                System.out.println("Chunk Unloaded.");
@@ -292,41 +309,42 @@ public class MainGameScene extends AbstractGameScene {
 
             ChunkLocation playerLocation = GameUtils.getChunkLocation(server.getPlayerEntity().getLocation());
 
-            if(GameUtils.isLocationOnPerimeter(playerLocation, clientChunk.getLocation(), IntegratedServer.RADIUS * 16)) continue;
+            if (GameUtils.isLocationOnPerimeter(playerLocation, clientChunk.getLocation(), IntegratedServer.RADIUS * 16))
+                continue;
 
             ChunkLocation nextLocation = loadedChunk.getLocation().add(16, 0, 0);
 
-            if(playerLocation.getNullableWorld() == null)
+            if (playerLocation.getNullableWorld() == null)
                 continue;
 
-            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
             nextLocation = loadedChunk.getLocation().add(-16, 0, 0);
-            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
             nextLocation = loadedChunk.getLocation().add(0, 16, 0);
-            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
             nextLocation = loadedChunk.getLocation().add(0, -16, 0);
-            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
             nextLocation = loadedChunk.getLocation().add(0, 0, 16);
-            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)){
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
             nextLocation = loadedChunk.getLocation().add(0, 0, -16);
-            if(GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS* 16)){
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
 
             if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
                 if (clientChunk.getRenderChunkID().isPresent())
                     getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
-                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS* 16)) {
+                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS * 16)) {
                     ChunkLocation cb = loadedChunk.getLocation();
                     RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
                     rc.setPosition(cb.getX(), cb.getY(), cb.getZ());

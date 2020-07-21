@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 //TODO Validate Mods provided
 public class GameItemManager implements ItemManager {
     private GameInstance kakaraCore;
-    private Map<Integer,Item> items = new ConcurrentHashMap<>();
+    private final Map<Integer, Item> items = new ConcurrentHashMap<>();
 
     @Override
     public void registerItem(Item item) {
-        items.put(item.getId(),item);
+        items.put(item.getId(), item);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GameItemManager implements ItemManager {
     @Override
     public Optional<Item> getItem(NameKey item) {
         for (Item item1 : items.values()) {
-            if (item1.getNameKey().equals(item)){
+            if (item1.getNameKey().equals(item)) {
                 return Optional.of(item1);
             }
         }

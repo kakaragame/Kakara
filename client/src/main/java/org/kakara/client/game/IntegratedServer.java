@@ -181,9 +181,8 @@ public class IntegratedServer extends Thread implements Server {
 
         }
         executorService.shutdown();
-        save.getWorlds().forEach(world -> {
-            ((ClientWorld) world).close();
-        });
+        save.getWorlds().forEach(world -> ((ClientWorld) world).close());
+        Kakara.getModManager().getLoadedMods().forEach(Kakara.getModManager()::unloadMod);
 
         status = Status.UNLOADED;
 

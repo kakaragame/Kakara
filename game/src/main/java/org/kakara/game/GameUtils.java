@@ -1,6 +1,7 @@
 package org.kakara.game;
 
 
+import org.kakara.core.Kakara;
 import org.kakara.core.game.Block;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
@@ -49,12 +50,12 @@ public class GameUtils {
         float blockHardness = ((Block) block.getItemStack().getItem()).getHardness();
         float toolHardness = toolHardness(itemStack.getItem());
         if (blockHardness == toolHardness) {
-            return 10d;
+            return 5d;
         } else if (blockHardness < toolHardness) {
             return 0d;
         } else {
             //TODO IDK
-            return 10d;
+            return 5d;
         }
     }
 
@@ -63,6 +64,13 @@ public class GameUtils {
             return ((Tool) item).getHardness();
         }
         return 1;
+    }
+
+    public static ItemStack getReadyForPlacement(ItemStack itemStack) {
+        itemStack.setCount(itemStack.getCount() - 1);
+        ItemStack placeStack = itemStack.clone();
+        placeStack.setCount(1);
+        return placeStack;
     }
 }
 

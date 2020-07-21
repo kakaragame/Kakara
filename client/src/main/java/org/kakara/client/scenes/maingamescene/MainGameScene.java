@@ -179,7 +179,7 @@ public class MainGameScene extends AbstractGameScene {
     public void update(float interval) {
         DebugModeCanvas.getInstance(kakaraGame, this).update();
         movement.playerMovement();
-
+        hotBarCanvas.update();
         if (chatComponent != null) {
             if (server instanceof IntegratedServer) {
                 ((IntegratedServer) server).newMessages().forEach(s -> chatComponent.addMessage(s));
@@ -211,11 +211,15 @@ public class MainGameScene extends AbstractGameScene {
                     blockAt.ifPresent(block -> {
                         if (block.getItemStack().getItem() instanceof AirBlock) return;
                         double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack());
-                        if (breakingBlock.breakBlock(breakPerFrame * Time.deltaTime)) {
+                        if (breakingBlock.breakBlock(breakPerFrame * Time.getDeltaTime())) {
                             ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
                             parentChunk.removeBlock(rb);
                             parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                             breakingBlock = null;
+                            if (hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack())) {
+                                hotBarCanvas.renderItems();
+                            }
+
                         }
                     });
                     if (blockAt.isEmpty()) {
@@ -271,8 +275,8 @@ public class MainGameScene extends AbstractGameScene {
 
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                    ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(hotBarCanvas.getCurrentItemStack(), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
-
+                    ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(GameUtils.getReadyForPlacement(hotBarCanvas.getCurrentItemStack()), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
+                    System.out.println("hotBarCanvas.getCurrentItemStack().getCount() = " + hotBarCanvas.getCurrentItemStack().getCount());
                 }
 
 

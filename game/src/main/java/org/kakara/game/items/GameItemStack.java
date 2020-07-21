@@ -65,7 +65,20 @@ public class GameItemStack implements ItemStack {
 
     @Override
     public void setLore(List<String> list) {
-this.lore = list;
+        this.lore = list;
+    }
+
+    @Override
+    public ItemStack clone() {
+        GameItemStack gameItemStack = new GameItemStack(count, item);
+        gameItemStack.lore = new ArrayList<>(lore);
+        return gameItemStack;
+    }
+
+    @Override
+    public boolean equalsIgnoreCount(ItemStack itemStack) {
+        //TODO compare other values
+        return itemStack.getItem().equals(item);
     }
 
     @Override
@@ -79,5 +92,15 @@ this.lore = list;
     @Override
     public int hashCode() {
         return Objects.hash(item);
+    }
+
+    @Override
+    public String toString() {
+        return "GameItemStack{" +
+                "count=" + count +
+                ", item=" + item.getNameKey().toString() +
+                ", name='" + name + '\'' +
+                ", lore=" + lore +
+                '}';
     }
 }

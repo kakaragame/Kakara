@@ -29,7 +29,7 @@ public class GroupedChunkIO extends ChunkIO {
 
     @Override
     public void run() {
-        while (gameWorld.isLoaded()) {
+        while (gameWorld.getStatus() == Status.LOADED || gameWorld.getStatus() == Status.LOADING) {
             try {
                 Pair<ChunkLocation, List<ChunkRequest>> request = requests.take();
                 List<ChunkLocation> reads = new ArrayList<>();

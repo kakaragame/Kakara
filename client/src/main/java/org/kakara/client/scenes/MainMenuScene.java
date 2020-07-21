@@ -6,6 +6,7 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.WorldCreator;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.NameKey;
+import org.kakara.core.Status;
 import org.kakara.core.modinstance.ModInstance;
 import org.kakara.core.modinstance.ModInstanceType;
 import org.kakara.engine.GameHandler;
@@ -170,8 +171,14 @@ public class MainMenuScene extends AbstractMenuScene {
             }
             saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new NameKey("KVANILLA:DEFAULT")));
             IntegratedServer integratedServer = new IntegratedServer(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), null);
-            MainGameScene gameScene = new MainGameScene(gameHandler, integratedServer, kakaraGame);
-            gameHandler.getSceneManager().setScene(gameScene);
+
+            LoadingScene loadingScene = new LoadingScene(gameHandler, integratedServer.getSave().getDefaultWorld(), Status.LOADED, () -> {
+                MainGameScene gameScene = new MainGameScene(gameHandler, integratedServer, kakaraGame);
+                gameHandler.getSceneManager().setScene(gameScene);
+            });
+            gameHandler.getSceneManager().setScene(loadingScene);
+            integratedServer.start();
+
         } catch (Exception ex) {
             setCurserStatus(true);
             KakaraGame.LOGGER.error("unable to start game", ex);

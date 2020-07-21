@@ -21,6 +21,7 @@ import org.kakara.core.mod.UnModObject;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
 import org.kakara.core.world.Chunk;
+import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
@@ -30,10 +31,7 @@ import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.mod.KakaraMod;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -92,7 +90,7 @@ public class IntegratedServer extends Thread implements Server {
         Kakara.getCommandManager().registerCommand(new KillCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new SaveChunk(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new RegenerateCommand(KakaraMod.getInstance(), this));
-        start();
+
         lastLocation = player.getLocation();
     }
 
@@ -163,6 +161,10 @@ public class IntegratedServer extends Thread implements Server {
 
     @Override
     public void run() {
+        if (((ClientWorld) getPlayerEntity().getLocation().getNullableWorld()).getChunksNow().isEmpty()) {
+            Set<ChunkLocation> chunkLocations = calibrateChunks();
+            ((ClientWorld) getPlayerEntity().getLocation().getNullableWorld()).initLoad(chunkLocations);
+        }
         //Yes I stole this from Engine
         float elapsedTime;
         float accumulator = 0f;
@@ -187,28 +189,33 @@ public class IntegratedServer extends Thread implements Server {
 
     }
 
+
     @Override
     public void update() {
-
+        if (getPlayerEntity().getLocation().getNullableWorld().getStatus() != Status.LOADED) return;
         if (sceneTickUpdate != null) sceneTickUpdate.run();
         if (getPlayerEntity() == null) return;
         Location start = getPlayerEntity().getLocation();
         if (lastLocation.equals(start)) return;
         lastLocation = start;
         if (start.getNullableWorld() == null) return;
-        if(((ClientWorld)getPlayerEntity().getLocation().getNullableWorld()).getChunksNow().isEmpty()){
-            for (int x = (int) (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
-                for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
-                    for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
-                        if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
-                            start.getNullableWorld().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
-                        }
+
+
+    }
+
+    public Set<ChunkLocation> calibrateChunks() {
+        Location start = getPlayerEntity().getLocation();
+        Set<ChunkLocation> locations = new HashSet<>();
+        for (int x = (int) (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
+            for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
+                for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
+                    if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
+                        locations.add(GameUtils.getChunkLocation(new Location(x, y, z)));
                     }
                 }
             }
         }
-
-
+        return locations;
     }
 
     @NotNull

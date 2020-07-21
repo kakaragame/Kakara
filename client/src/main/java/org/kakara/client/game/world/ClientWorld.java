@@ -39,13 +39,12 @@ public class ClientWorld extends GameWorld {
     private final Server server;
     private Location worldSpawn;
     private ChunkIO chunkIO = null;
-    private Status status = Status.LOADED;
+    private Status status = Status.LOADING;
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
         this.server = server;
         //chunkSet = new ChunkSet(-10000000, -100, -10000000, 10000000, 10000, 10000000);
-
         //TODO replace null with instance of ChunkWriter
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
@@ -186,8 +185,9 @@ public class ClientWorld extends GameWorld {
                             e.printStackTrace();
                             return;
                         }
-
                         ((ClientChunk) chunkMap.get(chunk.getLocation())).load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
+                        System.out.println("LOADED");
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -257,4 +257,25 @@ public class ClientWorld extends GameWorld {
         chunkIO.write(contents);
     }
 
+    public void initLoad(Set<ChunkLocation> chunkLocations) {
+        chunkLocations.forEach(this::getChunkAt);
+        while (true) {
+            int loadedChunks = 1;
+            for (Chunk chunk : getChunks()) {
+                if (chunk.getStatus() == Status.LOADED) {
+                    loadedChunks = loadedChunks + 1;
+                }
+            }
+            if (chunkLocations.size() <= loadedChunks) {
+                break;
+            }
+        }
+
+        status = Status.LOADED;
+    }
+
+    @Override
+    public Status getStatus() {
+        return status;
+    }
 }

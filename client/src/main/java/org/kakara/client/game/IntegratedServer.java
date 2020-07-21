@@ -2,7 +2,6 @@ package org.kakara.client.game;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
-import org.kakara.client.ChunkCleaner;
 import org.kakara.client.Client;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
@@ -54,7 +53,6 @@ public class IntegratedServer extends Thread implements Server {
     private boolean running = true;
     private Player player;
     private List<String> messages = new ArrayList<>();
-    private ChunkCleaner chunkCleaner;
     private final Time time = new Time();
     private Runnable sceneTickUpdate;
     private Location lastLocation;
@@ -86,9 +84,7 @@ public class IntegratedServer extends Thread implements Server {
         } catch (WorldLoadException e) {
             throw new ServerLoadException(e);
         }
-        chunkCleaner = new ChunkCleaner(this);
-//        chunkCleaner.start();
-        //ODS issue I dont care about right now
+
 
         player = getOnlinePlayer(playerUUID);
         //DONT EVER DO THIS
@@ -200,11 +196,13 @@ public class IntegratedServer extends Thread implements Server {
         if (lastLocation.equals(start)) return;
         lastLocation = start;
         if (start.getNullableWorld() == null) return;
-        for (int x = (int) (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
-            for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
-                for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
-                    if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
-                        start.getNullableWorld().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
+        if(((ClientWorld)getPlayerEntity().getLocation().getNullableWorld()).getChunksNow().isEmpty()){
+            for (int x = (int) (start.getX() - (RADIUS * 16)); x <= (start.getX() + (RADIUS * 16)); x += 16) {
+                for (int y = (int) (start.getY() - (RADIUS * 16)); y <= (start.getY() + (RADIUS * 16)); y += 16) {
+                    for (int z = (int) (start.getZ() - (RADIUS * 16)); z <= (start.getZ() + (RADIUS * 16)); z += 16) {
+                        if (GameUtils.isLocationInsideCurrentLocationRadius((int) start.getX(), (int) start.getY(), (int) start.getZ(), x, y, z, RADIUS)) {
+                            start.getNullableWorld().getChunkAt(GameUtils.getChunkLocation(new Location(x, y, z)));
+                        }
                     }
                 }
             }

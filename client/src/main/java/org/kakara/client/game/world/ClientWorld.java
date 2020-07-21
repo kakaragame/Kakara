@@ -101,7 +101,7 @@ public class ClientWorld extends GameWorld {
             throw new RuntimeException("TBH I am not sure what I want to do with this yet");
         }
         if (chunk instanceof ClientChunk) {
-            return ((ClientChunk) chunk).getGameBlock(location).or(() -> Optional.of(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem("kakara:air").get()))));
+            return ((ClientChunk) chunk).getGameBlock(location);
         }
         return Optional.empty();
     }
@@ -118,6 +118,17 @@ public class ClientWorld extends GameWorld {
             ((ClientChunk) chunk).setGameBlock(gameBlock);
         }
         return Optional.empty();
+    }
+
+    public void placeBlock(@NotNull ItemStack itemStack, @NotNull Location location) {
+        Chunk chunk = getChunkAt(GameUtils.getChunkLocation(location));
+        if (chunk.getStatus() != Status.LOADED) {
+            throw new RuntimeException("TBH I am not sure what I want to do with this yet, " + chunk.getStatus());
+        }
+        if (chunk instanceof ClientChunk) {
+            GameBlock gameBlock = new GameBlock(location, itemStack);
+            ((ClientChunk) chunk).placeBlock(gameBlock);
+        }
     }
 
     @Override

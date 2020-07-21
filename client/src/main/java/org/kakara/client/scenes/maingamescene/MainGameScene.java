@@ -7,6 +7,7 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.game.world.ClientChunk;
+import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.scenes.BreakingBlock;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
@@ -49,6 +50,7 @@ import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.items.ComponentCanvas;
 
 import org.kakara.engine.ui.text.Font;
+import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.items.blocks.AirBlock;
@@ -73,7 +75,6 @@ public class MainGameScene extends AbstractGameScene {
     protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
     protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
-    protected final GameChunkManager gameChunkManager = new GameChunkManager(this);
     protected RenderTexture breakingTexture;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
@@ -178,16 +179,56 @@ public class MainGameScene extends AbstractGameScene {
     public void update(float interval) {
         DebugModeCanvas.getInstance(kakaraGame, this).update();
         movement.playerMovement();
-
+        hotBarCanvas.update();
         if (chatComponent != null) {
             if (server instanceof IntegratedServer) {
                 ((IntegratedServer) server).newMessages().forEach(s -> chatComponent.addMessage(s));
             }
         }
 
-        long l = System.currentTimeMillis();
-        gameChunkManager.update();
-        System.out.println(l - System.currentTimeMillis());
+        ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
+        if (player.getGameItemID().isEmpty()) return;
+        if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
+            Collidable col = this.selectGameItems(20, player.getGameItemID().get());
+            if (col instanceof RenderBlock) {
+                RenderBlock rb = (RenderBlock) col;
+                RenderChunk parentChunk = rb.getParentChunk();
+                Location location = new Location(player.getLocation().getNullableWorld(), parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
+                if (breakingBlock == null || !breakingBlock.getGbLocation().equals(location)) {
+                    if (breakingBlock != null) {
+                        Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(breakingBlock.getChunkLocation())).findFirst();
+                        chunk.ifPresent(renderChunk -> {
+                            RenderBlock block = renderChunk.getOctChunk().get((int) breakingBlock.getBlockLocation().x, (int) breakingBlock.getBlockLocation().y, (int) breakingBlock.getBlockLocation().z);
+                            block.setOverlay(null);
+                            renderChunk.regenerateOverlayTextures(getTextureAtlas());
+                        });
+                    }
+                    breakingBlock = new BreakingBlock(location, parentChunk.getPosition(), rb.getPosition());
+                    rb.setOverlay(breakingTexture);
+                    parentChunk.regenerateOverlayTextures(getTextureAtlas());
+                } else {
+                    Optional<GameBlock> blockAt = ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getBlockAt(location);
+                    blockAt.ifPresent(block -> {
+                        if (block.getItemStack().getItem() instanceof AirBlock) return;
+                        double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack());
+                        if (breakingBlock.breakBlock(breakPerFrame * Time.getDeltaTime())) {
+                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                            parentChunk.removeBlock(rb);
+                            parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
+                            breakingBlock = null;
+                            if (hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack())) {
+                                hotBarCanvas.renderItems();
+                            }
+
+                        }
+                    });
+                    if (blockAt.isEmpty()) {
+                        System.out.println("OUCH");
+                    }
+
+                }
+            }
+        }
     }
 
 
@@ -234,9 +275,8 @@ public class MainGameScene extends AbstractGameScene {
 
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                    //THIS might work?
-                    chunkLoc.getNullableWorld().setBlock(hotBarCanvas.getCurrentItemStack(), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
-
+                    ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(GameUtils.getReadyForPlacement(hotBarCanvas.getCurrentItemStack()), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
+                    System.out.println("hotBarCanvas.getCurrentItemStack().getCount() = " + hotBarCanvas.getCurrentItemStack().getCount());
                 }
 
 
@@ -252,32 +292,85 @@ public class MainGameScene extends AbstractGameScene {
     public void gameSceneUpdate() {
         if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
         if (server.getPlayerEntity() == null || chatComponent == null) return;
-        ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
-        if (player.getGameItemID().isEmpty()) return;
-        if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
-            Collidable col = this.selectGameItems(20, player.getGameItemID().get());
-            if (col instanceof RenderBlock) {
-                RenderBlock rb = (RenderBlock) col;
-                RenderChunk parentChunk = rb.getParentChunk();
-                Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
-                if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
-                    breakingBlock = new BreakingBlock(location);
-                    rb.setOverlay(breakingTexture);
-                    parentChunk.regenerateOverlayTextures(getTextureAtlas());
-                } else {
-                    if (breakingBlock.breakBlock(0.005d)) {
-                        System.out.println("Breaking");
 
-                        long start = System.nanoTime();
-                        parentChunk.removeBlock(rb);
-                        parentChunk.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
-                        System.out.println(start - System.nanoTime());
-                        //server.getPlayerEntity().getLocation().getNullableWorld().setBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
-                        breakingBlock = null;
+        if (server.getPlayerEntity().getLocation().getNullableWorld() == null) return;
+
+        for (Chunk loadedChunk : ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()) {
+            if (loadedChunk.getStatus() != Status.LOADED) continue;
+            ClientChunk clientChunk = (ClientChunk) loadedChunk;
+            if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
+                if (clientChunk.getRenderChunkID().isPresent())
+                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
+//                System.out.println("Chunk Unloaded.");
+
+                // Maybe: TODO The operation should be done below instead of in the ChunkCleaner
+//                server.getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
+                continue;
+            }
+
+            ChunkLocation playerLocation = GameUtils.getChunkLocation(server.getPlayerEntity().getLocation());
+
+            if (GameUtils.isLocationOnPerimeter(playerLocation, clientChunk.getLocation(), IntegratedServer.RADIUS * 16))
+                continue;
+
+            ChunkLocation nextLocation = loadedChunk.getLocation().add(16, 0, 0);
+
+            if (playerLocation.getNullableWorld() == null)
+                continue;
+
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(-16, 0, 0);
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, 16, 0);
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, -16, 0);
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, 0, 16);
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+            nextLocation = loadedChunk.getLocation().add(0, 0, -16);
+            if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
+                playerLocation.getNullableWorld().getChunkAt(nextLocation);
+            }
+
+            if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
+                if (clientChunk.getRenderChunkID().isPresent())
+                    getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
+                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS * 16)) {
+                    ChunkLocation cb = loadedChunk.getLocation();
+                    RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
+                    rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+
+                    for (GameBlock gb : loadedChunk.getGameBlocks()) {
+                        if (gb.getItemStack().getItem().getId() == 0) continue;
+                        Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
+                        vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
+                        RenderBlock rb = new RenderBlock(new BlockLayout(),
+                                renderResourceManager.get
+                                        ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
+
+                        rc.addBlock(rb);
                     }
+                    clientChunk.setUpdatedHappened(false);
+                    rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                    getChunkHandler().addChunk(rc);
+                    clientChunk.setRenderChunkID(rc.getId());
                 }
             }
+
         }
+
+
+        // Honestly, This shouldn't be here:
     }
 
     public Server getServer() {

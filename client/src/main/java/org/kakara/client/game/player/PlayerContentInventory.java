@@ -19,4 +19,17 @@ public class PlayerContentInventory extends BasicNineBoxedInventory {
         }
         return itemStacks;
     }
+
+    public boolean addItemStackForPickup(ItemStack itemStack) {
+        for (int i = 0; i < getContents().length; i++) {
+            if (getItemStack(i).equalsIgnoreCount(itemStack)) {
+                getItemStack(i).setCount(getItemStack(i).getCount() + itemStack.getCount());
+                return false;
+
+            }
+        }
+        System.out.println("Calling");
+        addItemStack(itemStack);
+        return true;
+    }
 }

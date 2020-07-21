@@ -76,6 +76,7 @@ public class MainGameScene extends AbstractGameScene {
     protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
     protected RenderTexture breakingTexture;
+    private boolean hasRun = false;
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -361,7 +362,14 @@ public class MainGameScene extends AbstractGameScene {
                         rc.addBlock(rb);
                     }
                     clientChunk.setUpdatedHappened(false);
-                    rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                    if (!hasRun) {
+                        server.getExecutorService().submit(() -> {
+                            rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                        });
+                        hasRun = true;
+                    } else {
+                        rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
+                    }
                     getChunkHandler().addChunk(rc);
                     clientChunk.setRenderChunkID(rc.getId());
                 }

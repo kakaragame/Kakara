@@ -186,8 +186,6 @@ public class ClientWorld extends GameWorld {
                             return;
                         }
                         ((ClientChunk) chunkMap.get(chunk.getLocation())).load(new ChunkContent(base.getGameBlocks(), chunk.getLocation()));
-                        System.out.println("LOADED");
-
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

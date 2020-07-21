@@ -2,6 +2,7 @@ package org.kakara.client.game.world;
 
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.KakaraGame;
+import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.world.*;
 
@@ -51,7 +52,14 @@ public class ClientChunk implements Chunk {
     }
 
     public Optional<GameBlock> getGameBlock(Location location) {
-        return new ArrayList<>(gameBlockList).stream().filter(gameBlock -> gameBlock.getLocation().equals(location)).findFirst();
+        List<GameBlock> loop = new ArrayList<>(gameBlockList);
+        for (int i = 0; i < loop.size(); i++) {
+            if (loop.get(i).getLocation().equals(location)) {
+                return Optional.ofNullable(loop.get(i));
+            }
+        }
+        gameBlockList.add(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem(0).get())));
+        return getGameBlock(location);
     }
 
     public Optional<UUID> getRenderChunkID() {

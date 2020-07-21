@@ -193,8 +193,8 @@ public class MainGameScene extends AbstractGameScene {
             if (col instanceof RenderBlock) {
                 RenderBlock rb = (RenderBlock) col;
                 RenderChunk parentChunk = rb.getParentChunk();
-                Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
-                if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
+                Location location = new Location(player.getLocation().getNullableWorld(), parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
+                if (breakingBlock == null || !breakingBlock.getGbLocation().equals(location)) {
                     if (breakingBlock != null) {
                         Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(breakingBlock.getChunkLocation())).findFirst();
                         chunk.ifPresent(renderChunk -> {
@@ -207,12 +207,21 @@ public class MainGameScene extends AbstractGameScene {
                     rb.setOverlay(breakingTexture);
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
-                    if (breakingBlock.breakBlock(2d * Time.deltaTime)) {
-                        ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
-                        parentChunk.removeBlock(rb);
-                        parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                        breakingBlock = null;
+                    Optional<GameBlock> blockAt = ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getBlockAt(location);
+                    blockAt.ifPresent(block -> {
+                        if (block.getItemStack().getItem() instanceof AirBlock) return;
+                        double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack());
+                        if (breakingBlock.breakBlock(breakPerFrame * Time.deltaTime)) {
+                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                            parentChunk.removeBlock(rb);
+                            parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
+                            breakingBlock = null;
+                        }
+                    });
+                    if (blockAt.isEmpty()) {
+                        System.out.println("OUCH");
                     }
+
                 }
             }
         }

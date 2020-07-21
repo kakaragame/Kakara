@@ -101,7 +101,7 @@ public class ClientWorld extends GameWorld {
             throw new RuntimeException("TBH I am not sure what I want to do with this yet");
         }
         if (chunk instanceof ClientChunk) {
-            return ((ClientChunk) chunk).getGameBlock(location).or(() -> Optional.of(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem("kakara:air").get()))));
+            return ((ClientChunk) chunk).getGameBlock(location);
         }
         return Optional.empty();
     }

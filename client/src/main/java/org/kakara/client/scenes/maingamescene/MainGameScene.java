@@ -196,19 +196,14 @@ public class MainGameScene extends AbstractGameScene {
                 Location location = new Location(parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
                 if (breakingBlock == null || !breakingBlock.getBlockLocation().equals(location)) {
                     if (breakingBlock != null) {
-                        ChunkLocation chunkLocation = GameUtils.getChunkLocation(breakingBlock.getBlockLocation());
-                        Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(MoreUtils.chunkLocationToVector3(chunkLocation))).findFirst();
+                        Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(breakingBlock.getChunkLocation())).findFirst();
                         chunk.ifPresent(renderChunk -> {
-                            Vector3 renderBlockLocation = MoreUtils.gbLocationToRBLocation(location, chunkLocation);
-                            Optional<RenderBlock> oldRBOptional = renderChunk.getBlocks().stream().filter(renderBlock -> renderBlock.getPosition().equals(renderBlockLocation)).findFirst();
-                            oldRBOptional.ifPresent(renderBlock -> {
-                                //This code executes but does not work
-                                renderBlock.setOverlay(null);
-                                renderChunk.regenerateOverlayTextures(getTextureAtlas());
-                            });
+                            RenderBlock block = renderChunk.getOctChunk().get((int) breakingBlock.getBlockLocation().x, (int) breakingBlock.getBlockLocation().y, (int) breakingBlock.getBlockLocation().z);
+                            block.setOverlay(null);
+                            renderChunk.regenerateOverlayTextures(getTextureAtlas());
                         });
                     }
-                    breakingBlock = new BreakingBlock(location);
+                    breakingBlock = new BreakingBlock(location, parentChunk.getPosition(), rb.getPosition());
                     rb.setOverlay(breakingTexture);
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {

@@ -87,9 +87,9 @@ public class MoreUtils {
         return new Vector3(c.getX(), c.getY(), c.getZ());
     }
 
-    public static Vector3 gbLocationToRBLocation(Location location, ChunkLocation chunkLocation) {
+    public static Vector3 gbLocationToRBLocation(Location location, Vector3 vector) {
         Vector3 vector3 = locationToVector3(location);
-        vector3 = vector3.subtract(chunkLocation.getX(), chunkLocation.getY(), chunkLocation.getZ());
+        vector3 = vector3.subtract(vector.getX(), vector.getY(), vector.getZ());
         return vector3;
     }
 }

@@ -1,5 +1,9 @@
 package org.kakara.client.scenes.maingamescene;
 
+import org.kakara.core.Kakara;
+import org.kakara.core.NameKey;
+import org.kakara.engine.GameEngine;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.item.GameItem;
 import org.kakara.engine.item.MeshGameItem;
 import org.kakara.engine.item.mesh.Mesh;
@@ -36,6 +40,20 @@ public class SceneUtils {
         object.setVisible(false);
         object.setPosition((float) gameScene.server.getPlayerEntity().getLocation().getX(), (float) gameScene.server.getPlayerEntity().getLocation().getY(), (float) gameScene.server.getPlayerEntity().getLocation().getZ());
         object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f)));
+        object.getCollider().addOnTriggerEnter(trig -> {
+            if(trig instanceof MeshGameItem){
+                MeshGameItem item = (MeshGameItem) trig;
+                if(item.getTag().equals("pickupable")){
+                    NameKey key = (NameKey) item.getData().get(0);
+                    gameScene.getHotBar().getContentInventory().addItemStackForPickup(Kakara.createItemStack(Kakara.getItemManager().getItem(key).get()));
+                    item.setTag("TO BE REMOVED");
+                    gameScene.remove(item);
+                    gameScene.addQueueRunnable(() -> {
+                        gameScene.getHotBar().renderItems();
+                    });
+                }
+            }
+        });
         gameScene.add(object);
         return object.getId();
     }

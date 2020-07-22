@@ -27,7 +27,7 @@ import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
-import org.kakara.engine.GameHandler;
+import org.kakara.engine.GameHandler;import org.kakara.engine.item.features.HorizontalRotation;
 import org.kakara.engine.item.mesh.AtlasMesh;
 import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.Collidable;
@@ -255,6 +255,7 @@ public class MainGameScene extends AbstractGameScene {
                 droppedBlock.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
                 droppedBlock.setTag("pickupable");
                 droppedBlock.getData().add(droppedItem.getItemStack().getItem().getNameKey());
+                droppedBlock.addFeature(new HorizontalRotation());
                 droppedItem.setGameID(droppedBlock.getId());
                 add(droppedBlock);
             }

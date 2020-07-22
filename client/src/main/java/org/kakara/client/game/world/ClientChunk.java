@@ -37,6 +37,7 @@ public class ClientChunk implements Chunk {
     }
 
     public void placeBlock(GameBlock gameBlock) {
+        gameBlock.getItemStack().setCount(1);
         List<GameBlock> loop = new ArrayList<>(gameBlockList);
         for (int i = 0; i < loop.size(); i++) {
             if (loop.get(i).getLocation().equals(gameBlock.getLocation())) {
@@ -87,6 +88,7 @@ public class ClientChunk implements Chunk {
 
     public void load(ChunkContent base) {
         gameBlockList = base.getGameBlocks();
+        gameBlockList.forEach(block -> block.getItemStack().setCount(1));
         status = Status.LOADED;
     }
 

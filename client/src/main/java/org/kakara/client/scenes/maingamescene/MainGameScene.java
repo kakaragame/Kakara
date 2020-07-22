@@ -277,7 +277,6 @@ public class MainGameScene extends AbstractGameScene {
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(GameUtils.getReadyForPlacement(hotBarCanvas.getCurrentItemStack()), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
-                    System.out.println("hotBarCanvas.getCurrentItemStack().getCount() = " + hotBarCanvas.getCurrentItemStack().getCount());
                 }
 
 
@@ -302,7 +301,6 @@ public class MainGameScene extends AbstractGameScene {
             if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
                 if (clientChunk.getRenderChunkID().isPresent())
                     getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
-//                System.out.println("Chunk Unloaded.");
 
                 // Maybe: TODO The operation should be done below instead of in the ChunkCleaner
 //                server.getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);

@@ -129,7 +129,7 @@ public class MainGameScene extends AbstractGameScene {
         }
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
 
-        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderResourceManager, (PlayerContentInventory) server.getPlayerEntity().getInventory());
+        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderResourceManager, (PlayerContentInventory) server.getPlayerEntity().getInventory(), roboto);
         hotBarCanvas.show();
 
         ComponentCanvas main = new ComponentCanvas(this);
@@ -151,7 +151,6 @@ public class MainGameScene extends AbstractGameScene {
 
         add(main);
         add(hotBarCanvas);
-        add(hotBarCanvas.getObjectCanvas());
         try {
             ((ClientPlayer) server.getPlayerEntity()).setGameItemID(sceneUtils.createPlayerObject());
         } catch (Exception e) {
@@ -217,9 +216,8 @@ public class MainGameScene extends AbstractGameScene {
                             parentChunk.removeBlock(rb);
                             parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                             breakingBlock = null;
-                            if (hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack())) {
-                                hotBarCanvas.renderItems();
-                            }
+                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
+                            hotBarCanvas.renderItems();
 
                         }
                     });
@@ -277,6 +275,8 @@ public class MainGameScene extends AbstractGameScene {
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(GameUtils.getReadyForPlacement(hotBarCanvas.getCurrentItemStack()), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
+                    System.out.println("hotBarCanvas.getCurrentItemStack().getCount() = " + hotBarCanvas.getCurrentItemStack().getCount());
+                    hotBarCanvas.renderItems();
                 }
 
 
@@ -301,6 +301,7 @@ public class MainGameScene extends AbstractGameScene {
             if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
                 if (clientChunk.getRenderChunkID().isPresent())
                     getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
+//                System.out.println("Chunk Unloaded.");
 
                 // Maybe: TODO The operation should be done below instead of in the ChunkCleaner
 //                server.getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);

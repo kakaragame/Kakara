@@ -7,6 +7,7 @@ import org.kakara.core.NameKey;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.resources.Texture;
 import org.kakara.core.resources.TextureResolution;
+import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
@@ -14,13 +15,17 @@ import org.kakara.engine.item.mesh.AtlasMesh;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
+import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.Scene;
+import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
+import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
 import org.kakara.engine.ui.objectcanvas.UIObject;
+import org.kakara.engine.ui.text.Font;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
@@ -33,12 +38,16 @@ public class HotBarCanvas extends ComponentCanvas {
     private final RGBA selected = new RGBA(255, 255, 255, 0.4f);
     private final RGBA normal = new RGBA(0, 0, 0, 0.4f);
     private PlayerContentInventory contentInventory;
+
     private ObjectCanvas objectCanvas;
+    private ComponentCanvas numberCanvas;
+
     private final RenderResourceManager renderTextureCache;
     private final Scene scene;
     private final TextureAtlas atlas;
+    private Font roboto;
 
-    public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory) {
+    public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory, Font roboto) {
         super(scene);
         this.scene = scene;
         this.atlas = atlas;
@@ -60,10 +69,10 @@ public class HotBarCanvas extends ComponentCanvas {
 
         rects[0].setColor(selected);
 
-//        mainPanel.add(rect);
+        numberCanvas = new ComponentCanvas(scene);
 
         add(mainPanel);
-
+        this.roboto = roboto;
         renderItems();
     }
 
@@ -76,22 +85,28 @@ public class HotBarCanvas extends ComponentCanvas {
             }
         }
         if (update) renderItems();
+    }
 
+    @Override
+    public void render(HUD hud, GameHandler handler) {
+        super.render(hud, handler);
+        objectCanvas.render(hud, handler);
+        numberCanvas.render(hud, handler);
     }
 
     public void renderItems() {
         if(objectCanvas!=null) {
             objectCanvas.clearObjects();
+            numberCanvas.clearComponents();
         }
         try {
             if(objectCanvas==null ) {
                  objectCanvas = new ObjectCanvas(scene);
             }
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 5; i++) {
                 ItemStack itemStack = contentInventory.getHotBarContents()[i];
                 if (itemStack.getItem() instanceof AirBlock) continue;
                 RenderTexture txt = getTexture(itemStack);
-                System.out.println("itemStack = " + itemStack.toString());
 
                 AtlasMesh mesh = new AtlasMesh(txt, atlas, new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                 UIObject uiObject = new UIObject(mesh);
@@ -103,15 +118,16 @@ public class HotBarCanvas extends ComponentCanvas {
 
                 uiObject.getRotation().rotateX((float) Math.toRadians(50));
                 uiObject.getRotation().rotateY((float) Math.toRadians(40));
+
+                Text itemCountTxt = new Text(itemStack.getCount() + "", roboto);
+                itemCountTxt.setPosition(400 + (55 * i), 670 + 23);
+                itemCountTxt.setSize(25);
+                numberCanvas.add(itemCountTxt);
             }
 
         } catch (ExecutionException ee) {
             ee.printStackTrace();
         }
-    }
-
-    private ItemStack getItem(NameKey key) {
-        return Kakara.createItemStack(Kakara.getItemManager().getItem(key).get());
     }
 
     private RenderTexture getTexture(ItemStack is) throws ExecutionException {
@@ -160,9 +176,9 @@ public class HotBarCanvas extends ComponentCanvas {
         mainPanel.setVisible(false);
     }
 
-    public ObjectCanvas getObjectCanvas() {
-        return objectCanvas;
-    }
+//    public ObjectCanvas getObjectCanvas() {
+//        return objectCanvas;
+//    }
 
     public PlayerContentInventory getContentInventory() {
         return contentInventory;

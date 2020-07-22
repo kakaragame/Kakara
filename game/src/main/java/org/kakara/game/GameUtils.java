@@ -29,6 +29,14 @@ public class GameUtils {
                 Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius * 16), 2);
     }
 
+    public static boolean isLocationInsideCurrentLocationRadius(Location centerPoint, Location location, int radius) {
+        //(x-cx)^2 + (y-cy)^2 + (z-cz)^2 < r^2
+        //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?
+        return (Math.pow((centerPoint.getX() - location.getX()), 2) +
+                Math.pow((centerPoint.getY() - location.getY()), 2) +
+                Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius), 2);
+    }
+
     public static boolean isLocationInsideCurrentLocationRadius(int cX, int cY, int cZ, int lX, int lY, int lZ, int radius) {
         //(x-cx)^2 + (y-cy)^2 + (z-cz)^2 < r^2
         //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?

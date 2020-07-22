@@ -40,7 +40,7 @@ public class SceneUtils {
         object.setVisible(false);
         object.setPosition((float) gameScene.server.getPlayerEntity().getLocation().getX(), (float) gameScene.server.getPlayerEntity().getLocation().getY(), (float) gameScene.server.getPlayerEntity().getLocation().getZ());
         object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f)));
-        object.getCollider().addOnTriggerEnter(trig -> {
+/*        object.getCollider().addOnTriggerEnter(trig -> {
             if(trig instanceof MeshGameItem){
                 MeshGameItem item = (MeshGameItem) trig;
                 if(item.getTag().equals("pickupable")){
@@ -53,7 +53,7 @@ public class SceneUtils {
                     });
                 }
             }
-        });
+        });*/
         gameScene.add(object);
         return object.getId();
     }

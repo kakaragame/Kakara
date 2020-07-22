@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.Client;
 
+import org.kakara.client.game.DroppedItem;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.Utils;
@@ -40,6 +41,7 @@ public class ClientWorld extends GameWorld {
     private Location worldSpawn;
     private ChunkIO chunkIO = null;
     private Status status = Status.LOADING;
+    private List<DroppedItem> droppedItems = new ArrayList<>();
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
@@ -270,6 +272,14 @@ public class ClientWorld extends GameWorld {
         }
 
         status = Status.LOADED;
+    }
+
+    public List<DroppedItem> getDroppedItems() {
+        return droppedItems;
+    }
+
+    public void dropItem(Location location, ItemStack itemStack) {
+        droppedItems.add(new DroppedItem(location, itemStack));
     }
 
     @Override

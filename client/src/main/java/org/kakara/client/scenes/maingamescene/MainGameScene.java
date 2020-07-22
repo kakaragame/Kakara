@@ -3,6 +3,7 @@ package org.kakara.client.scenes.maingamescene;
 
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.client.game.DroppedItem;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.player.PlayerContentInventory;
@@ -190,9 +191,10 @@ public class MainGameScene extends AbstractGameScene {
                 ((IntegratedServer) server).newMessages().forEach(s -> chatComponent.addMessage(s));
             }
         }
-
-        synchronized (updateOnMainThread){
-            while(!updateOnMainThread.isEmpty()){
+        renderDroppedItems();
+        checkForDroppedItems();
+        synchronized (updateOnMainThread) {
+            while (!updateOnMainThread.isEmpty()) {
                 updateOnMainThread.poll().run();
             }
         }
@@ -230,16 +232,7 @@ public class MainGameScene extends AbstractGameScene {
 
 //                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
 //                            hotBarCanvas.renderItems();
-
-                            AtlasMesh mesh = new AtlasMesh(getTexture(block.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
-                            MeshGameItem droppedBlock = new MeshGameItem(mesh);
-                            droppedBlock.setCollider(new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f)));
-                            droppedBlock.setVelocityY(-9.18f);
-                            droppedBlock.setScale(0.3f);
-                            droppedBlock.setPosition((float) block.getLocation().getX(), (float) block.getLocation().getY(), (float) block.getLocation().getZ());
-                            droppedBlock.setTag("pickupable");
-                            droppedBlock.getData().add(block.getItemStack().getItem().getNameKey());
-                            add(droppedBlock);
+                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
                         }
                     });
                     if (blockAt.isEmpty()) {
@@ -251,6 +244,36 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
+    public void renderDroppedItems() {
+        for (DroppedItem droppedItem : ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
+            if (droppedItem.getGameID() == null) {
+                AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
+                MeshGameItem droppedBlock = new MeshGameItem(mesh);
+                //droppedBlock.setCollider(new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f)));
+                droppedBlock.setVelocityY(-9.18f);
+                droppedBlock.setScale(0.3f);
+                droppedBlock.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
+                droppedBlock.setTag("pickupable");
+                droppedBlock.getData().add(droppedItem.getItemStack().getItem().getNameKey());
+                droppedItem.setGameID(droppedBlock.getId());
+                add(droppedBlock);
+            }
+        }
+    }
+
+    public void checkForDroppedItems() {
+        List<DroppedItem> droppedItems = new ArrayList<>(((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems());
+        for (DroppedItem droppedItem : droppedItems) {
+            if (droppedItem.getGameID() != null) {
+                if (GameUtils.isLocationInsideCurrentLocationRadius(server.getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
+                    remove(getItemHandler().getItemWithId(droppedItem.getGameID()));
+                    ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
+                    ((PlayerContentInventory) server.getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
+                    hotBarCanvas.renderItems();
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
@@ -406,11 +429,11 @@ public class MainGameScene extends AbstractGameScene {
         return gameHandler.getResourceManager();
     }
 
-    public HotBarCanvas getHotBar(){
+    public HotBarCanvas getHotBar() {
         return hotBarCanvas;
     }
 
-    public void addQueueRunnable(Runnable run){
+    public void addQueueRunnable(Runnable run) {
         this.updateOnMainThread.add(run);
     }
 

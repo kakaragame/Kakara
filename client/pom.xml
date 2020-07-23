@@ -196,7 +196,7 @@
         <dependency>
             <groupId>org.kakara</groupId>
             <artifactId>engine</artifactId>
-            <version>1.0-Pre2-API-SNAPSHOT</version>
+            <version>1.0-Pre2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

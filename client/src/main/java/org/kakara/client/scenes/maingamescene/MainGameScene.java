@@ -250,7 +250,13 @@ public class MainGameScene extends AbstractGameScene {
             if (droppedItem.getGameID() == null) {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                 MeshGameItem droppedBlock = new MeshGameItem(mesh);
-                //droppedBlock.setCollider(new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f)));
+                BoxCollider collider = new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f));
+                collider.setPredicate(collidable -> {
+                    if (collidable instanceof RenderBlock) return false;
+                    if(collidable instanceof RenderChunk) return false;
+                    return true;
+                });
+                droppedBlock.setCollider(collider);
                 droppedBlock.setVelocityY(-9.18f);
                 droppedBlock.setScale(0.3f);
                 droppedBlock.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());

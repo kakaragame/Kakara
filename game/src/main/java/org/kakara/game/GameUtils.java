@@ -6,11 +6,15 @@ import org.kakara.core.game.Block;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.game.Tool;
+import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.serializers.ods.ItemStackTag;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.game.items.blocks.AirBlock;
+import org.kakara.game.resources.GameResourceManager;
+
+import java.util.concurrent.ExecutionException;
 
 public class GameUtils {
     public static ChunkLocation getChunkLocation(Location l) {
@@ -23,6 +27,14 @@ public class GameUtils {
         return (Math.pow((centerPoint.getX() - location.getX()), 2) +
                 Math.pow((centerPoint.getY() - location.getY()), 2) +
                 Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius * 16), 2);
+    }
+
+    public static boolean isLocationInsideCurrentLocationRadius(Location centerPoint, Location location, int radius) {
+        //(x-cx)^2 + (y-cy)^2 + (z-cz)^2 < r^2
+        //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?
+        return (Math.pow((centerPoint.getX() - location.getX()), 2) +
+                Math.pow((centerPoint.getY() - location.getY()), 2) +
+                Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius), 2);
     }
 
     public static boolean isLocationInsideCurrentLocationRadius(int cX, int cY, int cZ, int lX, int lY, int lZ, int radius) {
@@ -72,5 +84,6 @@ public class GameUtils {
         placeStack.setCount(1);
         return placeStack;
     }
+
 }
 

@@ -3,6 +3,8 @@ package org.kakara.client.scenes.maingamescene;
 
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.client.engine.item.HorizontalRotationFeature;
+import org.kakara.client.game.DroppedItem;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.player.PlayerContentInventory;
@@ -18,6 +20,7 @@ import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
+import org.kakara.core.game.ItemStack;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.core.resources.TextureResolution;
@@ -26,6 +29,8 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.item.mesh.AtlasMesh;
+import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.Collidable;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
@@ -61,6 +66,7 @@ import java.net.MalformedURLException;
 import java.util.*;
 import java.util.List;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -77,6 +83,7 @@ public class MainGameScene extends AbstractGameScene {
     protected final SceneUtils sceneUtils = new SceneUtils(this);
     protected RenderTexture breakingTexture;
     private boolean hasRun = false;
+    private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue();
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -185,6 +192,13 @@ public class MainGameScene extends AbstractGameScene {
                 ((IntegratedServer) server).newMessages().forEach(s -> chatComponent.addMessage(s));
             }
         }
+        renderDroppedItems();
+        checkForDroppedItems();
+        synchronized (updateOnMainThread) {
+            while (!updateOnMainThread.isEmpty()) {
+                updateOnMainThread.poll().run();
+            }
+        }
 
         ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
@@ -216,9 +230,10 @@ public class MainGameScene extends AbstractGameScene {
                             parentChunk.removeBlock(rb);
                             parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                             breakingBlock = null;
-                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
-                            hotBarCanvas.renderItems();
 
+//                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
+//                            hotBarCanvas.renderItems();
+                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
                         }
                     });
                     if (blockAt.isEmpty()) {
@@ -230,6 +245,43 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
+    public void renderDroppedItems() {
+        for (DroppedItem droppedItem : ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
+            if (droppedItem.getGameID() == null) {
+                AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
+                MeshGameItem droppedBlock = new MeshGameItem(mesh);
+                BoxCollider collider = new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f));
+                collider.setPredicate(collidable -> {
+                    if (collidable instanceof RenderBlock) return false;
+                    if(collidable instanceof RenderChunk) return false;
+                    return true;
+                });
+                droppedBlock.setCollider(collider);
+                droppedBlock.setVelocityY(-9.18f);
+                droppedBlock.setScale(0.3f);
+                droppedBlock.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
+                droppedBlock.setTag("pickupable");
+                droppedBlock.getData().add(droppedItem.getItemStack().getItem().getNameKey());
+                droppedBlock.addFeature(new HorizontalRotationFeature());
+                droppedItem.setGameID(droppedBlock.getId());
+                add(droppedBlock);
+            }
+        }
+    }
+
+    public void checkForDroppedItems() {
+        List<DroppedItem> droppedItems = new ArrayList<>(((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems());
+        for (DroppedItem droppedItem : droppedItems) {
+            if (droppedItem.getGameID() != null) {
+                if (GameUtils.isLocationInsideCurrentLocationRadius(server.getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
+                    remove(getItemHandler().getItemWithId(droppedItem.getGameID()));
+                    ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
+                    ((PlayerContentInventory) server.getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
+                    hotBarCanvas.renderItems();
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {
@@ -375,9 +427,6 @@ public class MainGameScene extends AbstractGameScene {
             }
 
         }
-
-
-        // Honestly, This shouldn't be here:
     }
 
     public Server getServer() {
@@ -388,9 +437,21 @@ public class MainGameScene extends AbstractGameScene {
         return gameHandler.getResourceManager();
     }
 
+    public HotBarCanvas getHotBar() {
+        return hotBarCanvas;
+    }
+
+    public void addQueueRunnable(Runnable run) {
+        this.updateOnMainThread.add(run);
+    }
+
     public void close() {
         PauseMenuCanvas.getInstance(kakaraGame, this).close();
         DebugModeCanvas.getInstance(kakaraGame, this).close();
 
+    }
+
+    private RenderTexture getTexture(ItemStack is) {
+        return renderResourceManager.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 }

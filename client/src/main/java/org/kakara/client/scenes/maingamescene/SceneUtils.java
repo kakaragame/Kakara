@@ -39,7 +39,17 @@ public class SceneUtils {
         MeshGameItem object = new MeshGameItem(mainPlayer);
         object.setVisible(false);
         object.setPosition((float) gameScene.server.getPlayerEntity().getLocation().getX(), (float) gameScene.server.getPlayerEntity().getLocation().getY(), (float) gameScene.server.getPlayerEntity().getLocation().getZ());
-        object.setCollider(new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f)));
+        BoxCollider boxCollider = new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f));
+        boxCollider.setPredicate(collidable -> {
+            if (collidable instanceof MeshGameItem) {
+                if (((MeshGameItem) collidable).getTag().equals("pickupable")) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+        object.setCollider(boxCollider);
 /*        object.getCollider().addOnTriggerEnter(trig -> {
             if(trig instanceof MeshGameItem){
                 MeshGameItem item = (MeshGameItem) trig;

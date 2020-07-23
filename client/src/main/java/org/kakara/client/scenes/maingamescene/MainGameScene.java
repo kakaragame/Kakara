@@ -3,6 +3,7 @@ package org.kakara.client.scenes.maingamescene;
 
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.client.engine.item.HorizontalRotationFeature;
 import org.kakara.client.game.DroppedItem;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.player.ClientPlayer;
@@ -249,12 +250,19 @@ public class MainGameScene extends AbstractGameScene {
             if (droppedItem.getGameID() == null) {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                 MeshGameItem droppedBlock = new MeshGameItem(mesh);
-                //droppedBlock.setCollider(new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f)));
+                BoxCollider collider = new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f));
+                collider.setPredicate(collidable -> {
+                    if (collidable instanceof RenderBlock) return false;
+                    if(collidable instanceof RenderChunk) return false;
+                    return true;
+                });
+                droppedBlock.setCollider(collider);
                 droppedBlock.setVelocityY(-9.18f);
                 droppedBlock.setScale(0.3f);
                 droppedBlock.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
                 droppedBlock.setTag("pickupable");
                 droppedBlock.getData().add(droppedItem.getItemStack().getItem().getNameKey());
+                droppedBlock.addFeature(new HorizontalRotationFeature());
                 droppedItem.setGameID(droppedBlock.getId());
                 add(droppedBlock);
             }

@@ -2,10 +2,8 @@ package org.kakara.game;
 
 
 import org.kakara.core.Kakara;
-import org.kakara.core.game.Block;
-import org.kakara.core.game.Item;
-import org.kakara.core.game.ItemStack;
-import org.kakara.core.game.Tool;
+import org.kakara.core.game.*;
+import org.kakara.core.player.Player;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.serializers.ods.ItemStackTag;
 import org.kakara.core.world.ChunkLocation;
@@ -58,7 +56,10 @@ public class GameUtils {
                 Math.pow((centerPoint.getZ() - location.getZ()), 2)) == Math.pow((radius * 16), 2);
     }
 
-    public static double getBreakingTime(GameBlock block, ItemStack itemStack) {
+    public static double getBreakingTime(GameBlock block, ItemStack itemStack, Player breaker) {
+        if (breaker.getGameMode() == DefaultGameMode.CREATIVE) {
+            return 50d;
+        }
         float blockHardness = ((Block) block.getItemStack().getItem()).getHardness();
         float toolHardness = toolHardness(itemStack.getItem());
         if (blockHardness == toolHardness) {

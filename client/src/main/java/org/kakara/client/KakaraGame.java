@@ -50,9 +50,10 @@ public class KakaraGame implements Game {
         client.getItemManager().load(client);
         client.getEventManager().load(client);
         client.getModManager().load(client);
-        EngineInventoryRenderer renderer = new EngineInventoryRenderer(Kakara.getResourceManager().getTexture("inventories/bnbi.png", KakaraMod.getInstance()).get(), GameInventoryUtils.getItemPositions());
-        renderer.setEngineController(new GameEngineInventoryController());
-        BasicNineBoxedInventory.setRenderer(renderer);
+        //TODO
+        //EngineInventoryRenderer renderer = new EngineInventoryRenderer(Kakara.getResourceManager().getTexture("inventories/bnbi.png", KakaraMod.getInstance()).get(), GameInventoryUtils.getItemPositions());
+       // renderer.setEngineController(new GameEngineInventoryController());
+        //BasicNineBoxedInventory.setRenderer(renderer);
     }
 
     @Override

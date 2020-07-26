@@ -17,6 +17,7 @@ import org.kakara.core.Status;
 import org.kakara.core.Utils;
 import org.kakara.core.client.Save;
 import org.kakara.core.exceptions.WorldLoadException;
+import org.kakara.core.game.DefaultGameMode;
 import org.kakara.core.mod.UnModObject;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
@@ -126,6 +127,7 @@ public class IntegratedServer extends Thread implements Server {
             playerFile.createNewFile();
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", "KingTux");
+            jsonObject.addProperty("gamemode", DefaultGameMode.CREATIVE.toString());
             jsonObject.addProperty("uuid", uuid.toString());
             jsonObject.addProperty("lastjointime", System.currentTimeMillis());
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(playerFile));

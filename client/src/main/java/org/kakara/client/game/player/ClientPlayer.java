@@ -8,9 +8,12 @@ import org.kakara.client.game.IntegratedServer;
 import org.kakara.core.Kakara;
 import org.kakara.core.NameKey;
 import org.kakara.core.events.entity.EntityTeleportEvent;
+import org.kakara.core.game.DefaultGameMode;
 import org.kakara.core.game.Entity;
+import org.kakara.core.game.GameMode;
 import org.kakara.core.gui.Inventory;
 import org.kakara.core.gui.Menu;
+import org.kakara.core.mod.game.GameMod;
 import org.kakara.core.player.PermissionSet;
 import org.kakara.core.player.Player;
 import org.kakara.core.player.PlayerEntity;
@@ -36,13 +39,15 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     private short hunger = 20;
     private UUID gameItemID;
     private PlayerContentInventory contentInventory;
+    private GameMode gameMode;
 
     public ClientPlayer(JsonObject jsonObject, @NotNull Location location, IntegratedServer integratedServer) {
         super(jsonObject, integratedServer);
         entity = new PlayerEntity(getName());
         this.location = location;
+        gameMode = DefaultGameMode.valueOf(jsonObject.get("gamemode").getAsString());
         contentInventory = new PlayerContentInventory();
-        contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVANILLA","DIRT")).get()), 1);
+        contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVANILLA", "DIRT")).get()), 1);
     }
 
     @Override
@@ -151,6 +156,16 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @Override
     public void sendMessage(@NotNull String message) {
         getServer().renderMessageToConsole(message);
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode) {
+        this.gameMode = gameMode;
     }
 
     @Override

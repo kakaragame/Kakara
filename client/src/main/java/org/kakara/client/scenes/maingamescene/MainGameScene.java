@@ -224,7 +224,7 @@ public class MainGameScene extends AbstractGameScene {
                     Optional<GameBlock> blockAt = ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getBlockAt(location);
                     blockAt.ifPresent(block -> {
                         if (block.getItemStack().getItem() instanceof AirBlock) return;
-                        double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack());
+                        double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack(), player);
                         if (breakingBlock.breakBlock(breakPerFrame * Time.getDeltaTime())) {
                             ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
                             parentChunk.removeBlock(rb);
@@ -253,7 +253,7 @@ public class MainGameScene extends AbstractGameScene {
                 BoxCollider collider = new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f));
                 collider.setPredicate(collidable -> {
                     if (collidable instanceof RenderBlock) return false;
-                    if(collidable instanceof RenderChunk) return false;
+                    if (collidable instanceof RenderChunk) return false;
                     return true;
                 });
                 droppedBlock.setCollider(collider);

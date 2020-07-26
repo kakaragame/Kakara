@@ -51,6 +51,7 @@ public class Client implements GameInstance {
         resourceManager = new GameResourceManager();
         eventManager = new GameEventManager();
         commandManager = new ClientCommandManager();
+
     }
 
     @Override

@@ -121,7 +121,7 @@ public class HotBarCanvas extends ComponentCanvas {
                 } else {
                     ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getResourceManager();
                     Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
-                    //TODO @Ryandw11
+                    //TODO @Ryandw11 - We need to be able the pass all the meshes
                     uiObject = new UIObject(mesh[0]);
                 }
                 uiObject.setPosition(400 + 25 + (55 * i), 670 + 25);

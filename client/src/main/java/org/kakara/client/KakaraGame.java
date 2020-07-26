@@ -1,13 +1,18 @@
 package org.kakara.client;
 
+import org.kakara.client.game.GameEngineInventoryController;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 
 import org.kakara.core.game.GameSettings;
+import org.kakara.core.gui.EngineInventoryRenderer;
+import org.kakara.core.gui.InventoryUtils;
+import org.kakara.core.gui.bnbi.BasicNineBoxedInventory;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
+import org.kakara.game.mod.KakaraMod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +50,9 @@ public class KakaraGame implements Game {
         client.getItemManager().load(client);
         client.getEventManager().load(client);
         client.getModManager().load(client);
+        EngineInventoryRenderer renderer = new EngineInventoryRenderer(Kakara.getResourceManager().getTexture("inventories/bnbi.png", KakaraMod.getInstance()).get(), GameInventoryUtils.getItemPositions());
+        renderer.setEngineController(new GameEngineInventoryController());
+        BasicNineBoxedInventory.setRenderer(renderer);
     }
 
     @Override

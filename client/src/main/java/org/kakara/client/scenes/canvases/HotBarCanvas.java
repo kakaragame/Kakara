@@ -1,9 +1,12 @@
 package org.kakara.client.scenes.canvases;
 
+import org.kakara.client.game.ClientResourceManager;
 import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.scenes.maingamescene.RenderResourceManager;
 import org.kakara.core.Kakara;
 import org.kakara.core.NameKey;
+import org.kakara.core.game.Block;
+import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.resources.Texture;
 import org.kakara.core.resources.TextureResolution;
@@ -12,6 +15,7 @@ import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.item.mesh.AtlasMesh;
+import org.kakara.engine.item.mesh.Mesh;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
@@ -95,23 +99,31 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     public void renderItems() {
-        if(objectCanvas!=null) {
+        if (objectCanvas != null) {
             objectCanvas.clearObjects();
             numberCanvas.clearComponents();
         }
         try {
-            if(objectCanvas==null ) {
-                 objectCanvas = new ObjectCanvas(scene);
+            if (objectCanvas == null) {
+                objectCanvas = new ObjectCanvas(scene);
             }
             for (int i = 0; i < 5; i++) {
                 ItemStack itemStack = contentInventory.getHotBarContents()[i];
-                if (itemStack.getItem() instanceof AirBlock) continue;
-                RenderTexture txt = getTexture(itemStack);
+                Item item = itemStack.getItem();
 
-                AtlasMesh mesh = new AtlasMesh(txt, atlas, new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
-                UIObject uiObject = new UIObject(mesh);
-                objectCanvas.add(uiObject);
-
+                if (item instanceof AirBlock) continue;
+                UIObject uiObject;
+                if (item instanceof Block) {
+                    RenderTexture txt = getTexture(itemStack);
+                    AtlasMesh mesh = new AtlasMesh(txt, atlas, new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
+                    uiObject = new UIObject(mesh);
+                    objectCanvas.add(uiObject);
+                } else {
+                    ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getResourceManager();
+                    Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
+                    //TODO @Ryandw11
+                    uiObject = new UIObject(mesh[0]);
+                }
                 uiObject.setPosition(400 + 25 + (55 * i), 670 + 25);
 
                 uiObject.setScale(25);

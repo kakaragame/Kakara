@@ -1,5 +1,6 @@
 package org.kakara.client;
 
+import org.kakara.client.game.ClientResourceManager;
 import org.kakara.client.game.commands.ClientCommandManager;
 import org.kakara.core.GameInstance;
 import org.kakara.core.GameTypes;
@@ -48,7 +49,7 @@ public class Client implements GameInstance {
         worldGenerationManager = new GameWorldGenerationManager();
         itemManager = new GameItemManager();
         modManager = new GameModManager(new KakaraMod(this));
-        resourceManager = new GameResourceManager();
+        resourceManager = new ClientResourceManager();
         eventManager = new GameEventManager();
         commandManager = new ClientCommandManager();
 

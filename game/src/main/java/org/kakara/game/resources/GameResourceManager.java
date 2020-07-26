@@ -17,10 +17,10 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class GameResourceManager implements ResourceManager {
-    private GameInstance kakaraCore;
-    private File resourceDirectory;
-    private static final String BASE_PATH = "/resources/";
-    private Map<Integer, Texture> textures = new HashMap<>();
+    protected GameInstance kakaraCore;
+    protected File resourceDirectory;
+    protected static final String BASE_PATH = "/resources/";
+    protected Map<Integer, Texture> textures = new HashMap<>();
 
     public GameResourceManager() {
     }

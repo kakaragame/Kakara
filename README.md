@@ -10,6 +10,6 @@ We will welcome any development. Look at the issue.
 If you need more infomation please join our Discord. 
 ## Information
 [Discord](https://discord.com/invite/GYAdsGY)
+
 [Twitter](https://twitter.com/kakaragame)
 
-https://twitter.com/kakaragame

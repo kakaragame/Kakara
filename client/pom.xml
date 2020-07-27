@@ -78,6 +78,10 @@
             <id>Ryandw11-SNAPSHOT</id>
             <url>https://repo.thevideogamevillage.com/repository/maven-snapshots/</url>
         </repository>
+        <repository>
+            <id>ObjectDataStructure</id>
+            <url>https://repo.thevideogamevillage.com/repository/maven-snapshots/</url>
+        </repository>
     </repositories>
 
     <profiles>
@@ -225,6 +229,12 @@
             <groupId>me.ryandw11</groupId>
             <artifactId>Octree</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.ryandw11</groupId>
+            <artifactId>ods</artifactId>
+            <version>1.0-MEM-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

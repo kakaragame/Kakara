@@ -75,10 +75,6 @@
             <url>https://repo.thevideogamevillage.com/repository/maven-releases/</url>
         </repository>
         <repository>
-            <id>Ryandw11-SNAPSHOT</id>
-            <url>https://repo.thevideogamevillage.com/repository/maven-snapshots/</url>
-        </repository>
-        <repository>
             <id>ObjectDataStructure</id>
             <url>https://repo.thevideogamevillage.com/repository/maven-snapshots/</url>
         </repository>
@@ -200,7 +196,7 @@
         <dependency>
             <groupId>org.kakara</groupId>
             <artifactId>engine</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-Pre3-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

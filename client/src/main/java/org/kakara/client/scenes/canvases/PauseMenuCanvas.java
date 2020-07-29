@@ -18,8 +18,9 @@ import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.events.HUDClickEvent;
 import org.kakara.engine.ui.events.HUDHoverEnterEvent;
 import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
-import org.kakara.engine.ui.text.Font;
-import org.kakara.engine.ui.text.TextAlign;
+import org.kakara.engine.ui.font.Font;
+import org.kakara.engine.ui.font.TextAlign;
+
 
 public class PauseMenuCanvas extends ActivateableCanvas {
     private static PauseMenuCanvas instance;

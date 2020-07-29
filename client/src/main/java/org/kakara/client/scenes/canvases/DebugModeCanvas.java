@@ -10,8 +10,9 @@ import org.kakara.engine.math.Vector3;
 import org.kakara.engine.resources.ResourceManager;
 ;
 import org.kakara.engine.ui.components.text.Text;
-import org.kakara.engine.ui.text.Font;
-import org.kakara.engine.ui.text.TextAlign;
+
+import org.kakara.engine.ui.font.Font;
+import org.kakara.engine.ui.font.TextAlign;
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 
@@ -73,7 +74,7 @@ public class DebugModeCanvas extends ActivateableCanvas {
         location.setText(String.format(locationFormat, v.x, v.y, v.z));
         ChunkLocation l = GameUtils.getChunkLocation(new Location(v.x, v.y, v.z));
         chunkLocation.setText(String.format(locationFormat, l.getX(), l.getY(), l.getZ()));
-        fps.setText("FPS: " + Math.round(1 / Time.deltaTime));
+        fps.setText("FPS: " + Math.round(1 / Time.getDeltaTime()));
 
         //numberOfChunksLoaded.setText("NOC: "+ gameScene.getServer().getPlayerEntity().getLocation().getWorld().getLoadedChunks().length);
     }

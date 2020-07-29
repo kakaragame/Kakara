@@ -9,15 +9,15 @@ import org.kakara.engine.events.event.CharacterPressEvent;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.RGBA;
+import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Panel;
 
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
-import org.kakara.engine.ui.text.Font;
+import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.utils.Time;
 
 import java.nio.charset.StandardCharsets;
@@ -170,7 +170,7 @@ public class ChatComponent extends GeneralComponent {
 
 
     @Override
-    public void init(HUD hud, GameHandler gameHandler) {
+    public void init(UserInterface hud, GameHandler gameHandler) {
         pollInit(hud, gameHandler);
     }
 
@@ -178,9 +178,9 @@ public class ChatComponent extends GeneralComponent {
     private float backspaceLag = 0;
 
     @Override
-    public void render(Vector2 relative, HUD hud, GameHandler handler){
+    public void render(Vector2 relative, UserInterface hud, GameHandler handler){
         pollRender(relative, hud, handler);
-        timer += Time.deltaTime;
+        timer += Time.getDeltaTime();
         if (wait) wait = false;
 
         if(focus && timer < 1){
@@ -205,7 +205,7 @@ public class ChatComponent extends GeneralComponent {
             historyPanel.add(ex);
             i--;
         }
-        backspaceLag -= backspaceLag >= 0 ? Time.deltaTime : 0;
+        backspaceLag -= backspaceLag >= 0 ? Time.getDeltaTime() : 0;
         if(handler.getKeyInput().isKeyPressed(GLFW_KEY_BACKSPACE) && backspaceLag < 0 && actualText.length() > 0){
             actualText = actualText.substring(0, actualText.length()-1);
             backspaceLag = 0.07f;

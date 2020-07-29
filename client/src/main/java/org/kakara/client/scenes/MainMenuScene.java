@@ -10,8 +10,8 @@ import org.kakara.core.Status;
 import org.kakara.core.modinstance.ModInstance;
 import org.kakara.core.modinstance.ModInstanceType;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.gui.WindowIcon;
-import org.kakara.engine.item.Texture;
+
+import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractMenuScene;
@@ -25,10 +25,11 @@ import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.events.HUDClickEvent;
 import org.kakara.engine.ui.events.HUDHoverEnterEvent;
 import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
+import org.kakara.engine.ui.font.Font;
+import org.kakara.engine.ui.font.TextAlign;
 import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.window.WindowIcon;
 
-import org.kakara.engine.ui.text.Font;
-import org.kakara.engine.ui.text.TextAlign;
 
 import java.io.File;
 import java.util.Arrays;

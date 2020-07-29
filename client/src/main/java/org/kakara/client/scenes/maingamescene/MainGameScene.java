@@ -29,14 +29,18 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.mesh.AtlasMesh;
+import org.kakara.engine.gameitems.Material;
+import org.kakara.engine.gameitems.MeshGameItem;
+import org.kakara.engine.gameitems.SkyBox;
+import org.kakara.engine.gameitems.Texture;
+import org.kakara.engine.gameitems.mesh.AtlasMesh;
+import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.Collidable;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.input.MouseClickType;
-import org.kakara.engine.item.*;
-import org.kakara.engine.item.mesh.Mesh;
+
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.TextureCache;
@@ -52,9 +56,9 @@ import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
+import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
 
-import org.kakara.engine.ui.text.Font;
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
@@ -263,7 +267,7 @@ public class MainGameScene extends AbstractGameScene {
                 droppedBlock.setTag("pickupable");
                 droppedBlock.getData().add(droppedItem.getItemStack().getItem().getNameKey());
                 droppedBlock.addFeature(new HorizontalRotationFeature());
-                droppedItem.setGameID(droppedBlock.getId());
+                droppedItem.setGameID(droppedBlock.getUUID());
                 add(droppedBlock);
             }
         }
@@ -274,7 +278,7 @@ public class MainGameScene extends AbstractGameScene {
         for (DroppedItem droppedItem : droppedItems) {
             if (droppedItem.getGameID() != null) {
                 if (GameUtils.isLocationInsideCurrentLocationRadius(server.getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
-                    remove(getItemHandler().getItemWithId(droppedItem.getGameID()));
+                    remove(getItemHandler().getItemWithId(droppedItem.getGameID()).get());
                     ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
                     ((PlayerContentInventory) server.getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
                     hotBarCanvas.renderItems();

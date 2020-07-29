@@ -14,22 +14,23 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
-import org.kakara.engine.item.mesh.AtlasMesh;
-import org.kakara.engine.item.mesh.Mesh;
+
+import org.kakara.engine.gameitems.mesh.AtlasMesh;
+import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.HUD;
 import org.kakara.engine.ui.RGBA;
+import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
+import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
 import org.kakara.engine.ui.objectcanvas.UIObject;
-import org.kakara.engine.ui.text.Font;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
@@ -92,7 +93,7 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     @Override
-    public void render(HUD hud, GameHandler handler) {
+    public void render(UserInterface hud, GameHandler handler) {
         super.render(hud, handler);
         objectCanvas.render(hud, handler);
         numberCanvas.render(hud, handler);

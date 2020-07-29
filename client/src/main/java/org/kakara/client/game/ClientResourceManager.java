@@ -6,7 +6,7 @@ import org.kakara.core.mod.Mod;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.resources.ResourceType;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.mesh.Mesh;
+import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.game.resources.GameResourceManager;
 

@@ -4,9 +4,10 @@ import org.kakara.core.Kakara;
 import org.kakara.core.NameKey;
 import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
-import org.kakara.engine.item.GameItem;
-import org.kakara.engine.item.MeshGameItem;
-import org.kakara.engine.item.mesh.Mesh;
+
+import org.kakara.engine.gameitems.GameItem;
+import org.kakara.engine.gameitems.MeshGameItem;
+import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.physics.collision.BoxCollider;
@@ -25,7 +26,7 @@ public class SceneUtils {
 
     protected Optional<GameItem> getItemByID(UUID uuid) {
         AtomicReference<GameItem> gameItemA = new AtomicReference<>();
-        gameScene.getItemHandler().getNonInstancedMeshMap().forEach((mesh, gameItems) -> gameItems.stream().filter(gameItem -> gameItem.getId().equals(uuid)).findFirst().ifPresent(gameItemA::set));
+        gameScene.getItemHandler().getNonInstancedMeshMap().forEach((mesh, gameItems) -> gameItems.stream().filter(gameItem -> gameItem.getUUID().equals(uuid)).findFirst().ifPresent(gameItemA::set));
         return Optional.ofNullable(gameItemA.get());
     }
 
@@ -65,6 +66,6 @@ public class SceneUtils {
             }
         });*/
         gameScene.add(object);
-        return object.getId();
+        return object.getUUID();
     }
 }

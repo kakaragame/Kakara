@@ -1,6 +1,7 @@
 package org.kakara.client;
 
 import me.kingtux.other.TheCodeOfAMadMan;
+import org.apache.commons.lang3.StringUtils;
 import org.kakara.client.game.GameEngineInventoryController;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.GameInstance;
@@ -10,8 +11,11 @@ import org.kakara.core.game.GameSettings;
 import org.kakara.core.gui.EngineInventoryRenderer;
 import org.kakara.core.gui.bnbi.Size27BoxedInventory;
 import org.kakara.core.gui.bnbi.Size9BoxedInventory;
+import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.game.GameModManager;
+import org.kakara.core.resources.ResourceType;
 import org.kakara.core.resources.Texture;
+import org.kakara.core.resources.TextureResolution;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
@@ -22,8 +26,12 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 public class KakaraGame implements Game {
     private GameInstance kakaraCore;
@@ -59,15 +67,24 @@ public class KakaraGame implements Game {
         client.getModManager().load(client);
         try {
             //Loading Local Resources
-            GameModManager.loadResources(KakaraMod.getInstance(), new JarFile(TheCodeOfAMadMan.getJarFromClass(KakaraGame.class)));
+            File file = TheCodeOfAMadMan.getJarFromClass(KakaraGame.class);
+            if (file.isDirectory()) {
+                throw new IllegalStateException("Kakara must be jar");
+            }
+            GameModManager.loadResources(KakaraMod.getInstance(), new JarFile(file));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
         //TODO Load Inventory
-        setupInventory(9);
-        setupInventory(27);
+        try {
+            setupInventory(9);
+            setupInventory(27);
+        }catch (IllegalStateException e){
+            e.printStackTrace();
+        }
 
     }
+
 
     private void setupInventory(int size) {
         Optional<Texture> texture = Kakara.getResourceManager().getTexture("inventories/bnbi_" + size + ".png", KakaraMod.getInstance());

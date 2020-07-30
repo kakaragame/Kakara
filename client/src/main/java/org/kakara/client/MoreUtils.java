@@ -7,6 +7,7 @@ import org.kakara.core.world.*;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.resources.ResourceManager;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -92,4 +93,19 @@ public class MoreUtils {
         vector3 = vector3.subtract(vector.getX(), vector.getY(), vector.getZ());
         return vector3;
     }
+
+    public static void getFiles(File directory, List<File> files) {
+
+        // Get all files from a directory.
+        File[] fList = directory.listFiles();
+        if (fList != null)
+            for (File file : fList) {
+                if (file.isFile()) {
+                    files.add(file);
+                } else if (file.isDirectory()) {
+                    getFiles(file.getAbsoluteFile(), files);
+                }
+            }
+    }
 }
+

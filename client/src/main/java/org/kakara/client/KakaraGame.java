@@ -1,5 +1,6 @@
 package org.kakara.client;
 
+import me.kingtux.other.TheCodeOfAMadMan;
 import org.kakara.client.game.GameEngineInventoryController;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.GameInstance;
@@ -7,8 +8,10 @@ import org.kakara.core.Kakara;
 
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.gui.EngineInventoryRenderer;
-import org.kakara.core.gui.InventoryUtils;
-import org.kakara.core.gui.bnbi.BasicNineBoxedInventory;
+import org.kakara.core.gui.bnbi.Size27BoxedInventory;
+import org.kakara.core.gui.bnbi.Size9BoxedInventory;
+import org.kakara.core.mod.game.GameModManager;
+import org.kakara.core.resources.Texture;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
@@ -17,6 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Optional;
+import java.util.jar.JarFile;
 
 public class KakaraGame implements Game {
     private GameInstance kakaraCore;
@@ -50,10 +57,32 @@ public class KakaraGame implements Game {
         client.getItemManager().load(client);
         client.getEventManager().load(client);
         client.getModManager().load(client);
-        //TODO
-        //EngineInventoryRenderer renderer = new EngineInventoryRenderer(Kakara.getResourceManager().getTexture("inventories/bnbi.png", KakaraMod.getInstance()).get(), GameInventoryUtils.getItemPositions());
-       // renderer.setEngineController(new GameEngineInventoryController());
-        //BasicNineBoxedInventory.setRenderer(renderer);
+        try {
+            //Loading Local Resources
+            GameModManager.loadResources(KakaraMod.getInstance(), new JarFile(TheCodeOfAMadMan.getJarFromClass(KakaraGame.class)));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+        //TODO Load Inventory
+        setupInventory(9);
+        setupInventory(27);
+
+    }
+
+    private void setupInventory(int size) {
+        Optional<Texture> texture = Kakara.getResourceManager().getTexture("inventories/bnbi_" + size + ".png", KakaraMod.getInstance());
+        if (texture.isEmpty()) {
+            LOGGER.warn(String.format("unable to load size: %d Inventory", size));
+            return;
+        }
+        EngineInventoryRenderer renderer = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions());
+        renderer.setEngineController(new GameEngineInventoryController());
+        switch (size) {
+            case 9:
+                Size9BoxedInventory.setRenderer(renderer);
+            case 27:
+                Size27BoxedInventory.setRenderer(renderer);
+        }
     }
 
     @Override

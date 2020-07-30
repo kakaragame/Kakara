@@ -25,6 +25,16 @@ public class ClientGameEntity implements GameEntity {
         return location;
     }
 
+    @Override
+    public boolean isLiving() {
+        return true;
+    }
+
+    @Override
+    public boolean kill() {
+        return false;
+    }
+
     @NotNull
     public Vector3 locationAsVector3() {
         return MoreUtils.locationToVector3(location);

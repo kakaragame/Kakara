@@ -20,6 +20,7 @@ import org.kakara.core.player.PlayerEntity;
 import org.kakara.core.player.Toast;
 import org.kakara.core.world.Location;
 import org.kakara.engine.math.Vector3;
+import org.kakara.game.GameUtils;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -45,7 +46,10 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         super(jsonObject, integratedServer);
         entity = new PlayerEntity(getName());
         this.location = location;
-        gameMode = DefaultGameMode.valueOf(jsonObject.get("gamemode").getAsString());
+        if (jsonObject.get("gamemode") == null) {
+            gameMode = DefaultGameMode.CREATIVE;
+        } else
+            gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());
         contentInventory = new PlayerContentInventory();
         contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVANILLA", "DIRT")).get()), 1);
     }
@@ -76,6 +80,16 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @NotNull
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public boolean isLiving() {
+        return true;
+    }
+
+    @Override
+    public boolean kill() {
+        return false;
     }
 
     @NotNull

@@ -127,7 +127,7 @@ public class IntegratedServer extends Thread implements Server {
             playerFile.createNewFile();
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", "KingTux");
-            jsonObject.addProperty("gamemode", DefaultGameMode.CREATIVE.toString());
+            jsonObject.addProperty("gamemode", GameUtils.getGameMode(DefaultGameMode.CREATIVE));
             jsonObject.addProperty("uuid", uuid.toString());
             jsonObject.addProperty("lastjointime", System.currentTimeMillis());
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(playerFile));

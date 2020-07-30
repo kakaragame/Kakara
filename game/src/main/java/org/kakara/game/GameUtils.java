@@ -12,6 +12,7 @@ import org.kakara.core.world.Location;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 
 public class GameUtils {
@@ -57,7 +58,7 @@ public class GameUtils {
     }
 
     public static double getBreakingTime(GameBlock block, ItemStack itemStack, Player breaker) {
-        if (breaker.getGameMode() == DefaultGameMode.CREATIVE) {
+        if (breaker.getGameMode().getProperties().contains(GameModeProperties.INSTANT_BREAKING)) {
             return 50d;
         }
         float blockHardness = ((Block) block.getItemStack().getItem()).getHardness();
@@ -86,5 +87,23 @@ public class GameUtils {
         return placeStack;
     }
 
+    public static String getGameMode(GameMode gameMode) {
+        return gameMode.getClass().getName() + "#" + gameMode.getName();
+    }
+
+    public static GameMode getGameMode(String mode) {
+        String[] split = mode.split("#");
+        try {
+            Class<?> clazz = Class.forName(split[0]);
+            if (clazz.isEnum()) {
+                return (GameMode) Enum.valueOf((Class<? extends Enum>) clazz, split[1]);
+            } else {
+                return (GameMode) clazz.getConstructor().newInstance();
+            }
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 

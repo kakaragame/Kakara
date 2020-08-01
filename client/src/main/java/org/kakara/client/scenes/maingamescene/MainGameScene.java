@@ -116,8 +116,12 @@ public class MainGameScene extends AbstractGameScene {
         List<RenderTexture> textures = new ArrayList<>();
 
         for (org.kakara.core.resources.Texture resource : Kakara.getResourceManager().getAllTextures()) {
-            //the TextureAtlas doesnt like Inventories
-            if (resource.getPath().contains("inventories")) continue;
+            //Ignore Textures that shouldnt be added to Texture Atlas
+            if(resource.getProperties().contains("NO_TEXTURE_ATLAS")){
+                continue;
+            }
+            System.out.println("resource.getPath() = " + resource.getPath());
+
             RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.get().getLocalPath()));
             textures.add(txt1);
 

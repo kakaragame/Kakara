@@ -1,13 +1,11 @@
 package org.kakara.game.resources;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.resources.*;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -53,6 +51,7 @@ public class GameResourceManager implements ResourceManager {
 
     @Override
     public void registerTexture(String s, TextureResolution i, Mod mod) {
+        if (!s.endsWith(".png")) return;
         File directory = new File(getModDir(mod), "texture" + File.separator + String.valueOf(i.getResolution()));
         directory.mkdirs();
         String path = BASE_PATH + "texture/" + i.getResolution() + "/" + s;
@@ -60,6 +59,10 @@ public class GameResourceManager implements ResourceManager {
 
         Texture texture = getTexture(s, mod).orElseGet(() -> {
             Texture texture1 = new Texture(s, mod);
+            for (String s1 : getPropertiesForResource(s, mod)) {
+                System.out.println(s1 + ":  " + s);
+                texture1.addProperty(s1);
+            }
             textures.put(texture1.hashCode(), texture1);
             return texture1;
         });
@@ -77,6 +80,31 @@ public class GameResourceManager implements ResourceManager {
             Kakara.LOGGER.error("Unable to copy file to local", e);
         }
 
+    }
+
+    private Set<String> getPropertiesForResource(String s, Mod mod) {
+        Set<String> set = new HashSet<>();
+
+        if (mod.getClass().getResource("/resources/resource.rules") == null) {
+            return set;
+        }
+        Properties properties = new Properties();
+        try {
+            properties.load(mod.getClass().getResourceAsStream("/resources/resource.rules"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return set;
+        }
+        if (!properties.containsKey(s)) return set;
+
+        System.out.println("Working");
+        String string = properties.getProperty(s);
+        System.out.println(string);
+        if (string.contains(","))
+            Collections.addAll(set, string.split(","));
+        else
+            set.add(string);
+        return set;
     }
 
     @Override

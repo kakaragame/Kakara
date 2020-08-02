@@ -4,6 +4,8 @@ import org.kakara.core.Kakara;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.resources.Resource;
 import org.kakara.core.world.*;
+import org.kakara.engine.GameHandler;
+import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.resources.ResourceManager;
 
@@ -106,6 +108,10 @@ public class MoreUtils {
                     getFiles(file.getAbsoluteFile(), files);
                 }
             }
+    }
+
+    public static Texture coreTextureToEngineTexture(org.kakara.core.resources.Texture coreTexture) {
+        return new Texture(coreResourceToEngineResource(coreTexture.get(), KakaraGame.getInstance()), GameHandler.getInstance().getCurrentScene());
     }
 }
 

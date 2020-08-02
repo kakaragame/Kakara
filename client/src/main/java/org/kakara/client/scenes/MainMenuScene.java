@@ -22,9 +22,9 @@ import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.GridConstraint;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
-import org.kakara.engine.ui.events.HUDClickEvent;
-import org.kakara.engine.ui.events.HUDHoverEnterEvent;
-import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
+import org.kakara.engine.ui.events.UIClickEvent;
+import org.kakara.engine.ui.events.UIHoverLeaveEvent;
+import org.kakara.engine.ui.events.UIHoverEnterEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.font.TextAlign;
 import org.kakara.engine.ui.items.ComponentCanvas;
@@ -114,9 +114,9 @@ public class MainMenuScene extends AbstractMenuScene {
         singlePlayerText.addConstraint(new HorizontalCenterConstraint());
         singlePlayer.add(singlePlayerText);
 
-        singlePlayer.addUActionEvent((HUDHoverEnterEvent) vector2 -> singlePlayer.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);
-        singlePlayer.addUActionEvent((HUDHoverLeaveEvent) vector2 -> singlePlayer.setColor(new RGBA(255, 255, 255, 0.5f)), HUDHoverLeaveEvent.class);
-        singlePlayer.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> singlePlayerClick(singlePlayer), HUDClickEvent.class);
+        singlePlayer.addUActionEvent((UIHoverEnterEvent) vector2 -> singlePlayer.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
+        singlePlayer.addUActionEvent((UIHoverLeaveEvent) vector2 -> singlePlayer.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
+        singlePlayer.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> singlePlayerClick(singlePlayer), UIClickEvent.class);
 
         componentCanvas.add(singlePlayer);
 
@@ -134,9 +134,9 @@ public class MainMenuScene extends AbstractMenuScene {
         multiPlayerText.addConstraint(new HorizontalCenterConstraint());
         multiPlayer.add(multiPlayerText);
 
-        multiPlayer.addUActionEvent((HUDHoverEnterEvent) vector2 -> multiPlayer.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);
-        multiPlayer.addUActionEvent((HUDHoverLeaveEvent) vector2 -> multiPlayer.setColor(new RGBA(255, 255, 255, 0.5f)), HUDHoverLeaveEvent.class);
-        multiPlayer.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"), HUDClickEvent.class);
+        multiPlayer.addUActionEvent((UIHoverEnterEvent) vector2 -> multiPlayer.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
+        multiPlayer.addUActionEvent((UIHoverLeaveEvent) vector2 -> multiPlayer.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
+        multiPlayer.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"), UIClickEvent.class);
 
         componentCanvas.add(multiPlayer);
 
@@ -145,10 +145,10 @@ public class MainMenuScene extends AbstractMenuScene {
          */
         Texture settings = new Texture(resourceManager.getResource("kakara_settings_gear.png"), this);
         Sprite settingsGear = new Sprite(settings, new Vector2(1030, 670), new Vector2(60, 60));
-        settingsGear.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"), HUDClickEvent.class);
+        settingsGear.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"), UIClickEvent.class);
         Rectangle settingsHolder = new Rectangle(new Vector2(1040, 680), new Vector2(60, 60), new RGBA(255, 255, 255, 0));
-        settingsHolder.addUActionEvent((HUDHoverEnterEvent) vector2 -> settingsHolder.getColor().a = 0.3f, HUDHoverEnterEvent.class);
-        settingsHolder.addUActionEvent((HUDHoverLeaveEvent) vector2 -> settingsHolder.getColor().a = 0, HUDHoverLeaveEvent.class);
+        settingsHolder.addUActionEvent((UIHoverEnterEvent) vector2 -> settingsHolder.getColor().a = 0.3f, UIHoverEnterEvent.class);
+        settingsHolder.addUActionEvent((UIHoverLeaveEvent) vector2 -> settingsHolder.getColor().a = 0, UIHoverLeaveEvent.class);
         componentCanvas.add(settingsGear);
         componentCanvas.add(settingsHolder);
 

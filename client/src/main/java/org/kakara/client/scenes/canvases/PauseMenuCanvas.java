@@ -15,9 +15,10 @@ import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
-import org.kakara.engine.ui.events.HUDClickEvent;
-import org.kakara.engine.ui.events.HUDHoverEnterEvent;
-import org.kakara.engine.ui.events.HUDHoverLeaveEvent;
+
+import org.kakara.engine.ui.events.UIClickEvent;
+import org.kakara.engine.ui.events.UIHoverEnterEvent;
+import org.kakara.engine.ui.events.UIHoverLeaveEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.font.TextAlign;
 
@@ -44,9 +45,9 @@ public class PauseMenuCanvas extends ActivateableCanvas {
         resumeGameText.addConstraint(new VerticalCenterConstraint());
         resumeGameText.addConstraint(new HorizontalCenterConstraint());
         resume.add(resumeGameText);
-        resume.addUActionEvent((HUDHoverEnterEvent) vector2 -> resume.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);
-        resume.addUActionEvent((HUDHoverLeaveEvent) vector2 -> resume.setColor(new RGBA(255, 255, 255, 0.5f)), HUDHoverLeaveEvent.class);
-        resume.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> switchStatus(), HUDClickEvent.class);
+        resume.addUActionEvent((UIHoverEnterEvent) vector2 -> resume.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
+        resume.addUActionEvent((UIHoverLeaveEvent) vector2 -> resume.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
+        resume.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> switchStatus(), UIClickEvent.class);
 
         //Quit Button
         quit = new Rectangle(new Vector2(0, 370), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
@@ -60,9 +61,9 @@ public class PauseMenuCanvas extends ActivateableCanvas {
         quitGameText.addConstraint(new VerticalCenterConstraint());
         quitGameText.addConstraint(new HorizontalCenterConstraint());
 
-        quit.addUActionEvent((HUDHoverEnterEvent) vector2 -> quit.setColor(new RGBA(204, 202, 202, 0.5f)), HUDHoverEnterEvent.class);
-        quit.addUActionEvent((HUDHoverLeaveEvent) vector2 -> quit.setColor(new RGBA(255, 255, 255, 0.5f)), HUDHoverLeaveEvent.class);
-        quit.addUActionEvent((HUDClickEvent) (vector2, mouseClickType) -> {
+        quit.addUActionEvent((UIHoverEnterEvent) vector2 -> quit.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
+        quit.addUActionEvent((UIHoverLeaveEvent) vector2 -> quit.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
+        quit.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> {
             MainGameScene mainGameScene = (MainGameScene) scene;
             LoadingScene loadingScene = new LoadingScene(GameHandler.getInstance(), mainGameScene.getServer(), Status.UNLOADED, new Runnable() {
                 @Override
@@ -77,7 +78,7 @@ public class PauseMenuCanvas extends ActivateableCanvas {
             GameHandler.getInstance().getSceneManager().setScene(loadingScene);
             mainGameScene.close();
             mainGameScene.getServer().close();
-        }, HUDClickEvent.class);
+        }, UIClickEvent.class);
         quit.add(quitGameText);
     }
 

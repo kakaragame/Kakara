@@ -109,8 +109,8 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void loadGraphics(GameHandler handler) {
-        getHUD().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
-        getHUD().addItem(PauseMenuCanvas.getInstance(kakaraGame, this));
+        getUserInterface().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
+        getUserInterface().addItem(PauseMenuCanvas.getInstance(kakaraGame, this));
 
         var resourceManager = gameHandler.getResourceManager();
         List<RenderTexture> textures = new ArrayList<>();

@@ -12,6 +12,7 @@ import org.kakara.client.game.commands.StatusCommand;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.game.world.ClientWorldManager;
+import org.kakara.client.utils.IntegratedTime;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.Utils;
@@ -52,7 +53,7 @@ public class IntegratedServer extends Thread implements Server {
     private boolean running = true;
     private Player player;
     private List<String> messages = new ArrayList<>();
-    private final Time time = new Time();
+    private final IntegratedTime time = new IntegratedTime();
     private Runnable sceneTickUpdate;
     private Location lastLocation;
     private Status status = Status.LOADED;

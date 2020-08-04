@@ -93,6 +93,13 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     @Override
+    public void init(UserInterface userInterface, GameHandler handler) {
+        super.init(userInterface, handler);
+        objectCanvas.init(userInterface, handler);
+        numberCanvas.init(userInterface, handler);
+    }
+
+    @Override
     public void render(UserInterface hud, GameHandler handler) {
         super.render(hud, handler);
         objectCanvas.render(hud, handler);
@@ -172,7 +179,7 @@ public class HotBarCanvas extends ComponentCanvas {
             return;
         }
 
-        if (number < 0 || number > 6) return;
+        if (number < 1 || number > 5) return;
 
         number--;
 

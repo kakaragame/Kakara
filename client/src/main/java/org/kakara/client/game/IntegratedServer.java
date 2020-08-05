@@ -5,10 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.kakara.client.Client;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
-import org.kakara.client.game.commands.KillCommand;
-import org.kakara.client.game.commands.RegenerateCommand;
-import org.kakara.client.game.commands.SaveChunk;
-import org.kakara.client.game.commands.StatusCommand;
+import org.kakara.client.game.commands.*;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.game.world.ClientWorldManager;
@@ -20,6 +17,7 @@ import org.kakara.core.client.Save;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.DefaultGameMode;
 import org.kakara.core.mod.UnModObject;
+import org.kakara.core.mod.game.GameMod;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
 import org.kakara.core.world.Chunk;
@@ -92,6 +90,7 @@ public class IntegratedServer extends Thread implements Server {
         Kakara.getCommandManager().registerCommand(new KillCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new SaveChunk(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new RegenerateCommand(KakaraMod.getInstance(), this));
+        Kakara.getCommandManager().registerCommand(new GameModeCommand(KakaraMod.getInstance()));
 
         lastLocation = player.getLocation();
     }

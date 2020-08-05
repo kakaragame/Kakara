@@ -27,7 +27,7 @@ public class GameModeCommand extends ModCommand {
         }
         GameMode gameMode;
         if (arguments.length == 0) {
-            executor.sendMessage("No gamemode privded");
+            executor.sendMessage("No gamemode provided");
             return;
         }
         if (arguments[0].contains("#")) {

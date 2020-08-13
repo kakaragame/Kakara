@@ -117,7 +117,7 @@ public class MainGameScene extends AbstractGameScene {
 
         for (org.kakara.core.resources.Texture resource : Kakara.getResourceManager().getAllTextures()) {
             //Ignore Textures that shouldnt be added to Texture Atlas
-            if(resource.getProperties().contains("NO_TEXTURE_ATLAS")){
+            if (resource.getProperties().contains("NO_TEXTURE_ATLAS")) {
                 continue;
             }
             System.out.println("resource.getPath() = " + resource.getPath());
@@ -243,6 +243,7 @@ public class MainGameScene extends AbstractGameScene {
 
 //                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
 //                            hotBarCanvas.renderItems();
+                            block.getItemStack().setCount(1);
                             ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
                         }
                     });

@@ -1,5 +1,6 @@
 package org.kakara.client.game.player;
 
+import org.kakara.client.KakaraGame;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.gui.EngineInventoryRenderer;
 import org.kakara.core.gui.InventoryRenderer;
@@ -23,17 +24,16 @@ public class PlayerContentInventory extends BasicNineBoxedInventory {
         return itemStacks;
     }
 
-    public boolean addItemStackForPickup(ItemStack itemStack) {
+    public void addItemStackForPickup(ItemStack itemStack) {
         for (int i = 0; i < getContents().length; i++) {
             if (getItemStack(i).equalsIgnoreCount(itemStack)) {
+                System.out.println("itemStack.getCount() = " + itemStack.getCount());
                 getItemStack(i).setCount(getItemStack(i).getCount() + itemStack.getCount());
-                return false;
-
+                return;
             }
         }
-        System.out.println("Calling");
+        KakaraGame.LOGGER.debug("Adding itemstack");
         addItemStack(itemStack);
-        return true;
     }
 
     @Override

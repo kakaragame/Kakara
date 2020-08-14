@@ -231,7 +231,7 @@
         <dependency>
             <groupId>me.ryandw11</groupId>
             <artifactId>Octree</artifactId>
-            <version>1.0</version>
+            <version>1.0-Test3-SNAPTSHOT</version>
         </dependency>
 
         <dependency>

@@ -58,50 +58,47 @@ public class InventoryCanvas extends ComponentCanvas {
             objectCanvas.clearObjects();
             numberCanvas.clearComponents();
         }
-        try {
-            if (objectCanvas == null) {
-                objectCanvas = new ObjectCanvas(scene);
-                numberCanvas = new ComponentCanvas(scene);
+        if (objectCanvas == null) {
+            objectCanvas = new ObjectCanvas(scene);
+            numberCanvas = new ComponentCanvas(scene);
 
-            }
-            //TODO handle positioning
-            for (int i = 0; i < elements.size(); i++) {
-
-                ItemStack itemStack = inventory.getItemStack(i);
-                Item item = itemStack.getItem();
-
-                if (item instanceof AirBlock) continue;
-                UIObject uiObject;
-                if (item instanceof Block) {
-                    RenderTexture txt = getTexture(itemStack);
-                    AtlasMesh mesh = new AtlasMesh(txt, scene.getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
-                    uiObject = new UIObject(mesh);
-                    objectCanvas.add(uiObject);
-                } else {
-                    ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getResourceManager();
-                    Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
-                    //TODO @Ryandw11 - We need to be able the pass all the meshes
-                    uiObject = new UIObject(mesh[0]);
-                }
-                uiObject.setPosition(400 + 25 + (55 * i), 670 + 25);
-
-                uiObject.setScale(25);
-
-                uiObject.getRotation().rotateX((float) Math.toRadians(50));
-                uiObject.getRotation().rotateY((float) Math.toRadians(40));
-
-                Text itemCountTxt = new Text(itemStack.getCount() + "", font);
-                itemCountTxt.setPosition(400 + (55 * i), 670 + 23);
-                itemCountTxt.setSize(25);
-                numberCanvas.add(itemCountTxt);
-            }
-
-        } catch (ExecutionException ee) {
-            ee.printStackTrace();
         }
+        //TODO handle positioning
+        for (int i = 0; i < elements.size(); i++) {
+
+            ItemStack itemStack = inventory.getItemStack(i);
+            Item item = itemStack.getItem();
+
+            if (item instanceof AirBlock) continue;
+            UIObject uiObject;
+            if (item instanceof Block) {
+                RenderTexture txt = getTexture(itemStack);
+                AtlasMesh mesh = new AtlasMesh(txt, scene.getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
+                uiObject = new UIObject(mesh);
+                objectCanvas.add(uiObject);
+            } else {
+                ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getResourceManager();
+                Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
+                //TODO @Ryandw11 - We need to be able the pass all the meshes
+                uiObject = new UIObject(mesh[0]);
+            }
+            uiObject.setPosition(400 + 25 + (55 * i), 670 + 25);
+
+            uiObject.setScale(25);
+
+            uiObject.getRotation().rotateX((float) Math.toRadians(50));
+            uiObject.getRotation().rotateY((float) Math.toRadians(40));
+
+            Text itemCountTxt = new Text(itemStack.getCount() + "", font);
+            itemCountTxt.setPosition(400 + (55 * i), 670 + 23);
+            itemCountTxt.setSize(25);
+            numberCanvas.add(itemCountTxt);
+        }
+
+
     }
 
-    private RenderTexture getTexture(ItemStack is) throws ExecutionException {
+    private RenderTexture getTexture(ItemStack is) {
         return scene.getRenderResourceManager().get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 

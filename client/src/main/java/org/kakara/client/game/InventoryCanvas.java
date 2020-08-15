@@ -1,5 +1,6 @@
 package org.kakara.client.game;
 
+import org.kakara.client.MoreUtils;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.client.scenes.maingamescene.RenderResourceManager;
 import org.kakara.core.Kakara;
@@ -18,7 +19,10 @@ import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
+import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.components.text.Text;
+import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
+import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
@@ -49,6 +53,10 @@ public class InventoryCanvas extends ComponentCanvas {
         this.font = font;
         this.scene = (MainGameScene) scene;
 
+        Sprite sprite = new Sprite(MoreUtils.coreTextureToEngineTexture(inventoryBackground));
+        sprite.addConstraint(new HorizontalCenterConstraint());
+        sprite.addConstraint(new VerticalCenterConstraint());
+        add(sprite);
 
         renderItems();
     }

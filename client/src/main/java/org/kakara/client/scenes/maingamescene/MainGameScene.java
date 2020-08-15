@@ -440,6 +440,10 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
+    public RenderResourceManager getRenderResourceManager() {
+        return renderResourceManager;
+    }
+
     public Server getServer() {
         return server;
     }

@@ -1,0 +1,59 @@
+{
+  "texture": "bnbi_9.png",
+  "slots": [
+    {
+      "type": "slot",
+      "slot": 0,
+      "position": "7,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 1,
+      "position": "23,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 2,
+      "position": "39,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 3,
+      "position": "55,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 4,
+      "position": "72,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 5,
+      "position": "87,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 6,
+      "position": "103,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 7,
+      "position": "119,27",
+      "size": "14,14"
+    },
+    {
+      "type": "slot",
+      "slot": 8,
+      "position": "135,27",
+      "size": "14,14"
+    }
+  ]
+}

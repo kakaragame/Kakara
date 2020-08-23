@@ -8,11 +8,12 @@ import org.kakara.core.command.CommandManager;
 import org.kakara.core.command.CommandSender;
 import org.kakara.core.command.TabCompleter;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class ClientCommandManager implements CommandManager {
+public class ClientCommandManager  implements CommandManager {
     private final Set<TabCompleter> tabCompleters = new HashSet<>();
     private final Set<Command> registeredCommands = new HashSet<>();
 
@@ -65,5 +66,10 @@ public class ClientCommandManager implements CommandManager {
     @Override
     public Set<Command> getRegisteredCommands() {
         return new HashSet<>(registeredCommands);
+    }
+
+    @Override
+    public Class<?> getStageClass() {
+        return CommandManager.class;
     }
 }

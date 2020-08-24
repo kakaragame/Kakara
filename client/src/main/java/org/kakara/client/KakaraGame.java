@@ -3,6 +3,7 @@ package org.kakara.client;
 import me.kingtux.other.TheCodeOfAMadMan;
 import org.apache.commons.lang3.StringUtils;
 import org.kakara.client.game.GameEngineInventoryController;
+import org.kakara.client.scenes.DebugScene;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;

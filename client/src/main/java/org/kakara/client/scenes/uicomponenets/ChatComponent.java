@@ -13,8 +13,9 @@ import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Panel;
-
 import org.kakara.engine.ui.components.shapes.Rectangle;
+import org.kakara.engine.ui.components.text.BoundedColoredText;
+import org.kakara.engine.ui.components.text.BoundedText;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
@@ -39,7 +40,10 @@ public class ChatComponent extends GeneralComponent {
     private Rectangle historyRectangle;
     private boolean wait;
 
-    List<String> history;
+    final float xSize = 700;
+
+    private List<String> history;
+    private List<String> sentHistory = new ArrayList<>();
 
     public ChatComponent(Font fontToUse, boolean alwaysShowHistory, Scene scene){
         font = fontToUse;
@@ -48,22 +52,22 @@ public class ChatComponent extends GeneralComponent {
         actualText = "";
         history = new ArrayList<>();
 
-        this.setScale(400, 550);
+        this.setScale(xSize, 550);
 
         Panel textArea = new Panel();
-        textArea.setScale(400, 50);
-        textArea.add(new Rectangle(new Vector2(0, 0), new Vector2(400, 50), new RGBA(148, 148, 148, 200)));
+        textArea.setScale(xSize, 50);
+        textArea.add(new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 160)));
 
         Panel histroyArea = new Panel();
-        histroyArea.setScale(400, 500);
+        histroyArea.setScale(xSize, 500);
         histroyArea.setPosition(0, 0);
-        this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(400, 500), new RGBA(186, 186, 186, 200));
+        this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(xSize, 500), new RGBA(168, 168, 168, 160));
         this.add(historyRectangle);
         textArea.setPosition(0, 500);
 
         textAreaText = new Text("Press T to type...", font);
         textAreaText.addConstraint(new VerticalCenterConstraint());
-        textAreaText.setLineWidth(500);
+        textAreaText.setLineWidth(600);
         textAreaText.setSize(20);
         textAreaText.setPosition(textAreaText.getPosition().add(10, 0));
         textArea.add(textAreaText);
@@ -124,12 +128,17 @@ public class ChatComponent extends GeneralComponent {
     @EventHandler
     public void onCharacterPress(CharacterPressEvent evt){
         if(!focus || wait) return;
+        if(actualText.length() > 100) return;
         byte[] ch = {(byte) evt.getCodePoint()};
         String toadd = new String(ch, StandardCharsets.UTF_8).toLowerCase();
         if(GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_LEFT_SHIFT) || GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_RIGHT_SHIFT) )
             toadd = toadd.toUpperCase();
         actualText += toadd;
     }
+
+
+    private int historyIndex = -1;
+    String tempStorage = "";
 
     @EventHandler
     public void onKeyPress(KeyPressEvent evt){
@@ -140,19 +149,44 @@ public class ChatComponent extends GeneralComponent {
             actualText = "";
             triggerEvent(ChatFocusEvent.class);
             swapHistory(true);
+            historyIndex = -1;
             return;
         }
         if(evt.isKeyPressed(GLFW_KEY_LEFT_SHIFT) || evt.isKeyPressed(GLFW_KEY_RIGHT_SHIFT)) return;
         if(!focus) return;
 
-//        if(evt.isKeyPressed(GLFW_KEY_BACKSPACE)){
-//            actualText = actualText.substring(0, actualText.length()-1);
-//            return;
-//        }
+        GameHandler handler = GameHandler.getInstance();
+        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_LEFT_CONTROL) && handler.getKeyInput().isKeyPressed(GLFW_KEY_V)){
+            actualText += GameHandler.getInstance().getClipboard().getClipboard();
+            if(actualText.length() > 100)
+                actualText = actualText.substring(0, 100);
+        }
+
+        //TODO add text copying and highlighting.
+
+        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_UP)){
+            if(historyIndex + 1 < sentHistory.size()) {
+                if(historyIndex == -1)
+                    tempStorage = actualText;
+                ++historyIndex;
+                actualText = sentHistory.get(sentHistory.size()-1 - historyIndex);
+            }
+        }
+        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_DOWN)){
+            if(historyIndex - 1 > -2) {
+                historyIndex--;
+                if(historyIndex == -1){
+                    actualText = tempStorage;
+                }else{
+                    actualText = sentHistory.get(sentHistory.size() -1 - historyIndex);
+                }
+            }
+        }
 
         if(evt.isKeyPressed(GLFW_KEY_ENTER)){
             String t = actualText;
             history.add(actualText);
+            sentHistory.add(actualText);
             actualText = "";
             triggerEvent(ChatSendEvent.class, t);
         }
@@ -175,7 +209,7 @@ public class ChatComponent extends GeneralComponent {
     }
 
     private float timer = 0;
-    private float backspaceLag = 0;
+    private long backspaceLag = System.currentTimeMillis();
 
     @Override
     public void render(Vector2 relative, UserInterface hud, GameHandler handler){
@@ -193,22 +227,29 @@ public class ChatComponent extends GeneralComponent {
             timer = 0;
         }
 
+        if(!focus)
+            return;
+
         historyPanel.clearChildren();
         List<String> stringToRender = history.size() > 19 ? history.subList(history.size()-19, history.size()) : new ArrayList<>(history);
-        ListIterator<String> li = stringToRender.listIterator(stringToRender.size());
-        int i = 19;
+        ListIterator<String> li = stringToRender.listIterator(Math.min(history.size(), 19));
+//        19;
+        float prevPos = 500;
         while(li.hasPrevious()){
-            Text ex = new Text(li.previous(), font);
-            ex.setPosition(0, i * 25);
-            ex.setLineWidth(500);
-            ex.setSize(25);
+            BoundedColoredText ex = new BoundedColoredText(li.previous(), font);
+            ex.setMaximumBound(new Vector2(350, 55));
+            ex.init(hud, handler);
+            ex.calculateLineNumbers(hud, handler);
+            prevPos -= (23 * ex.getLineNumbers()) - (ex.getLineHeight() * ex.getLineNumbers());
+            ex.setPosition(0, prevPos);
+            if(prevPos < 10) break;
+
+            ex.setSize(23);
             historyPanel.add(ex);
-            i--;
         }
-        backspaceLag -= backspaceLag >= 0 ? Time.getDeltaTime() : 0;
-        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_BACKSPACE) && backspaceLag < 0 && actualText.length() > 0){
+        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_BACKSPACE) && actualText.length() > 0 && System.currentTimeMillis() - backspaceLag > 100){
+            backspaceLag = System.currentTimeMillis();
             actualText = actualText.substring(0, actualText.length()-1);
-            backspaceLag = 0.07f;
         }
     }
 }

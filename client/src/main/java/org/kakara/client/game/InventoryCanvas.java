@@ -15,6 +15,7 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
+import org.kakara.engine.math.Vector2;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.Scene;
@@ -31,7 +32,6 @@ import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class InventoryCanvas extends ComponentCanvas {
     private ObjectCanvas objectCanvas;
@@ -76,8 +76,10 @@ public class InventoryCanvas extends ComponentCanvas {
 
             ItemStack itemStack = inventory.getItemStack(i);
             Item item = itemStack.getItem();
-
-            if (item instanceof AirBlock) continue;
+            Vector2 vector2 = getComponents().stream().filter(component -> component instanceof Sprite).findFirst().get().getPosition();
+            Vector2 uiObjectPosition = vector2.add(elements.get(i).getPosition().x, elements.get(i).getPosition().y);
+            //Make Small Box for itemholder
+            if (item instanceof AirBlock);
             UIObject uiObject;
             if (item instanceof Block) {
                 RenderTexture txt = getTexture(itemStack);
@@ -90,7 +92,8 @@ public class InventoryCanvas extends ComponentCanvas {
                 //TODO @Ryandw11 - We need to be able the pass all the meshes
                 uiObject = new UIObject(mesh[0]);
             }
-            uiObject.setPosition(400 + 25 + (55 * i), 670 + 25);
+
+            uiObject.setPosition(uiObjectPosition);
 
             uiObject.setScale(25);
 

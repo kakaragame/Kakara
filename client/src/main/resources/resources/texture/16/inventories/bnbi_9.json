@@ -2,6 +2,11 @@
   "texture": "bnbi_9.png",
   "slots": [
     {
+      "type": "title",
+      "position": "",
+      "size": ""
+    },
+    {
       "type": "slot",
       "slot": 0,
       "position": "7,27",
@@ -9,7 +14,7 @@
     },
     {
       "type": "slot",
-      "slot": 1,
+      "sot": 1,
       "position": "23,27",
       "size": "14,14"
     },

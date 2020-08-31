@@ -1,6 +1,5 @@
 package org.kakara.client.game.player;
 
-import org.kakara.client.KakaraGame;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.gui.EngineInventoryRenderer;
@@ -39,8 +38,8 @@ public class PlayerContentInventory extends BasicNineBoxedInventory {
         }
         MainGameScene gameScene = (MainGameScene) scene;
         gameScene.getHotBar().renderItems();
-
-        engineInventoryRenderer.redraw(this);
+//TODO implement this
+        //engineInventoryRenderer.redraw(this);
     }
 
     @Override

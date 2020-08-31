@@ -91,6 +91,7 @@ public class InventoryCanvas extends ComponentCanvas {
                 Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
                 //TODO @Ryandw11 - We need to be able the pass all the meshes
                 uiObject = new UIObject(mesh[0]);
+
             }
 
             uiObject.setPosition(uiObjectPosition);

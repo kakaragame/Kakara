@@ -27,6 +27,15 @@ public class GameEngineInventoryController implements EngineController {
     }
 
     @Override
+    public void redraw(Inventory inventory, Texture inventoryBackground, List<MenuElement> elementList) {
+        Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
+        if (!(scene instanceof MainGameScene)) return;
+        scene.getUserInterface().getUICanvases().stream().filter(uiCanvas -> uiCanvas instanceof InventoryCanvas).findFirst().ifPresent(uiCanvas -> {
+            ((InventoryCanvas) uiCanvas).renderItems();
+        });
+    }
+
+    @Override
     public void close() {
         Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
         if (!(scene instanceof MainGameScene)) return;

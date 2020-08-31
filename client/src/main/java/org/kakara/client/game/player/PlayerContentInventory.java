@@ -1,11 +1,14 @@
 package org.kakara.client.game.player;
 
 import org.kakara.client.KakaraGame;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.gui.EngineInventoryRenderer;
 import org.kakara.core.gui.InventoryRenderer;
 import org.kakara.core.gui.annotations.BuilderClass;
 import org.kakara.core.gui.bnbi.BasicNineBoxedInventory;
+import org.kakara.engine.GameHandler;
+import org.kakara.engine.scene.Scene;
 
 @BuilderClass(PlayerContentInventoryBuilder.class)
 public class PlayerContentInventory extends BasicNineBoxedInventory {
@@ -25,15 +28,19 @@ public class PlayerContentInventory extends BasicNineBoxedInventory {
     }
 
     public void addItemStackForPickup(ItemStack itemStack) {
-        for (int i = 0; i < getContents().length; i++) {
-            if (getItemStack(i).equalsIgnoreCount(itemStack)) {
-                System.out.println("itemStack.getCount() = " + itemStack.getCount());
-                getItemStack(i).setCount(getItemStack(i).getCount() + itemStack.getCount());
-                return;
-            }
-        }
-        KakaraGame.LOGGER.debug("Adding itemstack");
         addItemStack(itemStack);
+    }
+
+    @Override
+    public void redraw() {
+        Scene scene = GameHandler.getInstance().getCurrentScene();
+        if (!(scene instanceof MainGameScene)) {
+            throw new IllegalStateException("Must be inside a MainGameScene");
+        }
+        MainGameScene gameScene = (MainGameScene) scene;
+        gameScene.getHotBar().renderItems();
+
+        engineInventoryRenderer.redraw(this);
     }
 
     @Override

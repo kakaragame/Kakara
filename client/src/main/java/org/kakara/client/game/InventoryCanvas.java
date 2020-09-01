@@ -56,6 +56,9 @@ public class InventoryCanvas extends ComponentCanvas {
         Sprite sprite = new Sprite(MoreUtils.coreTextureToEngineTexture(inventoryBackground));
         sprite.addConstraint(new HorizontalCenterConstraint());
         sprite.addConstraint(new VerticalCenterConstraint());
+        System.out.println("sprite.getScale() = " + sprite.getScale());
+        sprite.setScale(156,34);
+        sprite.setVisible(true);
         add(sprite);
 
         renderItems();
@@ -108,7 +111,6 @@ public class InventoryCanvas extends ComponentCanvas {
     }
 
     private RenderTexture getTexture(ItemStack is) {
-        System.out.println("is.getItem().getNameKey().toString() = " + is.getItem().getNameKey().toString());
         return scene.getRenderResourceManager().get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 

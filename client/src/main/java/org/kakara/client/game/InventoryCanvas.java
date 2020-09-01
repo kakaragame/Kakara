@@ -56,9 +56,6 @@ public class InventoryCanvas extends ComponentCanvas {
         Sprite sprite = new Sprite(MoreUtils.coreTextureToEngineTexture(inventoryBackground));
         sprite.addConstraint(new HorizontalCenterConstraint());
         sprite.addConstraint(new VerticalCenterConstraint());
-        System.out.println("sprite.getScale() = " + sprite.getScale());
-        sprite.setScale(156,34);
-        sprite.setVisible(true);
         add(sprite);
 
         renderItems();

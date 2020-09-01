@@ -11,12 +11,13 @@ import org.kakara.engine.ui.UICanvas;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class GameEngineInventoryController implements EngineController {
     private static final String TAG = "CONTROLLER_INVENTORY";
 
     @Override
-    public void render(Inventory inventory, Texture inventoryBackground, List<MenuElement> elementList) {
+    public void render(Inventory inventory, Texture inventoryBackground, Set<MenuElement> elementList) {
         Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
         if (!(scene instanceof MainGameScene)) return;
         InventoryCanvas inventoryCanvas = new InventoryCanvas(scene, inventoryBackground, elementList, inventory, scene.getUserInterface().getFont("Roboto"));
@@ -27,7 +28,7 @@ public class GameEngineInventoryController implements EngineController {
     }
 
     @Override
-    public void redraw(Inventory inventory, Texture inventoryBackground, List<MenuElement> elementList) {
+    public void redraw(Inventory inventory, Texture inventoryBackground, Set<MenuElement> elementList) {
         Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
         if (!(scene instanceof MainGameScene)) return;
         scene.getUserInterface().getUICanvases().stream().filter(uiCanvas -> uiCanvas instanceof InventoryCanvas).findFirst().ifPresent(uiCanvas -> {

@@ -33,7 +33,7 @@ public class GameResourceManager implements ResourceManager {
     public void registerResource(String s, ResourceType resourceType, Mod mod) {
         File resourceDirectory = getModDir(mod, resourceType);
         resourceDirectory.mkdirs();
-        String path = BASE_PATH + resourceType.name() + s;
+        String path = BASE_PATH + resourceType.name().toLowerCase() + File.separator + s;
         File file = new File(resourceDirectory, correctPath(s));
         if (file.exists()) return;
         file.getParentFile().mkdirs();
@@ -42,7 +42,7 @@ public class GameResourceManager implements ResourceManager {
             if (io == null) {
                 throw new MissingResourceException("Unable to locate: " + path, mod.getName(), path);
             }
-            IOUtils.copy(io, new FileWriter(file), Charset.defaultCharset());
+            Files.copy(io, file.toPath());
         } catch (IOException e) {
             Kakara.LOGGER.error("Unable to copy file to local", e);
         }
@@ -162,6 +162,6 @@ public class GameResourceManager implements ResourceManager {
     }
 
     public File getModDir(Mod mod, ResourceType resourceType) {
-        return new File(getModDir(mod), resourceType.name());
+        return new File(getModDir(mod), resourceType.name().toLowerCase());
     }
 }

@@ -13,7 +13,6 @@ import org.kakara.core.game.Entity;
 import org.kakara.core.game.GameMode;
 import org.kakara.core.gui.Inventory;
 import org.kakara.core.gui.Menu;
-import org.kakara.core.mod.game.GameMod;
 import org.kakara.core.player.PermissionSet;
 import org.kakara.core.player.Player;
 import org.kakara.core.player.PlayerEntity;
@@ -22,11 +21,8 @@ import org.kakara.core.world.Location;
 import org.kakara.engine.math.Vector3;
 import org.kakara.game.GameUtils;
 
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @NotNull
@@ -189,7 +185,10 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     @Override
     public void openMenu(@NotNull Menu menu) {
-
+        if (menu instanceof Inventory) {
+            Inventory inventory = (Inventory) menu;
+            inventory.getRenderer().render(inventory);
+        }
     }
 
     public void moveLocation(double i, double i1, double i2) {

@@ -8,6 +8,7 @@ import org.kakara.core.game.Block;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.gui.Inventory;
+import org.kakara.core.gui.menu.items.ItemStackElement;
 import org.kakara.core.gui.menu.items.MenuElement;
 import org.kakara.core.resources.Texture;
 import org.kakara.core.resources.TextureResolution;
@@ -21,7 +22,6 @@ import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.Sprite;
-import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
@@ -31,19 +31,19 @@ import org.kakara.engine.ui.objectcanvas.UIObject;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
-import java.util.List;
+import java.util.Set;
 
 public class InventoryCanvas extends ComponentCanvas {
     private ObjectCanvas objectCanvas;
     private ComponentCanvas numberCanvas;
     private final Texture inventoryBackground;
-    private final List<MenuElement> elements;
+    private final Set<MenuElement> elements;
     private final Inventory inventory;
     private Font font;
     private MainGameScene scene;
     private RenderResourceManager renderResourceManager;
 
-    public InventoryCanvas(Scene scene, Texture inventoryBackground, List<MenuElement> elementList, Inventory inventory, Font font) {
+    public InventoryCanvas(Scene scene, Texture inventoryBackground, Set<MenuElement> elementList, Inventory inventory, Font font) {
         super(scene);
         if (!(scene instanceof MainGameScene)) throw new IllegalArgumentException("Must be a MainGameScene");
 
@@ -72,45 +72,43 @@ public class InventoryCanvas extends ComponentCanvas {
 
         }
         //TODO handle positioning
-        for (int i = 0; i < elements.size(); i++) {
+        for (MenuElement element : elements) {
+            if (element instanceof ItemStackElement) {
+                ItemStackElement stackElement = (ItemStackElement) element;
+                ItemStack itemStack = inventory.getItemStack(stackElement.getSlot());
+                Item item = itemStack.getItem();
+                Vector2 vector2 = getComponents().stream().filter(component -> component instanceof Sprite).findFirst().get().getPosition();
+                Vector2 uiObjectPosition = vector2.add(element.getPosition().x, element.getPosition().y);
+                //Make Small Box for itemholder
+                if (item instanceof AirBlock) continue;
+                UIObject uiObject;
+                if (item instanceof Block) {
+                    RenderTexture txt = getTexture(itemStack);
+                    AtlasMesh mesh = new AtlasMesh(txt, scene.getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
+                    uiObject = new UIObject(mesh);
+                    objectCanvas.add(uiObject);
+                } else {
+                    ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getResourceManager();
+                    Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
+                    //TODO @Ryandw11 - We need to be able the pass all the meshes
+                    uiObject = new UIObject(mesh[0]);
 
-            ItemStack itemStack = inventory.getItemStack(i);
-            Item item = itemStack.getItem();
-            Vector2 vector2 = getComponents().stream().filter(component -> component instanceof Sprite).findFirst().get().getPosition();
-            Vector2 uiObjectPosition = vector2.add(elements.get(i).getPosition().x, elements.get(i).getPosition().y);
-            //Make Small Box for itemholder
-            if (item instanceof AirBlock);
-            UIObject uiObject;
-            if (item instanceof Block) {
-                RenderTexture txt = getTexture(itemStack);
-                AtlasMesh mesh = new AtlasMesh(txt, scene.getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
-                uiObject = new UIObject(mesh);
-                objectCanvas.add(uiObject);
-            } else {
-                ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getResourceManager();
-                Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
-                //TODO @Ryandw11 - We need to be able the pass all the meshes
-                uiObject = new UIObject(mesh[0]);
+                }
 
+                uiObject.setPosition(uiObjectPosition);
+
+                uiObject.setScale(25);
+
+                uiObject.getRotation().rotateX((float) Math.toRadians(50));
+                uiObject.getRotation().rotateY((float) Math.toRadians(40));
             }
-
-            uiObject.setPosition(uiObjectPosition);
-
-            uiObject.setScale(25);
-
-            uiObject.getRotation().rotateX((float) Math.toRadians(50));
-            uiObject.getRotation().rotateY((float) Math.toRadians(40));
-
-            Text itemCountTxt = new Text(itemStack.getCount() + "", font);
-            itemCountTxt.setPosition(400 + (55 * i), 670 + 23);
-            itemCountTxt.setSize(25);
-            numberCanvas.add(itemCountTxt);
         }
 
 
     }
 
     private RenderTexture getTexture(ItemStack is) {
+        System.out.println("is.getItem().getNameKey().toString() = " + is.getItem().getNameKey().toString());
         return scene.getRenderResourceManager().get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 

@@ -17,13 +17,10 @@ import org.kakara.core.client.Save;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.game.DefaultGameMode;
 import org.kakara.core.mod.UnModObject;
-import org.kakara.core.mod.game.GameMod;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.player.Player;
-import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.Location;
-import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.ServerLoadException;
@@ -34,7 +31,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.kakara.client.KakaraGame.LOGGER;
 
@@ -92,6 +88,7 @@ public class IntegratedServer extends Thread implements Server {
         Kakara.getCommandManager().registerCommand(new SaveChunk(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new RegenerateCommand(KakaraMod.getInstance(), this));
         Kakara.getCommandManager().registerCommand(new GameModeCommand(KakaraMod.getInstance()));
+        Kakara.getCommandManager().registerCommand(new TestInventoryCommand(KakaraMod.getInstance(), this));
 
         lastLocation = player.getLocation();
     }

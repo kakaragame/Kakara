@@ -1,22 +1,16 @@
 package org.kakara.client;
 
 import me.kingtux.other.TheCodeOfAMadMan;
-import org.apache.commons.lang3.StringUtils;
 import org.kakara.client.game.GameEngineInventoryController;
-import org.kakara.client.scenes.DebugScene;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
-
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.gui.EngineInventoryRenderer;
 import org.kakara.core.gui.bnbi.Size27BoxedInventory;
 import org.kakara.core.gui.bnbi.Size9BoxedInventory;
-import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.game.GameModManager;
-import org.kakara.core.resources.ResourceType;
 import org.kakara.core.resources.Texture;
-import org.kakara.core.resources.TextureResolution;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
@@ -27,12 +21,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 
 public class KakaraGame implements Game {
     private GameInstance kakaraCore;
@@ -80,7 +70,7 @@ public class KakaraGame implements Game {
         try {
             setupInventory(9);
             setupInventory(27);
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             e.printStackTrace();
         }
 
@@ -93,13 +83,17 @@ public class KakaraGame implements Game {
             LOGGER.warn(String.format("unable to load size: %d Inventory", size));
             return;
         }
-        EngineInventoryRenderer renderer = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions());
-        renderer.setEngineController(new GameEngineInventoryController());
+        GameEngineInventoryController gameEngineInventoryController = new GameEngineInventoryController();
+
         switch (size) {
             case 9:
-                Size9BoxedInventory.setRenderer(renderer);
+                EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size));
+                render9.setEngineController(gameEngineInventoryController);
+                Size9BoxedInventory.setRenderer(render9);
             case 27:
-                Size27BoxedInventory.setRenderer(renderer);
+                EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size));
+                renderer27.setEngineController(gameEngineInventoryController);
+                Size27BoxedInventory.setRenderer(renderer27);
         }
     }
 

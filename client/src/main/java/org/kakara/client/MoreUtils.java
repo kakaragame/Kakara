@@ -7,11 +7,8 @@ import org.kakara.core.world.*;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector3;
-import org.kakara.engine.resources.ResourceManager;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,10 +73,12 @@ public class MoreUtils {
     }
 
     public static int getPoolSize() {
-        if (System.getProperty("kakara.pool.size", "0").equals("0")) {
+        if (!System.getProperties().containsKey("kakara.pool.size")) {
             int suggested = Runtime.getRuntime().availableProcessors() / 2;
             if (suggested < 4) {
                 return 4;
+            } else {
+                return suggested;
             }
         }
         return Integer.parseInt(System.getProperty("kakara.pool.size"));

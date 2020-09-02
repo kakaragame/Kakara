@@ -21,7 +21,7 @@ public class GameEngineInventoryController implements EngineController {
         Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
         if (!(scene instanceof MainGameScene)) return;
         InventoryCanvas inventoryCanvas = new InventoryCanvas(scene, inventoryBackground, elementList, inventory, scene.getUserInterface().getFont("Roboto"));
-        scene.getUserInterface().addItem(inventoryCanvas);
+        ((MainGameScene) scene).add(inventoryCanvas);
 
         //TODO render Inventory
         scene.setCurserStatus(true);

@@ -5,7 +5,6 @@ import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.core.world.Location;
 import org.kakara.engine.Camera;
-import org.kakara.engine.gameitems.GameItem;
 import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
@@ -15,14 +14,12 @@ import org.kakara.engine.physics.collision.Collidable;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class PlayerMovement {
+    boolean playerInJump = false;
+    float lastYPos = 0;
     private MainGameScene mainGameScene;
-
     public PlayerMovement(MainGameScene mainGameScene) {
         this.mainGameScene = mainGameScene;
     }
-
-    boolean playerInJump = false;
-    float lastYPos = 0;
 
     protected void playerMovement() {
 

@@ -2,10 +2,8 @@ package org.kakara.game.world;
 
 import me.ryandw11.ods.Compression;
 import me.ryandw11.ods.ObjectDataStructure;
-import me.ryandw11.ods.Tag;
 import me.ryandw11.ods.exception.ODSException;
 import me.ryandw11.ods.tags.ObjectTag;
-import org.kakara.core.Kakara;
 import org.kakara.core.serializers.ods.ChunkContentTag;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;

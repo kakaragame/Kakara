@@ -1,7 +1,6 @@
 package org.kakara.client.game.world;
 
 import org.jetbrains.annotations.Nullable;
-import org.kakara.client.KakaraGame;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.world.*;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public class ClientChunk implements Chunk {
     private ChunkLocation location;
@@ -86,14 +84,14 @@ public class ClientChunk implements Chunk {
         return status;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public void load(ChunkContent base) {
         gameBlockList = base.getGameBlocks();
         gameBlockList.forEach(block -> block.getItemStack().setCount(1));
         status = Status.LOADED;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public boolean isUpdatedHappened() {

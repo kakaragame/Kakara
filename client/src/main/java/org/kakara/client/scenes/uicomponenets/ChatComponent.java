@@ -15,7 +15,6 @@ import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.BoundedColoredText;
-import org.kakara.engine.ui.components.text.BoundedText;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
@@ -30,22 +29,23 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class ChatComponent extends GeneralComponent {
 
+    final float xSize = 700;
+    String tempStorage = "";
     private Font font;
     private boolean alwaysShowHistory;
-
     private Text textAreaText;
     private boolean focus;
     private String actualText;
     private Panel historyPanel;
     private Rectangle historyRectangle;
     private boolean wait;
-
-    final float xSize = 700;
-
     private List<String> history;
     private List<String> sentHistory = new ArrayList<>();
+    private int historyIndex = -1;
+    private float timer = 0;
+    private long backspaceLag = System.currentTimeMillis();
 
-    public ChatComponent(Font fontToUse, boolean alwaysShowHistory, Scene scene){
+    public ChatComponent(Font fontToUse, boolean alwaysShowHistory, Scene scene) {
         font = fontToUse;
         this.alwaysShowHistory = alwaysShowHistory;
         focus = false;
@@ -88,61 +88,60 @@ public class ChatComponent extends GeneralComponent {
     /**
      * Add a message to the chat message history.
      * <p>Does not trigger the ChatSendEvent.</p>
+     *
      * @param msg The message to send.
      */
-    public void addMessage(String msg){
+    public void addMessage(String msg) {
         history.add(msg);
     }
 
     /**
      * Set if the chat is in focus.
+     *
      * @param focus If the chat is in focus.
      */
-    public void setFocus(boolean focus){
+    public void setFocus(boolean focus) {
         this.focus = focus;
     }
 
     /**
      * If the chat is in focus.
+     *
      * @return If the chat is in focus.
      */
-    public boolean isFocused(){
+    public boolean isFocused() {
         return focus;
     }
 
-    public void setAlwaysShown(boolean alwaysShown){
-        this.alwaysShowHistory = alwaysShown;
-        if(alwaysShown) swapHistory(true);
-        else if(!focus) swapHistory(false);
-    }
-
-    public boolean isAlwaysShown(){
+    public boolean isAlwaysShown() {
         return alwaysShowHistory;
     }
 
-    private void swapHistory(boolean value){
+    public void setAlwaysShown(boolean alwaysShown) {
+        this.alwaysShowHistory = alwaysShown;
+        if (alwaysShown) swapHistory(true);
+        else if (!focus) swapHistory(false);
+    }
+
+    private void swapHistory(boolean value) {
         historyPanel.setVisible(value);
         historyRectangle.setVisible(value);
     }
 
     @EventHandler
-    public void onCharacterPress(CharacterPressEvent evt){
-        if(!focus || wait) return;
-        if(actualText.length() > 100) return;
+    public void onCharacterPress(CharacterPressEvent evt) {
+        if (!focus || wait) return;
+        if (actualText.length() > 100) return;
         byte[] ch = {(byte) evt.getCodePoint()};
         String toadd = new String(ch, StandardCharsets.UTF_8).toLowerCase();
-        if(GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_LEFT_SHIFT) || GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_RIGHT_SHIFT) )
+        if (GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_LEFT_SHIFT) || GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_RIGHT_SHIFT))
             toadd = toadd.toUpperCase();
         actualText += toadd;
     }
 
-
-    private int historyIndex = -1;
-    String tempStorage = "";
-
     @EventHandler
-    public void onKeyPress(KeyPressEvent evt){
-        if(evt.isKeyPressed(GLFW_KEY_T) && !focus){
+    public void onKeyPress(KeyPressEvent evt) {
+        if (evt.isKeyPressed(GLFW_KEY_T) && !focus) {
             focus = true;
             wait = true;
             textAreaText.setText("_");
@@ -152,104 +151,100 @@ public class ChatComponent extends GeneralComponent {
             historyIndex = -1;
             return;
         }
-        if(evt.isKeyPressed(GLFW_KEY_LEFT_SHIFT) || evt.isKeyPressed(GLFW_KEY_RIGHT_SHIFT)) return;
-        if(!focus) return;
+        if (evt.isKeyPressed(GLFW_KEY_LEFT_SHIFT) || evt.isKeyPressed(GLFW_KEY_RIGHT_SHIFT)) return;
+        if (!focus) return;
 
         GameHandler handler = GameHandler.getInstance();
-        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_LEFT_CONTROL) && handler.getKeyInput().isKeyPressed(GLFW_KEY_V)){
+        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_LEFT_CONTROL) && handler.getKeyInput().isKeyPressed(GLFW_KEY_V)) {
             actualText += GameHandler.getInstance().getClipboard().getClipboard();
-            if(actualText.length() > 100)
+            if (actualText.length() > 100)
                 actualText = actualText.substring(0, 100);
         }
 
         //TODO add text copying and highlighting.
 
-        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_UP)){
-            if(historyIndex + 1 < sentHistory.size()) {
-                if(historyIndex == -1)
+        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_UP)) {
+            if (historyIndex + 1 < sentHistory.size()) {
+                if (historyIndex == -1)
                     tempStorage = actualText;
                 ++historyIndex;
-                actualText = sentHistory.get(sentHistory.size()-1 - historyIndex);
+                actualText = sentHistory.get(sentHistory.size() - 1 - historyIndex);
             }
         }
-        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_DOWN)){
-            if(historyIndex - 1 > -2) {
+        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_DOWN)) {
+            if (historyIndex - 1 > -2) {
                 historyIndex--;
-                if(historyIndex == -1){
+                if (historyIndex == -1) {
                     actualText = tempStorage;
-                }else{
-                    actualText = sentHistory.get(sentHistory.size() -1 - historyIndex);
+                } else {
+                    actualText = sentHistory.get(sentHistory.size() - 1 - historyIndex);
                 }
             }
         }
 
-        if(evt.isKeyPressed(GLFW_KEY_ENTER)){
+        if (evt.isKeyPressed(GLFW_KEY_ENTER)) {
             String t = actualText;
             history.add(actualText);
             sentHistory.add(actualText);
             actualText = "";
             triggerEvent(ChatSendEvent.class, t);
         }
-        if(evt.isKeyPressed(GLFW_KEY_ESCAPE)){
+        if (evt.isKeyPressed(GLFW_KEY_ESCAPE)) {
             focus = false;
             actualText = "";
             textAreaText.setText("Press T to type...");
             triggerEvent(ChatBlurEvent.class);
-            if(!alwaysShowHistory)
+            if (!alwaysShowHistory)
                 swapHistory(false);
         }
 
 
     }
 
-
     @Override
     public void init(UserInterface hud, GameHandler gameHandler) {
         pollInit(hud, gameHandler);
     }
 
-    private float timer = 0;
-    private long backspaceLag = System.currentTimeMillis();
-
     @Override
-    public void render(Vector2 relative, UserInterface hud, GameHandler handler){
+    public void render(Vector2 relative, UserInterface hud, GameHandler handler) {
         pollRender(relative, hud, handler);
         timer += Time.getDeltaTime();
         if (wait) wait = false;
 
-        if(focus && timer < 1){
+        if (focus && timer < 1) {
             textAreaText.setText(actualText);
-        }else if(focus){
+        } else if (focus) {
             textAreaText.setText(actualText + "_");
         }
 
-        if(timer > 2){
+        if (timer > 2) {
             timer = 0;
         }
 
-        if(!focus)
+        if (!focus)
             return;
 
         historyPanel.clearChildren();
-        List<String> stringToRender = history.size() > 19 ? history.subList(history.size()-19, history.size()) : new ArrayList<>(history);
+        List<String> stringToRender = history.size() > 19 ? history.subList(history.size() - 19, history.size()) : new ArrayList<>(history);
         ListIterator<String> li = stringToRender.listIterator(Math.min(history.size(), 19));
 //        19;
         float prevPos = 500;
-        while(li.hasPrevious()){
+        while (li.hasPrevious()) {
             BoundedColoredText ex = new BoundedColoredText(li.previous(), font);
             ex.setMaximumBound(new Vector2(350, 55));
             ex.init(hud, handler);
             ex.calculateLineNumbers(hud, handler);
             prevPos -= (23 * ex.getLineNumbers()) - (ex.getLineHeight() * ex.getLineNumbers());
             ex.setPosition(0, prevPos);
-            if(prevPos < 10) break;
+            if (prevPos < 10) break;
 
             ex.setSize(23);
             historyPanel.add(ex);
         }
-        if(handler.getKeyInput().isKeyPressed(GLFW_KEY_BACKSPACE) && actualText.length() > 0 && System.currentTimeMillis() - backspaceLag > 100){
+        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_BACKSPACE) && actualText.length() > 0 && System.currentTimeMillis() - backspaceLag > 100) {
             backspaceLag = System.currentTimeMillis();
-            actualText = actualText.substring(0, actualText.length()-1);
+            actualText = actualText.substring(0, actualText.length() - 1);
         }
     }
 }

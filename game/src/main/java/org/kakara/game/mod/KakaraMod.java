@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 
 public class KakaraMod implements Mod {
     private static KakaraMod instance;
-private GameInstance gameInstance;
+    private GameInstance gameInstance;
+
     public KakaraMod(GameInstance gameInstance) {
         this.gameInstance = gameInstance;
         if (instance != null) throw new RuntimeException("Kakara has already been initialized");

@@ -21,29 +21,28 @@ import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
 import org.kakara.core.game.ItemStack;
-import org.kakara.engine.engine.CubeData;
-import org.kakara.engine.events.EventHandler;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.core.world.Chunk;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.GameBlock;
 import org.kakara.core.world.Location;
 import org.kakara.engine.GameHandler;
+import org.kakara.engine.engine.CubeData;
+import org.kakara.engine.events.EventHandler;
+import org.kakara.engine.events.event.KeyPressEvent;
+import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.gameitems.Material;
 import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.gameitems.SkyBox;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
-import org.kakara.engine.physics.collision.BoxCollider;
-import org.kakara.engine.physics.collision.Collidable;
-import org.kakara.engine.events.event.KeyPressEvent;
-import org.kakara.engine.events.event.MouseClickEvent;
 import org.kakara.engine.input.MouseClickType;
-
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.TextureCache;
+import org.kakara.engine.physics.collision.BoxCollider;
+import org.kakara.engine.physics.collision.Collidable;
 import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
@@ -58,7 +57,6 @@ import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
-
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
@@ -68,26 +66,25 @@ import org.kakara.game.resources.GameResourceManager;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
-import java.util.List;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F3;
 
 public class MainGameScene extends AbstractGameScene {
     protected final KakaraGame kakaraGame;
     protected final Server server;
+    protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
+    protected final PlayerMovement movement = new PlayerMovement(this);
+    protected final SceneUtils sceneUtils = new SceneUtils(this);
+    private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue();
     protected ChatComponent chatComponent;
     protected BreakingBlock breakingBlock = null;
     protected HotBarCanvas hotBarCanvas;
     protected MeshGameItem blockSelector;
-    protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
-    protected final PlayerMovement movement = new PlayerMovement(this);
-    protected final SceneUtils sceneUtils = new SceneUtils(this);
     protected RenderTexture breakingTexture;
     private boolean hasRun = false;
-    private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue();
 
     public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
         super(gameHandler);

@@ -2,7 +2,6 @@ package org.kakara.game.world;
 
 import org.jetbrains.annotations.NotNull;
 import org.kakara.core.GameInstance;
-import org.kakara.core.Kakara;
 import org.kakara.core.NameKey;
 import org.kakara.core.world.WorldGenerationManager;
 import org.kakara.core.world.WorldGenerator;

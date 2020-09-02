@@ -35,11 +35,11 @@ import org.kakara.game.resources.GameResourceManager;
 import java.util.Set;
 
 public class InventoryCanvas extends ComponentCanvas {
-    private ObjectCanvas objectCanvas;
-    private ComponentCanvas numberCanvas;
     private final Texture inventoryBackground;
     private final Set<MenuElement> elements;
     private final Inventory inventory;
+    private ObjectCanvas objectCanvas;
+    private ComponentCanvas numberCanvas;
     private Font font;
     private MainGameScene scene;
     private RenderResourceManager renderResourceManager;

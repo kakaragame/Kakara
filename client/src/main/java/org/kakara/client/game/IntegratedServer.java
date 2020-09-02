@@ -35,19 +35,19 @@ import java.util.concurrent.Executors;
 import static org.kakara.client.KakaraGame.LOGGER;
 
 public class IntegratedServer extends Thread implements Server {
+    //This will later be a Setting.
+    public static final int RADIUS = 8;
     @NotNull
     private final Save save;
     @NotNull
     private final UUID playerID;
-    //This will later be a Setting.
-    public static final int RADIUS = 8;
     private final ExecutorService executorService;
     private final List<Player> players = new ArrayList<>();
     private final File playersFolder;
+    private final IntegratedTime time = new IntegratedTime();
     private boolean running = true;
     private Player player;
     private List<String> messages = new ArrayList<>();
-    private final IntegratedTime time = new IntegratedTime();
     private Runnable sceneTickUpdate;
     private Location lastLocation;
     private Status status = Status.LOADED;

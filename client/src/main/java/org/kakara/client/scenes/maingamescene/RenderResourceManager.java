@@ -20,6 +20,7 @@ public class RenderResourceManager {
             }
         });
     }
+
     private RenderTexture getResource(String texture) {
         return gameScene.getTextureAtlas().getTextures().stream().filter(renderTexture -> GameResourceManager.correctPath(renderTexture.getResource().getOriginalPath()).equals(GameResourceManager.correctPath(texture))).findFirst().orElseThrow(() -> {
             return new RuntimeException("Unable to find " + GameResourceManager.correctPath(texture));

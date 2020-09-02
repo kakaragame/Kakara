@@ -28,9 +28,9 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @NotNull
     private final PermissionSet permissions = new PermissionSet();
     @NotNull
-    private Location location;
-    @NotNull
     private final Entity entity;
+    @NotNull
+    private Location location;
     private String displayName = getName();
     private short health = 20;
     private short hunger = 20;
@@ -78,6 +78,10 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         return location;
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     @Override
     public boolean isLiving() {
         return true;
@@ -106,6 +110,10 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         return entity;
     }
 
+    @Override
+    public short getHealth() {
+        return health;
+    }
 
     @Override
     public void setHealth(short health) {
@@ -113,18 +121,13 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     }
 
     @Override
-    public short getHealth() {
-        return health;
+    public short getHunger() {
+        return hunger;
     }
 
     @Override
     public void setHunger(short hunger) {
         this.hunger = hunger;
-    }
-
-    @Override
-    public short getHunger() {
-        return hunger;
     }
 
     @Override
@@ -205,9 +208,5 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     public void setGameItemID(UUID gameItemID) {
         this.gameItemID = gameItemID;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 }

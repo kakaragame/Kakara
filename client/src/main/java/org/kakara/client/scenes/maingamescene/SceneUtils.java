@@ -1,17 +1,11 @@
 package org.kakara.client.scenes.maingamescene;
 
-import org.kakara.core.Kakara;
-import org.kakara.core.NameKey;
-import org.kakara.engine.GameEngine;
-import org.kakara.engine.GameHandler;
-
 import org.kakara.engine.gameitems.GameItem;
 import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.physics.collision.BoxCollider;
-import org.kakara.engine.resources.Resource;
 
 import java.util.Optional;
 import java.util.UUID;

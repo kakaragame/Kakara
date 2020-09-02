@@ -2,7 +2,6 @@ package org.kakara.game.world.io;
 
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
-import org.kakara.game.GameUtils;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;

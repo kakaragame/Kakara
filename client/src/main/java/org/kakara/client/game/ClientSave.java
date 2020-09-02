@@ -20,6 +20,8 @@ import java.util.*;
 import static org.kakara.client.KakaraGame.LOGGER;
 
 public class ClientSave implements Save {
+    //TODO change to service provider
+    public static final SaveSettingsParser SAVE_SETTINGS_PARSER = new JsonSaveSettingParser();
     @NotNull
     private final Set<World> worlds = new HashSet<>();
     @NotNull
@@ -28,8 +30,6 @@ public class ClientSave implements Save {
     private final File saveFolder;
     @NotNull
     private final UUID defaultWorldID;
-    //TODO change to service provider
-    public static final SaveSettingsParser SAVE_SETTINGS_PARSER = new JsonSaveSettingParser();
     private Server server;
 
     public ClientSave(@NotNull File saveFolder) throws SaveLoadException {

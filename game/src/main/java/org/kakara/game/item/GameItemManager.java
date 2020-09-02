@@ -2,20 +2,20 @@ package org.kakara.game.item;
 
 import org.kakara.core.GameInstance;
 import org.kakara.core.NameKey;
-import org.kakara.core.Utils;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemManager;
-import org.kakara.core.mod.Mod;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 //TODO Validate Mods provided
 public class GameItemManager implements ItemManager {
-    private GameInstance kakaraCore;
     private final Map<Integer, Item> items = new ConcurrentHashMap<>();
+    private GameInstance kakaraCore;
 
     @Override
     public void registerItem(Item item) {

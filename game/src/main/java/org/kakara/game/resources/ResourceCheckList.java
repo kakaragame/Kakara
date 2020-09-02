@@ -2,7 +2,10 @@ package org.kakara.game.resources;
 
 import org.kakara.core.resources.TextureResolution;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ResourceCheckList {
     private Set<TextureResolution> checkedList = new HashSet<>();

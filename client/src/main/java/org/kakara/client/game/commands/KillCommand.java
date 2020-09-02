@@ -6,7 +6,6 @@ import org.kakara.core.mod.game.ModCommand;
 import org.kakara.game.Server;
 
 import java.util.Collections;
-import java.util.Set;
 
 public class KillCommand extends ModCommand {
     private Server server;

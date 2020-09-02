@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.core.world.World;
 import org.kakara.core.world.WorldManager;
-import org.kakara.game.Server;
 
 import java.util.UUID;
 

@@ -5,7 +5,6 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.ChunkWriter;
 import org.kakara.game.world.GameWorld;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -15,7 +14,7 @@ public class DefaultChunkIO extends ChunkIO {
     private BlockingQueue<ChunkRequest> requests;
 
     public DefaultChunkIO(GameWorld gameWorld, ChunkWriter chunkWriter) {
-        super(gameWorld,chunkWriter);
+        super(gameWorld, chunkWriter);
         requests = new LinkedBlockingDeque<>();
         start();
     }
@@ -44,7 +43,7 @@ public class DefaultChunkIO extends ChunkIO {
     }
 
     @Override
-    public void close()  {
+    public void close() {
 
     }
 }

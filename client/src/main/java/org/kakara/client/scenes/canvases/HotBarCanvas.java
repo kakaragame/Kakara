@@ -4,23 +4,19 @@ import org.kakara.client.game.ClientResourceManager;
 import org.kakara.client.game.player.PlayerContentInventory;
 import org.kakara.client.scenes.maingamescene.RenderResourceManager;
 import org.kakara.core.Kakara;
-import org.kakara.core.NameKey;
 import org.kakara.core.game.Block;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
-import org.kakara.core.resources.Texture;
 import org.kakara.core.resources.TextureResolution;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
-
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
-import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.UserInterface;
@@ -37,19 +33,17 @@ import org.kakara.game.resources.GameResourceManager;
 import java.util.concurrent.ExecutionException;
 
 public class HotBarCanvas extends ComponentCanvas {
-    private Panel mainPanel;
-    private Rectangle[] rects = new Rectangle[5];
-    private int selectedIndex = 0;
     private final RGBA selected = new RGBA(255, 255, 255, 0.4f);
     private final RGBA normal = new RGBA(0, 0, 0, 0.4f);
-    private PlayerContentInventory contentInventory;
-
-    private ObjectCanvas objectCanvas;
-    private ComponentCanvas numberCanvas;
-
     private final RenderResourceManager renderTextureCache;
     private final Scene scene;
     private final TextureAtlas atlas;
+    private Panel mainPanel;
+    private Rectangle[] rects = new Rectangle[5];
+    private int selectedIndex = 0;
+    private PlayerContentInventory contentInventory;
+    private ObjectCanvas objectCanvas;
+    private ComponentCanvas numberCanvas;
     private Font roboto;
 
     public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory, Font roboto) {

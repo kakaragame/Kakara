@@ -3,8 +3,6 @@ package org.kakara.client.game.world;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kakara.client.Client;
-
 import org.kakara.client.game.DroppedItem;
 import org.kakara.core.Kakara;
 import org.kakara.core.Status;
@@ -24,9 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class ClientWorld extends GameWorld {
     private final File worldFolder;

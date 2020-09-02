@@ -2,11 +2,8 @@ package org.kakara.client.scenes.canvases;
 
 import org.kakara.client.KakaraGame;
 import org.kakara.client.scenes.LoadingScene;
-import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
-import org.kakara.core.GameInstance;
 import org.kakara.core.Status;
-import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
@@ -15,7 +12,6 @@ import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
-
 import org.kakara.engine.ui.events.UIClickEvent;
 import org.kakara.engine.ui.events.UIHoverEnterEvent;
 import org.kakara.engine.ui.events.UIHoverLeaveEvent;

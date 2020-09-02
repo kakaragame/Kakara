@@ -1,28 +1,29 @@
 package org.kakara.game.resources;
 
-import org.apache.commons.io.IOUtils;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 import org.kakara.core.mod.Mod;
 import org.kakara.core.resources.*;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
 
 public class GameResourceManager implements ResourceManager {
+    protected static final String BASE_PATH = "/resources/";
     protected GameInstance kakaraCore;
     protected File resourceDirectory;
-    protected static final String BASE_PATH = "/resources/";
     protected Map<Integer, Texture> textures = new HashMap<>();
 
     public GameResourceManager() {
     }
 
+    //Helper Methods
+    public static String correctPath(String s) {
+        return s.replace("/", File.separator);
+    }
 
     @Override
     public Set<Texture> getAllTextures() {
@@ -47,7 +48,6 @@ public class GameResourceManager implements ResourceManager {
             Kakara.LOGGER.error("Unable to copy file to local", e);
         }
     }
-
 
     @Override
     public void registerTexture(String s, TextureResolution i, Mod mod) {
@@ -116,7 +116,6 @@ public class GameResourceManager implements ResourceManager {
         return new Resource(resoureFile, s);
     }
 
-
     @Override
     public Resource getTexture(String s, TextureResolution i, Mod mod) {
         if (getTexture(s, mod).isPresent()) {
@@ -150,11 +149,6 @@ public class GameResourceManager implements ResourceManager {
         this.kakaraCore = kakaraCore;
         resourceDirectory = new File(kakaraCore.getWorkingDirectory(), "resources");
         resourceDirectory.mkdirs();
-    }
-
-    //Helper Methods
-    public static String correctPath(String s) {
-        return s.replace("/", File.separator);
     }
 
     public File getModDir(Mod mod) {

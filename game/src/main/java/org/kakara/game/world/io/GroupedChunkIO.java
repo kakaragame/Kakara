@@ -27,6 +27,16 @@ public class GroupedChunkIO extends ChunkIO {
         start();
     }
 
+    public static <T> List<T> removeDuplicates(List<T> list) {
+        List<T> newList = new ArrayList<T>();
+        for (T element : list) {
+            if (!newList.contains(element)) {
+                newList.add(element);
+            }
+        }
+        return newList;
+    }
+
     @Override
     public void run() {
         while (gameWorld.getStatus() == Status.LOADED || gameWorld.getStatus() == Status.LOADING) {
@@ -64,16 +74,6 @@ public class GroupedChunkIO extends ChunkIO {
                 gameWorld.errorClose();
             }
         }
-    }
-
-    public static <T> List<T> removeDuplicates(List<T> list) {
-        List<T> newList = new ArrayList<T>();
-        for (T element : list) {
-            if (!newList.contains(element)) {
-                newList.add(element);
-            }
-        }
-        return newList;
     }
 
     private void saveAll() {

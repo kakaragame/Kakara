@@ -7,14 +7,13 @@ import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.ChunkWriter;
 import org.kakara.game.world.GameWorld;
 
-import java.io.Closeable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class ChunkIO extends Thread implements Statusable {
     protected GameWorld gameWorld;
     protected ChunkWriter chunkWriter;
-    protected Status status=Status.LOADED;
+    protected Status status = Status.LOADED;
 
     public ChunkIO(GameWorld clientWorld, ChunkWriter chunkWriter) {
         super(clientWorld.getName() + "-io");

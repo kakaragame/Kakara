@@ -1,7 +1,5 @@
 package org.kakara.client.game.commands;
 
-import com.google.gson.Gson;
-import org.kakara.client.MoreUtils;
 import org.kakara.core.command.CommandSender;
 import org.kakara.core.game.DefaultGameMode;
 import org.kakara.core.game.GameMode;
@@ -9,10 +7,8 @@ import org.kakara.core.mod.Mod;
 import org.kakara.core.mod.game.ModCommand;
 import org.kakara.core.player.Player;
 import org.kakara.game.GameUtils;
-import org.kakara.game.Server;
 
 import java.util.Collections;
-import java.util.Set;
 
 public class GameModeCommand extends ModCommand {
     public GameModeCommand(Mod mod) {

@@ -3,11 +3,8 @@ package org.kakara.client.tests.commands;
 import org.junit.jupiter.api.Test;
 import org.kakara.client.game.commands.ClientCommandManager;
 import org.kakara.client.tests.TestCommandSender;
-import org.kakara.client.tests.commands.TestCommand;
 import org.kakara.core.command.CommandManager;
 import org.kakara.core.command.CommandSender;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TestClientCommandManager {
     private CommandManager commandManager = new ClientCommandManager();

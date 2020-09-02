@@ -25,11 +25,11 @@ import java.util.Optional;
 import java.util.jar.JarFile;
 
 public class KakaraGame implements Game {
+    public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
+    private static KakaraGame kakaraGame;
     private GameInstance kakaraCore;
     private GameHandler gameHandler;
     private Client client;
-    public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
-    private static KakaraGame kakaraGame;
 
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
@@ -46,6 +46,10 @@ public class KakaraGame implements Game {
 
         //Set Shutdown hook
         //Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
+    }
+
+    public static KakaraGame getInstance() {
+        return kakaraGame;
     }
 
     private void loadKakaraCore() {
@@ -75,7 +79,6 @@ public class KakaraGame implements Game {
         }
 
     }
-
 
     private void setupInventory(int size) {
         Optional<Texture> texture = Kakara.getResourceManager().getTexture("inventories/bnbi_" + size + ".png", KakaraMod.getInstance());
@@ -124,7 +127,6 @@ public class KakaraGame implements Game {
 
     }
 
-
     public GameInstance getKakaraCore() {
         return kakaraCore;
     }
@@ -143,10 +145,6 @@ public class KakaraGame implements Game {
         //TODO bring back mod unloading
         //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
-    }
-
-    public static KakaraGame getInstance() {
-        return kakaraGame;
     }
 
     public int getTPS() {

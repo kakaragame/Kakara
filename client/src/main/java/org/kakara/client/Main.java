@@ -1,7 +1,6 @@
 package org.kakara.client;
 
 
-import org.apache.commons.cli.ParseException;
 import org.kakara.core.client.ClientSettings;
 import org.kakara.core.client.ClientSettingsBuilder;
 import org.kakara.engine.GameEngine;
@@ -47,7 +46,6 @@ public class Main {
         gameEngine.run();
 
     }
-
 
 
 }

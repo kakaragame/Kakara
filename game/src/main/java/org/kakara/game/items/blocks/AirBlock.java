@@ -11,7 +11,8 @@ import org.kakara.game.mod.KakaraMod;
 
 //Not to be rendered. It exists solely. So you can set a block to air.
 public class AirBlock implements Block {
-public static final String KEY = "AIR";
+    public static final String KEY = "AIR";
+
     @Override
     public void onStep(StepOnEvent event) {
 

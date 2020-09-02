@@ -21,7 +21,6 @@ import org.kakara.engine.utils.Utils;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.mod.KakaraMod;
-import org.kakara.game.resources.GameResourceManager;
 import org.kakara.game.world.GameWorldGenerationManager;
 
 import java.io.File;
@@ -90,13 +89,13 @@ public class Client implements GameInstance {
         return craftingManager;
     }
 
-    public void setWorldManager(WorldManager worldManager) {
-        this.worldManager = worldManager;
-    }
-
     @Override
     public WorldManager getWorldManager() {
         return worldManager;
+    }
+
+    public void setWorldManager(WorldManager worldManager) {
+        this.worldManager = worldManager;
     }
 
     @Override

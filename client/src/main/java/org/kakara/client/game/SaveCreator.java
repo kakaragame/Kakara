@@ -9,7 +9,9 @@ import org.kakara.core.modinstance.ModInstance;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class SaveCreator {
     private String name;
@@ -34,7 +36,7 @@ public class SaveCreator {
 
     public Save createSave() throws SaveLoadException {
         File saveFolder = new File(name);
-            saveFolder.mkdirs();
+        saveFolder.mkdirs();
 
         File saveFile = new File(saveFolder, "save.json");
         try {

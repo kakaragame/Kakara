@@ -11,9 +11,9 @@ import org.kakara.engine.math.Vector3;
 
 public class ClientGameEntity implements GameEntity {
     @NotNull
-    private Location location;
-    @NotNull
     private final Entity entity;
+    @NotNull
+    private Location location;
 
     public ClientGameEntity(@NotNull Location location, @NotNull Entity entity) {
         this.location = location;

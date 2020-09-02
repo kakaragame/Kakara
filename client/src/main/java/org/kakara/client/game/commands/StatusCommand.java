@@ -9,6 +9,7 @@ import java.util.Collections;
 
 public class StatusCommand extends ModCommand {
     private Server server;
+
     public StatusCommand(Mod mod, Server server) {
         super(Collections.singleton("stats"), "", mod, "status");
         this.server = server;
@@ -17,7 +18,7 @@ public class StatusCommand extends ModCommand {
     @Override
     public void execute(String command, String[] arguments, String fullCommand, CommandSender executor) {
         executor.sendMessage("Status");
-        executor.sendMessage("Number of Chunks Loaded: "+ server.getPlayerEntity().getLocation().getWorld().get().getChunks().size());
-        executor.sendMessage("Loc: "+ server.getPlayerEntity().getLocation().toString());
+        executor.sendMessage("Number of Chunks Loaded: " + server.getPlayerEntity().getLocation().getWorld().get().getChunks().size());
+        executor.sendMessage("Loc: " + server.getPlayerEntity().getLocation().toString());
     }
 }

@@ -16,7 +16,6 @@ public class GoldenStick extends ModItem {
     }
 
 
-
     @Override
     public void onClick(ClickEvent clickEvent) {
 

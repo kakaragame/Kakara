@@ -34,7 +34,7 @@ public class GameResourceManager implements ResourceManager {
     public void registerResource(String s, ResourceType resourceType, Mod mod) {
         File resourceDirectory = getModDir(mod, resourceType);
         resourceDirectory.mkdirs();
-        String path = BASE_PATH + resourceType.name().toLowerCase() + File.separator + s;
+        String path = BASE_PATH + resourceType.name().toLowerCase() + "/" + s;
         File file = new File(resourceDirectory, correctPath(s));
         if (file.exists()) return;
         file.getParentFile().mkdirs();

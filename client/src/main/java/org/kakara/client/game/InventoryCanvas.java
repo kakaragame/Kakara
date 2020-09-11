@@ -53,11 +53,15 @@ public class InventoryCanvas extends ComponentCanvas {
         this.inventory = inventory;
         this.font = font;
         this.scene = (MainGameScene) scene;
+        Panel panel = new Panel();
+        panel.setScale(GameHandler.getInstance().getWindow().initalWidth, GameHandler.getInstance().getWindow().initalHeight);
         Sprite sprite = new Sprite(MoreUtils.coreTextureToEngineTexture(inventoryBackground));
         sprite.addConstraint(new HorizontalCenterConstraint());
         sprite.addConstraint(new VerticalCenterConstraint());
+        panel.add(sprite);
+        panel.setVisible(true);
         sprite.setVisible(true);
-        add(sprite);
+        add(panel);
         renderItems();
     }
 
@@ -77,9 +81,9 @@ public class InventoryCanvas extends ComponentCanvas {
                 ItemStackElement stackElement = (ItemStackElement) element;
                 ItemStack itemStack = inventory.getItemStack(stackElement.getSlot());
                 Item item = itemStack.getItem();
-                Vector2 vector2 = getComponents().stream().filter(component -> component instanceof Sprite).findFirst().get().getPosition();
+                Vector2 vector2 = getComponents().stream().filter(component -> component instanceof Panel).findFirst().get().getChildren().get(0).getPosition();
                 Vector2 uiObjectPosition = vector2.add(element.getPosition().x, element.getPosition().y);
-                //Make Small Box for itemholder
+                //Make Small Box for item holder
                 if (item instanceof AirBlock) continue;
                 UIObject uiObject;
                 if (item instanceof Block) {

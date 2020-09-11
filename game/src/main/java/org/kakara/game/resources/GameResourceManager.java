@@ -1,5 +1,6 @@
 package org.kakara.game.resources;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 import org.kakara.core.mod.Mod;
@@ -110,6 +111,9 @@ public class GameResourceManager implements ResourceManager {
     @Override
     public Resource getResource(String s, ResourceType resourceType, Mod mod) {
         File resoureFile = new File(getModDir(mod, resourceType), correctPath(s));
+        if (resoureFile.getAbsolutePath().startsWith("/") && SystemUtils.IS_OS_WINDOWS) {
+            resoureFile = new File(resoureFile.getAbsolutePath().substring(1));
+        }
         if (!resoureFile.exists()) {
             //TODO decide what to do
         }

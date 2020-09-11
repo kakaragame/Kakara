@@ -219,7 +219,7 @@ public class MainGameScene extends AbstractGameScene {
                     if (breakingBlock != null) {
                         Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(breakingBlock.getChunkLocation())).findFirst();
                         chunk.ifPresent(renderChunk -> {
-                            RenderBlock block = renderChunk.getOctChunk().get((int) breakingBlock.getBlockLocation().x, (int) breakingBlock.getBlockLocation().y, (int) breakingBlock.getBlockLocation().z);
+                            RenderBlock block = renderChunk.getOctChunk()[(int) breakingBlock.getBlockLocation().x][(int) breakingBlock.getBlockLocation().y][(int) breakingBlock.getBlockLocation().z];
                             block.setOverlay(null);
                             renderChunk.regenerateOverlayTextures(getTextureAtlas());
                         });
@@ -326,7 +326,7 @@ public class MainGameScene extends AbstractGameScene {
                 }).collect(Collectors.toList());
                 RenderChunk desiredChunk = rcc.get(0);
                 Vector3 newBlockLoc = closestValue.subtract(desiredChunk.getPosition());
-                if (!desiredChunk.getOctChunk().find((int) newBlockLoc.x, (int) newBlockLoc.y, (int) newBlockLoc.z)) {
+                if (desiredChunk.getOctChunk()[(int) newBlockLoc.x][(int) newBlockLoc.y][(int) newBlockLoc.z] == null) {
                     //IGNORE Airs
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
                     RenderBlock rbs = new RenderBlock(new BlockLayout(),

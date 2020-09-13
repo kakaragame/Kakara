@@ -43,6 +43,8 @@ public class InventoryCanvas extends ComponentCanvas {
     private Font font;
     private MainGameScene scene;
     private RenderResourceManager renderResourceManager;
+    private Panel panel;
+    private boolean hadFirstRun = false;
 
     public InventoryCanvas(Scene scene, Texture inventoryBackground, Set<MenuElement> elementList, Inventory inventory, Font font) {
         super(scene);
@@ -53,16 +55,21 @@ public class InventoryCanvas extends ComponentCanvas {
         this.inventory = inventory;
         this.font = font;
         this.scene = (MainGameScene) scene;
-        Panel panel = new Panel();
+        panel = new Panel();
+        panel.addConstraint(new HorizontalCenterConstraint());
+        panel.addConstraint(new VerticalCenterConstraint());
         panel.setScale(GameHandler.getInstance().getWindow().initalWidth, GameHandler.getInstance().getWindow().initalHeight);
-        Sprite sprite = new Sprite(MoreUtils.coreTextureToEngineTexture(inventoryBackground));
+        org.kakara.engine.gameitems.Texture texture = MoreUtils.coreTextureToEngineTexture(inventoryBackground);
+        Sprite sprite = new Sprite(texture);
         sprite.addConstraint(new HorizontalCenterConstraint());
         sprite.addConstraint(new VerticalCenterConstraint());
         panel.add(sprite);
+        sprite.setScale(texture.getWidth(), texture.getHeight());
+
         panel.setVisible(true);
         sprite.setVisible(true);
         add(panel);
-        renderItems();
+
     }
 
     public void renderItems() {
@@ -81,8 +88,9 @@ public class InventoryCanvas extends ComponentCanvas {
                 ItemStackElement stackElement = (ItemStackElement) element;
                 ItemStack itemStack = inventory.getItemStack(stackElement.getSlot());
                 Item item = itemStack.getItem();
-                Vector2 vector2 = getComponents().stream().filter(component -> component instanceof Panel).findFirst().get().getChildren().get(0).getPosition();
-                Vector2 uiObjectPosition = vector2.add(element.getPosition().x, element.getPosition().y);
+
+                Vector2 vector2 = panel.getPosition().add(panel.getChildren().get(0).getPosition());
+                Vector2 uiObjectPosition = vector2.add(element.getPosition().x,element.getPosition().y).add(7, -5);
                 //Make Small Box for item holder
                 if (item instanceof AirBlock) continue;
                 UIObject uiObject;
@@ -101,7 +109,7 @@ public class InventoryCanvas extends ComponentCanvas {
 
                 uiObject.setPosition(uiObjectPosition);
 
-                uiObject.setScale(25);
+                uiObject.setScale(9);
 
                 uiObject.getRotation().rotateX((float) Math.toRadians(50));
                 uiObject.getRotation().rotateY((float) Math.toRadians(40));
@@ -118,15 +126,25 @@ public class InventoryCanvas extends ComponentCanvas {
     @Override
     public void init(UserInterface userInterface, GameHandler handler) {
         super.init(userInterface, handler);
-        objectCanvas.init(userInterface, handler);
-        numberCanvas.init(userInterface, handler);
+        if (hadFirstRun) {
+            objectCanvas.init(userInterface, handler);
+            numberCanvas.init(userInterface, handler);
+        }
+
     }
 
     @Override
     public void render(UserInterface userInterface, GameHandler handler) {
         super.render(userInterface, handler);
-        objectCanvas.render(userInterface, handler);
-        numberCanvas.render(userInterface, handler);
+        if (hadFirstRun) {
+
+            objectCanvas.render(userInterface, handler);
+            numberCanvas.render(userInterface, handler);
+        }
+        if (!hadFirstRun) {
+            renderItems();
+            hadFirstRun = true;
+        }
     }
 
     @Override
@@ -135,4 +153,6 @@ public class InventoryCanvas extends ComponentCanvas {
         objectCanvas.cleanup(handler);
         numberCanvas.cleanup(handler);
     }
+
+
 }

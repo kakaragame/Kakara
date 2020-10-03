@@ -69,7 +69,6 @@ public class PlayerMovement {
             location.setX(item.getPosition().x);
             location.setY(item.getPosition().y);
             location.setZ(item.getPosition().z);
-            player.setLocation(location);
             //I NEED HELP!
             MouseInput mi = mainGameScene.kakaraGame.getGameHandler().getMouseInput();
             player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());

@@ -1,6 +1,5 @@
 package org.kakara.client.scenes.maingamescene;
 
-import org.kakara.client.MoreUtils;
 import org.kakara.client.game.player.ClientPlayer;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.core.world.Location;
@@ -74,10 +73,9 @@ public class PlayerMovement {
             //I NEED HELP!
             MouseInput mi = mainGameScene.kakaraGame.getGameHandler().getMouseInput();
             player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
-            mainGameScene.getCamera().setPosition(MoreUtils.locationToVector3(location).add(0, 1, 0));
             Location l = player.getLocation();
-            mainGameScene.getCamera().setRotation(new Vector3(l.getPitch(), l.getYaw(), 0));
-
+            mainGameScene.getCamera().setPosition((float) l.getX(), (float) l.getY() + 1, (float) l.getZ());
+            mainGameScene.getCamera().setRotation(l.getPitch(), l.getYaw(), 0);
             // Handle the block selector.
             mainGameScene.blockSelector.setPosition(item.getPosition().x, -10, item.getPosition().z);
             try {

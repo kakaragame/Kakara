@@ -18,7 +18,6 @@ import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
@@ -27,6 +26,7 @@ import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
 import org.kakara.engine.ui.objectcanvas.UIObject;
+import org.kakara.engine.utils.RGBA;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
@@ -79,7 +79,7 @@ public class HotBarCanvas extends ComponentCanvas {
         boolean update = false;
         for (int i = 0; i < contentInventory.getHotBarContents().length; i++) {
             if (contentInventory.getItemStack(i).getCount() <= 0) {
-                contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), i);
+                contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(0)), i);
                 update = true;
             }
         }

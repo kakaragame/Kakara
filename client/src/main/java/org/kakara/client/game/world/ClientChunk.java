@@ -57,7 +57,7 @@ public class ClientChunk implements Chunk {
                 return Optional.ofNullable(loop.get(i));
             }
         }
-        gameBlockList.add(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem(0).get())));
+        gameBlockList.add(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem(0))));
         return getGameBlock(location);
     }
 

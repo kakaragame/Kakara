@@ -1,7 +1,7 @@
 package org.kakara.game.world.io;
 
+import org.kakara.core.ManagedObject;
 import org.kakara.core.Status;
-import org.kakara.core.Statusable;
 import org.kakara.core.world.ChunkContent;
 import org.kakara.core.world.ChunkLocation;
 import org.kakara.core.world.ChunkWriter;
@@ -10,7 +10,7 @@ import org.kakara.game.world.GameWorld;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class ChunkIO extends Thread implements Statusable {
+public abstract class ChunkIO extends Thread implements ManagedObject {
     protected GameWorld gameWorld;
     protected ChunkWriter chunkWriter;
     protected Status status = Status.LOADED;

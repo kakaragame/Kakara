@@ -51,12 +51,12 @@ import org.kakara.engine.renderobjects.mesh.MeshType;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
-import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.utils.Time;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
@@ -233,7 +233,7 @@ public class MainGameScene extends AbstractGameScene {
                         if (block.getItemStack().getItem() instanceof AirBlock) return;
                         double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack(), player);
                         if (breakingBlock.breakBlock(breakPerFrame * Time.getDeltaTime())) {
-                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), location);
+                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0)), location);
                             parentChunk.removeBlock(rb);
                             parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                             breakingBlock = null;
@@ -269,7 +269,7 @@ public class MainGameScene extends AbstractGameScene {
                 droppedBlock.setScale(0.3f);
                 droppedBlock.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
                 droppedBlock.setTag("pickupable");
-                droppedBlock.getData().add(droppedItem.getItemStack().getItem().getNameKey());
+                droppedBlock.getData().add(droppedItem.getItemStack().getItem().getControllerKey());
                 droppedBlock.addFeature(new HorizontalRotationFeature());
                 droppedItem.setGameID(droppedBlock.getUUID());
                 add(droppedBlock);

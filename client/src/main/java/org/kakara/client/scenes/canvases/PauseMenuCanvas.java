@@ -7,7 +7,6 @@ import org.kakara.core.Status;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
@@ -17,6 +16,7 @@ import org.kakara.engine.ui.events.UIHoverEnterEvent;
 import org.kakara.engine.ui.events.UIHoverLeaveEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.font.TextAlign;
+import org.kakara.engine.utils.RGBA;
 
 
 public class PauseMenuCanvas extends ActivateableCanvas {

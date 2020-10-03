@@ -1,7 +1,7 @@
 package org.kakara.client.game;
 
 import com.google.gson.JsonObject;
-import org.kakara.core.NameKey;
+import org.kakara.core.ControllerKey;
 import org.kakara.core.Utils;
 import org.kakara.core.exceptions.WorldLoadException;
 import org.kakara.core.world.Location;
@@ -15,7 +15,7 @@ import java.util.UUID;
 public class WorldCreator {
     private String worldName;
     private UUID uuid = UUID.randomUUID();
-    private NameKey generator;
+    private ControllerKey generator;
     private int seed;
 
     public String getWorldName() {
@@ -36,11 +36,11 @@ public class WorldCreator {
         return this;
     }
 
-    public NameKey getGenerator() {
+    public ControllerKey getGenerator() {
         return generator;
     }
 
-    public WorldCreator setGenerator(NameKey generator) {
+    public WorldCreator setGenerator(ControllerKey generator) {
         this.generator = generator;
         return this;
     }

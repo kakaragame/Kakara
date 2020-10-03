@@ -1,7 +1,7 @@
 package org.kakara.game.item;
 
+import org.kakara.core.ControllerKey;
 import org.kakara.core.GameInstance;
-import org.kakara.core.NameKey;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemManager;
 
@@ -30,7 +30,7 @@ public class GameItemManager implements ItemManager {
 
     @Override
     public List<Item> getItemsByName(String key) {
-        return items.values().stream().filter(item -> item.getNameKey().getName().equals(key)).collect(Collectors.toList());
+        return items.values().stream().filter(item -> item.getControllerKey().getKey().equals(key)).collect(Collectors.toList());
     }
 
     @Override
@@ -46,18 +46,18 @@ public class GameItemManager implements ItemManager {
     }
 
     @Override
-    public Optional<Item> getItem(NameKey item) {
+    public Item getItem(ControllerKey item) {
         for (Item item1 : items.values()) {
-            if (item1.getNameKey().equals(item)) {
-                return Optional.of(item1);
+            if (item1.getControllerKey().equals(item)) {
+                return item1;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override
-    public Optional<Item> getItem(int id) {
-        return Optional.ofNullable(items.get(id));
+    public Item getItem(int id) {
+        return (items.get(id));
     }
 
     @Override

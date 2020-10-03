@@ -1,13 +1,13 @@
 package org.kakara.game;
 
-import org.kakara.core.Statusable;
+import org.kakara.core.ManagedObject;
 import org.kakara.core.player.Player;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-public interface Server extends Statusable {
+public interface Server extends ManagedObject {
 
 
     void loadPlayer(UUID uuid);

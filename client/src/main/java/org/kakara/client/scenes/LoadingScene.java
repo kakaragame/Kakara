@@ -1,16 +1,16 @@
 package org.kakara.client.scenes;
 
+import org.kakara.core.ManagedObject;
 import org.kakara.core.Status;
-import org.kakara.core.Statusable;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.AbstractMenuScene;
 
 public class LoadingScene extends AbstractMenuScene {
-    private final Statusable statusable;
+    private final ManagedObject statusable;
     private final Status targetStatus;
     private Runnable onCompletion;
 
-    public LoadingScene(GameHandler handler, Statusable statusable, Status targetStatus, Runnable onCompletion) {
+    public LoadingScene(GameHandler handler, ManagedObject statusable, Status targetStatus, Runnable onCompletion) {
         super(handler);
         this.statusable = statusable;
         this.targetStatus = targetStatus;

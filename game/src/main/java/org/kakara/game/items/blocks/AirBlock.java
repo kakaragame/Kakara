@@ -1,6 +1,6 @@
 package org.kakara.game.items.blocks;
 
-import org.kakara.core.NameKey;
+import org.kakara.core.ControllerKey;
 import org.kakara.core.events.entity.StepOnEvent;
 import org.kakara.core.events.player.PlaceEvent;
 import org.kakara.core.events.player.click.ClickEvent;
@@ -49,7 +49,7 @@ public class AirBlock implements Block {
     }
 
     @Override
-    public NameKey getNameKey() {
+    public ControllerKey getControllerKey() {
         return NameKeyUtils.newKakaraNameKey(KEY);
     }
 

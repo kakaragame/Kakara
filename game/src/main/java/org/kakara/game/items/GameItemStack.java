@@ -98,7 +98,7 @@ public class GameItemStack implements ItemStack {
     public String toString() {
         return "GameItemStack{" +
                 "count=" + count +
-                ", item=" + item.getNameKey().toString() +
+                ", item=" + item.getControllerKey().toString() +
                 ", name='" + name + '\'' +
                 ", lore=" + lore +
                 '}';

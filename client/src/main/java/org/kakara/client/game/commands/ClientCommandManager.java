@@ -2,12 +2,13 @@ package org.kakara.client.game.commands;
 
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.MoreUtils;
-import org.kakara.core.NameKey;
+import org.kakara.core.ControllerKey;
 import org.kakara.core.command.Command;
 import org.kakara.core.command.CommandManager;
 import org.kakara.core.command.CommandSender;
 import org.kakara.core.command.TabCompleter;
 
+import javax.naming.ldap.Control;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class ClientCommandManager implements CommandManager {
 
         Optional<Command> command1;
         if (commandValue.contains(":")) {
-            command1 = registeredCommands.stream().filter(command2 -> command2.command().equals(new NameKey(commandValue))).findFirst();
+            command1 = registeredCommands.stream().filter(command2 -> command2.command().equals(new ControllerKey(commandValue))).findFirst();
         } else {
             command1 = registeredCommands.stream().filter(command2 -> command2.getAliases().contains(commandValue) || command2.command().getKey().equalsIgnoreCase(commandValue)).findFirst();
         }

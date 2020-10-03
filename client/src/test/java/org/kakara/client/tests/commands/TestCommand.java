@@ -1,6 +1,6 @@
 package org.kakara.client.tests.commands;
 
-import org.kakara.core.NameKey;
+import org.kakara.core.ControllerKey;
 import org.kakara.core.command.Command;
 import org.kakara.core.command.CommandSender;
 
@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestCommand implements Command {
     @Override
-    public NameKey command() {
-        return new NameKey("test", "test");
+    public ControllerKey command() {
+        return new ControllerKey("test", "test");
     }
 
     @Override

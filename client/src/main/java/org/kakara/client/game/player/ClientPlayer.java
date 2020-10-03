@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
+import org.kakara.core.ControllerKey;
 import org.kakara.core.Kakara;
-import org.kakara.core.NameKey;
 import org.kakara.core.events.entity.EntityTeleportEvent;
 import org.kakara.core.game.DefaultGameMode;
 import org.kakara.core.game.Entity;
@@ -47,7 +47,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         } else
             gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());
         contentInventory = new PlayerContentInventory();
-        contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new NameKey("KVANILLA", "DIRT")).get()), 1);
+        contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new ControllerKey("KVANILLA", "DIRT"))), 1);
     }
 
     @Override

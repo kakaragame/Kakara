@@ -9,7 +9,6 @@ import org.kakara.engine.events.event.CharacterPressEvent;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Panel;
@@ -18,6 +17,7 @@ import org.kakara.engine.ui.components.text.BoundedColoredText;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
+import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.utils.Time;
 
 import java.nio.charset.StandardCharsets;

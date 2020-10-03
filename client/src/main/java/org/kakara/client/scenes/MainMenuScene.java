@@ -1,11 +1,10 @@
 package org.kakara.client.scenes;
-
 import org.kakara.client.KakaraGame;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.SaveCreator;
 import org.kakara.client.game.WorldCreator;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
-import org.kakara.core.NameKey;
+import org.kakara.core.ControllerKey;
 import org.kakara.core.Status;
 import org.kakara.core.modinstance.ModInstance;
 import org.kakara.core.modinstance.ModInstanceType;
@@ -14,7 +13,7 @@ import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractMenuScene;
-import org.kakara.engine.ui.RGBA;
+
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
@@ -27,6 +26,7 @@ import org.kakara.engine.ui.events.UIHoverLeaveEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.font.TextAlign;
 import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.window.WindowIcon;
 
 import java.io.File;
@@ -168,7 +168,7 @@ public class MainMenuScene extends AbstractMenuScene {
             for (File file1 : getModsToLoad()) {
                 saveCreator.add(new ModInstance(file1.getName(), "", "1.0", null, ModInstanceType.FILE, file1));
             }
-            saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new NameKey("KVANILLA:DEFAULT")));
+            saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new ControllerKey("KVANILLA:DEFAULT")));
             IntegratedServer integratedServer = new IntegratedServer(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), null);
 
             LoadingScene loadingScene = new LoadingScene(gameHandler, integratedServer.getSave().getDefaultWorld(), Status.LOADED, () -> {

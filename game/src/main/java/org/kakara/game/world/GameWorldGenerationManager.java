@@ -1,8 +1,8 @@
 package org.kakara.game.world;
 
 import org.jetbrains.annotations.NotNull;
+import org.kakara.core.ControllerKey;
 import org.kakara.core.GameInstance;
-import org.kakara.core.NameKey;
 import org.kakara.core.world.WorldGenerationManager;
 import org.kakara.core.world.WorldGenerator;
 import org.kakara.core.world.region.Region;
@@ -27,9 +27,9 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
     }
 
     @Override
-    public WorldGenerator getGenerator(NameKey nameKey) {
+    public WorldGenerator getGenerator(ControllerKey nameKey) {
         for (WorldGenerator generator : generators) {
-            if (generator.getNameKey().equals(nameKey)) {
+            if (generator.getControllerKey().equals(nameKey)) {
                 return generator;
             }
         }

@@ -107,10 +107,10 @@ public class DebugCanvas implements UICanvas {
         ImGui.setNextWindowSize(300, 300, ImGuiCond.Once);
         ImGui.setNextWindowPos(10, 10, ImGuiCond.Once);
         ImGui.begin("Info");
-        MeshGameItem mgi = mainGameScene.getHoverObject();
-        ImGui.text("Location: " + mgi.getPosition() );
-        ImGui.text("Rotation: " + mgi.getRotation().getEulerAnglesXYZ(new Vector3f()));
-        ImGui.text("Scale: " + mgi.getScale());
+//        MeshGameItem mgi = mainGameScene.getHoverObject();
+//        ImGui.text("Location: " + mgi.getPosition() );
+//        ImGui.text("Rotation: " + mgi.getRotation().getEulerAnglesXYZ(new Vector3f()));
+//        ImGui.text("Scale: " + mgi.getScale());
         ImGui.end();
     }
 

@@ -17,13 +17,15 @@ public class PlayerMovement {
     boolean playerInJump = false;
     float lastYPos = 0;
     private MainGameScene mainGameScene;
+
     public PlayerMovement(MainGameScene mainGameScene) {
         this.mainGameScene = mainGameScene;
     }
 
     protected void playerMovement() {
-
-        if (mainGameScene.chatComponent.isFocused()) return;
+        if (mainGameScene.chatComponent != null) {
+            if (mainGameScene.chatComponent.isFocused()) return;
+        }
         if (PauseMenuCanvas.getInstance(mainGameScene.kakaraGame, mainGameScene).isActivated()) return;
         ClientPlayer player = (ClientPlayer) mainGameScene.server.getPlayerEntity();
 

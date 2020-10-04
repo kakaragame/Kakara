@@ -4,3 +4,6 @@ target/
 *.log
 out/
 client/test
+
+dependency-reduced-pom.xml
+MANIFEST.MF

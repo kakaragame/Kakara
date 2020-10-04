@@ -7,12 +7,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class DroppedItem {
-    private final Location location;
+    private final Location location = new Location(0, 0, 0);
     private final ItemStack itemStack;
     private UUID gameID;
 
     public DroppedItem(Location location, ItemStack itemStack) {
-        this.location = location;
+        this.location.set(location);
         this.itemStack = itemStack;
     }
 

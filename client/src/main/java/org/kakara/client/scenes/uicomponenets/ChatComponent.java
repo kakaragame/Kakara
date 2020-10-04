@@ -56,12 +56,12 @@ public class ChatComponent extends GeneralComponent {
 
         Panel textArea = new Panel();
         textArea.setScale(xSize, 50);
-        textArea.add(new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 1)));
+        textArea.add(new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 0.4f)));
 
         Panel histroyArea = new Panel();
         histroyArea.setScale(xSize, 500);
         histroyArea.setPosition(0, 0);
-        this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(xSize, 500), new RGBA(168, 168, 168, 1));
+        this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(xSize, 500), new RGBA(168, 168, 168, 0.6f));
         this.add(historyRectangle);
         textArea.setPosition(0, 500);
 

@@ -9,6 +9,7 @@ import org.kakara.engine.input.KeyInput;
 import org.kakara.engine.input.MouseInput;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.physics.collision.Collidable;
+import org.kakara.engine.renderobjects.RenderBlock;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -66,9 +67,7 @@ public class PlayerMovement {
             if (ki.isKeyPressed(GLFW_KEY_G))
                 item.setVelocityY(-9.18f);
             Location location = player.getLocation();
-            location.setX(item.getPosition().x);
-            location.setY(item.getPosition().y);
-            location.setZ(item.getPosition().z);
+            location.set(item.getPosition().x,item.getPosition().y, item.getPosition().z);
             //I NEED HELP!
             MouseInput mi = mainGameScene.kakaraGame.getGameHandler().getMouseInput();
             player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
@@ -76,11 +75,15 @@ public class PlayerMovement {
             mainGameScene.getCamera().setPosition((float) l.getX(), (float) l.getY() + 1, (float) l.getZ());
             mainGameScene.getCamera().setRotation(l.getPitch(), l.getYaw(), 0);
             // Handle the block selector.
-            mainGameScene.blockSelector.setPosition(item.getPosition().x, -10, item.getPosition().z);
             try {
                 Collidable objectFound = mainGameScene.selectGameItems(20, uuid);
-                if (objectFound != null)
-                    mainGameScene.blockSelector.setPosition(objectFound.getColPosition());
+                if (objectFound instanceof RenderBlock) {
+                    RenderBlock block = (RenderBlock) objectFound;
+                    // This does not mutate the Vector3.
+                    mainGameScene.blockSelector.setPosition(block.getPosition().add(block.getParentChunk().getPosition()));
+                }else{
+                    mainGameScene.blockSelector.setPosition((float) l.getX(), -10, (float) l.getZ());
+                }
             } catch (NullPointerException ignored) {
             }
         }));

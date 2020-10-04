@@ -68,6 +68,11 @@ public class KakaraMod implements Mod {
     }
 
     @Override
+    public void enableCompletion() {
+
+    }
+
+    @Override
     public String getUppercaseName() {
         return "KAKARA";
     }

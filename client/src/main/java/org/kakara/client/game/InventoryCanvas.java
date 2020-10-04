@@ -29,6 +29,7 @@ import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.events.UIClickEvent;
+import org.kakara.engine.ui.events.UIReleaseEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
@@ -50,6 +51,7 @@ public class InventoryCanvas extends ComponentCanvas {
     private Panel panel;
     private boolean hadFirstRun = false;
 
+    private HoldingItem holdingItem = null;
     private final Vector2 textureSize;
     private final int scale;
 
@@ -130,10 +132,15 @@ public class InventoryCanvas extends ComponentCanvas {
                         if (itemGrabInventoryEvent.isCancelled()) return;
                         //TODO execute event in EventManager
                         //if (itemGrabInventoryEvent.isCancelled()) return; CheckAgain
-
+                        holdingItem = new HoldingItem(itemStack, ((ItemStackElement) element).getSlot());
 
                     }
                     //TODO implement server
+                });
+                uiObject.addUActionEvent(UIReleaseEvent.class, (UIReleaseEvent) (pos, mouseClick) -> {
+                    //TODO find nearest location and drop it.
+
+                    holdingItem = null;
                 });
 
                 uiObject.setPosition(uiObjectPosition);

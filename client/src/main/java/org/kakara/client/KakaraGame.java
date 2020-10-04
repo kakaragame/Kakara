@@ -5,6 +5,7 @@ import org.kakara.client.game.GameEngineInventoryController;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
+import org.kakara.core.engine.EngineCore;
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.gui.EngineInventoryRenderer;
 import org.kakara.core.gui.InventoryProperties;
@@ -88,16 +89,13 @@ public class KakaraGame implements Game {
             return;
         }
         GameEngineInventoryController gameEngineInventoryController = new GameEngineInventoryController();
-
+        EngineCore.setEngineController(gameEngineInventoryController);
         switch (size) {
             case 9:
-                // Set the scale of the 9 image to be 2 (or double its size).
                 EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties(2));
-                render9.setEngineController(gameEngineInventoryController);
                 Size9BoxedInventory.setRenderer(render9);
             case 27:
                 EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties());
-                renderer27.setEngineController(gameEngineInventoryController);
                 Size27BoxedInventory.setRenderer(renderer27);
         }
     }

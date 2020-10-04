@@ -14,10 +14,12 @@ import org.kakara.core.mod.ModManager;
 import org.kakara.core.mod.game.GameModManager;
 import org.kakara.core.player.OfflinePlayer;
 import org.kakara.core.resources.ResourceManager;
+import org.kakara.core.service.ServiceManager;
 import org.kakara.core.sound.SoundManager;
 import org.kakara.core.world.WorldGenerationManager;
 import org.kakara.core.world.WorldManager;
 import org.kakara.engine.utils.Utils;
+import org.kakara.game.GameServiceManager;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.mod.KakaraMod;
@@ -40,6 +42,7 @@ public class Client implements GameInstance {
     private EventManager eventManager;
     private CommandManager commandManager;
     private WorldManager worldManager;
+    private ServiceManager serviceManager;
 
     public Client(KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
@@ -51,7 +54,7 @@ public class Client implements GameInstance {
         resourceManager = new ClientResourceManager();
         eventManager = new GameEventManager();
         commandManager = new ClientCommandManager();
-
+        serviceManager = new GameServiceManager();
     }
 
     @Override
@@ -101,6 +104,11 @@ public class Client implements GameInstance {
     @Override
     public KeyBindManager getKeyBindManager() {
         return null;
+    }
+
+    @Override
+    public ServiceManager getServiceManager() {
+        return serviceManager;
     }
 
     @Override

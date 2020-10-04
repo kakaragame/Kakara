@@ -9,10 +9,12 @@ import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.gui.Inventory;
 import org.kakara.core.gui.InventoryProperties;
+import org.kakara.core.gui.events.ItemGrabInventoryEvent;
 import org.kakara.core.gui.menu.items.ItemStackElement;
 import org.kakara.core.gui.menu.items.MenuElement;
 import org.kakara.core.resources.Texture;
 import org.kakara.core.resources.TextureResolution;
+import org.kakara.core.utils.EventUtils;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
@@ -26,6 +28,7 @@ import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
+import org.kakara.engine.ui.events.UIClickEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
@@ -120,6 +123,18 @@ public class InventoryCanvas extends ComponentCanvas {
                     uiObject = new UIObject(mesh[0]);
 
                 }
+                uiObject.addUActionEvent(UIClickEvent.class, (UIClickEvent) (location, mouseClickType) -> {
+                    if (scene.getServer() instanceof IntegratedServer) {
+                        ItemGrabInventoryEvent itemGrabInventoryEvent = new ItemGrabInventoryEvent(scene.getServer().getPlayerEntity(), inventory, itemStack);
+                        EventUtils.executeIfNotNull(stackElement.getItemGrabEvent(), itemGrabInventoryEvent);
+                        if (itemGrabInventoryEvent.isCancelled()) return;
+                        //TODO execute event in EventManager
+                        //if (itemGrabInventoryEvent.isCancelled()) return; CheckAgain
+
+
+                    }
+                    //TODO implement server
+                });
 
                 uiObject.setPosition(uiObjectPosition);
 

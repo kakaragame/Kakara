@@ -35,24 +35,25 @@ public class GameServiceManager implements ServiceManager {
     }
 
     @Override
-    public void executeOnceServiceIsFound(Consumer<Service> service, Class<? extends Service> serviceToFind) {
+    public <T extends Service> void executeOnceServiceIsFound(Consumer<T> service, Class<? extends Service> serviceToFind) {
         Optional<Service> service1 = getService(serviceToFind);
         if (service1.isPresent()) {
-            service.accept(service1.get());
+            service.accept((T) service1.get());
             return;
         }
-        serviceMap.put(serviceToFind, service);
+        serviceMap.put(serviceToFind, (Consumer<Service>)service);
     }
 
     @Override
-    public void executeOnceServiceIsFound(Consumer<Service> service, ControllerKey controllerKey) {
+    public <T extends Service> void executeOnceServiceIsFound(Consumer<T> service, ControllerKey controllerKey) {
         Optional<Service> service1 = getService(controllerKey);
         if (service1.isPresent()) {
-            service.accept(service1.get());
+            service.accept((T) service1.get());
             return;
         }
-        keySetMap.put(controllerKey, service);
+        keySetMap.put(controllerKey, (Consumer<Service>) service);
     }
+
 
     @Override
     public void registerService(Service service) {
@@ -60,7 +61,7 @@ public class GameServiceManager implements ServiceManager {
         checkForServices(service);
     }
 
-    private void checkForServices(Service service) {
+    private <T extends Service> void checkForServices(T service) {
         keySetMap.get(service.getControllerKey()).forEach(serviceConsumer -> {
             serviceConsumer.accept(service);
         });

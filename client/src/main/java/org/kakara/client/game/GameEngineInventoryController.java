@@ -3,6 +3,7 @@ package org.kakara.client.game;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.gui.EngineController;
 import org.kakara.core.gui.Inventory;
+import org.kakara.core.gui.InventoryProperties;
 import org.kakara.core.gui.menu.items.MenuElement;
 import org.kakara.core.resources.Texture;
 import org.kakara.engine.GameHandler;
@@ -17,7 +18,7 @@ public class GameEngineInventoryController implements EngineController {
     private static final String TAG = "CONTROLLER_INVENTORY";
 
     @Override
-    public void render(Inventory inventory, Texture inventoryBackground, Set<MenuElement> elementList) {
+    public void render(Inventory inventory, Texture inventoryBackground, Set<MenuElement> elementList, InventoryProperties properties) {
         Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
         if (!(scene instanceof MainGameScene)) return;
         InventoryCanvas inventoryCanvas = new InventoryCanvas(scene, inventoryBackground, elementList, inventory, scene.getUserInterface().getFont("Roboto"));
@@ -28,7 +29,7 @@ public class GameEngineInventoryController implements EngineController {
     }
 
     @Override
-    public void redraw(Inventory inventory, Texture inventoryBackground, Set<MenuElement> elementList) {
+    public void redraw(Inventory inventory, Texture inventoryBackground, Set<MenuElement> elementList, InventoryProperties properties) {
         Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
         if (!(scene instanceof MainGameScene)) return;
         scene.getUserInterface().getUICanvases().stream().filter(uiCanvas -> uiCanvas instanceof InventoryCanvas).findFirst().ifPresent(uiCanvas -> {

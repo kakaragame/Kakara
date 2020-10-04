@@ -90,11 +90,11 @@ public class KakaraGame implements Game {
 
         switch (size) {
             case 9:
-                EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size));
+                EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), null);
                 render9.setEngineController(gameEngineInventoryController);
                 Size9BoxedInventory.setRenderer(render9);
             case 27:
-                EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size));
+                EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), null);
                 renderer27.setEngineController(gameEngineInventoryController);
                 Size27BoxedInventory.setRenderer(renderer27);
         }

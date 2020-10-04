@@ -6,15 +6,15 @@ import org.kakara.engine.math.Vector3;
 import java.util.Objects;
 
 public class BreakingBlock {
-    private final Location gbLocation;
+    private final Location gbLocation = new Location(0, 0, 0);
     private final Vector3 chunkLocation;
     private final Vector3 blockLocation;
     private double percentage = 0.00;
 
     public BreakingBlock(Location gbLocation, Vector3 chunkLocation, Vector3 blockLocation1) {
-        this.gbLocation = gbLocation;
-        this.chunkLocation = chunkLocation;
-        this.blockLocation = blockLocation1;
+        this.gbLocation.set(gbLocation);
+        this.chunkLocation = chunkLocation.clone();
+        this.blockLocation = blockLocation1.clone();
     }
 
     public boolean breakBlock(double amount) {

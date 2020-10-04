@@ -7,6 +7,7 @@ import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.gui.EngineInventoryRenderer;
+import org.kakara.core.gui.InventoryProperties;
 import org.kakara.core.gui.bnbi.Size27BoxedInventory;
 import org.kakara.core.gui.bnbi.Size9BoxedInventory;
 import org.kakara.core.mod.game.GameModManager;
@@ -90,11 +91,12 @@ public class KakaraGame implements Game {
 
         switch (size) {
             case 9:
-                EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), null);
+                // Set the scale of the 9 image to be 2 (or double its size).
+                EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties(2));
                 render9.setEngineController(gameEngineInventoryController);
                 Size9BoxedInventory.setRenderer(render9);
             case 27:
-                EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), null);
+                EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties());
                 renderer27.setEngineController(gameEngineInventoryController);
                 Size27BoxedInventory.setRenderer(renderer27);
         }

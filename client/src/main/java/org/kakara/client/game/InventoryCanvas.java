@@ -8,6 +8,7 @@ import org.kakara.core.game.Block;
 import org.kakara.core.game.Item;
 import org.kakara.core.game.ItemStack;
 import org.kakara.core.gui.Inventory;
+import org.kakara.core.gui.InventoryProperties;
 import org.kakara.core.gui.menu.items.ItemStackElement;
 import org.kakara.core.gui.menu.items.MenuElement;
 import org.kakara.core.resources.Texture;
@@ -46,6 +47,9 @@ public class InventoryCanvas extends ComponentCanvas {
     private Panel panel;
     private boolean hadFirstRun = false;
 
+    private final Vector2 textureSize;
+    private final int scale;
+
     public InventoryCanvas(Scene scene, Texture inventoryBackground, Set<MenuElement> elementList, Inventory inventory, Font font) {
         super(scene);
         if (!(scene instanceof MainGameScene)) throw new IllegalArgumentException("Must be a MainGameScene");
@@ -64,7 +68,11 @@ public class InventoryCanvas extends ComponentCanvas {
         sprite.addConstraint(new HorizontalCenterConstraint());
         sprite.addConstraint(new VerticalCenterConstraint());
         panel.add(sprite);
-        sprite.setScale(texture.getWidth(), texture.getHeight());
+
+        InventoryProperties inventoryProperties = inventory.getRenderer().getProperties();
+        this.textureSize = new Vector2(texture.getWidth(), texture.getHeight());
+        this.scale = inventoryProperties.getScale();
+        sprite.setScale(texture.getWidth() * inventoryProperties.getScale(), texture.getHeight() * inventoryProperties.getScale());
 
         panel.setVisible(true);
         sprite.setVisible(true);
@@ -90,7 +98,13 @@ public class InventoryCanvas extends ComponentCanvas {
                 Item item = itemStack.getItem();
 
                 Vector2 vector2 = panel.getPosition().add(panel.getChildren().get(0).getPosition());
-                Vector2 uiObjectPosition = vector2.add(element.getPosition().x,element.getPosition().y).add(7, -5);
+                Vector2 elementPosition = new Vector2(element.getPosition().x, element.getPosition().y);
+                // TODO make a better way to do this in the engine.
+                elementPosition.x /= textureSize.x;
+                elementPosition.y /= textureSize.y;
+                elementPosition.x *= textureSize.x * scale;
+                elementPosition.y *= textureSize.y * scale;
+                Vector2 uiObjectPosition = vector2.add(elementPosition).add(7 * scale, -5 * scale);
                 //Make Small Box for item holder
                 if (item instanceof AirBlock) continue;
                 UIObject uiObject;
@@ -109,7 +123,7 @@ public class InventoryCanvas extends ComponentCanvas {
 
                 uiObject.setPosition(uiObjectPosition);
 
-                uiObject.setScale(9);
+                uiObject.setScale(9 * scale);
 
                 uiObject.getRotation().rotateX((float) Math.toRadians(50));
                 uiObject.getRotation().rotateY((float) Math.toRadians(40));

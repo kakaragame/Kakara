@@ -186,6 +186,7 @@ public class IntegratedServer extends Thread implements Server {
         Kakara.getModManager().getLoadedMods().forEach(Kakara.getModManager()::unloadMod);
 
         status = Status.UNLOADED;
+        Kakara.coreClose();
 
     }
 

@@ -2,9 +2,14 @@ package org.kakara.client;
 
 import me.kingtux.other.TheCodeOfAMadMan;
 import org.kakara.client.game.GameEngineInventoryController;
+import org.kakara.client.join.JoinDetails;
+import org.kakara.client.join.LocalJoin;
+import org.kakara.client.scenes.LoadingScene;
 import org.kakara.client.scenes.MainMenuScene;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.GameInstance;
 import org.kakara.core.Kakara;
+import org.kakara.core.Status;
 import org.kakara.core.engine.EngineCore;
 import org.kakara.core.game.GameSettings;
 import org.kakara.core.gui.EngineInventoryRenderer;
@@ -16,6 +21,7 @@ import org.kakara.core.resources.Texture;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
+import org.kakara.game.ServerLoadException;
 import org.kakara.game.mod.KakaraMod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +38,13 @@ public class KakaraGame implements Game {
     private GameInstance kakaraCore;
     private GameHandler gameHandler;
     private Client client;
+    private GameSettings settings;
 
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
+        this.settings = gameSettings;
         if (gameSettings.isTestMode()) System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
 
-        client = new Client(this, gameSettings);
-        //Load Core
-        loadKakaraCore();
         if (gameSettings.isTestMode()) {
             File file = new File("test" + File.separator + "mods");
             file.mkdirs();
@@ -48,6 +53,26 @@ public class KakaraGame implements Game {
 
         //Set Shutdown hook
         //Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
+    }
+
+    public LoadingScene join(JoinDetails joinDetails) throws ServerLoadException {
+        if (joinDetails.getEnvType() == JoinDetails.JoinType.LOCAL) {
+            LocalJoin join = (LocalJoin) joinDetails;
+            client = new LocalClient(join, this, settings);
+            loadKakaraCore();
+            client.setup();
+            LoadingScene loadingScene = new LoadingScene(gameHandler, join.getSave().getDefaultWorld(), Status.LOADED, () -> {
+                MainGameScene gameScene = new MainGameScene(gameHandler, client, kakaraGame);
+                gameHandler.getSceneManager().setScene(gameScene);
+            });
+            return loadingScene;
+        } else {
+            client = new ServerClient(joinDetails, this, settings);
+            loadKakaraCore();
+
+            //TODO Create a server software and add code to join it. (This wont take that long) :)
+            return null;
+        }
     }
 
     public static KakaraGame getInstance() {
@@ -151,4 +176,7 @@ public class KakaraGame implements Game {
         return 20;
     }
 
+    public GameSettings getSettings() {
+        return settings;
+    }
 }

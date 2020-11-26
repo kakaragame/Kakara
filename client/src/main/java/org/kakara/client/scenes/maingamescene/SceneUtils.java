@@ -33,7 +33,7 @@ public class SceneUtils {
         }
         MeshGameItem object = new MeshGameItem(mainPlayer);
         object.setVisible(false);
-        object.setPosition((float) gameScene.server.getPlayerEntity().getLocation().getX(), (float) gameScene.server.getPlayerEntity().getLocation().getY(), (float) gameScene.server.getPlayerEntity().getLocation().getZ());
+        object.setPosition((float) gameScene.getServer().getPlayerEntity().getLocation().getX(), (float) gameScene.getServer().getPlayerEntity().getLocation().getY(), (float) gameScene.getServer().getPlayerEntity().getLocation().getZ());
         BoxCollider boxCollider = new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f));
         boxCollider.setPredicate(collidable -> {
             if (collidable instanceof MeshGameItem) {

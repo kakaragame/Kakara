@@ -1,6 +1,7 @@
 package org.kakara.client.scenes.maingamescene;
 
 
+import org.kakara.client.Client;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.engine.item.HorizontalRotationFeature;
@@ -74,7 +75,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_F3;
 
 public class MainGameScene extends AbstractGameScene {
     protected final KakaraGame kakaraGame;
-    protected final Server server;
+    private final Client client;
     protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
     protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
@@ -86,14 +87,14 @@ public class MainGameScene extends AbstractGameScene {
     protected RenderTexture breakingTexture;
     private boolean hasRun = false;
 
-    public MainGameScene(GameHandler gameHandler, Server server, KakaraGame kakaraGame) {
+    public MainGameScene(GameHandler gameHandler, Client client, KakaraGame kakaraGame) {
         super(gameHandler);
         setCurserStatus(false);
-        this.server = server;
+        this.client = client;
         this.kakaraGame = kakaraGame;
 
-        if (server instanceof IntegratedServer) {
-            ((IntegratedServer) server).setSceneTickUpdate(this::gameSceneUpdate);
+        if (getServer() instanceof IntegratedServer){
+            ((IntegratedServer) getServer()).setSceneTickUpdate(this::gameSceneUpdate);
         }
     }
 
@@ -143,7 +144,7 @@ public class MainGameScene extends AbstractGameScene {
         }
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), this);
 
-        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderResourceManager, (PlayerContentInventory) server.getPlayerEntity().getInventory(), roboto);
+        hotBarCanvas = new HotBarCanvas(this, getTextureAtlas(), renderResourceManager, (PlayerContentInventory) getServer().getPlayerEntity().getInventory(), roboto);
         hotBarCanvas.show();
 
         ComponentCanvas main = new ComponentCanvas(this);
@@ -151,7 +152,7 @@ public class MainGameScene extends AbstractGameScene {
         chatComponent.setPosition(0, 170);
         chatComponent.addUActionEvent((ChatSendEvent) message -> {
             if (message.startsWith("/")) {
-                Kakara.getCommandManager().executeCommand(message.substring(1), server.getPlayerEntity());
+                Kakara.getCommandManager().executeCommand(message.substring(1), getServer().getPlayerEntity());
             }
         }, ChatSendEvent.class);
         chatComponent.addUActionEvent((ChatFocusEvent) () -> setCurserStatus(true), ChatFocusEvent.class);
@@ -166,7 +167,7 @@ public class MainGameScene extends AbstractGameScene {
         add(main);
         add(hotBarCanvas);
         try {
-            ((ClientPlayer) server.getPlayerEntity()).setGameItemID(sceneUtils.createPlayerObject());
+            ((ClientPlayer) getServer().getPlayerEntity()).setGameItemID(sceneUtils.createPlayerObject());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -195,8 +196,8 @@ public class MainGameScene extends AbstractGameScene {
         movement.playerMovement();
         hotBarCanvas.update();
         if (chatComponent != null) {
-            if (server instanceof IntegratedServer) {
-                ((IntegratedServer) server).newMessages().forEach(s -> chatComponent.addMessage(s));
+            if (getServer() instanceof IntegratedServer){
+                ((IntegratedServer) getServer()).newMessages().forEach(s -> chatComponent.addMessage(s));
             }
         }
         renderDroppedItems();
@@ -207,7 +208,7 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
 
-        ClientPlayer player = (ClientPlayer) server.getPlayerEntity();
+        ClientPlayer player = (ClientPlayer) getServer().getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20, player.getGameItemID().get());
@@ -228,12 +229,12 @@ public class MainGameScene extends AbstractGameScene {
                     rb.setOverlay(breakingTexture);
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
-                    Optional<GameBlock> blockAt = ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getBlockAt(location);
+                    Optional<GameBlock> blockAt = ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getBlockAt(location);
                     blockAt.ifPresent(block -> {
                         if (block.getItemStack().getItem() instanceof AirBlock) return;
                         double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack(), player);
                         if (breakingBlock.breakBlock(breakPerFrame * Time.getDeltaTime())) {
-                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0)), location);
+                            ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0)), location);
                             parentChunk.removeBlock(rb);
                             parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                             breakingBlock = null;
@@ -241,7 +242,7 @@ public class MainGameScene extends AbstractGameScene {
 //                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
 //                            hotBarCanvas.renderItems();
                             block.getItemStack().setCount(1);
-                            ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
+                            ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
                         }
                     });
                     if (blockAt.isEmpty()) {
@@ -254,7 +255,7 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     public void renderDroppedItems() {
-        for (DroppedItem droppedItem : ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
+        for (DroppedItem droppedItem : ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
             if (droppedItem.getGameID() == null) {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                 MeshGameItem droppedBlock = new MeshGameItem(mesh);
@@ -278,13 +279,13 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     public void checkForDroppedItems() {
-        List<DroppedItem> droppedItems = new ArrayList<>(((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems());
+        List<DroppedItem> droppedItems = new ArrayList<>(((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems());
         for (DroppedItem droppedItem : droppedItems) {
             if (droppedItem.getGameID() != null) {
-                if (GameUtils.isLocationInsideCurrentLocationRadius(server.getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
+                if (GameUtils.isLocationInsideCurrentLocationRadius(getServer().getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)){
                     remove(getItemHandler().getItemWithId(droppedItem.getGameID()).get());
-                    ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
-                    ((PlayerContentInventory) server.getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
+                    ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
+                    ((PlayerContentInventory) getServer().getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
                     hotBarCanvas.renderItems();
                 }
             }
@@ -303,7 +304,7 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
-        UUID playerID = ((ClientPlayer) server.getPlayerEntity()).getGameItemID().get();
+        UUID playerID = ((ClientPlayer) getServer().getPlayerEntity()).getGameItemID().get();
         if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20, playerID);
             if (col instanceof RenderBlock) {
@@ -313,9 +314,9 @@ public class MainGameScene extends AbstractGameScene {
                 Vector3 absoluteBlockPos = rb.getPosition().add(parentChunk.getPosition());
 
                 final Vector3 closestValue = ObjectPickingUtils.closestValue(absoluteBlockPos, getCamera());
-                ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(server.getPlayerEntity().getLocation().getNullableWorld(), closestValue.x, closestValue.y, closestValue.z));
-                if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
-                Chunk chunk = (server.getPlayerEntity().getLocation().getWorld().get()).getChunkAt(chunkLoc);
+                ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(getServer().getPlayerEntity().getLocation().getNullableWorld(), closestValue.x, closestValue.y, closestValue.z));
+                if (getServer().getPlayerEntity().getLocation().getWorld().isEmpty()) return;
+                Chunk chunk = (getServer().getPlayerEntity().getLocation().getWorld().get()).getChunkAt(chunkLoc);
                 if (chunk.getStatus() != Status.LOADED) return;
                 ClientChunk cc = (ClientChunk) chunk;
                 List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> {
@@ -347,28 +348,28 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     /**
-     * Update from the integrated server
+     * Update from the integrated getServer()
      */
     public void gameSceneUpdate() {
-        if (server.getPlayerEntity().getLocation().getWorld().isEmpty()) return;
-        if (server.getPlayerEntity() == null || chatComponent == null) return;
+        if (getServer().getPlayerEntity().getLocation().getWorld().isEmpty()) return;
+        if (getServer().getPlayerEntity() == null || chatComponent == null) return;
 
-        if (server.getPlayerEntity().getLocation().getNullableWorld() == null) return;
+        if (getServer().getPlayerEntity().getLocation().getNullableWorld() == null) return;
 
-        for (Chunk loadedChunk : ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()) {
+        for (Chunk loadedChunk : ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()) {
             if (loadedChunk.getStatus() != Status.LOADED) continue;
             ClientChunk clientChunk = (ClientChunk) loadedChunk;
-            if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
+            if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(getServer().getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
                 if (clientChunk.getRenderChunkID().isPresent())
                     getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
 //                System.out.println("Chunk Unloaded.");
 
                 // Maybe: TODO The operation should be done below instead of in the ChunkCleaner
-//                server.getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
+//                getServer().getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
                 continue;
             }
 
-            ChunkLocation playerLocation = GameUtils.getChunkLocation(server.getPlayerEntity().getLocation());
+            ChunkLocation playerLocation = GameUtils.getChunkLocation(getServer().getPlayerEntity().getLocation());
 
             if (GameUtils.isLocationOnPerimeter(playerLocation, clientChunk.getLocation(), IntegratedServer.RADIUS * 16))
                 continue;
@@ -405,7 +406,7 @@ public class MainGameScene extends AbstractGameScene {
             if (clientChunk.getRenderChunkID().isEmpty() || clientChunk.isUpdatedHappened()) {
                 if (clientChunk.getRenderChunkID().isPresent())
                     getChunkHandler().removeChunk(clientChunk.getRenderChunkID().get());
-                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(server.getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS * 16)) {
+                if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(getServer().getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS * 16)) {
                     ChunkLocation cb = loadedChunk.getLocation();
                     RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
                     rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
@@ -422,7 +423,7 @@ public class MainGameScene extends AbstractGameScene {
                     }
                     clientChunk.setUpdatedHappened(false);
                     if (!hasRun) {
-                        server.getExecutorService().submit(() -> {
+                        getServer().getExecutorService().submit(() -> {
                             rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);
                         });
                         hasRun = true;
@@ -442,7 +443,7 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     public Server getServer() {
-        return server;
+        return client.getServer();
     }
 
     public ResourceManager getResourceManager() {

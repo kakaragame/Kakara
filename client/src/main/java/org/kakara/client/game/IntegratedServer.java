@@ -2,7 +2,7 @@ package org.kakara.client.game;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
-import org.kakara.client.Client;
+import org.kakara.client.LocalClient;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.commands.*;
@@ -59,7 +59,8 @@ public class IntegratedServer extends Thread implements Server {
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
         }
-        ((Client) Kakara.getGameInstance()).setWorldManager(new ClientWorldManager(this));
+
+        ((LocalClient) Kakara.getGameInstance()).setWorldManager(new ClientWorldManager(this));
         executorService = Executors.newFixedThreadPool(MoreUtils.getPoolSize());
         playersFolder = new File(save.getSaveFolder(), "players");
         if (!playersFolder.exists()) playersFolder.mkdir();

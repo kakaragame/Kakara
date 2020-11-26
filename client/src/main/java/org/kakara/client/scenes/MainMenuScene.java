@@ -3,6 +3,7 @@ import org.kakara.client.KakaraGame;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.SaveCreator;
 import org.kakara.client.game.WorldCreator;
+import org.kakara.client.join.LocalJoin;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.ControllerKey;
 import org.kakara.core.Status;
@@ -84,7 +85,7 @@ public class MainMenuScene extends AbstractMenuScene {
             An error that is displayed if the game is not in testing mode.
          */
 
-        if (!kakaraGame.getClient().getGameSettings().isTestMode()) {
+        if (!kakaraGame.getSettings().isTestMode()) {
             Rectangle singlePlayer = new Rectangle(new Vector2(0, 370), new Vector2(500, 60), new RGBA(255, 255, 255, 0.5f));
             singlePlayer.addConstraint(new HorizontalCenterConstraint());
             Text singlePlayerText = new Text("Error: Kakara is not in test mode", roboto);
@@ -169,14 +170,8 @@ public class MainMenuScene extends AbstractMenuScene {
                 saveCreator.add(new ModInstance(file1.getName(), "", "1.0", null, ModInstanceType.FILE, file1));
             }
             saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new ControllerKey("KVANILLA:DEFAULT")));
-            IntegratedServer integratedServer = new IntegratedServer(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), null);
 
-            LoadingScene loadingScene = new LoadingScene(gameHandler, integratedServer.getSave().getDefaultWorld(), Status.LOADED, () -> {
-                MainGameScene gameScene = new MainGameScene(gameHandler, integratedServer, kakaraGame);
-                gameHandler.getSceneManager().setScene(gameScene);
-            });
-            gameHandler.getSceneManager().setScene(loadingScene);
-            integratedServer.start();
+            gameHandler.getSceneManager().setScene(kakaraGame.join(new LocalJoin(saveCreator.createSave(),UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5") )));
 
         } catch (Exception ex) {
             setCurserStatus(true);

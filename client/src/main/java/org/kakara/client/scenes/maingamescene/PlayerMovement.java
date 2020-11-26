@@ -27,7 +27,7 @@ public class PlayerMovement {
             if (mainGameScene.chatComponent.isFocused()) return;
         }
         if (PauseMenuCanvas.getInstance(mainGameScene.kakaraGame, mainGameScene).isActivated()) return;
-        ClientPlayer player = (ClientPlayer) mainGameScene.server.getPlayerEntity();
+        ClientPlayer player = (ClientPlayer) mainGameScene.getServer().getPlayerEntity();
 
         player.getGameItemID().ifPresent(uuid -> mainGameScene.sceneUtils.getItemByID(uuid).ifPresent((gameItem) -> {
             MeshGameItem item = (MeshGameItem) gameItem;

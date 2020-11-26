@@ -113,7 +113,7 @@ public class MainGameScene extends AbstractGameScene {
         List<RenderTexture> textures = new ArrayList<>();
 
         for (org.kakara.core.resources.Texture resource : Kakara.getResourceManager().getAllTextures()) {
-            //Ignore Textures that shouldnt be added to Texture Atlas
+            //Ignore Textures that shouldn't be added to Texture Atlas
             if (resource.getProperties().contains("NO_TEXTURE_ATLAS")) {
                 continue;
             }

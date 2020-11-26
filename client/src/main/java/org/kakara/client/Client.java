@@ -2,8 +2,8 @@ package org.kakara.client;
 
 import org.kakara.client.game.ClientResourceManager;
 import org.kakara.client.game.commands.ClientCommandManager;
+import org.kakara.core.EnvType;
 import org.kakara.core.GameInstance;
-import org.kakara.core.GameTypes;
 import org.kakara.core.command.CommandManager;
 import org.kakara.core.crafting.CraftingManager;
 import org.kakara.core.events.EventManager;
@@ -142,8 +142,8 @@ public class Client implements GameInstance {
     }
 
     @Override
-    public GameTypes getType() {
-        return GameTypes.CLIENT;
+    public EnvType getType() {
+        return EnvType.CLIENT;
     }
 
 

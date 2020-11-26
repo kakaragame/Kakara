@@ -26,7 +26,6 @@ public class Main {
                     setAuthServer(properties.getProperty("server.auth", "")).
                     setModServers(MoreUtils.stringArrayToStringArray(properties.getProperty("mod.servers", "https://kakara.org/mods"))).
                     setTestMode(true).setAuthToken(properties.getProperty("auth.token", "")).createClientSettings();
-
         } else {
             KakaraGame.LOGGER.error("Regular Mode is currently unsupported.");
             return;

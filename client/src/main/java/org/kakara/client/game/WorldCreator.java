@@ -1,10 +1,10 @@
 package org.kakara.client.game;
 
 import com.google.gson.JsonObject;
-import org.kakara.core.ControllerKey;
-import org.kakara.core.Utils;
-import org.kakara.core.exceptions.WorldLoadException;
-import org.kakara.core.world.Location;
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.Utils;
+import org.kakara.core.common.exceptions.WorldLoadException;
+import org.kakara.core.common.world.Location;
 
 import java.io.BufferedWriter;
 import java.io.File;

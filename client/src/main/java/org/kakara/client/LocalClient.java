@@ -101,10 +101,6 @@ public class LocalClient extends Client implements ServerGameInstance {
     }
 
 
-    @Override
-    public ServiceManager getServiceManager() {
-        return serviceManager;
-    }
 
     @Override
     public ModManager getModManager() {

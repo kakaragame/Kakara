@@ -4,14 +4,15 @@ import org.jetbrains.annotations.NotNull;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.utils.ModUtils;
-import org.kakara.core.client.Save;
-import org.kakara.core.client.SaveSettings;
-import org.kakara.core.client.SaveSettingsParser;
-import org.kakara.core.client.parsers.JsonSaveSettingParser;
-import org.kakara.core.exceptions.SaveLoadException;
-import org.kakara.core.exceptions.WorldLoadException;
-import org.kakara.core.modinstance.ModInstance;
-import org.kakara.core.world.World;
+
+import org.kakara.core.client.client.Save;
+import org.kakara.core.client.client.SaveSettings;
+import org.kakara.core.client.client.SaveSettingsParser;
+import org.kakara.core.client.client.parsers.JsonSaveSettingParser;
+import org.kakara.core.common.exceptions.SaveLoadException;
+import org.kakara.core.common.exceptions.WorldLoadException;
+import org.kakara.core.common.modinstance.ModInstance;
+import org.kakara.core.common.world.World;
 import org.kakara.game.Server;
 
 import java.io.File;

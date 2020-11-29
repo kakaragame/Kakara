@@ -1,11 +1,12 @@
 package org.kakara.client.game;
 
-import org.kakara.core.client.Save;
-import org.kakara.core.client.SaveSettings;
-import org.kakara.core.client.SaveSettingsBuilder;
-import org.kakara.core.exceptions.SaveLoadException;
-import org.kakara.core.exceptions.WorldLoadException;
-import org.kakara.core.modinstance.ModInstance;
+
+import org.kakara.core.client.client.Save;
+import org.kakara.core.client.client.SaveSettings;
+import org.kakara.core.client.client.SaveSettingsBuilder;
+import org.kakara.core.common.exceptions.SaveLoadException;
+import org.kakara.core.common.exceptions.WorldLoadException;
+import org.kakara.core.common.modinstance.ModInstance;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,9 +1,9 @@
 package org.kakara.client;
 
 import me.kingtux.other.TheCodeOfAMadMan;
-import org.kakara.client.game.GameEngineInventoryController;
 import org.kakara.client.join.JoinDetails;
 import org.kakara.client.join.LocalJoin;
+import org.kakara.client.local.game.GameEngineInventoryController;
 import org.kakara.client.scenes.LoadingScene;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
@@ -40,7 +40,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private GameInstance kakaraCore;
     private GameHandler gameHandler;
     private Client client;
-    private GameSettings settings;
+    private final GameSettings settings;
     private final EnvironmentModManager modManager;
     private final File workingDirectory;
     private final ResourceManager resourceManager;
@@ -55,7 +55,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
             file.mkdirs();
         }
         workingDirectory = Utils.getCurrentDirectory();
-        modManager = new EnvironmentModManager(new KakaraEnvMod());
+        modManager = new EnvironmentModManager(new KakaraEnvMod(this));
         modManager.load(this);
         resourceManager = new GameResourceManager();
         resourceManager.load(new File(getWorkingDirectory(), "client" + File.separator + "resources"));
@@ -93,7 +93,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private void loadKakaraCore() {
         LOGGER.info("Loading Core");
         Kakara.setGameInstance(client);
-        client.getResourceManager().load(client);
+        client.getResourceManager().load(new File(getWorkingDirectory(), "game"));
         client.getWorldGenerationManager().load(client);
         client.getItemManager().load(client);
         client.getEventManager().load(client);

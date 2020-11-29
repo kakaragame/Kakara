@@ -1,9 +1,10 @@
 package org.kakara.client;
 
-import org.kakara.client.game.ClientResourceManager;
-import org.kakara.client.game.IntegratedServer;
-import org.kakara.client.game.commands.ClientCommandManager;
+
 import org.kakara.client.join.LocalJoin;
+import org.kakara.client.local.game.ClientResourceManager;
+import org.kakara.client.local.game.IntegratedServer;
+import org.kakara.client.local.game.commands.ClientCommandManager;
 import org.kakara.core.common.EnvType;
 import org.kakara.core.common.Serverable;
 import org.kakara.core.common.command.CommandManager;
@@ -13,6 +14,7 @@ import org.kakara.core.common.exceptions.NoServerVersionAvailableException;
 import org.kakara.core.common.game.GameSettings;
 import org.kakara.core.common.game.Item;
 import org.kakara.core.common.game.ItemManager;
+import org.kakara.core.common.gui.container.ContainerUtils;
 import org.kakara.core.common.mod.ModManager;
 import org.kakara.core.common.mod.game.GameModManager;
 import org.kakara.core.common.resources.ResourceManager;
@@ -42,6 +44,7 @@ public class LocalClient extends Client implements ServerGameInstance {
     private WorldManager worldManager;
     private ServiceManager serviceManager;
     private final LocalJoin localJoin;
+    private ContainerUtils containerUtils;
 
     public LocalClient(LocalJoin joinDetails, KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
@@ -96,10 +99,14 @@ public class LocalClient extends Client implements ServerGameInstance {
     }
 
 
-
     @Override
     public ModManager getModManager() {
         return modManager;
+    }
+
+    @Override
+    public ContainerUtils getContainerUtils() {
+        return containerUtils;
     }
 
     @Override

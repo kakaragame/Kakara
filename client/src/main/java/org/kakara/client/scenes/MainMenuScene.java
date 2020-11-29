@@ -1,9 +1,9 @@
 package org.kakara.client.scenes;
 
 import org.kakara.client.KakaraGame;
-import org.kakara.client.game.SaveCreator;
-import org.kakara.client.game.WorldCreator;
 import org.kakara.client.join.LocalJoin;
+import org.kakara.client.local.game.SaveCreator;
+import org.kakara.client.local.game.WorldCreator;
 import org.kakara.core.common.ControllerKey;
 import org.kakara.core.common.modinstance.ModInstance;
 import org.kakara.core.common.modinstance.ModInstanceType;

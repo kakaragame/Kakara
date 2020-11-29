@@ -1,5 +1,6 @@
 package org.kakara.game.mod;
 
+import org.kakara.core.common.EnvironmentInstance;
 import org.kakara.core.common.GameInstance;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.mod.Mod;
@@ -8,16 +9,16 @@ import org.kakara.core.common.mod.ModType;
 import org.slf4j.Logger;
 
 public class KakaraEnvMod implements Mod {
-    private static KakaraMod instance;
-    private GameInstance gameInstance;
+    private static KakaraEnvMod instance;
+    private final EnvironmentInstance gameInstance;
 
-    public KakaraMod(GameInstance gameInstance) {
+    public KakaraEnvMod(EnvironmentInstance gameInstance) {
         this.gameInstance = gameInstance;
         if (instance != null) throw new RuntimeException("Kakara has already been initialized");
         instance = this;
     }
 
-    public static KakaraMod getInstance() {
+    public static KakaraEnvMod getInstance() {
         if (instance == null) throw new RuntimeException("Kakara is Not Ready");
         return instance;
     }
@@ -79,6 +80,6 @@ public class KakaraEnvMod implements Mod {
 
     @Override
     public GameInstance getGameInstance() {
-        return gameInstance;
+        return Kakara.getGameInstance();
     }
 }

@@ -2,13 +2,13 @@ package org.kakara.client.local.game.world;
 
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.local.game.IntegratedServer;
-import org.kakara.core.world.World;
-import org.kakara.core.world.WorldManager;
+import org.kakara.core.common.world.World;
+import org.kakara.core.server.world.WorldManager;
 
 import java.util.UUID;
 
 public class ClientWorldManager implements WorldManager {
-    private IntegratedServer integratedServer;
+    private final IntegratedServer integratedServer;
 
     public ClientWorldManager(IntegratedServer integratedServer) {
         this.integratedServer = integratedServer;

@@ -1,6 +1,6 @@
 package org.kakara.client.scenes;
 
-import org.kakara.core.world.Location;
+import org.kakara.core.common.world.Location;
 import org.kakara.engine.math.Vector3;
 
 import java.util.Objects;

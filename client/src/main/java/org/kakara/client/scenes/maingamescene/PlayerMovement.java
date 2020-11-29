@@ -1,8 +1,8 @@
 package org.kakara.client.scenes.maingamescene;
 
-import org.kakara.client.game.player.ClientPlayer;
+import org.kakara.client.local.game.player.ClientPlayer;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
-import org.kakara.core.world.Location;
+import org.kakara.core.common.world.Location;
 import org.kakara.engine.Camera;
 import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.input.KeyInput;
@@ -16,7 +16,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class PlayerMovement {
     boolean playerInJump = false;
     float lastYPos = 0;
-    private MainGameScene mainGameScene;
+    private final MainGameScene mainGameScene;
 
     public PlayerMovement(MainGameScene mainGameScene) {
         this.mainGameScene = mainGameScene;

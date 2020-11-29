@@ -3,7 +3,7 @@ package org.kakara.client.scenes.canvases;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.scenes.LoadingScene;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
-import org.kakara.core.Status;
+import org.kakara.core.common.Status;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
@@ -21,9 +21,9 @@ import org.kakara.engine.utils.RGBA;
 
 public class PauseMenuCanvas extends ActivateableCanvas {
     private static PauseMenuCanvas instance;
-    private Rectangle quit;
-    private Rectangle resume;
-    private Scene scene;
+    private final Rectangle quit;
+    private final Rectangle resume;
+    private final Scene scene;
 
     private PauseMenuCanvas(Scene scene) {
         super(scene);

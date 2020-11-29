@@ -50,7 +50,7 @@ public class IntegratedServer extends Thread implements Server {
     private final File playersFolder;
     private final IntegratedTime time = new IntegratedTime();
     private boolean running = true;
-    private Player player;
+    private final Player player;
     private List<String> messages = new ArrayList<>();
     private Runnable sceneTickUpdate;
     private Location lastLocation;
@@ -158,8 +158,8 @@ public class IntegratedServer extends Thread implements Server {
 
     @Override
     public void loadMods() {
-        List<UnModObject> modsToLoad = Kakara.getModManager().loadModsFile(save.getModsToLoad());
-        Kakara.getModManager().loadMods(modsToLoad);
+        List<UnModObject> modsToLoad = Kakara.getGameInstance().getModManager().loadModsFile(save.getModsToLoad());
+        Kakara.getGameInstance().getModManager().loadMods(modsToLoad);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class IntegratedServer extends Thread implements Server {
         }
         executorService.shutdown();
         save.getWorlds().forEach(world -> ((ClientWorld) world).close());
-        Kakara.getModManager().getLoadedMods().forEach(Kakara.getModManager()::unloadMod);
+        Kakara.getGameInstance().getModManager().getLoadedMods().forEach(Kakara.getGameInstance().getModManager()::unloadMod);
 
         status = Status.UNLOADED;
         Kakara.coreClose();

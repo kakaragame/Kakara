@@ -97,7 +97,7 @@ public class InventoryCanvas extends ComponentCanvas {
         for (MenuElement element : elements) {
             if (element instanceof ItemStackElement) {
                 ItemStackElement stackElement = (ItemStackElement) element;
-                ItemStack itemStack = inventory.getItemStack(stackElement.getSlot());
+                ItemStack itemStack = inventory.getContainer().getItemStack(stackElement.getSlot());
                 Item item = itemStack.getItem();
 
                 Vector2 vector2 = panel.getPosition().add(panel.getChildren().get(0).getPosition());

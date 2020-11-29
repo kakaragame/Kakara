@@ -5,12 +5,12 @@ import org.kakara.client.Client;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.engine.item.HorizontalRotationFeature;
-import org.kakara.client.game.DroppedItem;
-import org.kakara.client.game.IntegratedServer;
-import org.kakara.client.game.player.ClientPlayer;
-import org.kakara.client.game.player.PlayerContentInventory;
-import org.kakara.client.game.world.ClientChunk;
-import org.kakara.client.game.world.ClientWorld;
+import org.kakara.client.local.game.DroppedItem;
+import org.kakara.client.local.game.IntegratedServer;
+import org.kakara.client.local.game.player.ClientPlayer;
+import org.kakara.client.local.game.player.PlayerContentInventory;
+import org.kakara.client.local.game.world.ClientChunk;
+import org.kakara.client.local.game.world.ClientWorld;
 import org.kakara.client.scenes.BreakingBlock;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
@@ -19,14 +19,16 @@ import org.kakara.client.scenes.uicomponenets.ChatComponent;
 import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatSendEvent;
-import org.kakara.core.Kakara;
-import org.kakara.core.Status;
-import org.kakara.core.game.ItemStack;
-import org.kakara.core.resources.TextureResolution;
-import org.kakara.core.world.Chunk;
-import org.kakara.core.world.ChunkLocation;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
+import org.kakara.core.common.Kakara;
+import org.kakara.core.common.Status;
+import org.kakara.core.common.game.ItemStack;
+import org.kakara.core.common.resources.TextureResolution;
+import org.kakara.core.common.world.Chunk;
+import org.kakara.core.common.world.ChunkLocation;
+import org.kakara.core.common.world.GameBlock;
+import org.kakara.core.common.world.Location;
+import org.kakara.core.server.ServerGameInstance;
+import org.kakara.core.server.game.ServerItemStack;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
@@ -113,7 +115,7 @@ public class MainGameScene extends AbstractGameScene {
         var resourceManager = gameHandler.getResourceManager();
         List<RenderTexture> textures = new ArrayList<>();
 
-        for (org.kakara.core.resources.Texture resource : Kakara.getResourceManager().getAllTextures()) {
+        for (org.kakara.core.common.resources.Texture resource : Kakara.getGameInstance().getResourceManager().getAllTextures()) {
             //Ignore Textures that shouldn't be added to Texture Atlas
             if (resource.getProperties().contains("NO_TEXTURE_ATLAS")) {
                 continue;
@@ -126,7 +128,7 @@ public class MainGameScene extends AbstractGameScene {
         }
         breakingTexture = new RenderTexture(resourceManager.getResource("breaking/breaking.png"));
         textures.add(breakingTexture);
-        File file = new File(Kakara.getWorkingDirectory(), "tmp");
+        File file = new File(Kakara.getGameInstance().getWorkingDirectory(), "tmp");
         if (!file.exists()) {
             if (!file.mkdir()) {
                 //I am pretty lazy
@@ -152,7 +154,7 @@ public class MainGameScene extends AbstractGameScene {
         chatComponent.setPosition(0, 170);
         chatComponent.addUActionEvent((ChatSendEvent) message -> {
             if (message.startsWith("/")) {
-                Kakara.getCommandManager().executeCommand(message.substring(1), getServer().getPlayerEntity());
+                Kakara.getGameInstance().getCommandManager().executeCommand(message.substring(1), getServer().getPlayerEntity());
             }
         }, ChatSendEvent.class);
         chatComponent.addUActionEvent((ChatFocusEvent) () -> setCurserStatus(true), ChatFocusEvent.class);
@@ -229,19 +231,19 @@ public class MainGameScene extends AbstractGameScene {
                     rb.setOverlay(breakingTexture);
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
-                    Optional<GameBlock> blockAt = ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getBlockAt(location);
+                    Optional<GameBlock> blockAt = getServer().getPlayerEntity().getLocation().getNullableWorld().getBlockAt(location);
                     blockAt.ifPresent(block -> {
                         if (block.getItemStack().getItem() instanceof AirBlock) return;
                         double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack(), player);
                         if (breakingBlock.breakBlock(breakPerFrame * Time.getDeltaTime())) {
-                            ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).placeBlock(Kakara.createItemStack(Kakara.getItemManager().getItem(0)), location);
+                            ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).placeBlock(((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(0)), location);
                             parentChunk.removeBlock(rb);
                             parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                             breakingBlock = null;
 
 //                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
 //                            hotBarCanvas.renderItems();
-                            block.getItemStack().setCount(1);
+                            ((ServerItemStack) block.getItemStack()).setCount(1);
                             ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
                         }
                     });
@@ -262,8 +264,7 @@ public class MainGameScene extends AbstractGameScene {
                 BoxCollider collider = new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f));
                 collider.setPredicate(collidable -> {
                     if (collidable instanceof RenderBlock) return false;
-                    if (collidable instanceof RenderChunk) return false;
-                    return true;
+                    return !(collidable instanceof RenderChunk);
                 });
                 droppedBlock.setCollider(collider);
                 droppedBlock.setVelocityY(-9.18f);
@@ -331,7 +332,7 @@ public class MainGameScene extends AbstractGameScene {
                     //IGNORE Airs
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
                     RenderBlock rbs = new RenderBlock(new BlockLayout(),
-                            renderResourceManager.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
+                            renderResourceManager.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
 
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
@@ -417,7 +418,7 @@ public class MainGameScene extends AbstractGameScene {
                         vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
                         RenderBlock rb = new RenderBlock(new BlockLayout(),
                                 renderResourceManager.get
-                                        ((Kakara.getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
+                                        ((Kakara.getGameInstance().getResourceManager().getTexture(gb.getItemStack().getItem().getTexture(), TextureResolution._16, gb.getItemStack().getItem().getMod()).getLocalPath())), vector3);
 
                         rc.addBlock(rb);
                     }
@@ -465,6 +466,6 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     private RenderTexture getTexture(ItemStack is) {
-        return renderResourceManager.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
+        return renderResourceManager.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 }

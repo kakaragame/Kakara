@@ -2,9 +2,9 @@ package org.kakara.game;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.kakara.core.ControllerKey;
-import org.kakara.core.service.Service;
-import org.kakara.core.service.ServiceManager;
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.service.Service;
+import org.kakara.core.common.service.ServiceManager;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 public class GameServiceManager implements ServiceManager {
 
     //TODO Allow multiple impls of the same service and ways of easily changing IMPL
-    private Set<Service> registeredServices = new HashSet<>();
+    private final Set<Service> registeredServices = new HashSet<>();
 
-    private Multimap<ControllerKey, Consumer<Service>> keySetMap = ArrayListMultimap.create();
-    private Multimap<Class<? extends Service>, Consumer<Service>> serviceMap = ArrayListMultimap.create();
+    private final Multimap<ControllerKey, Consumer<Service>> keySetMap = ArrayListMultimap.create();
+    private final Multimap<Class<? extends Service>, Consumer<Service>> serviceMap = ArrayListMultimap.create();
 
     @Override
     public Optional<Service> getService(ControllerKey controllerKey) {

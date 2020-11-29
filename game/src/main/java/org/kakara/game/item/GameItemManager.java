@@ -1,9 +1,11 @@
 package org.kakara.game.item;
 
-import org.kakara.core.ControllerKey;
-import org.kakara.core.GameInstance;
-import org.kakara.core.game.Item;
-import org.kakara.core.game.ItemManager;
+
+
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.GameInstance;
+import org.kakara.core.common.game.Item;
+import org.kakara.core.common.game.ItemManager;
 
 import java.util.ArrayList;
 import java.util.List;

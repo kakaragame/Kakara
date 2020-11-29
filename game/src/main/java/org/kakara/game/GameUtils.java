@@ -1,11 +1,13 @@
 package org.kakara.game;
 
 
-import org.kakara.core.game.*;
-import org.kakara.core.player.Player;
-import org.kakara.core.world.ChunkLocation;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
+
+
+import org.kakara.core.common.game.*;
+import org.kakara.core.common.player.Player;
+import org.kakara.core.common.world.ChunkLocation;
+import org.kakara.core.common.world.GameBlock;
+import org.kakara.core.common.world.Location;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -1,9 +1,11 @@
 package org.kakara.client.game.world;
 
 import org.jetbrains.annotations.Nullable;
-import org.kakara.core.Kakara;
-import org.kakara.core.Status;
-import org.kakara.core.world.*;
+import org.kakara.core.common.Kakara;
+import org.kakara.core.common.Status;
+import org.kakara.core.common.world.*;
+import org.kakara.core.server.ServerGameInstance;
+import org.kakara.core.server.game.ServerItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,7 @@ public class ClientChunk implements Chunk {
     }
 
     public void placeBlock(GameBlock gameBlock) {
-        gameBlock.getItemStack().setCount(1);
+        ((ServerItemStack) gameBlock.getItemStack().getServerVersion()).setCount(1);
         List<GameBlock> loop = new ArrayList<>(gameBlockList);
         for (int i = 0; i < loop.size(); i++) {
             if (loop.get(i).getLocation().equals(gameBlock.getLocation())) {
@@ -57,7 +59,7 @@ public class ClientChunk implements Chunk {
                 return Optional.ofNullable(loop.get(i));
             }
         }
-        gameBlockList.add(new GameBlock(location, Kakara.createItemStack(Kakara.getItemManager().getItem(0))));
+        gameBlockList.add(new GameBlock(location, ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(0))));
         return getGameBlock(location);
     }
 
@@ -90,7 +92,7 @@ public class ClientChunk implements Chunk {
 
     public void load(ChunkContent base) {
         gameBlockList = base.getGameBlocks();
-        gameBlockList.forEach(block -> block.getItemStack().setCount(1));
+        gameBlockList.forEach(block -> ((ServerItemStack) block.getItemStack().getServerVersion()).setCount(1));
         status = Status.LOADED;
     }
 

@@ -1,8 +1,9 @@
 package org.kakara.client.game.commands;
 
-import org.kakara.core.command.CommandSender;
-import org.kakara.core.mod.Mod;
-import org.kakara.core.mod.game.ModCommand;
+
+import org.kakara.core.common.command.CommandSender;
+import org.kakara.core.common.mod.Mod;
+import org.kakara.core.common.mod.game.ModCommand;
 import org.kakara.game.Server;
 
 import java.util.Collections;

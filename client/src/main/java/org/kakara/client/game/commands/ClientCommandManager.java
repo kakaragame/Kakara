@@ -2,11 +2,12 @@ package org.kakara.client.game.commands;
 
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.MoreUtils;
-import org.kakara.core.ControllerKey;
-import org.kakara.core.command.Command;
-import org.kakara.core.command.CommandManager;
-import org.kakara.core.command.CommandSender;
-import org.kakara.core.command.TabCompleter;
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.command.Command;
+import org.kakara.core.common.command.CommandManager;
+import org.kakara.core.common.command.CommandSender;
+import org.kakara.core.common.command.TabCompleter;
+
 
 import javax.naming.ldap.Control;
 import java.util.HashSet;

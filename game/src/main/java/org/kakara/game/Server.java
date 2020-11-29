@@ -1,7 +1,8 @@
 package org.kakara.game;
 
-import org.kakara.core.ManagedObject;
-import org.kakara.core.player.Player;
+
+import org.kakara.core.common.ManagedObject;
+import org.kakara.core.common.player.Player;
 
 import java.util.List;
 import java.util.UUID;

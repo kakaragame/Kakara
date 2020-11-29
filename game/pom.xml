@@ -50,10 +50,21 @@
     <dependencies>
         <dependency>
             <groupId>org.kakara.core</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0-KT-SNAPSHOT</version>
+            <artifactId>common</artifactId>
+            <version>1.0-RW-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.kakara.core</groupId>
+            <artifactId>server</artifactId>
+            <version>1.0-RW-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>        <dependency>
+        <groupId>org.kakara.core</groupId>
+        <artifactId>client</artifactId>
+        <version>1.0-RW-SNAPSHOT</version>
+        <scope>compile</scope>
+    </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

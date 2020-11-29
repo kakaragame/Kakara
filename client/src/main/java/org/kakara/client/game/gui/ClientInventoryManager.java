@@ -1,9 +1,11 @@
 package org.kakara.client.game.gui;
 
-import org.kakara.core.gui.Inventory;
-import org.kakara.core.gui.InventoryBuilder;
-import org.kakara.core.gui.InventoryManager;
-import org.kakara.core.gui.annotations.BuilderClass;
+
+
+import org.kakara.core.common.gui.Inventory;
+import org.kakara.core.common.gui.InventoryBuilder;
+import org.kakara.core.common.gui.InventoryManager;
+import org.kakara.core.common.gui.annotations.BuilderClass;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -1,11 +1,12 @@
 package org.kakara.client.game.commands;
 
-import org.kakara.core.command.CommandSender;
-import org.kakara.core.game.DefaultGameMode;
-import org.kakara.core.game.GameMode;
-import org.kakara.core.mod.Mod;
-import org.kakara.core.mod.game.ModCommand;
-import org.kakara.core.player.Player;
+
+import org.kakara.core.common.command.CommandSender;
+import org.kakara.core.common.game.DefaultGameMode;
+import org.kakara.core.common.game.GameMode;
+import org.kakara.core.common.mod.Mod;
+import org.kakara.core.common.mod.game.ModCommand;
+import org.kakara.core.common.player.Player;
 import org.kakara.game.GameUtils;
 
 import java.util.Collections;
@@ -35,8 +36,8 @@ public class GameModeCommand extends ModCommand {
             executor.sendMessage(arguments[0] + " Does not exist");
             return;
         }
-        Player player = (Player) executor;
-        player.setGameMode(gameMode);
-        player.sendMessage("Gamemode changed to " + player.getGameMode().getName());
+       // Player player = (S) executor;
+        //player.setGameMode(gameMode);
+       // player.sendMessage("Gamemode changed to " + player.getGameMode().getName());
     }
 }

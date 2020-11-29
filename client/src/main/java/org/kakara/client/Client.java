@@ -1,10 +1,10 @@
 package org.kakara.client;
 
-import org.kakara.core.GameInstance;
+import org.kakara.core.server.ServerGameInstance;
 import org.kakara.game.Server;
 import org.kakara.game.ServerLoadException;
 
-public abstract class Client implements GameInstance {
+public abstract class Client implements ServerGameInstance {
     protected Server server;
 
     public Server getServer() {

@@ -14,7 +14,6 @@ import java.util.*;
 
 public class GameResourceManager implements ResourceManager {
     protected static final String BASE_PATH = "/resources/";
-    protected GameInstance kakaraCore;
     protected File resourceDirectory;
     protected Map<Integer, Texture> textures = new HashMap<>();
 
@@ -149,9 +148,8 @@ public class GameResourceManager implements ResourceManager {
     }
 
     @Override
-    public void load(GameInstance kakaraCore) {
-        this.kakaraCore = kakaraCore;
-        resourceDirectory = new File(kakaraCore.getWorkingDirectory(), "resources");
+    public void load(File basePath) {
+        resourceDirectory = new File(basePath, "resources");
         resourceDirectory.mkdirs();
     }
 

@@ -20,6 +20,7 @@ import org.kakara.core.common.mod.game.GameModManager;
 import org.kakara.core.common.resources.ResourceManager;
 import org.kakara.core.common.service.ServiceManager;
 import org.kakara.core.common.world.WorldGenerationManager;
+import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.game.ServerItemStack;
 import org.kakara.core.server.world.WorldManager;
 import org.kakara.engine.utils.Utils;
@@ -33,7 +34,7 @@ import org.kakara.game.world.GameWorldGenerationManager;
 import java.io.File;
 import java.util.UUID;
 
-public class LocalClient extends Client {
+public class LocalClient extends Client implements ServerGameInstance {
     private GameSettings settings;
     private KakaraGame kakaraGame;
     private ItemManager itemManager;
@@ -51,13 +52,11 @@ public class LocalClient extends Client {
         this.settings = gameSettings;
         this.kakaraGame = kakaraGame;
         workingDirectory = Utils.getCurrentDirectory();
-        worldGenerationManager = new GameWorldGenerationManager();
         itemManager = new GameItemManager();
         modManager = new GameModManager(new KakaraMod(this));
         resourceManager = new ClientResourceManager();
         eventManager = new GameEventManager();
         commandManager = new ClientCommandManager();
-        serviceManager = new GameServiceManager();
         this.localJoin = joinDetails;
     }
 
@@ -76,7 +75,7 @@ public class LocalClient extends Client {
     }
 
     @Override
-    public ItemStack createItemStack(Item item) {
+    public ServerItemStack createItemStack(Item item) {
         return new GameItemStack(1, item);
     }
 
@@ -91,11 +90,6 @@ public class LocalClient extends Client {
         return itemManager;
     }
 
-
-    @Override
-    public ServerItemStack createItemStack(Item item) {
-
-    }
 
     @Override
     public WorldManager getWorldManager() {

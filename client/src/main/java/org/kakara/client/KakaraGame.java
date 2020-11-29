@@ -7,21 +7,24 @@ import org.kakara.client.join.LocalJoin;
 import org.kakara.client.scenes.LoadingScene;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
-
-import org.kakara.core.common.GameInstance;
-import org.kakara.core.common.Kakara;
-import org.kakara.core.common.Status;
+import org.kakara.core.common.*;
 import org.kakara.core.common.engine.EngineCore;
 import org.kakara.core.common.game.GameSettings;
 import org.kakara.core.common.gui.EngineInventoryRenderer;
 import org.kakara.core.common.gui.InventoryProperties;
+import org.kakara.core.common.mod.ModManager;
+import org.kakara.core.common.mod.environment.EnvironmentModManager;
 import org.kakara.core.common.mod.game.GameModManager;
+import org.kakara.core.common.resources.ResourceManager;
 import org.kakara.core.common.resources.Texture;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
+import org.kakara.engine.utils.Utils;
 import org.kakara.game.ServerLoadException;
+import org.kakara.game.mod.KakaraEnvMod;
 import org.kakara.game.mod.KakaraMod;
+import org.kakara.game.resources.GameResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +34,16 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.jar.JarFile;
 
-public class KakaraGame implements Game {
+public class KakaraGame implements Game, EnvironmentInstance {
     public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
     private static KakaraGame kakaraGame;
     private GameInstance kakaraCore;
     private GameHandler gameHandler;
     private Client client;
     private GameSettings settings;
+    private final EnvironmentModManager modManager;
+    private final File workingDirectory;
+    private final ResourceManager resourceManager;
 
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
@@ -48,6 +54,12 @@ public class KakaraGame implements Game {
             File file = new File("test" + File.separator + "mods");
             file.mkdirs();
         }
+        workingDirectory = Utils.getCurrentDirectory();
+        modManager = new EnvironmentModManager(new KakaraEnvMod());
+        modManager.load(this);
+        resourceManager = new GameResourceManager();
+        resourceManager.load(new File(getWorkingDirectory(), "client" + File.separator + "resources"));
+        Kakara.setEnvironmentInstance(this);
 
 
         //Set Shutdown hook
@@ -177,5 +189,25 @@ public class KakaraGame implements Game {
 
     public GameSettings getSettings() {
         return settings;
+    }
+
+    @Override
+    public ModManager getModManager() {
+        return modManager;
+    }
+
+    @Override
+    public File getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    @Override
+    public EnvType getType() {
+        return EnvType.CLIENT;
+    }
+
+    @Override
+    public ResourceManager getResourceManager() {
+        return resourceManager;
     }
 }

@@ -1,15 +1,16 @@
 package org.kakara.game.items;
 
-import org.kakara.core.charm.Charm;
-import org.kakara.core.game.Item;
-import org.kakara.core.game.ItemStack;
+
+import org.kakara.core.common.game.Item;
+import org.kakara.core.common.game.ItemStack;
+import org.kakara.core.server.game.ServerItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class GameItemStack implements ItemStack {
+public class GameItemStack implements ServerItemStack {
     private int count;
     private Item item;
     private String name;
@@ -38,15 +39,7 @@ public class GameItemStack implements ItemStack {
         this.count = count;
     }
 
-    @Override
-    public Map<Charm, Byte> getCharms() {
-        return null;
-    }
 
-    @Override
-    public void addCharm(Charm charm, Byte level) {
-
-    }
 
     @Override
     public String getName() {

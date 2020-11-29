@@ -1,10 +1,10 @@
 package org.kakara.game.resources;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.kakara.core.GameInstance;
-import org.kakara.core.Kakara;
-import org.kakara.core.mod.Mod;
-import org.kakara.core.resources.*;
+import org.kakara.core.common.GameInstance;
+import org.kakara.core.common.Kakara;
+import org.kakara.core.common.mod.Mod;
+import org.kakara.core.common.resources.*;
 
 import java.io.File;
 import java.io.IOException;

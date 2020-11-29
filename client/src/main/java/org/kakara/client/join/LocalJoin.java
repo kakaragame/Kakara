@@ -1,6 +1,7 @@
 package org.kakara.client.join;
 
-import org.kakara.core.client.Save;
+
+import org.kakara.core.client.client.Save;
 
 import java.util.UUID;
 

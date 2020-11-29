@@ -1,6 +1,7 @@
 package org.kakara.game.world;
 
-import org.kakara.core.world.World;
+
+import org.kakara.core.common.world.World;
 
 import java.io.File;
 

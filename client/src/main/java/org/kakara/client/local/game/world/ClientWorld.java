@@ -1,17 +1,17 @@
-package org.kakara.client.game.world;
+package org.kakara.client.local.game.world;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.kakara.client.game.DroppedItem;
 
+import org.kakara.client.local.game.DroppedItem;
 import org.kakara.core.common.Kakara;
-import org.kakara.core.common.Serverable;
 import org.kakara.core.common.Status;
-import org.kakara.core.common.exceptions.NoServerVersionAvailableException;
 import org.kakara.core.common.exceptions.WorldLoadException;
-import org.kakara.core.common.game.ItemStack;
-import org.kakara.core.common.world.*;
+import org.kakara.core.common.world.Chunk;
+import org.kakara.core.common.world.ChunkLocation;
+import org.kakara.core.common.world.Location;
+import org.kakara.core.common.world.WorldGenerator;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.world.ClientChunkWriter;
@@ -282,20 +282,5 @@ public class ClientWorld extends GameWorld {
     @Override
     public Status getStatus() {
         return status;
-    }
-
-    @Override
-    public boolean isServerVersionAvailable() {
-        return true;
-    }
-
-    @Override
-    public <T extends Serverable> T getServerVersion() {
-        return this;
-    }
-
-    @Override
-    public void requiresServerVersion() throws NoServerVersionAvailableException {
-
     }
 }

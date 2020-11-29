@@ -7,17 +7,16 @@ import org.kakara.client.join.LocalJoin;
 import org.kakara.client.scenes.LoadingScene;
 import org.kakara.client.scenes.MainMenuScene;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
-import org.kakara.core.GameInstance;
-import org.kakara.core.Kakara;
-import org.kakara.core.Status;
-import org.kakara.core.engine.EngineCore;
-import org.kakara.core.game.GameSettings;
-import org.kakara.core.gui.EngineInventoryRenderer;
-import org.kakara.core.gui.InventoryProperties;
-import org.kakara.core.gui.bnbi.Size27BoxedInventory;
-import org.kakara.core.gui.bnbi.Size9BoxedInventory;
-import org.kakara.core.mod.game.GameModManager;
-import org.kakara.core.resources.Texture;
+
+import org.kakara.core.common.GameInstance;
+import org.kakara.core.common.Kakara;
+import org.kakara.core.common.Status;
+import org.kakara.core.common.engine.EngineCore;
+import org.kakara.core.common.game.GameSettings;
+import org.kakara.core.common.gui.EngineInventoryRenderer;
+import org.kakara.core.common.gui.InventoryProperties;
+import org.kakara.core.common.mod.game.GameModManager;
+import org.kakara.core.common.resources.Texture;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
@@ -67,7 +66,7 @@ public class KakaraGame implements Game {
             });
             return loadingScene;
         } else {
-            client = new ServerClient(joinDetails, this, settings);
+            //client = new ServerClient(joinDetails, this, settings);
             loadKakaraCore();
 
             //TODO Create a server software and add code to join it. (This wont take that long) :)
@@ -108,7 +107,7 @@ public class KakaraGame implements Game {
     }
 
     private void setupInventory(int size) {
-        Optional<Texture> texture = Kakara.getResourceManager().getTexture("inventories/bnbi_" + size + ".png", KakaraMod.getInstance());
+        Optional<Texture> texture = Kakara.getGameInstance().getResourceManager().getTexture("inventories/bnbi_" + size + ".png", KakaraMod.getInstance());
         if (texture.isEmpty()) {
             LOGGER.warn(String.format("unable to load size: %d Inventory", size));
             return;
@@ -118,10 +117,10 @@ public class KakaraGame implements Game {
         switch (size) {
             case 9:
                 EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties(2));
-                Size9BoxedInventory.setRenderer(render9);
+                //Size9BoxedInventory.setRenderer(render9);
             case 27:
                 EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties());
-                Size27BoxedInventory.setRenderer(renderer27);
+                //Size27BoxedInventory.setRenderer(renderer27);
         }
     }
 

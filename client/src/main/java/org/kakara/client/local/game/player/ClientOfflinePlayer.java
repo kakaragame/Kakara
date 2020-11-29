@@ -1,9 +1,8 @@
-package org.kakara.client.game.player;
+package org.kakara.client.local.game.player;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import org.kakara.game.Server;
 
 import java.util.Objects;

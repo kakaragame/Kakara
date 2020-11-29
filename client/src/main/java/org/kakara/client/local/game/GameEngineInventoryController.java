@@ -1,4 +1,4 @@
-package org.kakara.client.game;
+package org.kakara.client.local.game;
 
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 

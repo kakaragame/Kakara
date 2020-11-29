@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kakara.client.game.DroppedItem;
-
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.Serverable;
 import org.kakara.core.common.Status;
@@ -38,7 +37,7 @@ public class ClientWorld extends GameWorld {
     private Location worldSpawn;
     private ChunkIO chunkIO = null;
     private Status status = Status.LOADING;
-    private List<DroppedItem> droppedItems = new ArrayList<>();
+    private final List<DroppedItem> droppedItems = new ArrayList<>();
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;

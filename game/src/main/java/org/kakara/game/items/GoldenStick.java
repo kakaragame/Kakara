@@ -1,11 +1,11 @@
 package org.kakara.game.items;
 
-import org.kakara.core.annotations.Key;
-import org.kakara.core.annotations.Name;
-import org.kakara.core.annotations.Texture;
-import org.kakara.core.events.player.click.ClickEvent;
-import org.kakara.core.mod.Mod;
-import org.kakara.core.mod.game.ModItem;
+
+import org.kakara.core.common.annotations.Key;
+import org.kakara.core.common.annotations.Name;
+import org.kakara.core.common.annotations.Texture;
+import org.kakara.core.common.mod.Mod;
+import org.kakara.core.common.mod.game.ModItem;
 
 @Key("golden_stick")
 @Name("Golden Stick")
@@ -15,10 +15,5 @@ public class GoldenStick extends ModItem {
         super(mod);
     }
 
-
-    @Override
-    public void onClick(ClickEvent clickEvent) {
-
-    }
 
 }

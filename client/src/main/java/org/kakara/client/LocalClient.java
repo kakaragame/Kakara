@@ -4,7 +4,6 @@ import org.kakara.client.game.ClientResourceManager;
 import org.kakara.client.game.IntegratedServer;
 import org.kakara.client.game.commands.ClientCommandManager;
 import org.kakara.client.join.LocalJoin;
-
 import org.kakara.core.common.EnvType;
 import org.kakara.core.common.Serverable;
 import org.kakara.core.common.command.CommandManager;
@@ -14,7 +13,6 @@ import org.kakara.core.common.exceptions.NoServerVersionAvailableException;
 import org.kakara.core.common.game.GameSettings;
 import org.kakara.core.common.game.Item;
 import org.kakara.core.common.game.ItemManager;
-import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.mod.ModManager;
 import org.kakara.core.common.mod.game.GameModManager;
 import org.kakara.core.common.resources.ResourceManager;
@@ -24,31 +22,28 @@ import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.game.ServerItemStack;
 import org.kakara.core.server.world.WorldManager;
 import org.kakara.engine.utils.Utils;
-import org.kakara.game.GameServiceManager;
 import org.kakara.game.ServerLoadException;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.mod.KakaraMod;
-import org.kakara.game.world.GameWorldGenerationManager;
 
 import java.io.File;
-import java.util.UUID;
 
 public class LocalClient extends Client implements ServerGameInstance {
-    private GameSettings settings;
-    private KakaraGame kakaraGame;
-    private ItemManager itemManager;
-    private ResourceManager resourceManager;
-    private ModManager modManager;
-    private File workingDirectory;
+    private final GameSettings settings;
+    private final KakaraGame kakaraGame;
+    private final ItemManager itemManager;
+    private final ResourceManager resourceManager;
+    private final ModManager modManager;
+    private final File workingDirectory;
     private WorldGenerationManager worldGenerationManager;
-    private EventManager eventManager;
-    private CommandManager commandManager;
+    private final EventManager eventManager;
+    private final CommandManager commandManager;
     private WorldManager worldManager;
     private ServiceManager serviceManager;
     private final LocalJoin localJoin;
 
-    public LocalClient(LocalJoin joinDetails, KakaraGame kakaraGame, GameSettings gameSettings){
+    public LocalClient(LocalJoin joinDetails, KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
         this.kakaraGame = kakaraGame;
         workingDirectory = Utils.getCurrentDirectory();

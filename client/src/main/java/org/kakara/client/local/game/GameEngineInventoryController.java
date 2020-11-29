@@ -1,7 +1,6 @@
 package org.kakara.client.local.game;
 
 import org.kakara.client.scenes.maingamescene.MainGameScene;
-
 import org.kakara.core.common.gui.EngineController;
 import org.kakara.core.common.gui.Inventory;
 import org.kakara.core.common.gui.InventoryProperties;

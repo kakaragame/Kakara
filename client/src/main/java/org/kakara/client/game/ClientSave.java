@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.game.world.ClientWorld;
 import org.kakara.client.utils.ModUtils;
-
 import org.kakara.core.client.client.Save;
 import org.kakara.core.client.client.SaveSettings;
 import org.kakara.core.client.client.SaveSettingsParser;

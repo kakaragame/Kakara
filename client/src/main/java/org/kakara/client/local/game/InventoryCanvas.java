@@ -3,7 +3,6 @@ package org.kakara.client.local.game;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.client.scenes.maingamescene.RenderResourceManager;
-
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.game.Block;
 import org.kakara.core.common.game.Item;
@@ -44,10 +43,10 @@ public class InventoryCanvas extends ComponentCanvas {
     private final Inventory inventory;
     private ObjectCanvas objectCanvas;
     private ComponentCanvas numberCanvas;
-    private Font font;
-    private MainGameScene scene;
+    private final Font font;
+    private final MainGameScene scene;
     private RenderResourceManager renderResourceManager;
-    private Panel panel;
+    private final Panel panel;
     private boolean hadFirstRun = false;
 
     private HoldingItem holdingItem = null;

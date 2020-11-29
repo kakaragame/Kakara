@@ -1,27 +1,19 @@
 package org.kakara.game.items.blocks;
 
-import org.kakara.core.ControllerKey;
-import org.kakara.core.events.entity.StepOnEvent;
-import org.kakara.core.events.player.PlaceEvent;
-import org.kakara.core.events.player.click.ClickEvent;
-import org.kakara.core.game.Block;
-import org.kakara.core.mod.Mod;
+
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.events.RegisteredListener;
+import org.kakara.core.common.game.Block;
+import org.kakara.core.common.mod.Mod;
 import org.kakara.game.NameKeyUtils;
 import org.kakara.game.mod.KakaraMod;
+
+import java.util.Collections;
+import java.util.Set;
 
 //Not to be rendered. It exists solely. So you can set a block to air.
 public class AirBlock implements Block {
     public static final String KEY = "AIR";
-
-    @Override
-    public void onStep(StepOnEvent event) {
-
-    }
-
-    @Override
-    public void onPlace(PlaceEvent event) {
-
-    }
 
     @Override
     public float getHardness() {
@@ -64,7 +56,7 @@ public class AirBlock implements Block {
     }
 
     @Override
-    public void onClick(ClickEvent clickEvent) {
-
+    public Set<RegisteredListener> getRegisteredListeners() {
+        return Collections.emptySet();
     }
 }

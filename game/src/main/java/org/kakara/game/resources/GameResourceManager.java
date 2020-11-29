@@ -1,7 +1,6 @@
 package org.kakara.game.resources;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.kakara.core.common.GameInstance;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.mod.Mod;
 import org.kakara.core.common.resources.*;
@@ -52,7 +51,7 @@ public class GameResourceManager implements ResourceManager {
     @Override
     public void registerTexture(String s, TextureResolution i, Mod mod) {
         if (!s.endsWith(".png")) return;
-        File directory = new File(getModDir(mod), "texture" + File.separator + String.valueOf(i.getResolution()));
+        File directory = new File(getModDir(mod), "texture" + File.separator + i.getResolution());
         directory.mkdirs();
         String path = BASE_PATH + "texture/" + i.getResolution() + "/" + s;
         File file = new File(directory, correctPath(s));

@@ -7,12 +7,11 @@ import org.kakara.core.server.game.ServerItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class GameItemStack implements ServerItemStack {
     private int count;
-    private Item item;
+    private final Item item;
     private String name;
     private List<String> lore;
 

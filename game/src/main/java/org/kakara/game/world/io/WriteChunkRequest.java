@@ -1,7 +1,7 @@
 package org.kakara.game.world.io;
 
-import org.kakara.core.world.ChunkContent;
-import org.kakara.core.world.ChunkLocation;
+import org.kakara.core.common.world.ChunkContent;
+import org.kakara.core.common.world.ChunkLocation;
 import org.kakara.game.GameUtils;
 
 import java.util.ArrayList;

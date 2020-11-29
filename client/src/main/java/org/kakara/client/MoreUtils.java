@@ -1,7 +1,6 @@
 package org.kakara.client;
 
 
-import org.kakara.core.common.Kakara;
 import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.resources.Resource;
 import org.kakara.core.common.world.*;

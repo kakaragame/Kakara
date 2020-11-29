@@ -6,7 +6,6 @@ import org.kakara.core.common.Utils;
 import org.kakara.core.common.exceptions.WorldLoadException;
 import org.kakara.core.common.world.Location;
 
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

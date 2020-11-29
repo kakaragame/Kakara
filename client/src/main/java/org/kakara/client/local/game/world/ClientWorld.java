@@ -3,15 +3,15 @@ package org.kakara.client.local.game.world;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import org.kakara.client.local.game.DroppedItem;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.Status;
+import org.kakara.core.common.Utils;
 import org.kakara.core.common.exceptions.WorldLoadException;
-import org.kakara.core.common.world.Chunk;
-import org.kakara.core.common.world.ChunkLocation;
-import org.kakara.core.common.world.Location;
-import org.kakara.core.common.world.WorldGenerator;
+import org.kakara.core.common.game.Block;
+import org.kakara.core.common.game.ItemStack;
+import org.kakara.core.common.world.*;
+import org.kakara.core.server.ServerGameInstance;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.world.ClientChunkWriter;
@@ -38,7 +38,7 @@ public class ClientWorld extends GameWorld {
     private Location worldSpawn;
     private ChunkIO chunkIO = null;
     private Status status = Status.LOADING;
-    private List<DroppedItem> droppedItems = new ArrayList<>();
+    private final List<DroppedItem> droppedItems = new ArrayList<>();
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
@@ -47,7 +47,7 @@ public class ClientWorld extends GameWorld {
         //TODO replace null with instance of ChunkWriter
         try {
             JsonObject object = getSettings(new File(worldFolder, "world.json"));
-            chunkGenerator = Kakara.getGameInstance().getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
+            chunkGenerator = ((ServerGameInstance) Kakara.getGameInstance()).getWorldGenerationManager().getGenerator(object.get("generator").getAsString());
             if (chunkGenerator == null) {
                 throw new WorldLoadException("Unable to locate ChunkGenerator: " + object.get("generator").getAsString());
             }
@@ -135,9 +135,8 @@ public class ClientWorld extends GameWorld {
     }
 
 
-    @Override
     public @NotNull Optional<GameBlock> setBlock(@Nullable Block block, @NotNull Location location) {
-        return setBlock(Kakara.createItemStack(block), location);
+        return setBlock(((ServerGameInstance) Kakara.getGameInstance()).createItemStack(block), location);
     }
 
     @Override
@@ -283,4 +282,6 @@ public class ClientWorld extends GameWorld {
     public Status getStatus() {
         return status;
     }
+
+
 }

@@ -4,12 +4,12 @@ import me.ryandw11.ods.Compression;
 import me.ryandw11.ods.ObjectDataStructure;
 import me.ryandw11.ods.exception.ODSException;
 import me.ryandw11.ods.tags.ObjectTag;
-import org.kakara.core.serializers.ods.ChunkContentTag;
-import org.kakara.core.world.ChunkContent;
-import org.kakara.core.world.ChunkLocation;
-import org.kakara.core.world.ChunkWriter;
-import org.kakara.core.world.exceptions.ChunkLoadException;
-import org.kakara.core.world.exceptions.ChunkWriteException;
+import org.kakara.core.common.world.ChunkContent;
+import org.kakara.core.common.world.ChunkLocation;
+import org.kakara.core.common.world.ChunkWriter;
+import org.kakara.core.common.world.exceptions.ChunkLoadException;
+import org.kakara.core.common.world.exceptions.ChunkWriteException;
+import org.kakara.core.server.serializers.ods.ChunkContentTag;
 import org.kakara.game.GameUtils;
 import org.kakara.game.world.io.ChunkIOUtils;
 

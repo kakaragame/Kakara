@@ -1,7 +1,6 @@
 package org.kakara.game.item;
 
 
-
 import org.kakara.core.common.ControllerKey;
 import org.kakara.core.common.GameInstance;
 import org.kakara.core.common.game.Item;
@@ -10,7 +9,6 @@ import org.kakara.core.common.game.ItemManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 

@@ -1,6 +1,7 @@
 package org.kakara.game;
 
-import org.kakara.core.ControllerKey;
+
+import org.kakara.core.common.ControllerKey;
 
 public class NameKeyUtils {
     public static final String KAKARA_NAME = "KAKARA";

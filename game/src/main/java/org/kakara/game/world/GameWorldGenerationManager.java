@@ -1,24 +1,25 @@
 package org.kakara.game.world;
 
 import org.jetbrains.annotations.NotNull;
-import org.kakara.core.ControllerKey;
-import org.kakara.core.GameInstance;
-import org.kakara.core.world.WorldGenerationManager;
-import org.kakara.core.world.WorldGenerator;
-import org.kakara.core.world.region.Region;
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.GameInstance;
+import org.kakara.core.common.world.WorldGenerationManager;
+import org.kakara.core.common.world.WorldGenerator;
+import org.kakara.core.common.world.region.Region;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameWorldGenerationManager implements WorldGenerationManager {
     private GameInstance kakaraCore;
-    private List<Region> regions = new ArrayList<>();
-    private List<WorldGenerator> generators = new ArrayList<>();
+    private final List<Region> regions = new ArrayList<>();
+    private final List<WorldGenerator> generators = new ArrayList<>();
 
     @Override
     public void registerRegion(Region region) {
         regions.add(region);
     }
+
 
     @Override
     public void registerChunkGenerator(@NotNull WorldGenerator worldGenerator) {

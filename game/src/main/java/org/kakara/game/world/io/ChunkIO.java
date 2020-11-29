@@ -1,10 +1,11 @@
 package org.kakara.game.world.io;
 
-import org.kakara.core.ManagedObject;
-import org.kakara.core.Status;
-import org.kakara.core.world.ChunkContent;
-import org.kakara.core.world.ChunkLocation;
-import org.kakara.core.world.ChunkWriter;
+
+import org.kakara.core.common.ManagedObject;
+import org.kakara.core.common.Status;
+import org.kakara.core.common.world.ChunkContent;
+import org.kakara.core.common.world.ChunkLocation;
+import org.kakara.core.common.world.ChunkWriter;
 import org.kakara.game.world.GameWorld;
 
 import java.util.List;

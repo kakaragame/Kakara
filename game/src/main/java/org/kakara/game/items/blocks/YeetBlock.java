@@ -1,14 +1,12 @@
 package org.kakara.game.items.blocks;
 
-import org.kakara.core.annotations.Hardness;
-import org.kakara.core.annotations.Key;
-import org.kakara.core.annotations.Name;
-import org.kakara.core.annotations.Texture;
-import org.kakara.core.events.entity.StepOnEvent;
-import org.kakara.core.events.player.PlaceEvent;
-import org.kakara.core.events.player.click.ClickEvent;
-import org.kakara.core.mod.Mod;
-import org.kakara.core.mod.game.ModBlock;
+
+import org.kakara.core.common.annotations.Hardness;
+import org.kakara.core.common.annotations.Key;
+import org.kakara.core.common.annotations.Name;
+import org.kakara.core.common.annotations.Texture;
+import org.kakara.core.common.mod.Mod;
+import org.kakara.core.common.mod.game.ModBlock;
 
 @Texture("blocks/yeet.png")
 @Name("Yeet!")
@@ -19,19 +17,4 @@ public class YeetBlock extends ModBlock {
         super(mod);
     }
 
-    @Override
-    public void onStep(StepOnEvent event) {
-
-    }
-
-    @Override
-    public void onPlace(PlaceEvent event) {
-
-    }
-
-
-    @Override
-    public void onClick(ClickEvent clickEvent) {
-
-    }
 }

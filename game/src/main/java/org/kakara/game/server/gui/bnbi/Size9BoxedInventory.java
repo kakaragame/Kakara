@@ -1,0 +1,45 @@
+package org.kakara.game.server.gui.bnbi;
+
+
+import org.kakara.core.common.gui.InventoryRenderer;
+import org.kakara.core.common.gui.annotations.BuilderClass;
+import org.kakara.core.common.gui.container.BoxedInventoryContainer;
+import org.kakara.core.common.gui.container.InventoryContainer;
+
+@BuilderClass(BasicNineBoxedInventoryBuilder.class)
+public class Size9BoxedInventory extends BasicNineBoxedInventory {
+
+    private static InventoryRenderer renderer;
+    private BoxedInventoryContainer container;
+
+    public Size9BoxedInventory() {
+        super(9);
+    }
+
+    @Override
+    public void redraw() {
+        renderer.redraw(this);
+    }
+
+    @Override
+    public InventoryRenderer getRenderer() {
+        return renderer;
+    }
+
+    public static void setRenderer(InventoryRenderer renderer) {
+        if (Size9BoxedInventory.renderer != null) {
+            throw new IllegalStateException("InventoryRenderer already set");
+        }
+        Size9BoxedInventory.renderer = renderer;
+    }
+
+    @Override
+    public BoxedInventoryContainer getContainer() {
+        return container;
+    }
+
+    @Override
+    public void setInventoryContainer(InventoryContainer inventoryContainer) {
+        container = (BoxedInventoryContainer) inventoryContainer;
+    }
+}

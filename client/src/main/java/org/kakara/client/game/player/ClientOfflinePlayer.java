@@ -2,13 +2,13 @@ package org.kakara.client.game.player;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.kakara.core.common.player.OfflinePlayer;
+import org.kakara.core.common.player.Player;
 import org.kakara.game.Server;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class ClientOfflinePlayer implements OfflinePlayer {
     @NotNull
@@ -74,15 +74,7 @@ public class ClientOfflinePlayer implements OfflinePlayer {
         return Objects.hash(uuid);
     }
 
-    //TODO methods below
-    @Override
-    public void ban(@Nullable String reason) {
 
-    }
-
-    @Override
-    public void ban(long duration, @NotNull TimeUnit timeUnit, @Nullable String reason) {
-    }
 
     public Server getServer() {
         return server;

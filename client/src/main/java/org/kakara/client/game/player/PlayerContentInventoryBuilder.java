@@ -1,6 +1,7 @@
 package org.kakara.client.game.player;
 
-import org.kakara.core.gui.InventoryBuilder;
+
+import org.kakara.core.common.gui.InventoryBuilder;
 
 public class PlayerContentInventoryBuilder implements InventoryBuilder<PlayerContentInventory> {
     @Override

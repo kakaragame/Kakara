@@ -1,17 +1,17 @@
 package org.kakara.client.game.player;
 
 import org.kakara.client.scenes.maingamescene.MainGameScene;
-import org.kakara.core.game.ItemStack;
-import org.kakara.core.gui.EngineInventoryRenderer;
-import org.kakara.core.gui.InventoryRenderer;
-import org.kakara.core.gui.annotations.BuilderClass;
-import org.kakara.core.gui.bnbi.BasicNineBoxedInventory;
+import org.kakara.core.common.game.ItemStack;
+import org.kakara.core.common.gui.EngineInventoryRenderer;
+import org.kakara.core.common.gui.InventoryRenderer;
+import org.kakara.core.common.gui.annotations.BuilderClass;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
+import org.kakara.game.server.gui.bnbi.BasicNineBoxedInventory;
 
 @BuilderClass(PlayerContentInventoryBuilder.class)
 public class PlayerContentInventory extends BasicNineBoxedInventory {
-    private int hotbarSize = 5;
+    private final int hotbarSize = 5;
     private EngineInventoryRenderer engineInventoryRenderer;
 
     public PlayerContentInventory() {

@@ -2,22 +2,18 @@ package org.kakara.client.game.player;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.game.IntegratedServer;
-import org.kakara.core.ControllerKey;
-import org.kakara.core.Kakara;
-import org.kakara.core.events.entity.EntityTeleportEvent;
-import org.kakara.core.game.DefaultGameMode;
-import org.kakara.core.game.Entity;
-import org.kakara.core.game.GameMode;
-import org.kakara.core.gui.Inventory;
-import org.kakara.core.gui.Menu;
-import org.kakara.core.player.PermissionSet;
-import org.kakara.core.player.Player;
-import org.kakara.core.player.PlayerEntity;
-import org.kakara.core.player.Toast;
-import org.kakara.core.world.Location;
+import org.kakara.core.common.Serverable;
+import org.kakara.core.common.exceptions.NoServerVersionAvailableException;
+import org.kakara.core.common.game.DefaultGameMode;
+import org.kakara.core.common.game.Entity;
+import org.kakara.core.common.game.GameMode;
+import org.kakara.core.common.gui.Inventory;
+import org.kakara.core.common.permission.PermissionSet;
+import org.kakara.core.common.player.Player;
+import org.kakara.core.common.player.PlayerEntity;
+import org.kakara.core.common.world.Location;
 import org.kakara.engine.math.Vector3;
 import org.kakara.game.GameUtils;
 
@@ -31,12 +27,12 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     private final Entity entity;
     @NotNull
     private Location location;
-    private String displayName = getName();
-    private short health = 20;
-    private short hunger = 20;
+    private final String displayName = getName();
+    private final short health = 20;
+    private final short hunger = 20;
     private UUID gameItemID;
-    private PlayerContentInventory contentInventory;
-    private GameMode gameMode;
+    private final PlayerContentInventory contentInventory;
+    private final GameMode gameMode;
 
     public ClientPlayer(JsonObject jsonObject, @NotNull Location location, IntegratedServer integratedServer) {
         super(jsonObject, integratedServer);
@@ -47,7 +43,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         } else
             gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());
         contentInventory = new PlayerContentInventory();
-        contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new ControllerKey("KVANILLA", "DIRT"))), 1);
+        //contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new ControllerKey("KVANILLA", "DIRT"))), 1);
     }
 
     @Override
@@ -97,13 +93,6 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         return MoreUtils.locationToVector3(location);
     }
 
-    @Override
-    public void teleport(Location location) {
-        EntityTeleportEvent entityTeleportEvent = new EntityTeleportEvent(this, this.location, location);
-        Kakara.getEventManager().callEvent(entityTeleportEvent);
-        if (!entityTeleportEvent.isCancelled())
-            this.location = entityTeleportEvent.getNewLocation();
-    }
 
     @Override
     public Entity getEntityType() {
@@ -116,18 +105,8 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     }
 
     @Override
-    public void setHealth(short health) {
-        this.health = health;
-    }
-
-    @Override
     public short getHunger() {
         return hunger;
-    }
-
-    @Override
-    public void setHunger(short hunger) {
-        this.hunger = hunger;
     }
 
     @Override
@@ -135,24 +114,6 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         return displayName;
     }
 
-    @Override
-    public void setDisplayName(@NotNull String displayName) {
-        this.displayName = displayName;
-    }
-
-    //TODO the methods below
-    @Override
-    public void kick(@Nullable String reason) {
-
-    }
-
-    @Override
-    public void sendToast(@NotNull Toast toast) {
-
-    }
-
-    @Override
-    public void sendNotification(@NotNull String message) {
 
     }
 
@@ -176,23 +137,12 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         return gameMode;
     }
 
-    @Override
-    public void setGameMode(GameMode gameMode) {
-        this.gameMode = gameMode;
-    }
 
     @Override
     public @NotNull Inventory getInventory() {
         return contentInventory;
     }
 
-    @Override
-    public void openMenu(@NotNull Menu menu) {
-        if (menu instanceof Inventory) {
-            Inventory inventory = (Inventory) menu;
-            inventory.getRenderer().render(inventory);
-        }
-    }
 
     public void moveLocation(double i, double i1, double i2) {
         location = location.add(i, i1, i2);
@@ -208,5 +158,20 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     public void setGameItemID(UUID gameItemID) {
         this.gameItemID = gameItemID;
+    }
+
+    @Override
+    public boolean isServerVersionAvailable() {
+        return false;
+    }
+
+    @Override
+    public <T extends Serverable> T getServerVersion() {
+        return null;
+    }
+
+    @Override
+    public void requiresServerVersion() throws NoServerVersionAvailableException {
+
     }
 }

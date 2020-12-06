@@ -111,7 +111,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
         //TODO Load Inventory
         try {
             setupInventory(9);
-            setupInventory(27);
+            //setupInventory(27);
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }

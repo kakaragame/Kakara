@@ -1,5 +1,6 @@
 package org.kakara.client.scenes.canvases;
 
+import org.kakara.client.KakaraGame;
 import org.kakara.client.local.game.ClientResourceManager;
 import org.kakara.client.local.game.player.PlayerContentInventory;
 import org.kakara.client.scenes.maingamescene.RenderResourceManager;
@@ -47,6 +48,7 @@ public class HotBarCanvas extends ComponentCanvas {
     private ObjectCanvas objectCanvas;
     private final ComponentCanvas numberCanvas;
     private final Font roboto;
+    private boolean enabled;
 
     public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory, Font roboto) {
         super(scene);
@@ -78,6 +80,8 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     public void update() {
+        if (!enabled) return;
+
         boolean update = false;
         for (int i = 0; i < contentInventory.getHotBarContents().length; i++) {
             if (contentInventory.getContainer().getItemStack(i).getCount() <= 0) {
@@ -91,6 +95,7 @@ public class HotBarCanvas extends ComponentCanvas {
 
     @Override
     public void init(UserInterface userInterface, GameHandler handler) {
+        if (!enabled) return;
         super.init(userInterface, handler);
         objectCanvas.init(userInterface, handler);
         numberCanvas.init(userInterface, handler);
@@ -98,6 +103,7 @@ public class HotBarCanvas extends ComponentCanvas {
 
     @Override
     public void render(UserInterface hud, GameHandler handler) {
+        if (!enabled) return;
         super.render(hud, handler);
         objectCanvas.render(hud, handler);
         numberCanvas.render(hud, handler);
@@ -107,6 +113,11 @@ public class HotBarCanvas extends ComponentCanvas {
         if (objectCanvas != null) {
             objectCanvas.clearObjects();
             numberCanvas.clearComponents();
+        }
+        if (contentInventory == null) {
+            KakaraGame.LOGGER.warn("No Player Inventory Found");
+            enabled = false;
+            return;
         }
         try {
             if (objectCanvas == null) {

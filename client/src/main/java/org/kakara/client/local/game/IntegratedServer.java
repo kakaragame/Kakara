@@ -70,14 +70,15 @@ public class IntegratedServer extends Thread implements Server {
         if (!playersFolder.exists()) playersFolder.mkdir();
         this.playerID = playerUUID;
         LOGGER.info("Loading Mod Classes");
-        List<UnModObject> modsToBeLoaded = Kakara.getEnvironmentInstance().getModManager().loadModsFile(save.getModsToLoad());
+        System.out.println("save.getModsToLoad().size() = " + save.getModsToLoad().size());
+        List<UnModObject> modsToBeLoaded = Kakara.getGameInstance().getModManager().loadModsFile(save.getModsToLoad());
         LOGGER.info("Enabling Mods");
-        Kakara.getEnvironmentInstance().getModManager().loadMods(modsToBeLoaded);
-        Kakara.getEnvironmentInstance().getModManager().loadStage(Kakara.getGameInstance().getEventManager());
-        Kakara.getEnvironmentInstance().getModManager().loadStage(Kakara.getGameInstance().getItemManager());
-        Kakara.getEnvironmentInstance().getModManager().loadStage(Kakara.getGameInstance().getCommandManager());
+        Kakara.getGameInstance().getModManager().loadMods(modsToBeLoaded);
+        Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getEventManager());
+        Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getItemManager());
+        Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getCommandManager());
         Kakara.getGameInstance().getItemManager().registerItem(new AirBlock());
-        Kakara.getEnvironmentInstance().getModManager().loadStage(((ServerGameInstance) Kakara.getGameInstance()).getWorldGenerationManager());
+        Kakara.getGameInstance().getModManager().loadStage(((ServerGameInstance) Kakara.getGameInstance()).getWorldGenerationManager());
         LOGGER.info("Loading Worlds");
         try {
             save.prepareWorlds();

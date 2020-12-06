@@ -2,6 +2,7 @@ package org.kakara.game.items.blocks;
 
 
 import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.events.Event;
 import org.kakara.core.common.events.RegisteredListener;
 import org.kakara.core.common.game.Block;
 import org.kakara.core.common.mod.Mod;
@@ -9,7 +10,7 @@ import org.kakara.game.NameKeyUtils;
 import org.kakara.game.mod.KakaraMod;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.Map;
 
 //Not to be rendered. It exists solely. So you can set a block to air.
 public class AirBlock implements Block {
@@ -55,8 +56,9 @@ public class AirBlock implements Block {
         return KakaraMod.getInstance();
     }
 
+
     @Override
-    public Set<RegisteredListener> getRegisteredListeners() {
-        return Collections.emptySet();
+    public Map<Class<? extends Event>, RegisteredListener> getRegisteredListeners() {
+        return Collections.emptyMap();
     }
 }

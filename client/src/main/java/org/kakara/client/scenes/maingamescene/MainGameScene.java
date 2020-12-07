@@ -319,13 +319,11 @@ public class MainGameScene extends AbstractGameScene {
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
                     RenderBlock rbs = new RenderBlock(new BlockLayout(),
                             renderResourceManager.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
-                    //TODO call Server#getServerController()#blockPlace()
-
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                    ((ClientWorld) chunkLoc.getNullableWorld()).placeBlock(GameUtils.getReadyForPlacement(hotBarCanvas.getCurrentItemStack()), MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()));
-                    System.out.println("hotBarCanvas.getCurrentItemStack().getCount() = " + hotBarCanvas.getCurrentItemStack().getCount());
-                    hotBarCanvas.renderItems();
+                    getController().blockPlace(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()), hotBarCanvas.getCurrentItemStack());
+                    //TODO HotBar render should be done by the Inventory
+                    //hotBarCanvas.renderItems();
                 }
 
 
@@ -450,6 +448,10 @@ public class MainGameScene extends AbstractGameScene {
         PauseMenuCanvas.getInstance(kakaraGame, this).close();
         DebugModeCanvas.getInstance(kakaraGame, this).close();
 
+    }
+
+    private ClientServerController getController() {
+        return (ClientServerController) getServer().getServerController();
     }
 
     private RenderTexture getTexture(ItemStack is) {

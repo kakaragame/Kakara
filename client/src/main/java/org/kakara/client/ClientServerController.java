@@ -1,5 +1,6 @@
 package org.kakara.client;
 
+import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.world.Location;
 import org.kakara.game.ServerController;
 
@@ -17,4 +18,6 @@ public interface ClientServerController extends ServerController {
      * @param location
      */
     void blockBreak(Location location);
+
+    void blockPlace(Location location, ItemStack itemStack);
 }

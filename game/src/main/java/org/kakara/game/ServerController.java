@@ -1,5 +1,6 @@
 package org.kakara.game;
 
+import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.world.Location;
 
 public interface ServerController {
@@ -12,5 +13,6 @@ public interface ServerController {
 
     void breakBlock(Location location);
 
+    void placeBlock(Location location, ItemStack itemStack);
 
 }

@@ -3,6 +3,7 @@ package org.kakara.client.local.game;
 import org.kakara.client.ClientServerController;
 import org.kakara.client.local.game.player.ClientPlayer;
 import org.kakara.client.local.game.world.ClientWorld;
+import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.world.GameBlock;
 import org.kakara.core.common.world.Location;
 import org.kakara.core.server.game.ServerItemStack;
@@ -29,6 +30,11 @@ public class LocalServerController implements ClientServerController {
     }
 
     @Override
+    public void blockPlace(Location location, ItemStack itemStack) {
+        placeBlock(location, itemStack);
+    }
+
+    @Override
     public void breakBlock(Location location) {
         Optional<GameBlock> blockAt = server.getPlayerEntity().getLocation().getNullableWorld().getBlockAt(location);
         blockAt.ifPresent(block -> {
@@ -36,6 +42,17 @@ public class LocalServerController implements ClientServerController {
             ((ClientWorld) server.getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
 
         });
+    }
+
+    @Override
+    public void placeBlock(Location location, ItemStack itemStack) {
+        for (ItemStack stack : server.getPlayerEntity().getInventory().getContainer()) {
+            if (stack.equals(itemStack)) {
+                ((ServerItemStack) stack).setCount(stack.getCount() - 1);
+            }
+        }
+        ((ClientWorld) location.getNullableWorld()).placeBlock(LocalUtils.copyItemStackButOnlyOneCount(itemStack), location);
+
     }
 
     @Override

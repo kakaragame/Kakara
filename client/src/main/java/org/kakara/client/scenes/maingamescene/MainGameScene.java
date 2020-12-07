@@ -202,7 +202,7 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
         renderDroppedItems();
-        checkForDroppedItems();
+        //checkForDroppedItems();
         synchronized (updateOnMainThread) {
             while (!updateOnMainThread.isEmpty()) {
                 updateOnMainThread.poll().run();
@@ -278,20 +278,6 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
-    public void checkForDroppedItems() {
-        List<DroppedItem> droppedItems = new ArrayList<>(((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems());
-        for (DroppedItem droppedItem : droppedItems) {
-            if (droppedItem.getGameID() != null) {
-                if (GameUtils.isLocationInsideCurrentLocationRadius(getServer().getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
-                    //TODO re add the inventory
-                    //remove(getItemHandler().getItemWithId(droppedItem.getGameID()).get());
-                    //((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
-                    //((PlayerContentInventory) getServer().getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
-                    //hotBarCanvas.renderItems();
-                }
-            }
-        }
-    }
 
     @EventHandler
     public void onKeyPress(KeyPressEvent e) {

@@ -10,8 +10,10 @@ import org.kakara.client.local.game.commands.KillCommand;
 import org.kakara.client.local.game.commands.StatusCommand;
 import org.kakara.client.local.game.commands.TestInventoryCommand;
 import org.kakara.client.local.game.player.ClientPlayer;
+import org.kakara.client.local.game.player.PlayerContentInventory;
 import org.kakara.client.local.game.world.ClientWorld;
 import org.kakara.client.local.game.world.ClientWorldManager;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.client.utils.IntegratedTime;
 import org.kakara.core.client.client.Save;
 import org.kakara.core.common.Kakara;
@@ -25,6 +27,7 @@ import org.kakara.core.common.player.Player;
 import org.kakara.core.common.world.ChunkLocation;
 import org.kakara.core.common.world.Location;
 import org.kakara.core.server.ServerGameInstance;
+import org.kakara.engine.GameHandler;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
 import org.kakara.game.ServerController;
@@ -57,6 +60,7 @@ public class IntegratedServer extends Thread implements Server {
     private Location lastLocation;
     private Status status = Status.LOADED;
     private final LocalServerController localServerController = new LocalServerController(this);
+    private MainGameScene gameScene;
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID, Runnable sceneTickUpdate) throws ServerLoadException {
         super("Kakara-IntegratedServer");
@@ -197,6 +201,23 @@ public class IntegratedServer extends Thread implements Server {
     }
 
 
+    public void checkForDroppedItems() {
+        ClientWorld clientWorld = (ClientWorld) getPlayerEntity().getLocation().getNullableWorld();
+        List<DroppedItem> droppedItems = new ArrayList<>(clientWorld.getDroppedItems());
+        for (DroppedItem droppedItem : droppedItems) {
+            if (droppedItem.getGameID() != null) {
+                if (GameUtils.isLocationInsideCurrentLocationRadius(getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
+                    //TODO re add the inventory
+                    getGameScene().remove(getGameScene().getItemHandler().getItemWithId(droppedItem.getGameID()).get());
+                    clientWorld.getDroppedItems().remove(droppedItem);
+                    ((PlayerContentInventory) getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
+                    //TODO only re-render HotBar if if adds to the HotBar
+                    //hotBarCanvas.renderItems();
+                }
+            }
+        }
+    }
+
     @Override
     public void update() {
         if (getPlayerEntity().getLocation().getNullableWorld().getStatus() != Status.LOADED) return;
@@ -206,6 +227,7 @@ public class IntegratedServer extends Thread implements Server {
         if (lastLocation.equals(start)) return;
         lastLocation = start;
         if (start.getNullableWorld() == null) return;
+        checkForDroppedItems();
 
 
     }
@@ -272,6 +294,11 @@ public class IntegratedServer extends Thread implements Server {
     @Override
     public void errorClose(Exception e) {
 
+    }
+
+    public MainGameScene getGameScene() {
+        if (gameScene == null) gameScene = (MainGameScene) GameHandler.getInstance().getCurrentScene();
+        return gameScene;
     }
 
     @Override

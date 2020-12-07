@@ -80,7 +80,7 @@ public class MainGameScene extends AbstractGameScene {
     protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
     protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
-    private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue();
+    private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue<>();
     protected ChatComponent chatComponent;
     protected BreakingBlock breakingBlock = null;
     protected HotBarCanvas hotBarCanvas;
@@ -97,12 +97,16 @@ public class MainGameScene extends AbstractGameScene {
         if (getServer() instanceof IntegratedServer) {
             ((IntegratedServer) getServer()).setSceneTickUpdate(this::gameSceneUpdate);
         }
+        if (Kakara.getGameInstance() == null) {
+            throw new IllegalStateException("A Kakara game has not been initialized. ");
+        }
     }
 
 
     @Override
     public void work() {
-
+        //This only exists to make Intellij Happy.
+        KakaraGame.LOGGER.info("Loading MainGameScene");
     }
 
 
@@ -114,13 +118,11 @@ public class MainGameScene extends AbstractGameScene {
         var resourceManager = gameHandler.getResourceManager();
         List<RenderTexture> textures = new ArrayList<>();
 
-        for (org.kakara.core.common.resources.Texture resource : Kakara.getGameInstance().getResourceManager().getAllTextures()) {
+        for (org.kakara.core.common.resources.Texture resource : Objects.requireNonNull(Kakara.getGameInstance()).getResourceManager().getAllTextures()) {
             //Ignore Textures that shouldn't be added to Texture Atlas
             if (resource.getProperties().contains("NO_TEXTURE_ATLAS")) {
                 continue;
             }
-            System.out.println("resource.getPath() = " + resource.getPath());
-
             RenderTexture txt1 = new RenderTexture(resourceManager.getResource(resource.get().getLocalPath()));
             textures.add(txt1);
 
@@ -128,12 +130,8 @@ public class MainGameScene extends AbstractGameScene {
         breakingTexture = new RenderTexture(resourceManager.getResource("breaking/breaking.png"));
         textures.add(breakingTexture);
         File file = new File(Kakara.getGameInstance().getWorkingDirectory(), "tmp");
-        if (!file.exists()) {
-            if (!file.mkdir()) {
-                //I am pretty lazy
-                Kakara.LOGGER.error("Unable to create tmp folder");
-                return;
-            }
+        if (!file.exists() && !file.mkdir()) {
+            throw new IllegalStateException("Unable to create tmp folder.");
         }
         file.deleteOnExit();
         TextureAtlas atlas = new TextureAtlas(textures, file.getAbsolutePath(), this);
@@ -151,13 +149,13 @@ public class MainGameScene extends AbstractGameScene {
         ComponentCanvas main = new ComponentCanvas(this);
         chatComponent = new ChatComponent(roboto, false, this);
         chatComponent.setPosition(0, 170);
-        chatComponent.addUActionEvent((ChatSendEvent) message -> {
+        chatComponent.addUActionEvent(ChatSendEvent.class, (ChatSendEvent) message -> {
             if (message.startsWith("/")) {
                 Kakara.getGameInstance().getCommandManager().executeCommand(message.substring(1), getServer().getPlayerEntity());
             }
-        }, ChatSendEvent.class);
-        chatComponent.addUActionEvent((ChatFocusEvent) () -> setCurserStatus(true), ChatFocusEvent.class);
-        chatComponent.addUActionEvent((ChatBlurEvent) () -> setCurserStatus(false), ChatBlurEvent.class);
+        });
+        chatComponent.addUActionEvent(ChatFocusEvent.class, (ChatFocusEvent) () -> setCurserStatus(true));
+        chatComponent.addUActionEvent(ChatBlurEvent.class, (ChatBlurEvent) () -> setCurserStatus(false));
         main.add(chatComponent);
 
         Rectangle indicator = new Rectangle(new Vector2(0, 0), new Vector2(5, 5), new RGBA(0, 255, 0, 1));
@@ -202,13 +200,15 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
         renderDroppedItems();
-        //checkForDroppedItems();
         synchronized (updateOnMainThread) {
             while (!updateOnMainThread.isEmpty()) {
                 updateOnMainThread.poll().run();
             }
         }
+        blockBreakHandler();
+    }
 
+    private void blockBreakHandler() {
         ClientPlayer player = (ClientPlayer) getServer().getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
@@ -248,7 +248,6 @@ public class MainGameScene extends AbstractGameScene {
                     if (blockAt.isEmpty()) {
                         System.out.println("OUCH");
                     }
-
                 }
             }
         }
@@ -291,7 +290,8 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
-        UUID playerID = ((ClientPlayer) getServer().getPlayerEntity()).getGameItemID().get();
+
+        UUID playerID = ((ClientPlayer) getServer().getPlayerEntity()).getGameItemID().orElseThrow(() -> new IllegalStateException("No Player Entity Found"));
         if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
             Collidable col = this.selectGameItems(20, playerID);
             if (col instanceof RenderBlock) {
@@ -303,7 +303,7 @@ public class MainGameScene extends AbstractGameScene {
                 final Vector3 closestValue = ObjectPickingUtils.closestValue(absoluteBlockPos, getCamera());
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(getServer().getPlayerEntity().getLocation().getNullableWorld(), closestValue.x, closestValue.y, closestValue.z));
                 if (getServer().getPlayerEntity().getLocation().getWorld().isEmpty()) return;
-                Chunk chunk = (getServer().getPlayerEntity().getLocation().getWorld().get()).getChunkAt(chunkLoc);
+                Chunk chunk = (Objects.requireNonNull(getServer().getPlayerEntity().getLocation().getNullableWorld())).getChunkAt(chunkLoc);
                 if (chunk.getStatus() != Status.LOADED) return;
                 ClientChunk cc = (ClientChunk) chunk;
                 List<RenderChunk> rcc = getChunkHandler().getRenderChunkList().stream().filter((rc) -> {

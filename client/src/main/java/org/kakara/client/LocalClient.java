@@ -28,6 +28,7 @@ import org.kakara.game.ServerLoadException;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.mod.KakaraMod;
+import org.kakara.game.server.gui.ServerContainerUtils;
 import org.kakara.game.world.GameWorldGenerationManager;
 
 import java.io.File;
@@ -45,7 +46,7 @@ public class LocalClient extends Client implements ServerGameInstance {
     private WorldManager worldManager;
     private ServiceManager serviceManager;
     private final LocalJoin localJoin;
-    private ContainerUtils containerUtils;
+    private final ContainerUtils containerUtils;
 
     public LocalClient(LocalJoin joinDetails, KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
@@ -57,6 +58,7 @@ public class LocalClient extends Client implements ServerGameInstance {
         eventManager = new GameEventManager();
         commandManager = new ClientCommandManager();
         worldGenerationManager = new GameWorldGenerationManager();
+        containerUtils = new ServerContainerUtils();
         this.localJoin = joinDetails;
     }
 

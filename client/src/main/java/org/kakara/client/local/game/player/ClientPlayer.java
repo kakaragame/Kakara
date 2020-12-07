@@ -42,8 +42,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
             gameMode = DefaultGameMode.CREATIVE;
         } else
             gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());
-        contentInventory = null;
-        //contentInventory = new PlayerContentInventory();
+        contentInventory = new PlayerContentInventory();
         //contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new ControllerKey("KVANILLA", "DIRT"))), 1);
     }
 

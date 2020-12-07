@@ -203,7 +203,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
 
     @Override
     public EnvType getType() {
-        return EnvType.CLIENT;
+        return Kakara.getGameInstance() == null ? EnvType.CLIENT : Kakara.getGameInstance().getType();
     }
 
     @Override

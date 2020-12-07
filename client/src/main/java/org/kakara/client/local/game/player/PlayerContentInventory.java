@@ -8,6 +8,8 @@ import org.kakara.core.common.gui.InventoryRenderer;
 import org.kakara.core.common.gui.annotations.BuilderClass;
 import org.kakara.core.common.gui.container.BoxedInventoryContainer;
 import org.kakara.core.common.gui.container.InventoryContainer;
+import org.kakara.core.server.gui.InventoryUtils;
+import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
 import org.kakara.game.server.gui.bnbi.BasicNineBoxedInventory;
@@ -21,6 +23,9 @@ public class PlayerContentInventory extends BasicNineBoxedInventory {
     public PlayerContentInventory() {
         super(36);
         boxedInventoryContainer = Kakara.getGameInstance().getContainerUtils().createBoxInventoryContainer();
+        for (ItemStack itemStack : InventoryUtils.listWithAir(36)) {
+            ((ServerBoxedInventoryContainer) boxedInventoryContainer).addItemStack(itemStack);
+        }
     }
 
     public ItemStack[] getHotBarContents() {

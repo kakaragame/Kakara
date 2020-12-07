@@ -15,6 +15,7 @@ import java.util.List;
 public class ServerBoxInventoryContainer implements ServerBoxedInventoryContainer {
     private final List<ServerItemStack> items = new ArrayList<>();
 
+
     @Override
     public @NotNull ItemStack getItemStack(@NotNull Point point) {
         return null;
@@ -64,7 +65,7 @@ public class ServerBoxInventoryContainer implements ServerBoxedInventoryContaine
 
     @Override
     public void addItemStack(ItemStack itemStack) {
-
+        items.add((ServerItemStack) itemStack);
     }
 
     @Override

@@ -141,7 +141,7 @@ public class LocalClient extends Client implements ServerGameInstance {
 
     @Override
     public EnvType getType() {
-        return EnvType.CLIENT;
+        return EnvType.SERVER;
     }
 
 

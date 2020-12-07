@@ -80,6 +80,7 @@ public class IntegratedServer extends Thread implements Server {
         Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getItemManager());
         Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getCommandManager());
         Kakara.getGameInstance().getItemManager().registerItem(new AirBlock());
+        System.out.println("Kakara.getEnvironmentInstance().getType() = " + Kakara.getEnvironmentInstance().getType());
         Kakara.getGameInstance().getModManager().loadStage(((ServerGameInstance) Kakara.getGameInstance()).getWorldGenerationManager());
         LOGGER.info("Loading Worlds");
         try {

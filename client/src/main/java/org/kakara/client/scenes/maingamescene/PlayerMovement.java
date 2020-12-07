@@ -1,5 +1,6 @@
 package org.kakara.client.scenes.maingamescene;
 
+import org.kakara.client.ClientServerController;
 import org.kakara.client.local.game.player.ClientPlayer;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.core.common.world.Location;
@@ -66,11 +67,13 @@ public class PlayerMovement {
 
             if (ki.isKeyPressed(GLFW_KEY_G))
                 item.setVelocityY(-9.18f);
-            Location location = player.getLocation();
-            location.set(item.getPosition().x,item.getPosition().y, item.getPosition().z);
-            //I NEED HELP!
             MouseInput mi = mainGameScene.kakaraGame.getGameHandler().getMouseInput();
-            player.moveLocation((float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x());
+
+            Location location;
+            location = new Location(player.getLocation().getNullableWorld(), item.getPosition().x, item.getPosition().y, item.getPosition().z, player.getLocation().getPitch(), player.getLocation().getYaw());
+            location = location.add(new Location(0, 0, 0, (float) mi.getDeltaPosition().y(), (float) mi.getDeltaPosition().x()));
+            ((ClientServerController) mainGameScene.getServer().getServerController()).playerMove(location);
+            //TODO change ordering. In this current method on a server will result in large amounts of lag.
             Location l = player.getLocation();
             mainGameScene.getCamera().setPosition((float) l.getX(), (float) l.getY() + 1, (float) l.getZ());
             mainGameScene.getCamera().setRotation(l.getPitch(), l.getYaw(), 0);
@@ -81,7 +84,7 @@ public class PlayerMovement {
                     RenderBlock block = (RenderBlock) objectFound;
                     // This does not mutate the Vector3.
                     mainGameScene.blockSelector.setPosition(block.getPosition().add(block.getParentChunk().getPosition()));
-                }else{
+                } else {
                     mainGameScene.blockSelector.setPosition((float) l.getX(), -10, (float) l.getZ());
                 }
             } catch (NullPointerException ignored) {

@@ -57,7 +57,7 @@ public class GameUtils {
             return 50d;
         }
         float blockHardness = ((Block) block.getItemStack().getItem()).getHardness();
-        float toolHardness = toolHardness(itemStack.getItem());
+        float toolHardness = itemStack == null ? 1 : toolHardness(itemStack.getItem());
         if (blockHardness == toolHardness) {
             return 5d;
         } else if (blockHardness < toolHardness) {

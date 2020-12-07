@@ -2,6 +2,7 @@ package org.kakara.client.scenes.maingamescene;
 
 
 import org.kakara.client.Client;
+import org.kakara.client.ClientServerController;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.engine.item.HorizontalRotationFeature;
@@ -27,8 +28,6 @@ import org.kakara.core.common.world.Chunk;
 import org.kakara.core.common.world.ChunkLocation;
 import org.kakara.core.common.world.GameBlock;
 import org.kakara.core.common.world.Location;
-import org.kakara.core.server.ServerGameInstance;
-import org.kakara.core.server.game.ServerItemStack;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
@@ -95,7 +94,7 @@ public class MainGameScene extends AbstractGameScene {
         this.client = client;
         this.kakaraGame = kakaraGame;
 
-        if (getServer() instanceof IntegratedServer){
+        if (getServer() instanceof IntegratedServer) {
             ((IntegratedServer) getServer()).setSceneTickUpdate(this::gameSceneUpdate);
         }
     }
@@ -198,7 +197,7 @@ public class MainGameScene extends AbstractGameScene {
         movement.playerMovement();
         hotBarCanvas.update();
         if (chatComponent != null) {
-            if (getServer() instanceof IntegratedServer){
+            if (getServer() instanceof IntegratedServer) {
                 ((IntegratedServer) getServer()).newMessages().forEach(s -> chatComponent.addMessage(s));
             }
         }
@@ -234,17 +233,16 @@ public class MainGameScene extends AbstractGameScene {
                     Optional<GameBlock> blockAt = getServer().getPlayerEntity().getLocation().getNullableWorld().getBlockAt(location);
                     blockAt.ifPresent(block -> {
                         if (block.getItemStack().getItem() instanceof AirBlock) return;
-                        double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), hotBarCanvas.getCurrentItemStack(), player);
+                        //hotBarCanvas.getCurrentItemStack()
+                        double breakPerFrame = GameUtils.getBreakingTime(blockAt.get(), null, player);
                         if (breakingBlock.breakBlock(breakPerFrame * Time.getDeltaTime())) {
-                            ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).placeBlock(((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(0)), location);
+                            //If the block was cancelled. By the server it will require a re-render. This might be changed in the future.
                             parentChunk.removeBlock(rb);
                             parentChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
+                            //Remove old breakingBlock
                             breakingBlock = null;
-
-//                            hotBarCanvas.getContentInventory().addItemStackForPickup(block.getItemStack());
-//                            hotBarCanvas.renderItems();
-                            ((ServerItemStack) block.getItemStack()).setCount(1);
-                            ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).dropItem(block.getLocation(), block.getItemStack());
+                            //call the blockBreak
+                            ((ClientServerController) getServer().getServerController()).blockBreak(location);
                         }
                     });
                     if (blockAt.isEmpty()) {
@@ -257,6 +255,7 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     public void renderDroppedItems() {
+
         for (DroppedItem droppedItem : ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
             if (droppedItem.getGameID() == null) {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
@@ -283,11 +282,12 @@ public class MainGameScene extends AbstractGameScene {
         List<DroppedItem> droppedItems = new ArrayList<>(((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems());
         for (DroppedItem droppedItem : droppedItems) {
             if (droppedItem.getGameID() != null) {
-                if (GameUtils.isLocationInsideCurrentLocationRadius(getServer().getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)){
-                    remove(getItemHandler().getItemWithId(droppedItem.getGameID()).get());
-                    ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
-                    ((PlayerContentInventory) getServer().getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
-                    hotBarCanvas.renderItems();
+                if (GameUtils.isLocationInsideCurrentLocationRadius(getServer().getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
+                    //TODO re add the inventory
+                    //remove(getItemHandler().getItemWithId(droppedItem.getGameID()).get());
+                    //((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems().remove(droppedItem);
+                    //((PlayerContentInventory) getServer().getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
+                    //hotBarCanvas.renderItems();
                 }
             }
         }
@@ -333,6 +333,7 @@ public class MainGameScene extends AbstractGameScene {
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
                     RenderBlock rbs = new RenderBlock(new BlockLayout(),
                             renderResourceManager.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
+                    //TODO call Server#getServerController()#blockPlace()
 
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);

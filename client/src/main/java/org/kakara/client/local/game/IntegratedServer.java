@@ -27,6 +27,7 @@ import org.kakara.core.common.world.Location;
 import org.kakara.core.server.ServerGameInstance;
 import org.kakara.game.GameUtils;
 import org.kakara.game.Server;
+import org.kakara.game.ServerController;
 import org.kakara.game.ServerLoadException;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.mod.KakaraMod;
@@ -55,6 +56,7 @@ public class IntegratedServer extends Thread implements Server {
     private Runnable sceneTickUpdate;
     private Location lastLocation;
     private Status status = Status.LOADED;
+    private final LocalServerController localServerController = new LocalServerController(this);
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID, Runnable sceneTickUpdate) throws ServerLoadException {
         super("Kakara-IntegratedServer");
@@ -269,5 +271,10 @@ public class IntegratedServer extends Thread implements Server {
     @Override
     public void errorClose(Exception e) {
 
+    }
+
+    @Override
+    public ServerController getServerController() {
+        return localServerController;
     }
 }

@@ -40,4 +40,6 @@ public interface Server extends ManagedObject {
     void renderMessageToConsole(String message);
 
     void errorClose(Exception e);
+
+    ServerController getServerController();
 }

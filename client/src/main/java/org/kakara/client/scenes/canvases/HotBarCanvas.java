@@ -48,7 +48,7 @@ public class HotBarCanvas extends ComponentCanvas {
     private ObjectCanvas objectCanvas;
     private final ComponentCanvas numberCanvas;
     private final Font roboto;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory, Font roboto) {
         super(scene);

@@ -1,19 +1,25 @@
 package org.kakara.game.server.gui;
 
+import org.apache.commons.collections4.iterators.ArrayIterator;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.core.common.Serverable;
 import org.kakara.core.common.exceptions.NoServerVersionAvailableException;
 import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.server.game.ServerItemStack;
+import org.kakara.core.server.gui.InventoryUtils;
 import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
+import org.kakara.game.items.blocks.AirBlock;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class ServerBoxInventoryContainer implements ServerBoxedInventoryContainer {
-    private final List<ServerItemStack> items = new ArrayList<>();
+    private final ServerItemStack[] serverItemStacks;
+
+    public ServerBoxInventoryContainer(int i) {
+        serverItemStacks = InventoryUtils.arrayWithAir(i);
+
+    }
 
 
     @Override
@@ -23,33 +29,28 @@ public class ServerBoxInventoryContainer implements ServerBoxedInventoryContaine
 
     @Override
     public @NotNull ItemStack getItemStack(int i) {
-        return null;
+        return serverItemStacks[i];
     }
 
     @Override
     public @NotNull ItemStack[] getContents() {
-        return items.toArray(new ServerItemStack[0]);
+        return serverItemStacks;
     }
 
     @Override
     public int getNextEmtpySlot() {
-        return 0;
+        for (int i = 0; i < serverItemStacks.length; i++) {
+            if (serverItemStacks[i].getItem() instanceof AirBlock) {
+                return i;
+            }
+        }
+        return serverItemStacks.length + 1;
     }
 
     @NotNull
     @Override
     public Iterator<ItemStack> iterator() {
-        return new Iterator<>() {
-            @Override
-            public boolean hasNext() {
-                return items.iterator().hasNext();
-            }
-
-            @Override
-            public ServerItemStack next() {
-                return items.iterator().next();
-            }
-        };
+        return new ArrayIterator<>(serverItemStacks);
     }
 
 
@@ -60,12 +61,16 @@ public class ServerBoxInventoryContainer implements ServerBoxedInventoryContaine
 
     @Override
     public void setItemStack(int i, ItemStack itemStack) {
-
+        serverItemStacks[i] = (ServerItemStack) itemStack;
     }
 
     @Override
     public void addItemStack(ItemStack itemStack) {
-        items.add((ServerItemStack) itemStack);
+        //TODO combine ItemStacks if possible
+        if (getNextEmtpySlot() > serverItemStacks.length) {
+            return;
+        }
+        setItemStack(getNextEmtpySlot(), itemStack);
     }
 
     @Override
@@ -80,7 +85,7 @@ public class ServerBoxInventoryContainer implements ServerBoxedInventoryContaine
 
     @Override
     public <T extends Serverable> T getServerVersion() {
-        return null;
+        return (T) this;
     }
 
     @Override

@@ -318,7 +318,7 @@ public class MainGameScene extends AbstractGameScene {
                     //IGNORE Airs
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
                     RenderBlock rbs = new RenderBlock(new BlockLayout(),
-                            renderResourceManager.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
+                            renderResourceManager.get(GameResourceManager.correctPath(Objects.requireNonNull(Kakara.getGameInstance()).getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
                     getController().blockPlace(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()), hotBarCanvas.getCurrentItemStack());

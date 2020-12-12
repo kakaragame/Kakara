@@ -123,7 +123,8 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
 
     @Override
     public void sendMessage(@NotNull String message) {
-        getServer().renderMessageToConsole(message);
+
+        getServer().getServerController().sendMessage(message.getBytes());
     }
 
     @Override

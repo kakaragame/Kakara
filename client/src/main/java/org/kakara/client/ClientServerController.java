@@ -20,4 +20,6 @@ public interface ClientServerController extends ServerController {
     void blockBreak(Location location);
 
     void blockPlace(Location location, ItemStack itemStack);
+
+    void messageSend(byte[] message);
 }

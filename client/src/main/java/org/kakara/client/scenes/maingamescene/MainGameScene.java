@@ -150,9 +150,10 @@ public class MainGameScene extends AbstractGameScene {
         chatComponent = new ChatComponent(roboto, false, this);
         chatComponent.setPosition(0, 170);
         chatComponent.addUActionEvent(ChatSendEvent.class, (ChatSendEvent) message -> {
-            if (message.startsWith("/")) {
-                Kakara.getGameInstance().getCommandManager().executeCommand(message.substring(1), getServer().getPlayerEntity());
-            }
+//            if (message.startsWith("/")) {
+//                Kakara.getGameInstance().getCommandManager().executeCommand(message.substring(1), getServer().getPlayerEntity());
+//            }
+            getController().messageSend(message.getBytes());
         });
         chatComponent.addUActionEvent(ChatFocusEvent.class, (ChatFocusEvent) () -> setCurserStatus(true));
         chatComponent.addUActionEvent(ChatBlurEvent.class, (ChatBlurEvent) () -> setCurserStatus(false));
@@ -194,11 +195,7 @@ public class MainGameScene extends AbstractGameScene {
         DebugModeCanvas.getInstance(kakaraGame, this).update();
         movement.playerMovement();
         hotBarCanvas.update();
-        if (chatComponent != null) {
-            if (getServer() instanceof IntegratedServer) {
-                ((IntegratedServer) getServer()).newMessages().forEach(s -> chatComponent.addMessage(s));
-            }
-        }
+
         renderDroppedItems();
         synchronized (updateOnMainThread) {
             while (!updateOnMainThread.isEmpty()) {
@@ -448,6 +445,10 @@ public class MainGameScene extends AbstractGameScene {
         PauseMenuCanvas.getInstance(kakaraGame, this).close();
         DebugModeCanvas.getInstance(kakaraGame, this).close();
 
+    }
+
+    public ChatComponent getChatComponent() {
+        return chatComponent;
     }
 
     private ClientServerController getController() {

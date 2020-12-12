@@ -31,16 +31,16 @@ public class ChatComponent extends GeneralComponent {
 
     final float xSize = 700;
     String tempStorage = "";
-    private Font font;
+    private final Font font;
     private boolean alwaysShowHistory;
-    private Text textAreaText;
+    private final Text textAreaText;
     private boolean focus;
     private String actualText;
-    private Panel historyPanel;
-    private Rectangle historyRectangle;
+    private final Panel historyPanel;
+    private final Rectangle historyRectangle;
     private boolean wait;
-    private List<String> history;
-    private List<String> sentHistory = new ArrayList<>();
+    private final List<String> history;
+    private final List<String> sentHistory = new ArrayList<>();
     private int historyIndex = -1;
     private float timer = 0;
     private long backspaceLag = System.currentTimeMillis();
@@ -184,8 +184,8 @@ public class ChatComponent extends GeneralComponent {
 
         if (evt.isKeyPressed(GLFW_KEY_ENTER)) {
             String t = actualText;
-            history.add(actualText);
-            sentHistory.add(actualText);
+            //history.add(actualText);
+            //sentHistory.add(actualText);
             actualText = "";
             triggerEvent(ChatSendEvent.class, t);
         }

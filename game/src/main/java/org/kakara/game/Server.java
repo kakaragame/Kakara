@@ -37,7 +37,6 @@ public interface Server extends ManagedObject {
 
     void close();
 
-    void renderMessageToConsole(String message);
 
     void errorClose(Exception e);
 

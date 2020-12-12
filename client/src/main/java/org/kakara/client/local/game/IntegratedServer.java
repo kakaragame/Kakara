@@ -55,7 +55,6 @@ public class IntegratedServer extends Thread implements Server {
     private final IntegratedTime time = new IntegratedTime();
     private boolean running = true;
     private final Player player;
-    private List<String> messages = new ArrayList<>();
     private Runnable sceneTickUpdate;
     private Location lastLocation;
     private Status status = Status.LOADED;
@@ -276,16 +275,6 @@ public class IntegratedServer extends Thread implements Server {
         running = false;
     }
 
-    public List<String> newMessages() {
-        List<String> clone = new ArrayList<>(messages);
-        messages = new ArrayList<>();
-        return clone;
-    }
-
-    @Override
-    public void renderMessageToConsole(String message) {
-        messages.add(message);
-    }
 
     public void setSceneTickUpdate(Runnable sceneTickUpdate) {
         this.sceneTickUpdate = sceneTickUpdate;

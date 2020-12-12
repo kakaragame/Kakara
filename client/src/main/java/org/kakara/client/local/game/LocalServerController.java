@@ -3,6 +3,7 @@ package org.kakara.client.local.game;
 import org.kakara.client.ClientServerController;
 import org.kakara.client.local.game.player.ClientPlayer;
 import org.kakara.client.local.game.world.ClientWorld;
+import org.kakara.core.common.Kakara;
 import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.world.GameBlock;
 import org.kakara.core.common.world.Location;
@@ -35,6 +36,18 @@ public class LocalServerController implements ClientServerController {
     }
 
     @Override
+    public void messageSend(byte[] message) {
+        //TODO call Message send Event
+
+        String stringMessage = new String(message);
+        if (stringMessage.startsWith("/")) {
+            Kakara.getGameInstance().getCommandManager().executeCommand(stringMessage.substring(1), server.getPlayerEntity());
+            return;
+        }
+        sendMessage(message);
+    }
+
+    @Override
     public void breakBlock(Location location) {
         Optional<GameBlock> blockAt = server.getPlayerEntity().getLocation().getNullableWorld().getBlockAt(location);
         blockAt.ifPresent(block -> {
@@ -53,6 +66,11 @@ public class LocalServerController implements ClientServerController {
         }
         ((ClientWorld) location.getNullableWorld()).placeBlock(LocalUtils.copyItemStackButOnlyOneCount(itemStack), location);
 
+    }
+
+    @Override
+    public void sendMessage(byte[] message) {
+        server.getGameScene().getChatComponent().addMessage(new String(message));
     }
 
     @Override

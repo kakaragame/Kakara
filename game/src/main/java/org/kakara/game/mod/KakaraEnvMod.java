@@ -1,7 +1,6 @@
 package org.kakara.game.mod;
 
 import org.kakara.core.common.EnvironmentInstance;
-import org.kakara.core.common.GameInstance;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.mod.Mod;
 import org.kakara.core.common.mod.ModRules;
@@ -78,8 +77,5 @@ public class KakaraEnvMod implements Mod {
         return "KAKARA";
     }
 
-    @Override
-    public GameInstance getGameInstance() {
-        return Kakara.getGameInstance();
-    }
+
 }

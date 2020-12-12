@@ -5,15 +5,15 @@ import org.kakara.core.common.command.CommandSender;
 import org.kakara.core.common.game.DefaultGameMode;
 import org.kakara.core.common.game.GameMode;
 import org.kakara.core.common.mod.Mod;
-import org.kakara.core.common.mod.game.ModCommand;
 import org.kakara.core.common.player.Player;
 import org.kakara.game.GameUtils;
+import org.kakara.game.commands.BuiltinCommand;
 
 import java.util.Collections;
 
-public class GameModeCommand extends ModCommand {
+public class GameModeCommand extends BuiltinCommand {
     public GameModeCommand(Mod mod) {
-        super(Collections.singleton("gm"), "", mod, "gamemode");
+        super(Collections.singleton("gm"), "", "gamemode");
     }
 
     @Override

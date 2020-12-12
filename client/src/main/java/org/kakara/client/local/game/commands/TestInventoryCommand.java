@@ -3,16 +3,16 @@ package org.kakara.client.local.game.commands;
 
 import org.kakara.core.common.command.CommandSender;
 import org.kakara.core.common.mod.Mod;
-import org.kakara.core.common.mod.game.ModCommand;
 import org.kakara.game.Server;
+import org.kakara.game.commands.BuiltinCommand;
 
 import java.util.Collections;
 
-public class TestInventoryCommand extends ModCommand {
-    private Server server;
+public class TestInventoryCommand extends BuiltinCommand {
+    private final Server server;
 
     public TestInventoryCommand(Mod mod, Server server) {
-        super(Collections.singleton("tinv"), "", mod, "test-inventory");
+        super(Collections.singleton("tinv"), "", "test-inventory");
         this.server = server;
     }
 

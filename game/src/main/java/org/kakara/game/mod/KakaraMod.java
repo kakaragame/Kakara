@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 public class KakaraMod implements Mod {
     private static KakaraMod instance;
-    private GameInstance gameInstance;
+    private final GameInstance gameInstance;
 
     public KakaraMod(GameInstance gameInstance) {
         this.gameInstance = gameInstance;
@@ -78,8 +78,5 @@ public class KakaraMod implements Mod {
         return "KAKARA";
     }
 
-    @Override
-    public GameInstance getGameInstance() {
-        return gameInstance;
-    }
+
 }

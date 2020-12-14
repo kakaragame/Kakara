@@ -13,14 +13,19 @@ import org.kakara.core.common.game.GameSettings;
 import org.kakara.core.common.gui.EngineInventoryRenderer;
 import org.kakara.core.common.gui.InventoryProperties;
 import org.kakara.core.common.mod.ModManager;
+import org.kakara.core.common.mod.ModRules;
 import org.kakara.core.common.mod.environment.EnvironmentModManager;
 import org.kakara.core.common.mod.game.GameModManager;
 import org.kakara.core.common.resources.ResourceManager;
 import org.kakara.core.common.resources.Texture;
+import org.kakara.core.common.service.ServiceManager;
+import org.kakara.core.common.settings.SettingManager;
+import org.kakara.core.common.settings.simple.SimpleSettingManager;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
+import org.kakara.game.GameServiceManager;
 import org.kakara.game.ServerLoadException;
 import org.kakara.game.mod.KakaraEnvMod;
 import org.kakara.game.mod.KakaraMod;
@@ -44,6 +49,8 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private final EnvironmentModManager modManager;
     private final File workingDirectory;
     private final ResourceManager resourceManager;
+    private final ServiceManager serviceManager;
+    private final SettingManager settingManager;
 
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
@@ -60,7 +67,8 @@ public class KakaraGame implements Game, EnvironmentInstance {
         resourceManager = new GameResourceManager();
         resourceManager.load(new File(getWorkingDirectory(), "client" + File.separator + "resources"));
         Kakara.setEnvironmentInstance(this);
-
+        serviceManager = new GameServiceManager();
+        settingManager = new SimpleSettingManager(ModRules.ModTarget.ENVIRONMENT);
 
         //Set Shutdown hook
         //Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
@@ -209,5 +217,20 @@ public class KakaraGame implements Game, EnvironmentInstance {
     @Override
     public ResourceManager getResourceManager() {
         return resourceManager;
+    }
+
+    @Override
+    public SettingManager getEnvironmentSettingsManager() {
+        return settingManager;
+    }
+
+    @Override
+    public ControllerKey createSystemKey(String s) {
+        return ControllerKey.create("KAKARA", s);
+    }
+
+    @Override
+    public ServiceManager getServiceManager() {
+        return serviceManager;
     }
 }

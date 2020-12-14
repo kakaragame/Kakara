@@ -16,14 +16,18 @@ import org.kakara.core.common.game.Item;
 import org.kakara.core.common.game.ItemManager;
 import org.kakara.core.common.gui.container.ContainerUtils;
 import org.kakara.core.common.mod.ModManager;
+import org.kakara.core.common.mod.ModRules;
 import org.kakara.core.common.mod.game.GameModManager;
 import org.kakara.core.common.resources.ResourceManager;
 import org.kakara.core.common.service.ServiceManager;
+import org.kakara.core.common.settings.SettingManager;
+import org.kakara.core.common.settings.simple.SimpleSettingManager;
 import org.kakara.core.common.world.WorldGenerationManager;
 import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.game.ServerItemStack;
 import org.kakara.core.server.world.WorldManager;
 import org.kakara.engine.utils.Utils;
+import org.kakara.game.GameServiceManager;
 import org.kakara.game.ServerLoadException;
 import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
@@ -44,7 +48,8 @@ public class LocalClient extends Client implements ServerGameInstance {
     private final EventManager eventManager;
     private final CommandManager commandManager;
     private WorldManager worldManager;
-    private ServiceManager serviceManager;
+    private final ServiceManager serviceManager;
+    private final SettingManager settingManager;
     private final LocalJoin localJoin;
     private final ContainerUtils containerUtils;
 
@@ -59,6 +64,8 @@ public class LocalClient extends Client implements ServerGameInstance {
         commandManager = new ClientCommandManager();
         worldGenerationManager = new GameWorldGenerationManager();
         containerUtils = new ServerContainerUtils();
+        serviceManager = new GameServiceManager();
+        settingManager = new SimpleSettingManager(ModRules.ModTarget.GAME);
         this.localJoin = joinDetails;
     }
 
@@ -114,6 +121,11 @@ public class LocalClient extends Client implements ServerGameInstance {
     }
 
     @Override
+    public ServiceManager getServiceManager() {
+        return serviceManager;
+    }
+
+    @Override
     public File getWorkingDirectory() {
         return workingDirectory;
     }
@@ -142,6 +154,11 @@ public class LocalClient extends Client implements ServerGameInstance {
     @Override
     public EnvType getType() {
         return EnvType.SERVER;
+    }
+
+    @Override
+    public SettingManager getGameSettingsManager() {
+        return settingManager;
     }
 
 

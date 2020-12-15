@@ -1,17 +1,27 @@
 package org.kakara.client.join;
 
-public abstract class JoinDetails {
-    private JoinType envType;
+import java.io.File;
 
-    public JoinDetails(JoinType envType) {
+public abstract class JoinDetails {
+    private final JoinType envType;
+    private final File workingDirectory;
+
+    public JoinDetails(JoinType envType, File workingDirectory) {
         this.envType = envType;
+        if (!workingDirectory.exists()) workingDirectory.mkdirs();
+        this.workingDirectory = workingDirectory;
     }
 
     public JoinType getEnvType() {
         return envType;
     }
 
-    public static enum JoinType {
+    public File getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+
+    public enum JoinType {
         SERVER,
         LOCAL
     }

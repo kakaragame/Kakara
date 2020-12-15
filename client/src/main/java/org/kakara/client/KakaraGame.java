@@ -68,8 +68,11 @@ public class KakaraGame implements Game, EnvironmentInstance {
         resourceManager.load(new File(getWorkingDirectory(), "client" + File.separator + "resources"));
         Kakara.setEnvironmentInstance(this);
         serviceManager = new GameServiceManager();
-        settingManager = new SimpleSettingManager(ModRules.ModTarget.ENVIRONMENT);
 
+        File settings = new File(getWorkingDirectory(), "settings");
+        settings.mkdir();
+        settingManager = new SimpleSettingManager(settings);
+        ((SimpleSettingManager) settingManager).init(ModRules.ModTarget.ENVIRONMENT);
         //Set Shutdown hook
         //Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
     }
@@ -106,6 +109,8 @@ public class KakaraGame implements Game, EnvironmentInstance {
         client.getItemManager().load(client);
         client.getEventManager().load(client);
         client.getModManager().load(client);
+        ((SimpleSettingManager) client.getGameSettingsManager()).init(ModRules.ModTarget.GAME);
+
         try {
             //Loading Local Resources
             File file = TheCodeOfAMadMan.getJarFromClass(KakaraGame.class);

@@ -56,7 +56,7 @@ public class LocalClient extends Client implements ServerGameInstance {
     public LocalClient(LocalJoin joinDetails, KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
         this.kakaraGame = kakaraGame;
-        workingDirectory = Utils.getCurrentDirectory();
+        workingDirectory = joinDetails.getWorkingDirectory();
         itemManager = new GameItemManager();
         modManager = new GameModManager(new KakaraMod(this));
         resourceManager = new ClientResourceManager();
@@ -65,7 +65,9 @@ public class LocalClient extends Client implements ServerGameInstance {
         worldGenerationManager = new GameWorldGenerationManager();
         containerUtils = new ServerContainerUtils();
         serviceManager = new GameServiceManager();
-        settingManager = new SimpleSettingManager(ModRules.ModTarget.GAME);
+        File settings = new File(workingDirectory, "settings");
+        settings.mkdir();
+        settingManager = new SimpleSettingManager(settings);
         this.localJoin = joinDetails;
     }
 
@@ -76,6 +78,7 @@ public class LocalClient extends Client implements ServerGameInstance {
         } else {
             //TODO implement world joining
         }
+
     }
 
     @Override

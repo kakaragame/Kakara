@@ -30,6 +30,7 @@ import org.kakara.game.ServerLoadException;
 import org.kakara.game.mod.KakaraEnvMod;
 import org.kakara.game.mod.KakaraMod;
 import org.kakara.game.resources.GameResourceManager;
+import org.kakara.game.settings.JsonSettingController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
         resourceManager.load(new File(getWorkingDirectory(), "client" + File.separator + "resources"));
         Kakara.setEnvironmentInstance(this);
         serviceManager = new GameServiceManager();
-
+        registerDefaultServices();
         File settings = new File(getWorkingDirectory(), "settings");
         settings.mkdir();
         settingManager = new SimpleSettingManager(settings);
@@ -99,6 +100,10 @@ public class KakaraGame implements Game, EnvironmentInstance {
 
     public static KakaraGame getInstance() {
         return kakaraGame;
+    }
+
+    private void registerDefaultServices() {
+        serviceManager.registerService(new JsonSettingController());
     }
 
     private void loadKakaraCore() {

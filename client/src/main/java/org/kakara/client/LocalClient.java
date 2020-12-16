@@ -33,6 +33,7 @@ import org.kakara.game.item.GameItemManager;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.mod.KakaraMod;
 import org.kakara.game.server.gui.ServerContainerUtils;
+import org.kakara.game.settings.JsonSettingController;
 import org.kakara.game.world.GameWorldGenerationManager;
 
 import java.io.File;
@@ -65,10 +66,15 @@ public class LocalClient extends Client implements ServerGameInstance {
         worldGenerationManager = new GameWorldGenerationManager();
         containerUtils = new ServerContainerUtils();
         serviceManager = new GameServiceManager();
+        registerDefaultServices();
         File settings = new File(workingDirectory, "settings");
         settings.mkdir();
         settingManager = new SimpleSettingManager(settings);
         this.localJoin = joinDetails;
+    }
+
+    private void registerDefaultServices() {
+        serviceManager.registerService(new JsonSettingController());
     }
 
     public void setup() throws ServerLoadException {

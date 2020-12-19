@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.local.game.IntegratedServer;
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.Kakara;
 import org.kakara.core.common.Serverable;
 import org.kakara.core.common.exceptions.NoServerVersionAvailableException;
 import org.kakara.core.common.game.DefaultGameMode;
@@ -14,6 +16,8 @@ import org.kakara.core.common.permission.PermissionSet;
 import org.kakara.core.common.player.Player;
 import org.kakara.core.common.player.PlayerEntity;
 import org.kakara.core.common.world.Location;
+import org.kakara.core.server.ServerGameInstance;
+import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
 import org.kakara.engine.math.Vector3;
 import org.kakara.game.GameUtils;
 
@@ -43,7 +47,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
         } else
             gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());
         contentInventory = new PlayerContentInventory();
-        //contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(new ControllerKey("KVANILLA", "DIRT"))), 1);
+        ((ServerBoxedInventoryContainer) contentInventory.getContainer()).addItemStack(((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(new ControllerKey("KVANILLA", "DIRT"))));
     }
 
     @Override

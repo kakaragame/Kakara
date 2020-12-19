@@ -30,6 +30,7 @@ public class LoadingScene extends AbstractMenuScene {
 
     @Override
     public void update(float v) {
+        System.out.println("getStatus() = " + statusable.getStatus());
         if (statusable.getStatus() == targetStatus) {
             onCompletion.run();
         }

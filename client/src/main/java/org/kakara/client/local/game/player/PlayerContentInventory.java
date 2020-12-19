@@ -42,7 +42,7 @@ public class PlayerContentInventory extends BasicNineBoxedInventory {
             throw new IllegalStateException("Must be inside a MainGameScene");
         }
         MainGameScene gameScene = (MainGameScene) scene;
-        gameScene.getHotBar().renderItems();
+        gameScene.addQueueRunnable(() -> gameScene.getHotBar().renderItems());
 //TODO implement this
         //engineInventoryRenderer.redraw(this);
     }

@@ -83,13 +83,13 @@ public class HotBarCanvas extends ComponentCanvas {
         if (!enabled) return;
 
         boolean update = false;
-        for (int i = 0; i < contentInventory.getHotBarContents().length; i++) {
+/*        for (int i = 0; i < contentInventory.getHotBarContents().length; i++) {
             if (contentInventory.getContainer().getItemStack(i).getCount() <= 0) {
                 //TODO rewrite this code to have Server and Client support
                 ((ServerBoxedInventoryContainer) contentInventory.getContainer()).setItemStack(i, ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(0)));
                 update = true;
             }
-        }
+        }*/
         if (update) renderItems();
     }
 

@@ -73,6 +73,7 @@ public class PauseMenuCanvas extends ActivateableCanvas {
             });
             GameHandler.getInstance().getSceneManager().setScene(loadingScene);
             mainGameScene.close();
+
             mainGameScene.getServer().close();
         }, UIClickEvent.class);
         quit.add(quitGameText);

@@ -202,7 +202,6 @@ public class MainGameScene extends AbstractGameScene {
                 updateOnMainThread.poll().run();
             }
         }
-        blockBreakHandler();
     }
 
     private void blockBreakHandler() {
@@ -239,6 +238,7 @@ public class MainGameScene extends AbstractGameScene {
                             //Remove old breakingBlock
                             breakingBlock = null;
                             //call the blockBreak
+                            System.out.println("BREAKING BLOCK");
                             ((ClientServerController) getServer().getServerController()).blockBreak(location);
                         }
                     });
@@ -326,6 +326,8 @@ public class MainGameScene extends AbstractGameScene {
 
             }
 
+        } else if (evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()) {
+            blockBreakHandler();
         }
 
     }

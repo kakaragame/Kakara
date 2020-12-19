@@ -1,8 +1,6 @@
 package org.kakara.game.world.io;
 
-import org.kakara.core.common.world.ChunkContent;
-import org.kakara.core.common.world.ChunkLocation;
-import org.kakara.core.common.world.ChunkWriter;
+import org.kakara.core.common.world.*;
 import org.kakara.game.world.GameWorld;
 
 import java.util.List;
@@ -40,6 +38,13 @@ public class DefaultChunkIO extends ChunkIO {
         WriteChunkRequest readChunkRequest = new WriteChunkRequest(contents, completableFuture);
         requests.add(readChunkRequest);
         return completableFuture;
+    }
+
+    @Override
+    public CompletableFuture<List<Location>> writeBlock(List<GameBlock> chunkLocations) {
+        if (!supportsSingleBlockWrites())
+            throw new IllegalArgumentException("The ChunkWriter does not support single writes");
+        return null;
     }
 
     @Override

@@ -2,14 +2,13 @@ package org.kakara.game.world;
 
 import me.ryandw11.ods.ObjectDataStructure;
 import me.ryandw11.ods.compression.Compressor;
-import me.ryandw11.ods.compression.GZIPCompression;
-import me.ryandw11.ods.compression.ZLIBCompression;
 import me.ryandw11.ods.exception.ODSException;
 import me.ryandw11.ods.tags.ObjectTag;
 import me.ryandw11.odscp.zstd.ZSTDCompression;
 import org.kakara.core.common.world.ChunkContent;
 import org.kakara.core.common.world.ChunkLocation;
 import org.kakara.core.common.world.ChunkWriter;
+import org.kakara.core.common.world.GameBlock;
 import org.kakara.core.common.world.exceptions.ChunkLoadException;
 import org.kakara.core.common.world.exceptions.ChunkWriteException;
 import org.kakara.core.server.serializers.ods.ChunkContentTag;
@@ -54,7 +53,7 @@ public class ClientChunkWriter implements ChunkWriter {
         File chunkFile = getChunkFile(chunkLocation);
         if (!chunkFile.exists()) return new ChunkContent(chunkLocation);
 
-        ObjectDataStructure ods = new ObjectDataStructure(chunkFile,getCompressor());
+        ObjectDataStructure ods = new ObjectDataStructure(chunkFile, getCompressor());
         ObjectTag objectTag = null;
         try {
             objectTag = ods.get(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
@@ -80,7 +79,7 @@ public class ClientChunkWriter implements ChunkWriter {
                 continue;
             }
 
-            ObjectDataStructure ods = new ObjectDataStructure(chunkFile,getCompressor());
+            ObjectDataStructure ods = new ObjectDataStructure(chunkFile, getCompressor());
             for (ChunkLocation chunkLocation1 : chunkLocationCollectionEntry.getValue()) {
                 ObjectTag objectTag = null;
                 try {
@@ -159,6 +158,20 @@ public class ClientChunkWriter implements ChunkWriter {
                 }
             }
         }
+    }
+
+    public boolean supportsSingleBlockWrites() {
+        return false;
+    }
+
+    @Override
+    public void writeBlock(GameBlock gameBlock) throws ChunkWriteException {
+
+    }
+
+    @Override
+    public void writeBlock(List<GameBlock> list) throws ChunkWriteException {
+
     }
 
     private String getChunkKey(ChunkLocation loc) {

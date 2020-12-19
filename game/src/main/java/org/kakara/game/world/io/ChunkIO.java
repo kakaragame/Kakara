@@ -3,9 +3,7 @@ package org.kakara.game.world.io;
 
 import org.kakara.core.common.ManagedObject;
 import org.kakara.core.common.Status;
-import org.kakara.core.common.world.ChunkContent;
-import org.kakara.core.common.world.ChunkLocation;
-import org.kakara.core.common.world.ChunkWriter;
+import org.kakara.core.common.world.*;
 import org.kakara.game.world.GameWorld;
 
 import java.util.List;
@@ -22,6 +20,10 @@ public abstract class ChunkIO extends Thread implements ManagedObject {
         this.gameWorld = clientWorld;
     }
 
+    public boolean supportsSingleBlockWrites() {
+        return chunkWriter.supportsSingleBlockWrites();
+    }
+
     @Override
     public Status getStatus() {
         return status;
@@ -34,6 +36,8 @@ public abstract class ChunkIO extends Thread implements ManagedObject {
     public abstract CompletableFuture<List<ChunkContent>> get(List<ChunkLocation> chunkLocations);
 
     public abstract CompletableFuture<List<ChunkLocation>> write(List<ChunkContent> chunkLocations);
+
+    public abstract CompletableFuture<List<Location>> writeBlock(List<GameBlock> chunkLocations);
 
     public abstract void close();
 }

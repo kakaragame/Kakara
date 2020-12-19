@@ -1,6 +1,5 @@
 package org.kakara.game.world;
 
-import me.ryandw11.ods.Compression;
 import me.ryandw11.ods.ObjectDataStructure;
 import me.ryandw11.ods.exception.ODSException;
 import me.ryandw11.ods.tags.ObjectTag;
@@ -47,7 +46,7 @@ public class ClientChunkWriter implements ChunkWriter {
         File chunkFile = getChunkFile(chunkLocation);
         if (!chunkFile.exists()) return new ChunkContent(chunkLocation);
 
-        ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
+        ObjectDataStructure ods = new ObjectDataStructure(chunkFile);
         ObjectTag objectTag = null;
         try {
             objectTag = ods.get(chunkLocation.getX() + "-" + chunkLocation.getY() + "-" + chunkLocation.getZ());
@@ -73,7 +72,7 @@ public class ClientChunkWriter implements ChunkWriter {
                 continue;
             }
 
-            ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
+            ObjectDataStructure ods = new ObjectDataStructure(chunkFile);
             for (ChunkLocation chunkLocation1 : chunkLocationCollectionEntry.getValue()) {
                 ObjectTag objectTag = null;
                 try {
@@ -100,7 +99,7 @@ public class ClientChunkWriter implements ChunkWriter {
     public void writeChunk(ChunkContent chunk) throws ChunkWriteException {
         File chunkFile = getChunkFile(chunk.getLocation());
 
-        ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
+        ObjectDataStructure ods = new ObjectDataStructure(chunkFile);
         if (!chunkFile.exists()) {
             try {
                 chunkFile.createNewFile();
@@ -125,7 +124,7 @@ public class ClientChunkWriter implements ChunkWriter {
     public void writeChunks(List<ChunkContent> chunks) throws ChunkWriteException {
         for (Map.Entry<ChunkLocation, Collection<ChunkContent>> entry : ChunkIOUtils.sortByChunk(chunks).asMap().entrySet()) {
             File chunkFile = getChunkFileFromChunkFileLocation(entry.getKey());
-            ObjectDataStructure ods = new ObjectDataStructure(chunkFile, Compression.GZIP);
+            ObjectDataStructure ods = new ObjectDataStructure(chunkFile);
             if (!chunkFile.exists()) {
                 try {
                     //NEW File

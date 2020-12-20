@@ -30,6 +30,7 @@ import org.kakara.game.ServerLoadException;
 import org.kakara.game.mod.KakaraEnvMod;
 import org.kakara.game.mod.KakaraMod;
 import org.kakara.game.resources.GameResourceManager;
+import org.kakara.game.server.gui.bnbi.Size9BoxedInventory;
 import org.kakara.game.settings.JsonSettingController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,7 +148,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
         switch (size) {
             case 9:
                 EngineInventoryRenderer render9 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties(2));
-                //Size9BoxedInventory.setRenderer(render9);
+                Size9BoxedInventory.setRenderer(render9);
             case 27:
                 EngineInventoryRenderer renderer27 = new EngineInventoryRenderer(texture.get(), GameInventoryUtils.getItemPositions(size), new InventoryProperties());
                 //Size27BoxedInventory.setRenderer(renderer27);

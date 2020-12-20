@@ -1,6 +1,7 @@
 package org.kakara.game.server.gui.bnbi;
 
 
+import org.kakara.core.common.Kakara;
 import org.kakara.core.common.gui.InventoryRenderer;
 import org.kakara.core.common.gui.annotations.BuilderClass;
 import org.kakara.core.common.gui.container.BoxedInventoryContainer;
@@ -14,6 +15,8 @@ public class Size9BoxedInventory extends BasicNineBoxedInventory {
 
     public Size9BoxedInventory() {
         super(9);
+        container = Kakara.getGameInstance().getContainerUtils().createBoxInventoryContainer(9);
+
     }
 
     @Override

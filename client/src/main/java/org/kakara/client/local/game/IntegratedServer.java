@@ -210,8 +210,6 @@ public class IntegratedServer extends Thread implements Server {
                     getGameScene().remove(getGameScene().getItemHandler().getItemWithId(droppedItem.getGameID()).get());
                     clientWorld.getDroppedItems().remove(droppedItem);
                     ((PlayerContentInventory) getPlayerEntity().getInventory()).addItemStackForPickup(droppedItem.getItemStack());
-                    //TODO only re-render HotBar if if adds to the HotBar
-                    //hotBarCanvas.renderItems();
                 }
             }
         }

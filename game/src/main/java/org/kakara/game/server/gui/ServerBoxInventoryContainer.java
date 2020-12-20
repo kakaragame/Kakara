@@ -67,6 +67,12 @@ public class ServerBoxInventoryContainer implements ServerBoxedInventoryContaine
     @Override
     public void addItemStack(ItemStack itemStack) {
         //TODO combine ItemStacks if possible
+        for (ServerItemStack serverItemStack : serverItemStacks) {
+            if (serverItemStack.equalsIgnoreCount(itemStack)) {
+                serverItemStack.setCount(serverItemStack.getCount() + 1);
+                return;
+            }
+        }
         if (getNextEmtpySlot() > serverItemStacks.length) {
             return;
         }

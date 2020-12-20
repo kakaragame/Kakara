@@ -12,19 +12,20 @@ import org.kakara.core.common.game.DefaultGameMode;
 import org.kakara.core.common.game.Entity;
 import org.kakara.core.common.game.GameMode;
 import org.kakara.core.common.gui.Inventory;
+import org.kakara.core.common.gui.Menu;
 import org.kakara.core.common.permission.PermissionSet;
-import org.kakara.core.common.player.Player;
 import org.kakara.core.common.player.PlayerEntity;
 import org.kakara.core.common.world.Location;
 import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
+import org.kakara.core.server.player.ServerPlayer;
 import org.kakara.engine.math.Vector3;
 import org.kakara.game.GameUtils;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class ClientPlayer extends ClientOfflinePlayer implements Player {
+public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
     @NotNull
     private final PermissionSet permissions = new PermissionSet();
     @NotNull
@@ -172,5 +173,13 @@ public class ClientPlayer extends ClientOfflinePlayer implements Player {
     @Override
     public void requiresServerVersion() throws NoServerVersionAvailableException {
 
+    }
+
+    @Override
+    public void openMenu(Menu menu) {
+        if (menu instanceof Inventory) {
+            Inventory inventory = (Inventory) menu;
+            inventory.getRenderer().render(inventory);
+        }
     }
 }

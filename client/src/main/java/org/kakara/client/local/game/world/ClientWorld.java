@@ -17,6 +17,7 @@ import org.kakara.game.Server;
 import org.kakara.game.world.ClientChunkWriter;
 import org.kakara.game.world.GameWorld;
 import org.kakara.game.world.io.ChunkIO;
+import org.kakara.game.world.io.DefaultChunkIO;
 import org.kakara.game.world.io.GroupedChunkIO;
 
 import java.io.File;
@@ -56,7 +57,9 @@ public class ClientWorld extends GameWorld {
             name = object.get("name").getAsString();
             worldID = UUID.fromString(object.get("id").getAsString());
             worldSpawn = Utils.getGson().fromJson(object.get("location"), Location.class);
-            this.chunkIO = new GroupedChunkIO(this, new ClientChunkWriter(this));
+            //this.chunkIO = new GroupedChunkIO(this, new ClientChunkWriter(this));
+            this.chunkIO = new DefaultChunkIO(this, new ClientChunkWriter(this));
+
         } catch (WorldLoadException e) {
             throw e;
         } catch (Exception e) {
@@ -254,6 +257,7 @@ public class ClientWorld extends GameWorld {
     }
 
     public void initLoad(Set<ChunkLocation> chunkLocations) {
+        System.out.println("chunkLocations = " + chunkLocations.size());
         chunkLocations.forEach(this::getChunkAt);
         while (true) {
             int loadedChunks = 1;
@@ -262,6 +266,7 @@ public class ClientWorld extends GameWorld {
                     loadedChunks = loadedChunks + 1;
                 }
             }
+            System.out.println("loadedChunks = " + loadedChunks);
             if (chunkLocations.size() <= loadedChunks) {
                 break;
             }

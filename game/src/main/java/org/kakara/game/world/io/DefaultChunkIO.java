@@ -1,6 +1,9 @@
 package org.kakara.game.world.io;
 
+import org.kakara.core.common.Status;
 import org.kakara.core.common.world.*;
+import org.kakara.core.common.world.exceptions.ChunkLoadException;
+import org.kakara.core.common.world.exceptions.ChunkWriteException;
 import org.kakara.game.world.GameWorld;
 
 import java.util.List;
@@ -19,9 +22,33 @@ public class DefaultChunkIO extends ChunkIO {
 
     @Override
     public void run() {
-        while (gameWorld.isLoaded()) {
-
+        while (gameWorld.getStatus() == Status.LOADED || gameWorld.getStatus() == Status.LOADING) {
+            ChunkRequest request = null;
+            try {
+                request = requests.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (request instanceof ReadChunkRequest) {
+                ChunkLocation chunkLocation = ((ReadChunkRequest) request).getChunkLocations().get(0);
+                try {
+                    ((ReadChunkRequest) request).respond(chunkLocation, chunkWriter.getChunksByLocation(((ReadChunkRequest) request).getChunkLocations()));
+                    ((ReadChunkRequest) request).respond();
+                } catch (ChunkLoadException e) {
+                    e.printStackTrace();
+                    gameWorld.errorClose();
+                }
+            } else if (request instanceof WriteChunkRequest) {
+                try {
+                    chunkWriter.writeChunks(((WriteChunkRequest) request).getChunks());
+                } catch (ChunkWriteException e) {
+                    e.printStackTrace();
+                }
+                ((WriteChunkRequest) request).respond(((WriteChunkRequest) request).getChunks().get(0).getLocation());
+                ((WriteChunkRequest) request).respond();
+            }
         }
+
     }
 
     @Override

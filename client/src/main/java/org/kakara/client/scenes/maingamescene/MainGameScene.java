@@ -202,6 +202,11 @@ public class MainGameScene extends AbstractGameScene {
                 updateOnMainThread.poll().run();
             }
         }
+        if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed()) {
+            System.out.println("kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() = " + kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed());
+            System.out.println("kakaraGame.getGameHandler().getMouseInput().isRightButtonPressed() = " + kakaraGame.getGameHandler().getMouseInput().isRightButtonPressed());
+            blockBreakHandler();
+        }
     }
 
     private void blockBreakHandler() {
@@ -326,10 +331,10 @@ public class MainGameScene extends AbstractGameScene {
 
             }
 
-        } else if (evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()) {
+        } /*else if (evt.getMouseClickType() == MouseClickType.LEFT_CLICK && !chatComponent.isFocused()) {
             blockBreakHandler();
         }
-
+*/
     }
 
     /**

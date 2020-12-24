@@ -203,8 +203,6 @@ public class MainGameScene extends AbstractGameScene {
             }
         }
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed()) {
-            System.out.println("kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() = " + kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed());
-            System.out.println("kakaraGame.getGameHandler().getMouseInput().isRightButtonPressed() = " + kakaraGame.getGameHandler().getMouseInput().isRightButtonPressed());
             blockBreakHandler();
         }
     }

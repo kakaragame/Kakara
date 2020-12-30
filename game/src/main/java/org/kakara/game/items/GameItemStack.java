@@ -18,8 +18,6 @@ public class GameItemStack implements ServerItemStack {
     public GameItemStack(int count, Item item) {
         this.count = count;
         this.item = item;
-        name = item.getName();
-        lore = new ArrayList<>();
     }
 
     @Override
@@ -39,9 +37,9 @@ public class GameItemStack implements ServerItemStack {
     }
 
 
-
     @Override
     public String getName() {
+        if (name == null) name = item.getName();
         return name;
     }
 
@@ -52,6 +50,7 @@ public class GameItemStack implements ServerItemStack {
 
     @Override
     public List<String> getLore() {
+        if (lore == null) lore = new ArrayList<>();
         return new ArrayList<>(lore);
     }
 

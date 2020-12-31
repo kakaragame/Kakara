@@ -192,6 +192,18 @@ public class MainGameScene extends AbstractGameScene {
 
     @Override
     public void update(float interval) {
+        try {
+            internalUpdate();
+        } catch (Exception e) {
+            //I am so tired of the game freezing up and locking the mouse every time the game fails
+            //This should catch it and print it out in a way that I can read the error.
+            //TODO handle more serious exceptions with game closes.
+            PauseMenuCanvas.getInstance(kakaraGame, this).switchStatus();
+            KakaraGame.LOGGER.error("Game update exception thrown", e);
+        }
+    }
+
+    private void internalUpdate() {
         DebugModeCanvas.getInstance(kakaraGame, this).update();
         movement.playerMovement();
         hotBarCanvas.update();

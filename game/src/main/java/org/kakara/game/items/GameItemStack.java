@@ -6,6 +6,7 @@ import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.server.game.ServerItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,13 +51,12 @@ public class GameItemStack implements ServerItemStack {
 
     @Override
     public List<String> getLore() {
-        if (lore == null) lore = new ArrayList<>();
-        return new ArrayList<>(lore);
+        return lore;
     }
 
     @Override
     public void setLore(List<String> list) {
-        this.lore = list;
+        this.lore = Collections.unmodifiableList(list);
     }
 
     @Override
@@ -68,8 +68,7 @@ public class GameItemStack implements ServerItemStack {
 
     @Override
     public boolean equalsIgnoreCount(ItemStack itemStack) {
-        //TODO compare other values
-        return itemStack.getItem().equals(item);
+        return itemStack.getItem().equals(item) && getName().equals(itemStack.getName()) && Objects.equals(getLore(), itemStack.getLore());
     }
 
     @Override

@@ -80,11 +80,11 @@ public class IntegratedServer extends Thread implements Server {
         LOGGER.info("Enabling Mods");
         Kakara.getGameInstance().getModManager().loadMods(modsToBeLoaded);
         Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getEventManager());
-        Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getItemManager());
+        Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getItemRegistry());
         Kakara.getGameInstance().getModManager().loadStage(Kakara.getGameInstance().getCommandManager());
-        Kakara.getGameInstance().getItemManager().registerItem(new AirBlock());
+        Kakara.getGameInstance().getItemRegistry().registerItem(new AirBlock());
         System.out.println("Kakara.getEnvironmentInstance().getType() = " + Kakara.getEnvironmentInstance().getType());
-        Kakara.getGameInstance().getModManager().loadStage(((ServerGameInstance) Kakara.getGameInstance()).getWorldGenerationManager());
+        Kakara.getGameInstance().getModManager().loadStage(((ServerGameInstance) Kakara.getGameInstance()).getWorldGenerationRegistry());
         LOGGER.info("Loading Worlds");
         try {
             save.prepareWorlds();

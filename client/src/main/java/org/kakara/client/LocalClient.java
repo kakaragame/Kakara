@@ -13,44 +13,42 @@ import org.kakara.core.common.events.game.GameEventManager;
 import org.kakara.core.common.exceptions.NoServerVersionAvailableException;
 import org.kakara.core.common.game.GameSettings;
 import org.kakara.core.common.game.Item;
-import org.kakara.core.common.game.ItemManager;
+import org.kakara.core.common.game.ItemRegistry;
 import org.kakara.core.common.gui.container.ContainerUtils;
 import org.kakara.core.common.mod.ModManager;
-import org.kakara.core.common.mod.ModRules;
 import org.kakara.core.common.mod.game.GameModManager;
 import org.kakara.core.common.resources.ResourceManager;
 import org.kakara.core.common.service.ServiceManager;
-import org.kakara.core.common.settings.SettingManager;
+import org.kakara.core.common.settings.SettingRegistry;
 import org.kakara.core.common.settings.simple.SimpleSettingManager;
-import org.kakara.core.common.world.WorldGenerationManager;
+import org.kakara.core.common.world.WorldGenerationRegistry;
 import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.game.ServerItemStack;
 import org.kakara.core.server.world.WorldManager;
-import org.kakara.engine.utils.Utils;
 import org.kakara.game.GameServiceManager;
 import org.kakara.game.ServerLoadException;
-import org.kakara.game.item.GameItemManager;
+import org.kakara.game.item.GameItemRegistry;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.mod.KakaraMod;
 import org.kakara.game.server.gui.ServerContainerUtils;
 import org.kakara.game.settings.JsonSettingController;
-import org.kakara.game.world.GameWorldGenerationManager;
+import org.kakara.game.world.GameWorldGenerationRegistry;
 
 import java.io.File;
 
 public class LocalClient extends Client implements ServerGameInstance {
     private final GameSettings settings;
     private final KakaraGame kakaraGame;
-    private final ItemManager itemManager;
+    private final ItemRegistry itemManager;
     private final ResourceManager resourceManager;
     private final ModManager modManager;
     private final File workingDirectory;
-    private final WorldGenerationManager worldGenerationManager;
+    private final WorldGenerationRegistry worldGenerationManager;
     private final EventManager eventManager;
     private final CommandManager commandManager;
     private WorldManager worldManager;
     private final ServiceManager serviceManager;
-    private final SettingManager settingManager;
+    private final SettingRegistry settingManager;
     private final LocalJoin localJoin;
     private final ContainerUtils containerUtils;
 
@@ -58,12 +56,12 @@ public class LocalClient extends Client implements ServerGameInstance {
         this.settings = gameSettings;
         this.kakaraGame = kakaraGame;
         workingDirectory = joinDetails.getWorkingDirectory();
-        itemManager = new GameItemManager();
+        itemManager = new GameItemRegistry();
         modManager = new GameModManager(new KakaraMod(this));
         resourceManager = new ClientResourceManager();
         eventManager = new GameEventManager();
         commandManager = new ClientCommandManager();
-        worldGenerationManager = new GameWorldGenerationManager();
+        worldGenerationManager = new GameWorldGenerationRegistry();
         containerUtils = new ServerContainerUtils();
         serviceManager = new GameServiceManager();
         registerDefaultServices();
@@ -104,7 +102,7 @@ public class LocalClient extends Client implements ServerGameInstance {
 
 
     @Override
-    public ItemManager getItemManager() {
+    public ItemRegistry getItemRegistry() {
         return itemManager;
     }
 
@@ -145,7 +143,7 @@ public class LocalClient extends Client implements ServerGameInstance {
     }
 
     @Override
-    public WorldGenerationManager getWorldGenerationManager() {
+    public WorldGenerationRegistry getWorldGenerationRegistry() {
         return worldGenerationManager;
     }
 
@@ -165,8 +163,7 @@ public class LocalClient extends Client implements ServerGameInstance {
         return EnvType.SERVER;
     }
 
-    @Override
-    public SettingManager getGameSettingsManager() {
+    public SettingRegistry getGameSettingRegistry() {
         return settingManager;
     }
 

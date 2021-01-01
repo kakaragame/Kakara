@@ -48,7 +48,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
         } else
             gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());
         contentInventory = new PlayerContentInventory();
-        ((ServerBoxedInventoryContainer) contentInventory.getContainer()).addItemStack(((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(new ControllerKey("KVANILLA", "DIRT"))));
+        ((ServerBoxedInventoryContainer) contentInventory.getContainer()).addItemStack(((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemRegistry().getItem(new ControllerKey("KVANILLA", "DIRT"))));
     }
 
     @Override

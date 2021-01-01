@@ -19,7 +19,7 @@ import org.kakara.core.common.mod.game.GameModManager;
 import org.kakara.core.common.resources.ResourceManager;
 import org.kakara.core.common.resources.Texture;
 import org.kakara.core.common.service.ServiceManager;
-import org.kakara.core.common.settings.SettingManager;
+import org.kakara.core.common.settings.SettingRegistry;
 import org.kakara.core.common.settings.simple.SimpleSettingManager;
 import org.kakara.engine.Game;
 import org.kakara.engine.GameHandler;
@@ -52,7 +52,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private final File workingDirectory;
     private final ResourceManager resourceManager;
     private final ServiceManager serviceManager;
-    private final SettingManager settingManager;
+    private final SettingRegistry settingManager;
 
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
@@ -111,11 +111,11 @@ public class KakaraGame implements Game, EnvironmentInstance {
         LOGGER.info("Loading Core");
         Kakara.setGameInstance(client);
         client.getResourceManager().load(new File(getWorkingDirectory(), "game"));
-        client.getWorldGenerationManager().load(client);
-        client.getItemManager().load(client);
+        client.getWorldGenerationRegistry().load(client);
+        client.getItemRegistry().load(client);
         client.getEventManager().load(client);
         client.getModManager().load(client);
-        ((SimpleSettingManager) client.getGameSettingsManager()).init(ModRules.ModTarget.GAME);
+        ((SimpleSettingManager) client.getGameSettingRegistry()).init(ModRules.ModTarget.GAME);
 
         try {
             //Loading Local Resources
@@ -231,9 +231,10 @@ public class KakaraGame implements Game, EnvironmentInstance {
     }
 
     @Override
-    public SettingManager getEnvironmentSettingsManager() {
+    public SettingRegistry getEnvironmentSettingsRegistry() {
         return settingManager;
     }
+
 
     @Override
     public ControllerKey createSystemKey(String s) {

@@ -30,7 +30,7 @@ public class TestInventoryCommand extends BuiltinCommand {
     public void execute(String command, String[] arguments, String fullCommand, CommandSender executor) {
         if (executor instanceof Player) {
             BasicNineBoxedInventory build = new BasicNineBoxedInventoryBuilder().setCapacity(9).build();
-            ServerItemStack stack = ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItems().get(2));
+            ServerItemStack stack = ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemRegistry().getItems().get(2));
             ((ServerBoxedInventoryContainer) build.getContainer()).setItemStack(0,stack);
             ((ServerBoxedInventoryContainer) build.getContainer()).setItemStack(1,stack);
             ((ServerBoxedInventoryContainer) build.getContainer()).setItemStack(2,stack);

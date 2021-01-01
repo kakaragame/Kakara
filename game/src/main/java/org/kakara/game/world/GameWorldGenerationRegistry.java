@@ -3,14 +3,14 @@ package org.kakara.game.world;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.core.common.ControllerKey;
 import org.kakara.core.common.GameInstance;
-import org.kakara.core.common.world.WorldGenerationManager;
+import org.kakara.core.common.world.WorldGenerationRegistry;
 import org.kakara.core.common.world.WorldGenerator;
 import org.kakara.core.common.world.region.Region;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameWorldGenerationManager implements WorldGenerationManager {
+public class GameWorldGenerationRegistry implements WorldGenerationRegistry {
     private GameInstance kakaraCore;
     private final List<Region> regions = new ArrayList<>();
     private final List<WorldGenerator> generators = new ArrayList<>();
@@ -54,6 +54,6 @@ public class GameWorldGenerationManager implements WorldGenerationManager {
 
     @Override
     public Class<?> getStageClass() {
-        return WorldGenerationManager.class;
+        return WorldGenerationRegistry.class;
     }
 }

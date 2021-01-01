@@ -4,7 +4,7 @@ package org.kakara.game.item;
 import org.kakara.core.common.ControllerKey;
 import org.kakara.core.common.GameInstance;
 import org.kakara.core.common.game.Item;
-import org.kakara.core.common.game.ItemManager;
+import org.kakara.core.common.game.ItemRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 //TODO Validate Mods provided
-public class GameItemManager implements ItemManager {
+public class GameItemRegistry implements ItemRegistry {
     private final Map<Integer, Item> items = new ConcurrentHashMap<>();
     private GameInstance kakaraCore;
 
@@ -67,6 +67,6 @@ public class GameItemManager implements ItemManager {
 
     @Override
     public Class<?> getStageClass() {
-        return ItemManager.class;
+        return ItemRegistry.class;
     }
 }

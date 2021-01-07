@@ -110,7 +110,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private void loadKakaraCore() {
         LOGGER.info("Loading Core");
         Kakara.setGameInstance(client);
-        client.getResourceManager().load(new File(getWorkingDirectory(), "game"));
+        client.getResourceManager().load(new File(getWorkingDirectory(), ""));
         client.getWorldGenerationRegistry().load(client);
         client.getItemRegistry().load(client);
         client.getEventManager().load(client);

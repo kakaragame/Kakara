@@ -56,7 +56,10 @@ public class GameItemStack implements ServerItemStack {
 
     @Override
     public void setLore(List<String> list) {
-        this.lore = Collections.unmodifiableList(list);
+        if (list == null) {
+            lore = null;
+        } else
+            this.lore = Collections.unmodifiableList(list);
     }
 
     @Override

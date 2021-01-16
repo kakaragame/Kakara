@@ -90,7 +90,7 @@ public class MainGameScene extends AbstractGameScene {
 
     public MainGameScene(GameHandler gameHandler, Client client, KakaraGame kakaraGame) {
         super(gameHandler);
-        setCurserStatus(false);
+        setCurserStatus(true);
         this.client = client;
         this.kakaraGame = kakaraGame;
 
@@ -382,23 +382,23 @@ public class MainGameScene extends AbstractGameScene {
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = loadedChunk.getLocation().add(-16, 0, 0);
+            nextLocation = nextLocation.subtractMut(16,0,0).addMut(-16, 0, 0);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = loadedChunk.getLocation().add(0, 16, 0);
+            nextLocation = nextLocation.addMut(16,0,0).addMut(0, 16, 0);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = loadedChunk.getLocation().add(0, -16, 0);
+            nextLocation = nextLocation.subtractMut(0,16,0).addMut(0, -16, 0);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = loadedChunk.getLocation().add(0, 0, 16);
+            nextLocation = nextLocation.addMut(0,16,0).addMut(0, 0, 16);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = loadedChunk.getLocation().add(0, 0, -16);
+            nextLocation = nextLocation.subtractMut(0,0,16).addMut(0, 0, -16);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }

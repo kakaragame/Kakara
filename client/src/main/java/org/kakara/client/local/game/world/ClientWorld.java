@@ -18,7 +18,6 @@ import org.kakara.game.world.ClientChunkWriter;
 import org.kakara.game.world.GameWorld;
 import org.kakara.game.world.io.ChunkIO;
 import org.kakara.game.world.io.DefaultChunkIO;
-import org.kakara.game.world.io.GroupedChunkIO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -160,8 +159,10 @@ public class ClientWorld extends GameWorld {
         if (chunkFound != null) {
             return chunkFound;
         }
-        ClientChunk chunk = new ClientChunk(location);
-        chunkMap.put(location, chunk);
+        //To prevent future bugs we need to clone it at this point
+        ChunkLocation location1 = new ChunkLocation(location.getNullableWorld(), location.getX(), location.getY(), location.getZ());
+        ClientChunk chunk = new ClientChunk(location1);
+        chunkMap.put(location1, chunk);
         server.getExecutorService().submit(() -> {
             loadChunk(chunk);
         });
@@ -190,6 +191,7 @@ public class ClientWorld extends GameWorld {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    System.exit(0);
                 }
             });
         });

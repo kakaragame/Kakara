@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File testFile = new File("test" + File.separator + "test.properties");
+        File testFile = new File("test" + File.separator + "test.yml");
         ClientSettings clientSettings = null;
         if (testFile.exists()) {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");

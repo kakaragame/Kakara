@@ -1,8 +1,9 @@
 package org.kakara.client;
 
 
-import org.kakara.core.client.ClientSettings;
-import org.kakara.core.client.ClientSettingsBuilder;
+
+import org.kakara.core.client.client.ClientSettings;
+import org.kakara.core.client.client.ClientSettingsBuilder;
 import org.kakara.engine.GameEngine;
 
 import java.io.File;
@@ -14,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        File testFile = new File("test" + File.separator + "test.properties");
+        File testFile = new File("test" + File.separator + "test.yml");
         ClientSettings clientSettings = null;
         if (testFile.exists()) {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
@@ -26,7 +27,6 @@ public class Main {
                     setAuthServer(properties.getProperty("server.auth", "")).
                     setModServers(MoreUtils.stringArrayToStringArray(properties.getProperty("mod.servers", "https://kakara.org/mods"))).
                     setTestMode(true).setAuthToken(properties.getProperty("auth.token", "")).createClientSettings();
-
         } else {
             KakaraGame.LOGGER.error("Regular Mode is currently unsupported.");
             return;

@@ -1,13 +1,16 @@
 package org.kakara.client.scenes.canvases;
 
-import org.kakara.client.game.ClientResourceManager;
-import org.kakara.client.game.player.PlayerContentInventory;
+import org.kakara.client.KakaraGame;
+import org.kakara.client.local.game.ClientResourceManager;
+import org.kakara.client.local.game.player.PlayerContentInventory;
 import org.kakara.client.scenes.maingamescene.RenderResourceManager;
-import org.kakara.core.Kakara;
-import org.kakara.core.game.Block;
-import org.kakara.core.game.Item;
-import org.kakara.core.game.ItemStack;
-import org.kakara.core.resources.TextureResolution;
+import org.kakara.core.common.Kakara;
+import org.kakara.core.common.game.Block;
+import org.kakara.core.common.game.Item;
+import org.kakara.core.common.game.ItemStack;
+import org.kakara.core.common.resources.TextureResolution;
+import org.kakara.core.server.ServerGameInstance;
+import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
@@ -18,7 +21,6 @@ import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
@@ -27,6 +29,7 @@ import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
 import org.kakara.engine.ui.objectcanvas.UIObject;
+import org.kakara.engine.utils.RGBA;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
@@ -38,13 +41,14 @@ public class HotBarCanvas extends ComponentCanvas {
     private final RenderResourceManager renderTextureCache;
     private final Scene scene;
     private final TextureAtlas atlas;
-    private Panel mainPanel;
-    private Rectangle[] rects = new Rectangle[5];
+    private final Panel mainPanel;
+    private final Rectangle[] rects = new Rectangle[5];
     private int selectedIndex = 0;
-    private PlayerContentInventory contentInventory;
+    private final PlayerContentInventory contentInventory;
     private ObjectCanvas objectCanvas;
-    private ComponentCanvas numberCanvas;
-    private Font roboto;
+    private final ComponentCanvas numberCanvas;
+    private final Font roboto;
+    private boolean enabled = true;
 
     public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory, Font roboto) {
         super(scene);
@@ -76,18 +80,22 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     public void update() {
+        if (!enabled) return;
+
         boolean update = false;
-        for (int i = 0; i < contentInventory.getHotBarContents().length; i++) {
-            if (contentInventory.getItemStack(i).getCount() <= 0) {
-                contentInventory.setItemStack(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()), i);
+/*        for (int i = 0; i < contentInventory.getHotBarContents().length; i++) {
+            if (contentInventory.getContainer().getItemStack(i).getCount() <= 0) {
+                //TODO rewrite this code to have Server and Client support
+                ((ServerBoxedInventoryContainer) contentInventory.getContainer()).setItemStack(i, ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(0)));
                 update = true;
             }
-        }
+        }*/
         if (update) renderItems();
     }
 
     @Override
     public void init(UserInterface userInterface, GameHandler handler) {
+        if (!enabled) return;
         super.init(userInterface, handler);
         objectCanvas.init(userInterface, handler);
         numberCanvas.init(userInterface, handler);
@@ -95,6 +103,7 @@ public class HotBarCanvas extends ComponentCanvas {
 
     @Override
     public void render(UserInterface hud, GameHandler handler) {
+        if (!enabled) return;
         super.render(hud, handler);
         objectCanvas.render(hud, handler);
         numberCanvas.render(hud, handler);
@@ -104,6 +113,11 @@ public class HotBarCanvas extends ComponentCanvas {
         if (objectCanvas != null) {
             objectCanvas.clearObjects();
             numberCanvas.clearComponents();
+        }
+        if (contentInventory == null) {
+            KakaraGame.LOGGER.warn("No Player Inventory Found");
+            enabled = false;
+            return;
         }
         try {
             if (objectCanvas == null) {
@@ -121,7 +135,7 @@ public class HotBarCanvas extends ComponentCanvas {
                     uiObject = new UIObject(mesh);
                     objectCanvas.add(uiObject);
                 } else {
-                    ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getResourceManager();
+                    ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getGameInstance().getResourceManager();
                     Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
                     //TODO @Ryandw11 - We need to be able the pass all the meshes
                     uiObject = new UIObject(mesh[0]);
@@ -145,7 +159,7 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     private RenderTexture getTexture(ItemStack is) throws ExecutionException {
-        return renderTextureCache.get(GameResourceManager.correctPath(Kakara.getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
+        return renderTextureCache.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 
     public RenderTexture getCurrentItem() {

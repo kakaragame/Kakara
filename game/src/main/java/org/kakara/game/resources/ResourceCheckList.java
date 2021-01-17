@@ -1,6 +1,7 @@
 package org.kakara.game.resources;
 
-import org.kakara.core.resources.TextureResolution;
+
+import org.kakara.core.common.resources.TextureResolution;
 
 import java.util.Arrays;
 import java.util.HashSet;

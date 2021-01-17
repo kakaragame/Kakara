@@ -14,7 +14,11 @@
         <module>game</module>
     </modules>
 
-
+    <properties>
+        <sonar.projectKey>kakaragame_Kakara</sonar.projectKey>
+        <sonar.organization>kakaragame</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    </properties>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>

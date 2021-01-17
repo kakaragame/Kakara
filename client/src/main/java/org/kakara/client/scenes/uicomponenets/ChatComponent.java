@@ -9,7 +9,6 @@ import org.kakara.engine.events.event.CharacterPressEvent;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.GeneralComponent;
 import org.kakara.engine.ui.components.Panel;
@@ -18,6 +17,7 @@ import org.kakara.engine.ui.components.text.BoundedColoredText;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
+import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.utils.Time;
 
 import java.nio.charset.StandardCharsets;
@@ -31,16 +31,16 @@ public class ChatComponent extends GeneralComponent {
 
     final float xSize = 700;
     String tempStorage = "";
-    private Font font;
+    private final Font font;
     private boolean alwaysShowHistory;
-    private Text textAreaText;
+    private final Text textAreaText;
     private boolean focus;
     private String actualText;
-    private Panel historyPanel;
-    private Rectangle historyRectangle;
+    private final Panel historyPanel;
+    private final Rectangle historyRectangle;
     private boolean wait;
-    private List<String> history;
-    private List<String> sentHistory = new ArrayList<>();
+    private final List<String> history;
+    private final List<String> sentHistory = new ArrayList<>();
     private int historyIndex = -1;
     private float timer = 0;
     private long backspaceLag = System.currentTimeMillis();
@@ -56,12 +56,12 @@ public class ChatComponent extends GeneralComponent {
 
         Panel textArea = new Panel();
         textArea.setScale(xSize, 50);
-        textArea.add(new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 160)));
+        textArea.add(new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 0.4f)));
 
         Panel histroyArea = new Panel();
         histroyArea.setScale(xSize, 500);
         histroyArea.setPosition(0, 0);
-        this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(xSize, 500), new RGBA(168, 168, 168, 160));
+        this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(xSize, 500), new RGBA(168, 168, 168, 0.6f));
         this.add(historyRectangle);
         textArea.setPosition(0, 500);
 
@@ -184,8 +184,8 @@ public class ChatComponent extends GeneralComponent {
 
         if (evt.isKeyPressed(GLFW_KEY_ENTER)) {
             String t = actualText;
-            history.add(actualText);
-            sentHistory.add(actualText);
+            //history.add(actualText);
+            //sentHistory.add(actualText);
             actualText = "";
             triggerEvent(ChatSendEvent.class, t);
         }

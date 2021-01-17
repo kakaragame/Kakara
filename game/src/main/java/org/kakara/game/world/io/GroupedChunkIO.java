@@ -2,12 +2,10 @@ package org.kakara.game.world.io;
 
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.lang3.tuple.Pair;
-import org.kakara.core.Status;
-import org.kakara.core.world.ChunkContent;
-import org.kakara.core.world.ChunkLocation;
-import org.kakara.core.world.ChunkWriter;
-import org.kakara.core.world.exceptions.ChunkLoadException;
-import org.kakara.core.world.exceptions.ChunkWriteException;
+import org.kakara.core.common.Status;
+import org.kakara.core.common.world.*;
+import org.kakara.core.common.world.exceptions.ChunkLoadException;
+import org.kakara.core.common.world.exceptions.ChunkWriteException;
 import org.kakara.game.world.GameWorld;
 
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class GroupedChunkIO extends ChunkIO {
-    private BlockingQueue<Pair<ChunkLocation, List<ChunkRequest>>> requests;
+    private final BlockingQueue<Pair<ChunkLocation, List<ChunkRequest>>> requests;
 
     public GroupedChunkIO(GameWorld gameWorld, ChunkWriter chunkWriter) {
         super(gameWorld, chunkWriter);
@@ -146,6 +144,14 @@ public class GroupedChunkIO extends ChunkIO {
             }
         }
         return completableFuture;
+    }
+
+    @Override
+    public CompletableFuture<List<Location>> writeBlock(List<GameBlock> chunkLocations) {
+        if (!supportsSingleBlockWrites())
+            throw new IllegalArgumentException("The ChunkWriter does not support single writes");
+        //TODO implement this method
+        return null;
     }
 
     @Override

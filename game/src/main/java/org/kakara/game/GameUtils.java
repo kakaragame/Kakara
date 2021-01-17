@@ -1,11 +1,12 @@
 package org.kakara.game;
 
 
-import org.kakara.core.game.*;
-import org.kakara.core.player.Player;
-import org.kakara.core.world.ChunkLocation;
-import org.kakara.core.world.GameBlock;
-import org.kakara.core.world.Location;
+import org.kakara.core.common.game.*;
+import org.kakara.core.common.player.Player;
+import org.kakara.core.common.world.ChunkLocation;
+import org.kakara.core.common.world.GameBlock;
+import org.kakara.core.common.world.Location;
+import org.kakara.core.server.game.ServerItemStack;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -56,7 +57,7 @@ public class GameUtils {
             return 50d;
         }
         float blockHardness = ((Block) block.getItemStack().getItem()).getHardness();
-        float toolHardness = toolHardness(itemStack.getItem());
+        float toolHardness = itemStack == null ? 1 : toolHardness(itemStack.getItem());
         if (blockHardness == toolHardness) {
             return 5d;
         } else if (blockHardness < toolHardness) {
@@ -75,10 +76,18 @@ public class GameUtils {
     }
 
     public static ItemStack getReadyForPlacement(ItemStack itemStack) {
-        itemStack.setCount(itemStack.getCount() - 1);
-        ItemStack placeStack = itemStack.clone();
-        placeStack.setCount(1);
-        return placeStack;
+        if (itemStack.isServerVersionAvailable()) {
+            ServerItemStack stack = (ServerItemStack) ((ServerItemStack) itemStack).clone();
+
+            stack.setCount(itemStack.getCount() - 1);
+            ServerItemStack placeStack = stack;
+            placeStack.setCount(1);
+            return placeStack;
+        } else {
+            //TODO write support for external servers
+            return null;
+        }
+
     }
 
     public static String getGameMode(GameMode gameMode) {

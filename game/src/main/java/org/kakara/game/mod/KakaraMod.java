@@ -1,15 +1,16 @@
 package org.kakara.game.mod;
 
-import org.kakara.core.GameInstance;
-import org.kakara.core.Kakara;
-import org.kakara.core.mod.Mod;
-import org.kakara.core.mod.ModRules;
-import org.kakara.core.mod.ModType;
+
+import org.kakara.core.common.GameInstance;
+import org.kakara.core.common.Kakara;
+import org.kakara.core.common.mod.Mod;
+import org.kakara.core.common.mod.ModRules;
+import org.kakara.core.common.mod.ModType;
 import org.slf4j.Logger;
 
 public class KakaraMod implements Mod {
     private static KakaraMod instance;
-    private GameInstance gameInstance;
+    private final GameInstance gameInstance;
 
     public KakaraMod(GameInstance gameInstance) {
         this.gameInstance = gameInstance;
@@ -68,12 +69,14 @@ public class KakaraMod implements Mod {
     }
 
     @Override
+    public void enableCompletion() {
+
+    }
+
+    @Override
     public String getUppercaseName() {
         return "KAKARA";
     }
 
-    @Override
-    public GameInstance getGameInstance() {
-        return gameInstance;
-    }
+
 }

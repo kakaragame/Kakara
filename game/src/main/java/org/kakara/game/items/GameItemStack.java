@@ -1,25 +1,24 @@
 package org.kakara.game.items;
 
-import org.kakara.core.charm.Charm;
-import org.kakara.core.game.Item;
-import org.kakara.core.game.ItemStack;
+
+import org.kakara.core.common.game.Item;
+import org.kakara.core.common.game.ItemStack;
+import org.kakara.core.server.game.ServerItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-public class GameItemStack implements ItemStack {
+public class GameItemStack implements ServerItemStack {
     private int count;
-    private Item item;
+    private final Item item;
     private String name;
     private List<String> lore;
 
     public GameItemStack(int count, Item item) {
         this.count = count;
         this.item = item;
-        name = item.getName();
-        lore = new ArrayList<>();
     }
 
     @Override
@@ -38,18 +37,10 @@ public class GameItemStack implements ItemStack {
         this.count = count;
     }
 
-    @Override
-    public Map<Charm, Byte> getCharms() {
-        return null;
-    }
-
-    @Override
-    public void addCharm(Charm charm, Byte level) {
-
-    }
 
     @Override
     public String getName() {
+        if (name == null) name = item.getName();
         return name;
     }
 
@@ -60,12 +51,15 @@ public class GameItemStack implements ItemStack {
 
     @Override
     public List<String> getLore() {
-        return new ArrayList<>(lore);
+        return lore;
     }
 
     @Override
     public void setLore(List<String> list) {
-        this.lore = list;
+        if (list == null) {
+            lore = null;
+        } else
+            this.lore = Collections.unmodifiableList(list);
     }
 
     @Override
@@ -77,8 +71,7 @@ public class GameItemStack implements ItemStack {
 
     @Override
     public boolean equalsIgnoreCount(ItemStack itemStack) {
-        //TODO compare other values
-        return itemStack.getItem().equals(item);
+        return itemStack.getItem().equals(item) && getName().equals(itemStack.getName()) && Objects.equals(getLore(), itemStack.getLore());
     }
 
     @Override
@@ -98,7 +91,7 @@ public class GameItemStack implements ItemStack {
     public String toString() {
         return "GameItemStack{" +
                 "count=" + count +
-                ", item=" + item.getNameKey().toString() +
+                ", item=" + item.getControllerKey().toString() +
                 ", name='" + name + '\'' +
                 ", lore=" + lore +
                 '}';

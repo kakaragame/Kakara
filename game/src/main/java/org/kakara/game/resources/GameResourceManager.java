@@ -1,10 +1,9 @@
 package org.kakara.game.resources;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.kakara.core.GameInstance;
-import org.kakara.core.Kakara;
-import org.kakara.core.mod.Mod;
-import org.kakara.core.resources.*;
+import org.kakara.core.common.Kakara;
+import org.kakara.core.common.mod.Mod;
+import org.kakara.core.common.resources.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.util.*;
 
 public class GameResourceManager implements ResourceManager {
     protected static final String BASE_PATH = "/resources/";
-    protected GameInstance kakaraCore;
     protected File resourceDirectory;
     protected Map<Integer, Texture> textures = new HashMap<>();
 
@@ -53,7 +51,7 @@ public class GameResourceManager implements ResourceManager {
     @Override
     public void registerTexture(String s, TextureResolution i, Mod mod) {
         if (!s.endsWith(".png")) return;
-        File directory = new File(getModDir(mod), "texture" + File.separator + String.valueOf(i.getResolution()));
+        File directory = new File(getModDir(mod), "texture" + File.separator + i.getResolution());
         directory.mkdirs();
         String path = BASE_PATH + "texture/" + i.getResolution() + "/" + s;
         File file = new File(directory, correctPath(s));
@@ -149,9 +147,8 @@ public class GameResourceManager implements ResourceManager {
     }
 
     @Override
-    public void load(GameInstance kakaraCore) {
-        this.kakaraCore = kakaraCore;
-        resourceDirectory = new File(kakaraCore.getWorkingDirectory(), "resources");
+    public void load(File basePath) {
+        resourceDirectory = new File(basePath, "resources");
         resourceDirectory.mkdirs();
     }
 

@@ -1,30 +1,40 @@
 package org.kakara.game.items.blocks;
 
-import org.kakara.core.NameKey;
-import org.kakara.core.events.entity.StepOnEvent;
-import org.kakara.core.events.player.PlaceEvent;
-import org.kakara.core.events.player.click.ClickEvent;
-import org.kakara.core.game.Block;
-import org.kakara.core.mod.Mod;
+
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.events.Event;
+import org.kakara.core.common.events.RegisteredListener;
+import org.kakara.core.common.game.Block;
+import org.kakara.core.common.game.ToolType;
+import org.kakara.core.common.mod.Mod;
 import org.kakara.game.NameKeyUtils;
 import org.kakara.game.mod.KakaraMod;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 //Not to be rendered. It exists solely. So you can set a block to air.
 public class AirBlock implements Block {
     public static final String KEY = "AIR";
 
     @Override
-    public void onStep(StepOnEvent event) {
-
-    }
-
-    @Override
-    public void onPlace(PlaceEvent event) {
-
+    public Set<ToolType> requiredToolTypes() {
+        return Collections.emptySet();
     }
 
     @Override
     public float getHardness() {
+        return 0;
+    }
+
+    @Override
+    public float getResistance() {
+        return 0;
+    }
+
+    @Override
+    public int getHarvestLevel() {
         return 0;
     }
 
@@ -49,7 +59,7 @@ public class AirBlock implements Block {
     }
 
     @Override
-    public NameKey getNameKey() {
+    public ControllerKey getControllerKey() {
         return NameKeyUtils.newKakaraNameKey(KEY);
     }
 
@@ -63,8 +73,9 @@ public class AirBlock implements Block {
         return KakaraMod.getInstance();
     }
 
-    @Override
-    public void onClick(ClickEvent clickEvent) {
 
+    @Override
+    public Map<Class<? extends Event>, RegisteredListener> getRegisteredListeners() {
+        return Collections.emptyMap();
     }
 }

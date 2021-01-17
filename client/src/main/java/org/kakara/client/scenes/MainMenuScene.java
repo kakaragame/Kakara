@@ -1,20 +1,17 @@
 package org.kakara.client.scenes;
 
 import org.kakara.client.KakaraGame;
-import org.kakara.client.game.IntegratedServer;
-import org.kakara.client.game.SaveCreator;
-import org.kakara.client.game.WorldCreator;
-import org.kakara.client.scenes.maingamescene.MainGameScene;
-import org.kakara.core.NameKey;
-import org.kakara.core.Status;
-import org.kakara.core.modinstance.ModInstance;
-import org.kakara.core.modinstance.ModInstanceType;
+import org.kakara.client.join.LocalJoin;
+import org.kakara.client.local.game.SaveCreator;
+import org.kakara.client.local.game.WorldCreator;
+import org.kakara.core.common.ControllerKey;
+import org.kakara.core.common.modinstance.ModInstance;
+import org.kakara.core.common.modinstance.ModInstanceType;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractMenuScene;
-import org.kakara.engine.ui.RGBA;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
@@ -27,6 +24,7 @@ import org.kakara.engine.ui.events.UIHoverLeaveEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.font.TextAlign;
 import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.window.WindowIcon;
 
 import java.io.File;
@@ -35,7 +33,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class MainMenuScene extends AbstractMenuScene {
-    private KakaraGame kakaraGame;
+    private final KakaraGame kakaraGame;
 
     public MainMenuScene(GameHandler gameHandler, KakaraGame kakaraGame) {
         super(gameHandler);
@@ -84,7 +82,7 @@ public class MainMenuScene extends AbstractMenuScene {
             An error that is displayed if the game is not in testing mode.
          */
 
-        if (!kakaraGame.getClient().getGameSettings().isTestMode()) {
+        if (!kakaraGame.getSettings().isTestMode()) {
             Rectangle singlePlayer = new Rectangle(new Vector2(0, 370), new Vector2(500, 60), new RGBA(255, 255, 255, 0.5f));
             singlePlayer.addConstraint(new HorizontalCenterConstraint());
             Text singlePlayerText = new Text("Error: Kakara is not in test mode", roboto);
@@ -168,15 +166,9 @@ public class MainMenuScene extends AbstractMenuScene {
             for (File file1 : getModsToLoad()) {
                 saveCreator.add(new ModInstance(file1.getName(), "", "1.0", null, ModInstanceType.FILE, file1));
             }
-            saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new NameKey("KVANILLA:DEFAULT")));
-            IntegratedServer integratedServer = new IntegratedServer(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), null);
+            saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new ControllerKey("KVANILLA:DEFAULT")));
 
-            LoadingScene loadingScene = new LoadingScene(gameHandler, integratedServer.getSave().getDefaultWorld(), Status.LOADED, () -> {
-                MainGameScene gameScene = new MainGameScene(gameHandler, integratedServer, kakaraGame);
-                gameHandler.getSceneManager().setScene(gameScene);
-            });
-            gameHandler.getSceneManager().setScene(loadingScene);
-            integratedServer.start();
+            gameHandler.getSceneManager().setScene(kakaraGame.join(new LocalJoin(saveCreator.createSave(),UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5") )));
 
         } catch (Exception ex) {
             setCurserStatus(true);

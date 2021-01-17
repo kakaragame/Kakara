@@ -4,3 +4,8 @@ target/
 *.log
 out/
 client/test
+engine/
+KLauncher
+dependency-reduced-pom.xml
+MANIFEST.MF
+start.sh

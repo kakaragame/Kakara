@@ -1,9 +1,9 @@
 package org.kakara.client;
 
-import org.kakara.core.Kakara;
-import org.kakara.core.game.ItemStack;
-import org.kakara.core.resources.Resource;
-import org.kakara.core.world.*;
+
+import org.kakara.core.common.game.ItemStack;
+import org.kakara.core.common.resources.Resource;
+import org.kakara.core.common.world.*;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector3;
@@ -64,13 +64,7 @@ public class MoreUtils {
     }
 
 
-    public static List<ItemStack> listWithAir(int capacity) {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        for (int i = 0; i < capacity; i++) {
-            itemStacks.add(Kakara.createItemStack(Kakara.getItemManager().getItem(0).get()));
-        }
-        return itemStacks;
-    }
+
 
     public static int getPoolSize() {
         if (!System.getProperties().containsKey("kakara.pool.size")) {
@@ -109,7 +103,7 @@ public class MoreUtils {
             }
     }
 
-    public static Texture coreTextureToEngineTexture(org.kakara.core.resources.Texture coreTexture) {
+    public static Texture coreTextureToEngineTexture(org.kakara.core.common.resources.Texture coreTexture) {
         return new Texture(coreResourceToEngineResource(coreTexture.get(), KakaraGame.getInstance()), GameHandler.getInstance().getCurrentScene());
     }
 }

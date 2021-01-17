@@ -25,10 +25,20 @@ repositories {
 }
 
 dependencies {
+    //Common Game Depends Depends
     implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("org.apache.commons:commons-lang3:3.11")
+    implementation("org.apache.commons:commons-collections4:4.4")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.guava:guava:30.1-jre")
+    //ODS - Game Storage
+    implementation(group = "me.ryandw11", name = "ods", version = "1.0.4")
+    implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
+    //Engine
     implementation("org.kakara:engine:1.0-PRE4-SNAPSHOT")
+    //Core
+    implementation("org.kakara.core:common:1.0-SNAPSHOT")
+    implementation("org.kakara.core:client:1.0-SNAPSHOT")
+    implementation("org.kakara.core:server:1.0-SNAPSHOT")
 
 }

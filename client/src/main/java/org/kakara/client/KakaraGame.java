@@ -1,6 +1,7 @@
 package org.kakara.client;
 
 import me.kingtux.other.TheCodeOfAMadMan;
+import org.kakara.client.discord.DiscordManager;
 import org.kakara.client.join.JoinDetails;
 import org.kakara.client.join.LocalJoin;
 import org.kakara.client.local.game.GameEngineInventoryController;
@@ -53,6 +54,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private final ResourceManager resourceManager;
     private final ServiceManager serviceManager;
     private final SettingRegistry settingManager;
+    private DiscordManager discordManager;
 
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
@@ -77,6 +79,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
         ((SimpleSettingManager) settingManager).init(ModRules.ModTarget.ENVIRONMENT);
         //Set Shutdown hook
         //Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
+        discordManager = new DiscordManager(this);
     }
 
     public LoadingScene join(JoinDetails joinDetails) throws ServerLoadException {
@@ -161,6 +164,8 @@ public class KakaraGame implements Game, EnvironmentInstance {
         this.gameHandler = gameHandler;
         //Load MainMenuScene
         loadMusicManager();
+        discordManager.start();
+
     }
 
     @Override

@@ -8,3 +8,4 @@ engine/
 KLauncher
 dependency-reduced-pom.xml
 MANIFEST.MF
+start.sh

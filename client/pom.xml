@@ -376,6 +376,11 @@
             <classifier>${lwjgl.natives}</classifier>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.Carleslc</groupId>
+            <artifactId>Simple-YAML</artifactId>
+            <version>1.7.2</version>
+        </dependency>
     </dependencies>
 
 </project>

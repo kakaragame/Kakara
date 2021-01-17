@@ -35,7 +35,7 @@ dependencies {
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.4")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
     //Engine
-    implementation("org.kakara:engine:1.0-PRE4-SNAPSHOT")
+    compileOnly("org.kakara:engine:1.0-PRE4-SNAPSHOT")
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
     implementation("org.kakara.core:client:1.0-SNAPSHOT")

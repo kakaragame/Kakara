@@ -13,6 +13,21 @@ java {
     sourceCompatibility = org.gradle.api.JavaVersion.VERSION_11
 
 }
+tasks.withType<Jar> {
+    // Otherwise you'll get a "No main manifest attribute" error
+    manifest {
+        attributes["Main-Class"] = "org.kakara.client.Main"
+        attributes["Launcher-Agent-Class"] = "org.kakara.client.Agent"
+    }
+
+    // To add all of the dependencies
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+}
 
 repositories {
     maven("https://repo.maven.apache.org/maven2/")
@@ -36,7 +51,7 @@ dependencies {
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.4")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
     //Engine
-    implementation("org.kakara:engine:1.0-PRE4-SNAPSHOT")
+    compileOnly("org.kakara:engine:1.0-PRE4-SNAPSHOT")
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
     implementation("org.kakara.core:client:1.0-SNAPSHOT")

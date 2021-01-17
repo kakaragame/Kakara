@@ -7,7 +7,10 @@ plugins {
 
 group = "org.kakara"
 version = "1.0-SNAPSHOT"
-
+version = "1.0-SNAPSHOT"
+if (hasProperty("buildNumber")) {
+    version = "1.0-" + properties.get("buildNumber") + "-SNAPSHOT";
+}
 java {
     targetCompatibility = org.gradle.api.JavaVersion.VERSION_11
     sourceCompatibility = org.gradle.api.JavaVersion.VERSION_11

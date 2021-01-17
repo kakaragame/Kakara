@@ -78,7 +78,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
         settingManager = new SimpleSettingManager(settings);
         ((SimpleSettingManager) settingManager).init(ModRules.ModTarget.ENVIRONMENT);
         //Set Shutdown hook
-        //Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
         discordManager = new DiscordManager(this);
     }
 
@@ -205,6 +205,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
         //TODO bring back mod unloading
         //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
+        discordManager.setRunning(false);
     }
 
     public int getTPS() {

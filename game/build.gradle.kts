@@ -5,9 +5,8 @@ plugins {
 
 }
 
-group = "org.kakara.core"
+group = "org.kakara"
 version = "1.0-SNAPSHOT"
-val artifactName = "common"
 
 java {
     targetCompatibility = org.gradle.api.JavaVersion.VERSION_11
@@ -30,8 +29,6 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.11")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.guava:guava:30.1-jre")
-    implementation("org.jetbrains", "annotations", "20.1.0")
-    implementation(project(":network"))
-    implementation(project(":auth"))
-    compileOnly("me.ryandw11:ods:1.0.4")
+    implementation("org.kakara:engine:1.0-PRE4-SNAPSHOT")
+
 }

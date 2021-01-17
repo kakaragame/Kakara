@@ -10,3 +10,8 @@ klauncher
 dependency-reduced-pom.xml
 MANIFEST.MF
 start.sh
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

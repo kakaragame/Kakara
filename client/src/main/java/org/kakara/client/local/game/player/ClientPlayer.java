@@ -43,7 +43,8 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
         super(jsonObject, integratedServer);
         entity = new PlayerEntity(getName());
         this.location = location;
-        if (jsonObject.get("gamemode") == null) {
+
+        if (jsonObject.has("gamemode")) {
             gameMode = DefaultGameMode.CREATIVE;
         } else
             gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());

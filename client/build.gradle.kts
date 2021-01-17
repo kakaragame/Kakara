@@ -43,7 +43,12 @@ repositories {
 }
 
 dependencies {
+    //Logging
     implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-log4j12:1.7.5")
+    implementation("log4j:apache-log4j-extras:1.2.17")
+    implementation("com.jcabi:jcabi-log:0.17.3")
+
     implementation("org.apache.commons:commons-lang3:3.11")
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("commons-cli:commons-cli:1.4")

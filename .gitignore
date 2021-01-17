@@ -6,6 +6,6 @@ out/
 client/test
 engine/
 KLauncher
+klauncher
 dependency-reduced-pom.xml
 MANIFEST.MF
-start.sh

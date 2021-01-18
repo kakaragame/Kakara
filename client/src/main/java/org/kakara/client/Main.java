@@ -21,6 +21,7 @@ public class Main {
         try {
             CommandLine cmd = parser.parse(options, args);
             String engine_jar = cmd.getOptionValue("E");
+            System.out.println("Engine_Jar: "+ engine_jar);
             Path of = Path.of(engine_jar);
             Agent.addToClassPath(of);
         } catch (ParseException e) {

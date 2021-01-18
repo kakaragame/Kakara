@@ -90,7 +90,7 @@ public class MainGameScene extends AbstractGameScene {
 
     public MainGameScene(GameHandler gameHandler, Client client, KakaraGame kakaraGame) {
         super(gameHandler);
-        setCurserStatus(true);
+        setCurserStatus(false);
         this.client = client;
         this.kakaraGame = kakaraGame;
 

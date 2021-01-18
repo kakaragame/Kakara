@@ -1,20 +1,32 @@
 package org.kakara.client;
 
 
-
+import org.apache.commons.cli.*;
 import org.kakara.core.client.client.ClientSettings;
 import org.kakara.core.client.client.ClientSettingsBuilder;
-import org.kakara.engine.GameEngine;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Properties;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        Options options = new Options();
+        options.addOption("E","engine", true,"Engine Jar");
+        CommandLineParser parser = new DefaultParser();
 
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            String engine_jar = cmd.getOptionValue("E");
+            Path of = Path.of(engine_jar);
+            Agent.addToClassPath(of);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return;
+        }
         File testFile = new File("test" + File.separator + "test.yml");
         ClientSettings clientSettings = null;
         if (testFile.exists()) {
@@ -33,17 +45,11 @@ public class Main {
         }
 
 
-        KakaraGame kakaraGame;
-        try {
-            kakaraGame = new KakaraGame(clientSettings);
-        } catch (Exception e) {
-            KakaraGame.LOGGER.error("Unable to load Kakara", e);
-            return;
-        }
+        GameLoader.load(clientSettings);
 
-        // TODO add in a ability to select vSync mode.
-        GameEngine gameEngine = new GameEngine("Kakara", 1080, 720, false, kakaraGame);
-        gameEngine.run();
+    }
+
+    private static void loadNeededLibraries() {
 
     }
 

@@ -39,6 +39,6 @@ dependencies {
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
     implementation("org.kakara.core:client:1.0-SNAPSHOT")
-    implementation("org.kakara.core:server:1.0-SNAPSHOT")
+    implementation("org.kakara.core:server:1.0-RW-SNAPSHOT")
 
 }

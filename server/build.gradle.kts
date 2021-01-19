@@ -32,7 +32,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.11")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.guava:guava:30.1-jre")
-    implementation("org.kakara:engine:1.0-PRE4-SNAPSHOT")
+    implementation("org.kakara:engine:1.0-PRE4")
     implementation(project(":game"))
 
 }

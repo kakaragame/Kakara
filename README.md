@@ -13,3 +13,6 @@ If you need more infomation please join our Discord.
 
 [Twitter](https://twitter.com/kakaragame)
 
+
+## Kakara Supporters! 
+Thank you [GitBook](https://www.gitbook.com/) for the documentation help!

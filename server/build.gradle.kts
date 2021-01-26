@@ -23,6 +23,8 @@ repositories {
     jcenter()
     maven("https://repo.kingtux.me/storages/maven/kingtux-repo")
     maven("https://repo.kingtux.me/storages/maven/ryandw11")
+    maven("https://repo.kingtux.me/storages/maven/kakara")
+
     maven("https://jitpack.io")
     maven("https://repo.ryandw11.com/repository/maven-releases/")
 }
@@ -32,7 +34,6 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.11")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.guava:guava:30.1-jre")
-    implementation("org.kakara:engine:1.0-PRE4-SNAPSHOT")
     implementation(project(":game"))
 
 }

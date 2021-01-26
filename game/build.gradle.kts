@@ -20,6 +20,8 @@ repositories {
     jcenter()
     maven("https://repo.kingtux.me/storages/maven/kingtux-repo")
     maven("https://repo.kingtux.me/storages/maven/ryandw11")
+    maven("https://repo.kingtux.me/storages/maven/kakara")
+
     maven("https://jitpack.io")
     maven("https://repo.ryandw11.com/repository/maven-releases/")
 }
@@ -35,10 +37,13 @@ dependencies {
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.4")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
     //Engine
-    compileOnly("org.kakara:engine:1.0-PRE4-SNAPSHOT")
+    implementation(group = "org.kakara", name = "engine", version = "1.0-SNAPSHOT", classifier="all")
+
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
     implementation("org.kakara.core:client:1.0-SNAPSHOT")
     implementation("org.kakara.core:server:1.0-SNAPSHOT")
+// https://mvnrepository.com/artifact/org.jetbrains/annotations
+    implementation( group="org.jetbrains", name= "annotations", version= "20.1.0")
 
 }

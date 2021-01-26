@@ -2,11 +2,11 @@ plugins {
     java
     `java-library`
     id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("org.kakara.versionfile") version "1.0.0"
 
 }
-
+val engineVersion = "1.0-SNAPSHOT"
 group = "org.kakara"
-version = "1.0-SNAPSHOT"
 version = "1.0-SNAPSHOT"
 if (hasProperty("buildNumber")) {
     version = "1.0-" + properties.get("buildNumber") + "-SNAPSHOT";
@@ -32,11 +32,27 @@ tasks.withType<Jar> {
     })
 }
 
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        dependsOn(project.tasks.getByName("vftask"));
+    }
+    "jar"{
+        dependsOn(project.tasks.getByName("vftask"));
+    }
+}
+
+versionFileConfig {
+    isCompileIntoJar = true;
+    jarDirectory = "kakara"
+    customValues["engine.version"] = engineVersion;
+}
+
 repositories {
     maven("https://repo.maven.apache.org/maven2/")
     mavenLocal()
     jcenter()
     maven("https://repo.kingtux.me/storages/maven/kingtux-repo")
+    maven("https://repo.kingtux.me/storages/maven/kakara")
     maven("https://repo.kingtux.me/storages/maven/ryandw11")
     maven("https://jitpack.io")
     maven("https://repo.ryandw11.com/repository/maven-releases/")
@@ -59,7 +75,9 @@ dependencies {
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.4")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
     //Engine
-    compileOnly("org.kakara:engine:1.0-PRE4-SNAPSHOT")
+    implementation(group = "org.kakara", name = "engine", version = engineVersion, classifier="all")
+    implementation("io.imgui.java:binding:1.77-0.17.2")
+    implementation("io.imgui.java:lwjgl3:1.77-0.17.2")
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
     implementation("org.kakara.core:client:1.0-SNAPSHOT")

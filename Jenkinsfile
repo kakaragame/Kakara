@@ -11,7 +11,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'build/libs/*.jar, followSymlinks: false
+                    archiveArtifacts artifacts: 'build/libs/*.jar', followSymlinks: false
                 }
             }
         }

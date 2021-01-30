@@ -10,7 +10,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'build/libs/*.jar', followSymlinks: false
+                  archiveArtifacts artifacts: 'client/build/libs/, server/build/libs/', followSymlinks: false                
                 }
             }
         }

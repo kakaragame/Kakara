@@ -258,7 +258,6 @@ public class ClientWorld extends GameWorld {
     }
 
     public void initLoad(Set<ChunkLocation> chunkLocations) {
-        System.out.println("chunkLocations = " + chunkLocations.size());
         chunkLocations.forEach(this::getChunkAt);
         while (true) {
             int loadedChunks = 1;
@@ -267,7 +266,6 @@ public class ClientWorld extends GameWorld {
                     loadedChunks = loadedChunks + 1;
                 }
             }
-            System.out.println("loadedChunks = " + loadedChunks);
             if (chunkLocations.size() <= loadedChunks) {
                 break;
             }

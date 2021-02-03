@@ -80,12 +80,14 @@ public class PlayerMovement {
             // Handle the block selector.
             try {
                 Collidable objectFound = mainGameScene.selectGameItems(20, uuid);
-                if (objectFound instanceof RenderBlock) {
-                    RenderBlock block = (RenderBlock) objectFound;
-                    // This does not mutate the Vector3.
-                    mainGameScene.blockSelector.setPosition(block.getPosition().add(block.getParentChunk().getPosition()));
-                } else {
-                    mainGameScene.blockSelector.setPosition((float) l.getX(), -10, (float) l.getZ());
+                if(mainGameScene.blockSelector!=null){
+                    if (objectFound instanceof RenderBlock) {
+                        RenderBlock block = (RenderBlock) objectFound;
+                        // This does not mutate the Vector3.
+                        mainGameScene.blockSelector.setPosition(block.getPosition().add(block.getParentChunk().getPosition()));
+                    } else {
+                        mainGameScene.blockSelector.setPosition((float) l.getX(), -10, (float) l.getZ());
+                    }
                 }
             } catch (NullPointerException ignored) {
             }

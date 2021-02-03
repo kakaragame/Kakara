@@ -217,14 +217,18 @@ public class IntegratedServer extends Thread implements Server {
 
     @Override
     public void update() {
-        if (getPlayerEntity().getLocation().getNullableWorld().getStatus() != Status.LOADED) return;
-        if (sceneTickUpdate != null) sceneTickUpdate.run();
         if (getPlayerEntity() == null) return;
         Location start = getPlayerEntity().getLocation();
-        if (lastLocation.equals(start)) return;
-        lastLocation = start;
         if (start.getNullableWorld() == null) return;
         checkForDroppedItems();
+
+        if (getPlayerEntity().getLocation().getNullableWorld().getStatus() != Status.LOADED) return;
+
+        if (sceneTickUpdate != null){
+            sceneTickUpdate.run();
+        }
+        if (lastLocation.equals(start)) return;
+        lastLocation = start;
 
 
     }

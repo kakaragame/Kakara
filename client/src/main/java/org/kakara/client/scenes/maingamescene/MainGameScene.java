@@ -33,12 +33,10 @@ import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
-import org.kakara.engine.gameitems.Material;
 import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.gameitems.SkyBox;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
-import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
@@ -174,9 +172,9 @@ public class MainGameScene extends AbstractGameScene {
         }
 
         //Mesh m = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
-      //m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png").getByteBuffer())));
+        //m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png").getByteBuffer())));
         //m.setWireframe(true);
-       //this.blockSelector = new MeshGameItem(m);
+        //this.blockSelector = new MeshGameItem(m);
         //this.blockSelector.setScale(1.01f);
         //add(this.blockSelector);
     }
@@ -383,23 +381,23 @@ public class MainGameScene extends AbstractGameScene {
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = nextLocation.subtractMut(16,0,0).addMut(-16, 0, 0);
+            nextLocation = nextLocation.subtractMut(16, 0, 0).addMut(-16, 0, 0);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = nextLocation.addMut(16,0,0).addMut(0, 16, 0);
+            nextLocation = nextLocation.addMut(16, 0, 0).addMut(0, 16, 0);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = nextLocation.subtractMut(0,16,0).addMut(0, -16, 0);
+            nextLocation = nextLocation.subtractMut(0, 16, 0).addMut(0, -16, 0);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = nextLocation.addMut(0,16,0).addMut(0, 0, 16);
+            nextLocation = nextLocation.addMut(0, 16, 0).addMut(0, 0, 16);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }
-            nextLocation = nextLocation.subtractMut(0,0,16).addMut(0, 0, -16);
+            nextLocation = nextLocation.subtractMut(0, 0, 16).addMut(0, 0, -16);
             if (GameUtils.isLocationInsideCurrentLocationRadius(playerLocation, nextLocation, IntegratedServer.RADIUS * 16)) {
                 playerLocation.getNullableWorld().getChunkAt(nextLocation);
             }

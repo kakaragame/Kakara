@@ -80,7 +80,7 @@ dependencies {
     compileOnly("io.imgui.java:lwjgl3:1.77-0.17.2")
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
-    implementation("org.kakara.core:client:1.0-SNAPSHOT")
+    implementation("org.kakara.core:client:1.0-test-SNAPSHOT")
     implementation("org.kakara.core:server:1.0-SNAPSHOT")
     //Game - The Core Game
     implementation(project(":game"))

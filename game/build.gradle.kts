@@ -41,7 +41,7 @@ dependencies {
 
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
-    implementation("org.kakara.core:client:1.0-SNAPSHOT")
+    implementation("org.kakara.core:client:1.0-test-SNAPSHOT")
     implementation("org.kakara.core:server:1.0-SNAPSHOT")
 // https://mvnrepository.com/artifact/org.jetbrains/annotations
     implementation( group="org.jetbrains", name= "annotations", version= "20.1.0")

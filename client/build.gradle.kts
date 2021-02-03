@@ -75,9 +75,9 @@ dependencies {
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.4")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
     //Engine
-    implementation(group = "org.kakara", name = "engine", version = engineVersion, classifier="all")
-    implementation("io.imgui.java:binding:1.77-0.17.2")
-    implementation("io.imgui.java:lwjgl3:1.77-0.17.2")
+    compileOnly (group = "org.kakara", name = "engine", version = engineVersion, classifier="all")
+    compileOnly("io.imgui.java:binding:1.77-0.17.2")
+    compileOnly("io.imgui.java:lwjgl3:1.77-0.17.2")
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")
     implementation("org.kakara.core:client:1.0-SNAPSHOT")

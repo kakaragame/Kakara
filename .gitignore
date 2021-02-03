@@ -3,13 +3,17 @@ target/
 *.iml
 *.log
 out/
+# The Game Test Directory.
 client/test
 engine/
-KLauncher
-klauncher
+# klauncher
+KLauncher*
+klauncher*
 dependency-reduced-pom.xml
 MANIFEST.MF
+# Start Scripts that KingTux uses. If you would like them feel free to contact him on the Kakara Discord Server
 start.sh
+start.bat
 # Ignore Gradle project-specific cache directory
 .gradle
 

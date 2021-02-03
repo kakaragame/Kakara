@@ -127,6 +127,7 @@ public class MainGameScene extends AbstractGameScene {
             textures.add(txt1);
 
         }
+        textures.add(new RenderTexture(resourceManager.getResource("block_select.png")));
         breakingTexture = new RenderTexture(resourceManager.getResource("breaking/breaking.png"));
         textures.add(breakingTexture);
         File file = new File(Kakara.getGameInstance().getWorkingDirectory(), "tmp");
@@ -172,12 +173,12 @@ public class MainGameScene extends AbstractGameScene {
             e.printStackTrace();
         }
 
-        Mesh m = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
-        m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png").getByteBuffer())));
-        m.setWireframe(true);
-        this.blockSelector = new MeshGameItem(m);
-        this.blockSelector.setScale(1.01f);
-        add(this.blockSelector);
+        //Mesh m = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
+      //m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png").getByteBuffer())));
+        //m.setWireframe(true);
+       //this.blockSelector = new MeshGameItem(m);
+        //this.blockSelector.setScale(1.01f);
+        //add(this.blockSelector);
     }
 
     private Texture loadSkyBoxTexture() {

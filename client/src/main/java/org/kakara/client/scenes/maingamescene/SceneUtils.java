@@ -42,20 +42,6 @@ public class SceneUtils {
             return false;
         });
         object.setCollider(boxCollider);
-/*        object.getCollider().addOnTriggerEnter(trig -> {
-            if(trig instanceof MeshGameItem){
-                MeshGameItem item = (MeshGameItem) trig;
-                if(item.getTag().equals("pickupable")){
-                    NameKey key = (NameKey) item.getData().get(0);
-                    gameScene.getHotBar().getContentInventory().addItemStackForPickup(Kakara.createItemStack(Kakara.getItemManager().getItem(key).get()));
-                    item.setTag("TO BE REMOVED");
-                    gameScene.remove(item);
-                    gameScene.addQueueRunnable(() -> {
-                        gameScene.getHotBar().renderItems();
-                    });
-                }
-            }
-        });*/
         gameScene.add(object);
         return object.getUUID();
     }

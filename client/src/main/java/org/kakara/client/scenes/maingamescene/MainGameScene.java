@@ -183,7 +183,7 @@ public class MainGameScene extends AbstractGameScene {
 
     private Texture loadSkyBoxTexture() {
         try {
-            return TextureCache.getInstance(gameHandler.getResourceManager()).getTexture("skybox/general.png", this);
+            return TextureCache.getInstance(gameHandler.getResourceManager()).getTexture("skybox/daytime2.png", this);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

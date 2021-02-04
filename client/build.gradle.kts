@@ -60,8 +60,7 @@ repositories {
 
 dependencies {
     //Logging
-    implementation("org.slf4j:slf4j-api:1.7.30")
-    implementation("org.slf4j:slf4j-log4j12:1.7.30")
+    implementation("org.slf4j:slf4j-log4j12:1.8.0-beta4")
     implementation("log4j:apache-log4j-extras:1.2.17")
     implementation("com.jcabi:jcabi-log:0.19.0")
 

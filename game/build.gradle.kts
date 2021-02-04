@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     //Common Game Depends Depends
-    implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-api:1.8.0-beta4")
     implementation("org.apache.commons:commons-lang3:3.11")
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("com.google.code.gson:gson:2.8.6")

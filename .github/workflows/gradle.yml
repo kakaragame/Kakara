@@ -23,4 +23,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build -Pbranch=${{ github.ref }}
+      # Dont do this. But Github actions does not have a a variable for getting the current branch.
+      # They also are in HEAD when executing so Kakara's code to get the branch fails.
+      run: ./gradlew build -Pbranch=GITHUB_ACTIONS

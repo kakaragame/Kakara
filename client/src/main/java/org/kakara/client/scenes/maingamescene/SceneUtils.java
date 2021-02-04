@@ -2,14 +2,11 @@ package org.kakara.client.scenes.maingamescene;
 
 import org.kakara.engine.gameitems.GameItem;
 import org.kakara.engine.gameitems.MeshGameItem;
-import org.kakara.engine.gameitems.mesh.IMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.physics.collision.BoxCollider;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,11 +18,7 @@ public class SceneUtils {
     }
 
     protected Optional<GameItem> getItemByID(UUID uuid) {
-        for (Map.Entry<IMesh, List<GameItem>> entry : gameScene.getItemHandler().getNonInstancedMeshMap().entrySet()) {
-            List<GameItem> gameItems = entry.getValue();
-            return gameItems.stream().filter(gameItem -> gameItem.getUUID().equals(uuid)).findFirst();
-        }
-        return Optional.empty();
+        return gameScene.getItemHandler().getItemWithId(uuid);
     }
 
     protected UUID createPlayerObject() {

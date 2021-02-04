@@ -6,10 +6,14 @@ plugins {
 }
 
 group = "org.kakara"
-version = "1.0-SNAPSHOT"
-version = "1.0-SNAPSHOT"
+var branch = "";
+if (hasProperty("branch")) {
+    branch = properties.get("branch").toString()
+}
 if (hasProperty("buildNumber")) {
-    version = "1.0-" + properties.get("buildNumber") + "-SNAPSHOT";
+    version = org.kakara.engine.Version.getGameVersion(properties.get("buildNumber").toString(), branch);
+} else {
+    version = org.kakara.engine.Version.getGameVersion("", branch);
 }
 java {
     targetCompatibility = org.gradle.api.JavaVersion.VERSION_11

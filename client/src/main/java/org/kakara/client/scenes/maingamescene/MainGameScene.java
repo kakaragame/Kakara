@@ -33,10 +33,12 @@ import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
+import org.kakara.engine.gameitems.Material;
 import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.gameitems.SkyBox;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
+import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
@@ -171,12 +173,12 @@ public class MainGameScene extends AbstractGameScene {
             e.printStackTrace();
         }
 
-        //Mesh m = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
-        //m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png").getByteBuffer())));
-        //m.setWireframe(true);
-        //this.blockSelector = new MeshGameItem(m);
-        //this.blockSelector.setScale(1.01f);
-        //add(this.blockSelector);
+        Mesh m = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
+        m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png"), this)));
+        m.setWireframe(true);
+        this.blockSelector = new MeshGameItem(m);
+        this.blockSelector.setScale(1.01f);
+        add(this.blockSelector);
     }
 
     private Texture loadSkyBoxTexture() {

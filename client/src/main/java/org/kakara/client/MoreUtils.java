@@ -1,6 +1,9 @@
 package org.kakara.client;
 
 
+import org.kakara.core.client.client.SaveSettings;
+import org.kakara.core.client.client.parsers.JsonSaveSettingParser;
+import org.kakara.core.common.exceptions.SaveLoadException;
 import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.resources.Resource;
 import org.kakara.core.common.world.*;
@@ -9,10 +12,8 @@ import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector3;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FilenameFilter;
+import java.util.*;
 
 public class MoreUtils {
     public static String[] stringArrayToStringArray(String property) {
@@ -35,7 +36,6 @@ public class MoreUtils {
         return kakaraGame.getGameHandler().getResourceManager().getResource(resource.getLocalPath());
 
     }
-
 
 
     public static Map<ItemStack, List<Location>> sortByType(List<ChunkBase> mehChunks) {
@@ -101,6 +101,23 @@ public class MoreUtils {
                     getFiles(file.getAbsoluteFile(), files);
                 }
             }
+    }
+
+    public List<SaveSettings> getSaves() throws SaveLoadException {
+        File file = new File(KakaraGame.getInstance().getWorkingDirectory(), "saves");
+        if (!file.exists()) {
+            file.mkdir();
+            return Collections.emptyList();
+        }
+        String[] directories = file.list((current, name) -> new File(current, name).isDirectory());
+        List<SaveSettings> saveSettings = new ArrayList<>();
+        JsonSaveSettingParser saveSettingParser = new JsonSaveSettingParser();
+        for (String directory : directories) {
+            File saveFolder = new File(file, directory);
+            File saveFile = new File(saveFolder, "save.json");
+            saveSettings.add(saveSettingParser.fromFile(saveFile));
+        }
+        return saveSettings;
     }
 
     public static Texture coreTextureToEngineTexture(org.kakara.core.common.resources.Texture coreTexture) {

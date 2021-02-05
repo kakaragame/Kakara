@@ -4,6 +4,7 @@ import org.kakara.client.KakaraGame;
 import org.kakara.client.join.LocalJoin;
 import org.kakara.client.local.game.SaveCreator;
 import org.kakara.client.local.game.WorldCreator;
+import org.kakara.client.scenes.menu.WorldSelectMenu;
 import org.kakara.core.common.ControllerKey;
 import org.kakara.core.common.modinstance.ModInstance;
 import org.kakara.core.common.modinstance.ModInstanceType;
@@ -78,24 +79,7 @@ public class MainMenuScene extends AbstractMenuScene {
         versionNumber.addConstraint(new GridConstraint(12, 30, 3, 11));
         componentCanvas.add(versionNumber);
 
-        /*
-            An error that is displayed if the game is not in testing mode.
-         */
 
-        if (!kakaraGame.getSettings().isTestMode()) {
-            Rectangle singlePlayer = new Rectangle(new Vector2(0, 370), new Vector2(500, 60), new RGBA(255, 255, 255, 0.5f));
-            singlePlayer.addConstraint(new HorizontalCenterConstraint());
-            Text singlePlayerText = new Text("Error: Kakara is not in test mode", roboto);
-            singlePlayerText.setSize(40);
-            singlePlayerText.setLineWidth(500);
-            singlePlayerText.setTextAlign(TextAlign.CENTER | TextAlign.MIDDLE);
-            singlePlayerText.addConstraint(new VerticalCenterConstraint());
-            singlePlayerText.addConstraint(new HorizontalCenterConstraint());
-            singlePlayer.add(singlePlayerText);
-            componentCanvas.add(singlePlayer);
-            add(componentCanvas);
-            return;
-        }
 
         /*
          * The single player button.
@@ -112,10 +96,29 @@ public class MainMenuScene extends AbstractMenuScene {
 
         singlePlayer.addUActionEvent((UIHoverEnterEvent) vector2 -> singlePlayer.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
         singlePlayer.addUActionEvent((UIHoverLeaveEvent) vector2 -> singlePlayer.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
-        singlePlayer.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> singlePlayerClick(singlePlayer), UIClickEvent.class);
+        singlePlayer.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> singlePlayerTest(singlePlayer), UIClickEvent.class);
 
         componentCanvas.add(singlePlayer);
+        /*
+        The test mode button
+         */
+        if (kakaraGame.getSettings().isTestMode()) {
+            Rectangle testMode = new Rectangle(new Vector2(0, 600), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
+            testMode.addConstraint(new HorizontalCenterConstraint());
+            Text testModeText = new Text("Test Mode", roboto);
+            testModeText.setSize(40);
+            testModeText.setLineWidth(300);
+            testModeText.setTextAlign(TextAlign.CENTER | TextAlign.MIDDLE);
+            testModeText.addConstraint(new VerticalCenterConstraint());
+            testModeText.addConstraint(new HorizontalCenterConstraint());
+            testMode.add(testModeText);
 
+            testMode.addUActionEvent((UIHoverEnterEvent) vector2 -> testMode.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
+            testMode.addUActionEvent((UIHoverLeaveEvent) vector2 -> testMode.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
+            testMode.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> testModeClick(testMode), UIClickEvent.class);
+
+            componentCanvas.add(testMode);
+        }
 
         /*
          * The multi player button.
@@ -153,11 +156,11 @@ public class MainMenuScene extends AbstractMenuScene {
     }
 
     /**
-     * When the single player button is clicked.
+     * When the test player button is clicked.
      *
      * @param playButton The button that was clicked.
      */
-    private void singlePlayerClick(Rectangle playButton) {
+    private void testModeClick(Rectangle playButton) {
         if (!playButton.isVisible()) return;
         try {
             File file = new File("testsave");
@@ -168,12 +171,28 @@ public class MainMenuScene extends AbstractMenuScene {
             }
             saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new ControllerKey("KVANILLA:DEFAULT")));
 
-            gameHandler.getSceneManager().setScene(kakaraGame.join(new LocalJoin(saveCreator.createSave(),UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5") )));
+            gameHandler.getSceneManager().setScene(kakaraGame.join(new LocalJoin(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"))));
 
         } catch (Exception ex) {
             setCurserStatus(true);
             KakaraGame.LOGGER.error("unable to start game", ex);
             // gameHandler.getSceneManager().setScene();
+        }
+    }
+
+    /**
+     * When the single player button is clicked.
+     *
+     * @param playButton The button that was clicked.
+     */
+    private void singlePlayerTest(Rectangle playButton) {
+        if (!playButton.isVisible()) return;
+        try {
+            WorldSelectMenu selectMenu = new WorldSelectMenu(gameHandler, kakaraGame);
+            gameHandler.getSceneManager().setScene(selectMenu);
+        } catch (Exception ex) {
+            setCurserStatus(true);
+            KakaraGame.LOGGER.error("unable to start game", ex);
         }
     }
 

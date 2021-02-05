@@ -20,10 +20,10 @@ import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.window.WindowIcon;
 
-public class WorldSelectMenu extends AbstractMenuScene {
+public class CreateWorldScene extends AbstractMenuScene {
     private final KakaraGame kakaraGame;
 
-    public WorldSelectMenu(GameHandler gameHandler, KakaraGame kakaraGame) {
+    public CreateWorldScene(GameHandler gameHandler, KakaraGame kakaraGame) {
         super(gameHandler);
         this.kakaraGame = kakaraGame;
     }
@@ -62,34 +62,17 @@ public class WorldSelectMenu extends AbstractMenuScene {
 
             componentCanvas.add(backButton);
         }
-        {
-            Rectangle createWorld = new Rectangle(new Vector2(600, 600), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
-            Text backButtonText = new Text("Create New World", roboto);
-            backButtonText.setSize(40);
-            backButtonText.setLineWidth(300);
-            backButtonText.setTextAlign(TextAlign.CENTER | TextAlign.MIDDLE);
-            backButtonText.addConstraint(new VerticalCenterConstraint());
-            backButtonText.addConstraint(new HorizontalCenterConstraint());
-            createWorld.add(backButtonText);
 
-            createWorld.addUActionEvent(UIHoverEnterEvent.class, (UIHoverEnterEvent) vector2 -> createWorld.setColor(new RGBA(204, 202, 202, 0.5f)));
-            createWorld.addUActionEvent(UIHoverLeaveEvent.class, (UIHoverLeaveEvent) vector2 -> createWorld.setColor(new RGBA(255, 255, 255, 0.5f)));
-            createWorld.addUActionEvent(UIClickEvent.class, (UIClickEvent) (vector2, mouseClickType) -> createNewWorld(createWorld));
-
-            componentCanvas.add(createWorld);
-        }
         add(componentCanvas);
 
     }
 
-    private void createNewWorld(Rectangle createWorld) {
-        gameHandler.getSceneManager().setScene(new CreateWorldScene(gameHandler, kakaraGame));
-    }
+
 
     private void goBack(Rectangle backButton) {
         try {
-            Scene scene = kakaraGame.firstScene(gameHandler);
-            gameHandler.getSceneManager().setScene(scene);
+            WorldSelectMenu selectMenu = new WorldSelectMenu(gameHandler, kakaraGame);
+            gameHandler.getSceneManager().setScene(selectMenu);
         } catch (Exception e) {
             e.printStackTrace();
         }

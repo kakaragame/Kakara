@@ -36,6 +36,8 @@ public class MoreUtils {
 
     }
 
+
+
     public static Map<ItemStack, List<Location>> sortByType(List<ChunkBase> mehChunks) {
         Map<ItemStack, List<Location>> map = new HashMap<>();
         for (ChunkBase chunkBase : mehChunks) {
@@ -62,8 +64,6 @@ public class MoreUtils {
         }
         return i;
     }
-
-
 
 
     public static int getPoolSize() {

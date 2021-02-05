@@ -23,6 +23,7 @@ import org.kakara.core.common.service.ServiceManager;
 import org.kakara.core.common.settings.SettingRegistry;
 import org.kakara.core.common.settings.simple.SimpleSettingManager;
 import org.kakara.engine.Game;
+import org.kakara.engine.GameEngine;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.utils.Utils;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.jar.JarFile;
 
 public class KakaraGame implements Game, EnvironmentInstance {
@@ -55,6 +57,16 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private final ServiceManager serviceManager;
     private final SettingRegistry settingManager;
     private DiscordManager discordManager;
+    private static Properties gameVersion = new Properties();
+
+    static {
+        try {
+            if (GameEngine.class.getResource("/kakara/version.properties") != null)
+                gameVersion.load(GameEngine.class.getResourceAsStream("/kakara/version.properties"));
+        } catch (IOException e) {
+            LOGGER.warn("Unable to load kakaraproperties", e);
+        }
+    }
 
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
@@ -250,5 +262,9 @@ public class KakaraGame implements Game, EnvironmentInstance {
     @Override
     public ServiceManager getServiceManager() {
         return serviceManager;
+    }
+
+    public static Properties getGameVersion() {
+        return gameVersion;
     }
 }

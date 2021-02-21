@@ -6,11 +6,8 @@ import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.core.common.world.Location;
 import org.kakara.engine.Camera;
 import org.kakara.engine.gameitems.GameItem;
-import org.kakara.engine.gameitems.MeshGameItem;
-import org.kakara.engine.input.KeyInput;
-import org.kakara.engine.input.MouseInput;
+
 import org.kakara.engine.math.Vector3;
-import org.kakara.engine.physics.collision.Collidable;
 import org.kakara.engine.renderobjects.RenderBlock;
 
 import java.util.Optional;
@@ -22,7 +19,7 @@ public class PlayerMovement {
     boolean playerInJump = false;
     float lastYPos = 0;
     private final MainGameScene mainGameScene;
-    private MeshGameItem item;
+    private GameItem item;
 
     public PlayerMovement(MainGameScene mainGameScene) {
         this.mainGameScene = mainGameScene;
@@ -42,9 +39,9 @@ public class PlayerMovement {
             if (gameItemID.isEmpty()) return;
             Optional<GameItem> itemByID = mainGameScene.sceneUtils.getItemByID(gameItemID.get());
             if (itemByID.isEmpty()) return;
-            item = (MeshGameItem) itemByID.get();
+            item =  itemByID.get();
         }
-        item.setVelocityX(0);
+        item.transform.setVelocityX(0);
         item.setVelocityZ(0);
 
         Camera gameCamera = mainGameScene.getCamera();

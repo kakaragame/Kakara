@@ -13,7 +13,7 @@ public class RenderResourceManager {
 
     public RenderResourceManager(MainGameScene gameScene) {
         this.gameScene = gameScene;
-        renderTextureCache = new CachingHashMap<>(new CacheLoader<String, RenderTexture>() {
+        renderTextureCache = new CachingHashMap<>(new CacheLoader<>() {
             @Override
             public RenderTexture load(String s) throws Exception {
                 return getResource(GameResourceManager.correctPath(s));
@@ -22,9 +22,7 @@ public class RenderResourceManager {
     }
 
     private RenderTexture getResource(String texture) {
-        return gameScene.getTextureAtlas().getTextures().stream().filter(renderTexture -> GameResourceManager.correctPath(renderTexture.getResource().getOriginalPath()).equals(GameResourceManager.correctPath(texture))).findFirst().orElseThrow(() -> {
-            return new RuntimeException("Unable to find " + GameResourceManager.correctPath(texture));
-        });
+        return gameScene.getTextureAtlas().getTextures().stream().filter(renderTexture -> GameResourceManager.correctPath(renderTexture.getResource().getOriginalPath()).equals(GameResourceManager.correctPath(texture))).findFirst().orElseThrow(() -> new RuntimeException("Unable to find " + GameResourceManager.correctPath(texture)));
     }
 
     public RenderTexture get(String localPath) {

@@ -10,7 +10,7 @@ import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
-import org.kakara.engine.ui.components.GeneralComponent;
+import org.kakara.engine.ui.components.GeneralUIComponent;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.BoundedColoredText;
@@ -27,7 +27,7 @@ import java.util.ListIterator;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class ChatComponent extends GeneralComponent {
+public class ChatComponent extends GeneralUIComponent {
 
     final float xSize = 700;
     String tempStorage = "";

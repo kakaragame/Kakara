@@ -171,7 +171,7 @@ public class MainMenuScene extends AbstractMenuScene {
             gameHandler.getSceneManager().setScene(kakaraGame.join(new LocalJoin(saveCreator.createSave(),UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5") )));
 
         } catch (Exception ex) {
-            setCurserStatus(true);
+            setCursorStatus(true);
             KakaraGame.LOGGER.error("unable to start game", ex);
             // gameHandler.getSceneManager().setScene();
         }

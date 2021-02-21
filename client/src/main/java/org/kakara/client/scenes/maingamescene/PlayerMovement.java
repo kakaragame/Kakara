@@ -20,6 +20,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class PlayerMovement {
     boolean playerInJump = false;
+    boolean hasJumped = false;
     float lastYPos = 0;
     private final MainGameScene mainGameScene;
     private MeshGameItem item;
@@ -64,14 +65,15 @@ public class PlayerMovement {
         if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
             item.movePositionByCamera(0, -0.3f, 0, gameCamera);
         }
-        if (ki.isKeyPressed(GLFW_KEY_SPACE) && !playerInJump) {
+        if (ki.isKeyPressed(GLFW_KEY_SPACE) && !playerInJump && !hasJumped) {
             playerInJump = true;
+            hasJumped = true;
             lastYPos = item.getPosition().y;
             item.setVelocityY(4);
         }
-        if (playerInJump) {
+        if(playerInJump){
             item.movePositionByCamera(0, 0.3F, 0, gameCamera);
-            if (item.getPosition().y > lastYPos + 3) {
+            if (item.getPosition().y > lastYPos + 1.1) {
                 playerInJump = false;
                 item.setVelocityY(-9.18f);
             }
@@ -105,4 +107,7 @@ public class PlayerMovement {
         }
     }
 
+    public void resetJump() {
+        if (hasJumped) hasJumped = false;
+    }
 }

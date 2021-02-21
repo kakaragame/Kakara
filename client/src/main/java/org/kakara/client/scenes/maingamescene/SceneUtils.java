@@ -38,7 +38,8 @@ public class SceneUtils {
                     return true;
                 }
             }
-
+            //TODO check if bottom of player has touched the ground. Currently just reset on any touch.
+            gameScene.movement.resetJump();
             return false;
         });
         object.setCollider(boxCollider);

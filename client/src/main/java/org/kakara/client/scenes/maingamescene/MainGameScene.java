@@ -33,18 +33,16 @@ import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.events.event.MouseClickEvent;
+import org.kakara.engine.gameitems.GameItem;
 import org.kakara.engine.gameitems.Material;
-import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.gameitems.SkyBox;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
-import org.kakara.engine.input.MouseClickType;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.TextureCache;
 import org.kakara.engine.physics.collision.BoxCollider;
-import org.kakara.engine.physics.collision.Collidable;
 import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
@@ -84,13 +82,13 @@ public class MainGameScene extends AbstractGameScene {
     protected ChatComponent chatComponent;
     protected BreakingBlock breakingBlock = null;
     protected HotBarCanvas hotBarCanvas;
-    protected MeshGameItem blockSelector;
+    protected GameItem blockSelector;
     protected RenderTexture breakingTexture;
     private boolean hasRun = false;
 
     public MainGameScene(GameHandler gameHandler, Client client, KakaraGame kakaraGame) {
         super(gameHandler);
-        setCurserStatus(false);
+        setCursorStatus(false);
         this.client = client;
         this.kakaraGame = kakaraGame;
 
@@ -156,8 +154,8 @@ public class MainGameScene extends AbstractGameScene {
 //            }
             getController().messageSend(message.getBytes());
         });
-        chatComponent.addUActionEvent(ChatFocusEvent.class, (ChatFocusEvent) () -> setCurserStatus(true));
-        chatComponent.addUActionEvent(ChatBlurEvent.class, (ChatBlurEvent) () -> setCurserStatus(false));
+        chatComponent.addUActionEvent(ChatFocusEvent.class, (ChatFocusEvent) () -> setCursorStatus(true));
+        chatComponent.addUActionEvent(ChatBlurEvent.class, (ChatBlurEvent) () -> setCursorStatus(false));
         main.add(chatComponent);
 
         Rectangle indicator = new Rectangle(new Vector2(0, 0), new Vector2(5, 5), new RGBA(0, 255, 0, 1));
@@ -176,8 +174,8 @@ public class MainGameScene extends AbstractGameScene {
         Mesh m = new Mesh(CubeData.vertex, CubeData.texture, CubeData.normal, CubeData.indices);
         m.setMaterial(new Material(new Texture(resourceManager.getResource("block_select.png"), this)));
         m.setWireframe(true);
-        this.blockSelector = new MeshGameItem(m);
-        this.blockSelector.setScale(1.01f);
+        this.blockSelector = new GameItem(m);
+        this.blockSelector.transform.setScale(1.01f);
         add(this.blockSelector);
     }
 
@@ -271,19 +269,19 @@ public class MainGameScene extends AbstractGameScene {
         for (DroppedItem droppedItem : ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
             if (droppedItem.getGameID() == null) {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
-                MeshGameItem droppedBlock = new MeshGameItem(mesh);
+                GameItem droppedBlock = new GameItem(mesh);
                 BoxCollider collider = new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f));
                 collider.setPredicate(collidable -> {
                     if (collidable instanceof RenderBlock) return false;
                     return !(collidable instanceof RenderChunk);
                 });
-                droppedBlock.setCollider(collider);
-                droppedBlock.setVelocityY(-9.18f);
-                droppedBlock.setScale(0.3f);
-                droppedBlock.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
+                //droppedBlock.setCollider(collider);
+                //droppedBlock.transform.setVelocityY(-9.18f);
+                droppedBlock.transform.setScale(0.3f);
+                droppedBlock.transform.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
                 droppedBlock.setTag("pickupable");
                 droppedBlock.getData().add(droppedItem.getItemStack().getItem().getControllerKey());
-                droppedBlock.addFeature(new HorizontalRotationFeature());
+                //droppedBlock.addFeature(new HorizontalRotationFeature());
                 droppedItem.setGameID(droppedBlock.getUUID());
                 add(droppedBlock);
             }

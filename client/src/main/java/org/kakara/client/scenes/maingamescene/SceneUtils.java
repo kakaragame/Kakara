@@ -1,11 +1,11 @@
 package org.kakara.client.scenes.maingamescene;
 
 import org.kakara.engine.gameitems.GameItem;
-import org.kakara.engine.gameitems.MeshGameItem;
 import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.StaticModelLoader;
 import org.kakara.engine.physics.collision.BoxCollider;
+import org.kakara.engine.physics.collision.PhysicsComponent;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -28,20 +28,19 @@ public class SceneUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        MeshGameItem object = new MeshGameItem(mainPlayer);
-        object.setVisible(false);
-        object.setPosition((float) gameScene.getServer().getPlayerEntity().getLocation().getX(), (float) gameScene.getServer().getPlayerEntity().getLocation().getY(), (float) gameScene.getServer().getPlayerEntity().getLocation().getZ());
-        BoxCollider boxCollider = new BoxCollider(new Vector3(0, 0, 0), new Vector3(0.99f, 1.99f, 0.99f));
+        GameItem object = new GameItem(mainPlayer);
+        //object.setVisible(false);
+        object.transform.setPosition((float) gameScene.getServer().getPlayerEntity().getLocation().getX(), (float) gameScene.getServer().getPlayerEntity().getLocation().getY(), (float) gameScene.getServer().getPlayerEntity().getLocation().getZ());
+        PhysicsComponent physicsComponent = object.addComponent(PhysicsComponent.class);
+        BoxCollider boxCollider = object.addComponent(BoxCollider.class);
+        boxCollider.setPoint1(new Vector3(0, 0, 0));
+        boxCollider.setPoint2(new Vector3(0.99f, 1.99f, 0.99f));
         boxCollider.setPredicate(collidable -> {
-            if (collidable instanceof MeshGameItem) {
-                if (((MeshGameItem) collidable).getTag().equals("pickupable")) {
-                    return true;
-                }
+            if (collidable.getGameItem().getTag().equals("pickupable")) {
+                return true;
             }
-
             return false;
         });
-        object.setCollider(boxCollider);
         gameScene.add(object);
         return object.getUUID();
     }

@@ -1,5 +1,6 @@
 package org.kakara.client.scenes.maingamescene;
 
+import org.kakara.core.common.Kakara;
 import org.kakara.engine.components.MeshRenderer;
 import org.kakara.engine.gameitems.GameItem;
 import org.kakara.engine.gameitems.mesh.Mesh;
@@ -45,6 +46,7 @@ public class SceneUtils {
             return false;
         });
         gameScene.add(object);
+        Kakara.LOGGER.debug("Player created with the UUID of "+ object.getUUID().toString());
         return object.getUUID();
     }
 }

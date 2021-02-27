@@ -223,7 +223,7 @@ public class MainGameScene extends AbstractGameScene {
         ClientPlayer player = (ClientPlayer) getServer().getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
-            if (player.getGameItemID().isPresent()) {
+            if (player.getGameItemID().isEmpty()) {
                 KakaraGame.LOGGER.warn("Player is not initialized. ");
                 return;
             }

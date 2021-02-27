@@ -1,7 +1,7 @@
 package org.kakara.client.utils;
 
 /**
- * This class handles the time for the {@link org.kakara.client.game.IntegratedServer} class.
+ * This class handles the time for the {@link org.kakara.client.local.game.IntegratedServer} class.
  */
 public class IntegratedTime {
     private static float deltaTime;

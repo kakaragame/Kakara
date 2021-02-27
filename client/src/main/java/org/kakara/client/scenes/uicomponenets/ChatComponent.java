@@ -208,7 +208,7 @@ public class ChatComponent extends GeneralUIComponent {
 
     @Override
     public void render(Vector2 relative, UserInterface hud, GameHandler handler) {
-        pollRender(relative, hud, handler);
+        super.render(relative, hud, handler);
         timer += Time.getDeltaTime();
         if (wait) wait = false;
 

@@ -224,7 +224,7 @@ public class MainGameScene extends AbstractGameScene {
         if (player.getGameItemID().isEmpty()) return;
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
             if (player.getGameItemID().isEmpty()) {
-                KakaraGame.LOGGER.warn("Player is not initialized. ");
+                KakaraGame.LOGGER.warn("Player is not initialized.");
                 return;
             }
             ColliderComponent col = this.selectGameItems(20, player.getGameItemID().get());
@@ -418,9 +418,10 @@ public class MainGameScene extends AbstractGameScene {
                     ChunkLocation cb = loadedChunk.getLocation();
                     VoxelChunk rc = new VoxelChunk(new ArrayList<>(), getTextureAtlas());
                     rc.transform.setPosition(cb.getX(), cb.getY(), cb.getZ());
-
+                    boolean nonAirFound = false;
                     for (GameBlock gb : loadedChunk.getGameBlocks()) {
                         if (gb.getItemStack().getItem().getId() == 0) continue;
+                        if (!nonAirFound) nonAirFound = true;
                         Vector3 vector3 = MoreUtils.locationToVector3(gb.getLocation());
                         vector3 = vector3.subtract(cb.getX(), cb.getY(), cb.getZ());
                         Voxel rb = new Voxel(new BlockLayout(),
@@ -430,6 +431,8 @@ public class MainGameScene extends AbstractGameScene {
                         rc.addVoxel(rb);
                     }
                     clientChunk.setUpdatedHappened(false);
+
+                    if(!nonAirFound) continue;
                     if (!hasRun) {
                         getServer().getExecutorService().submit(() -> {
                             rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);

@@ -90,14 +90,14 @@ public class PauseMenuCanvas extends ActivateableCanvas {
     void add() {
         add(quit);
         add(resume);
-        scene.setCurserStatus(true);
+        scene.setCursorStatus(true);
     }
 
     @Override
     void remove() {
         removeComponent(quit);
         removeComponent(resume);
-        scene.setCurserStatus(false);
+        scene.setCursorStatus(false);
 
     }
 

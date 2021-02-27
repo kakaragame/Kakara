@@ -39,10 +39,13 @@ import org.kakara.engine.gameitems.SkyBox;
 import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
+import org.kakara.engine.input.mouse.MouseClickType;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.models.TextureCache;
 import org.kakara.engine.physics.collision.BoxCollider;
+import org.kakara.engine.physics.collision.ColliderComponent;
+import org.kakara.engine.physics.collision.RenderBlockCollider;
 import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.renderobjects.RenderChunk;
 import org.kakara.engine.renderobjects.RenderTexture;
@@ -222,21 +225,22 @@ public class MainGameScene extends AbstractGameScene {
         ClientPlayer player = (ClientPlayer) getServer().getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
-            Collidable col = this.selectGameItems(20, player.getGameItemID().get());
-            if (col instanceof RenderBlock) {
-                RenderBlock rb = (RenderBlock) col;
+            ColliderComponent col = this.selectGameItems(20, player.getGameItemID().get());
+            if (col instanceof RenderBlockCollider) {
+                RenderBlockCollider renderBlockCollider = (RenderBlockCollider) col;
+                RenderBlock rb = renderBlockCollider.getRenderBlock();
                 RenderChunk parentChunk = rb.getParentChunk();
-                Location location = new Location(player.getLocation().getNullableWorld(), parentChunk.getPosition().x + rb.getPosition().x, parentChunk.getPosition().y + rb.getPosition().y, parentChunk.getPosition().z + rb.getPosition().z);
+                Location location = new Location(player.getLocation().getNullableWorld(), parentChunk.transform.getPosition().x + rb.getPosition().x, parentChunk.transform.getPosition().y + rb.getPosition().y, parentChunk.transform.getPosition().z + rb.getPosition().z);
                 if (breakingBlock == null || !breakingBlock.getGbLocation().equals(location)) {
                     if (breakingBlock != null) {
-                        Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.getPosition().equals(breakingBlock.getChunkLocation())).findFirst();
+                        Optional<RenderChunk> chunk = getChunkHandler().getRenderChunkList().stream().filter(renderChunk -> renderChunk.transform.getPosition().equals(breakingBlock.getChunkLocation())).findFirst();
                         chunk.ifPresent(renderChunk -> {
                             RenderBlock block = renderChunk.getOctChunk()[(int) breakingBlock.getBlockLocation().x][(int) breakingBlock.getBlockLocation().y][(int) breakingBlock.getBlockLocation().z];
                             block.setOverlay(null);
                             renderChunk.regenerateOverlayTextures(getTextureAtlas());
                         });
                     }
-                    breakingBlock = new BreakingBlock(location, parentChunk.getPosition(), rb.getPosition());
+                    breakingBlock = new BreakingBlock(location, parentChunk.transform.getPosition(), rb.getPosition());
                     rb.setOverlay(breakingTexture);
                     parentChunk.regenerateOverlayTextures(getTextureAtlas());
                 } else {
@@ -270,10 +274,12 @@ public class MainGameScene extends AbstractGameScene {
             if (droppedItem.getGameID() == null) {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                 GameItem droppedBlock = new GameItem(mesh);
-                BoxCollider collider = new BoxCollider(new Vector3(0f, 0f, 0f), new Vector3(0.8f, 0.9f, 0.8f));
+                BoxCollider collider = droppedBlock.addComponent(BoxCollider.class);
                 collider.setPredicate(collidable -> {
-                    if (collidable instanceof RenderBlock) return false;
-                    return !(collidable instanceof RenderChunk);
+                    if (collidable instanceof RenderBlockCollider) return false;
+                    //TODO correct this
+                    //return !(collidable instanceof RenderChunk);
+                    return true;
                 });
                 //droppedBlock.setCollider(collider);
                 //droppedBlock.transform.setVelocityY(-9.18f);
@@ -304,12 +310,13 @@ public class MainGameScene extends AbstractGameScene {
 
         UUID playerID = ((ClientPlayer) getServer().getPlayerEntity()).getGameItemID().orElseThrow(() -> new IllegalStateException("No Player Entity Found"));
         if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
-            Collidable col = this.selectGameItems(20, playerID);
-            if (col instanceof RenderBlock) {
-                RenderBlock rb = (RenderBlock) col;
+            ColliderComponent col = this.selectGameItems(20, playerID);
+            if (col instanceof RenderBlockCollider) {
+                RenderBlockCollider renderBlockCollider = (RenderBlockCollider) col;
+                RenderBlock rb = renderBlockCollider.getRenderBlock();
                 RenderChunk parentChunk = rb.getParentChunk();
 
-                Vector3 absoluteBlockPos = rb.getPosition().add(parentChunk.getPosition());
+                Vector3 absoluteBlockPos = rb.getPosition().add(parentChunk.transform.getPosition());
 
                 final Vector3 closestValue = ObjectPickingUtils.closestValue(absoluteBlockPos, getCamera());
                 ChunkLocation chunkLoc = GameUtils.getChunkLocation(new Location(getServer().getPlayerEntity().getLocation().getNullableWorld(), closestValue.x, closestValue.y, closestValue.z));
@@ -324,7 +331,7 @@ public class MainGameScene extends AbstractGameScene {
                     return false;
                 }).collect(Collectors.toList());
                 RenderChunk desiredChunk = rcc.get(0);
-                Vector3 newBlockLoc = closestValue.subtract(desiredChunk.getPosition());
+                Vector3 newBlockLoc = closestValue.subtract(desiredChunk.transform.getPosition());
                 if (desiredChunk.getOctChunk()[(int) newBlockLoc.x][(int) newBlockLoc.y][(int) newBlockLoc.z] == null) {
                     //IGNORE Airs
                     if (hotBarCanvas.getCurrentItemStack().getItem() instanceof AirBlock) return;
@@ -332,7 +339,7 @@ public class MainGameScene extends AbstractGameScene {
                             renderResourceManager.get(GameResourceManager.correctPath(Objects.requireNonNull(Kakara.getGameInstance()).getResourceManager().getTexture(hotBarCanvas.getCurrentItemStack().getItem().getTexture(), TextureResolution._16, hotBarCanvas.getCurrentItemStack().getItem().getMod()).getLocalPath())), newBlockLoc);
                     desiredChunk.addBlock(rbs);
                     desiredChunk.regenerateChunk(getTextureAtlas(), MeshType.SYNC);
-                    getController().blockPlace(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.getPosition()), chunkLoc.getNullableWorld()), hotBarCanvas.getCurrentItemStack());
+                    getController().blockPlace(MoreUtils.vector3ToLocation(newBlockLoc.add(desiredChunk.transform.getPosition()), chunkLoc.getNullableWorld()), hotBarCanvas.getCurrentItemStack());
                     //TODO HotBar render should be done by the Inventory
                     //hotBarCanvas.renderItems();
                 }
@@ -408,7 +415,7 @@ public class MainGameScene extends AbstractGameScene {
                 if (GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(getServer().getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS * 16)) {
                     ChunkLocation cb = loadedChunk.getLocation();
                     RenderChunk rc = new RenderChunk(new ArrayList<>(), getTextureAtlas());
-                    rc.setPosition(cb.getX(), cb.getY(), cb.getZ());
+                    rc.transform.setPosition(cb.getX(), cb.getY(), cb.getZ());
 
                     for (GameBlock gb : loadedChunk.getGameBlocks()) {
                         if (gb.getItemStack().getItem().getId() == 0) continue;

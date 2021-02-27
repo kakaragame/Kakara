@@ -19,3 +19,4 @@ start.bat
 
 # Ignore Gradle build output directory
 build/
+engine.jar

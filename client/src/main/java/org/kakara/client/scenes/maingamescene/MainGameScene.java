@@ -52,6 +52,7 @@ import org.kakara.engine.renderobjects.RenderTexture;
 import org.kakara.engine.renderobjects.TextureAtlas;
 import org.kakara.engine.renderobjects.mesh.MeshType;
 import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
+import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.ui.components.shapes.Rectangle;
@@ -183,12 +184,11 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     private Texture loadSkyBoxTexture() {
-        try {
-            return TextureCache.getInstance(gameHandler.getResourceManager()).getTexture("skybox/daytime2.png", this);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        System.out.println("gameHandler.getResourceManager().getResource(\"skybox.obj\").getURL().toString() = " + gameHandler.getResourceManager().getResource("skybox.obj").getURL().toString());
+        Resource resource = gameHandler.getResourceManager().getResource("skybox/daytime2.png");
+        System.out.println("resource.getURL().toString() = " + resource.getURL().toString());
+        System.out.println("resource.getClass().getName() = " + resource.getClass().getName());
+        return new Texture(resource, this);
     }
 
 
@@ -225,6 +225,10 @@ public class MainGameScene extends AbstractGameScene {
         ClientPlayer player = (ClientPlayer) getServer().getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed() && !chatComponent.isFocused()) {
+            if (player.getGameItemID().isPresent()) {
+                KakaraGame.LOGGER.warn("Player is not initialized. ");
+                return;
+            }
             ColliderComponent col = this.selectGameItems(20, player.getGameItemID().get());
             if (col instanceof RenderBlockCollider) {
                 RenderBlockCollider renderBlockCollider = (RenderBlockCollider) col;

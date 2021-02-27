@@ -1,5 +1,6 @@
 package org.kakara.client.scenes.maingamescene;
 
+import org.kakara.engine.components.MeshRenderer;
 import org.kakara.engine.gameitems.GameItem;
 import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.math.Vector3;
@@ -29,7 +30,7 @@ public class SceneUtils {
             e.printStackTrace();
         }
         GameItem object = new GameItem(mainPlayer);
-        //object.setVisible(false);
+        object.getComponent(MeshRenderer.class).setVisible(false);
         object.transform.setPosition((float) gameScene.getServer().getPlayerEntity().getLocation().getX(), (float) gameScene.getServer().getPlayerEntity().getLocation().getY(), (float) gameScene.getServer().getPlayerEntity().getLocation().getZ());
         PhysicsComponent physicsComponent = object.addComponent(PhysicsComponent.class);
         BoxCollider boxCollider = object.addComponent(BoxCollider.class);

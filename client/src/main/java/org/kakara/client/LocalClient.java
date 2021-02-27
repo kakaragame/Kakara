@@ -7,6 +7,7 @@ import org.kakara.client.local.game.IntegratedServer;
 import org.kakara.client.local.game.commands.ClientCommandManager;
 import org.kakara.core.common.EnvType;
 import org.kakara.core.common.Serverable;
+import org.kakara.core.common.calculator.CalculatorRegistry;
 import org.kakara.core.common.command.CommandManager;
 import org.kakara.core.common.events.EventManager;
 import org.kakara.core.common.events.game.GameEventManager;
@@ -161,6 +162,11 @@ public class LocalClient extends Client implements ServerGameInstance {
     @Override
     public EnvType getType() {
         return EnvType.SERVER;
+    }
+
+    @Override
+    public CalculatorRegistry getCalculatorRegistry() {
+        return null;
     }
 
     public SettingRegistry getGameSettingRegistry() {

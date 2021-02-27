@@ -15,6 +15,7 @@ import org.kakara.core.common.gui.Inventory;
 import org.kakara.core.common.gui.Menu;
 import org.kakara.core.common.permission.PermissionSet;
 import org.kakara.core.common.player.PlayerEntity;
+import org.kakara.core.common.player.meter.PlayerMeterController;
 import org.kakara.core.common.world.Location;
 import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
@@ -101,15 +102,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
         return entity;
     }
 
-    @Override
-    public short getHealth() {
-        return health;
-    }
 
-    @Override
-    public short getHunger() {
-        return hunger;
-    }
 
     @Override
     public @NotNull String getDisplayName() {
@@ -136,6 +129,11 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
     @Override
     public GameMode getGameMode() {
         return gameMode;
+    }
+
+    @Override
+    public PlayerMeterController getMeterController() {
+        return null;
     }
 
 

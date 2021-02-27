@@ -65,7 +65,7 @@ public class InventoryCanvas extends ComponentCanvas {
         panel = new Panel();
         panel.addConstraint(new HorizontalCenterConstraint());
         panel.addConstraint(new VerticalCenterConstraint());
-        panel.setScale(GameHandler.getInstance().getWindow().initalWidth, GameHandler.getInstance().getWindow().initalHeight);
+        panel.setScale(GameHandler.getInstance().getWindow().getWidth(), GameHandler.getInstance().getWindow().getHeight());
         org.kakara.engine.gameitems.Texture texture = MoreUtils.coreTextureToEngineTexture(inventoryBackground);
         Sprite sprite = new Sprite(texture);
         sprite.addConstraint(new HorizontalCenterConstraint());

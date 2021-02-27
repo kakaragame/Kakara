@@ -5,6 +5,7 @@ import org.kakara.client.Client;
 import org.kakara.client.ClientServerController;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.MoreUtils;
+import org.kakara.client.engine.item.HorizontalRotationComponent;
 import org.kakara.client.local.game.DroppedItem;
 import org.kakara.client.local.game.IntegratedServer;
 import org.kakara.client.local.game.player.ClientPlayer;
@@ -44,6 +45,7 @@ import org.kakara.engine.math.Vector3;
 import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.ColliderComponent;
 
+import org.kakara.engine.physics.collision.PhysicsComponent;
 import org.kakara.engine.physics.collision.VoxelCollider;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
@@ -258,7 +260,6 @@ public class MainGameScene extends AbstractGameScene {
                             //Remove old breakingBlock
                             breakingBlock = null;
                             //call the blockBreak
-                            System.out.println("BREAKING BLOCK");
                             ((ClientServerController) getServer().getServerController()).blockBreak(location);
                         }
                     });
@@ -277,19 +278,18 @@ public class MainGameScene extends AbstractGameScene {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                 GameItem droppedBlock = new GameItem(mesh);
                 BoxCollider collider = droppedBlock.addComponent(BoxCollider.class);
+                PhysicsComponent physicsComponent = droppedBlock.addComponent(PhysicsComponent.class);
+                physicsComponent.setVelocityY(-9.18f);
+                physicsComponent.setResolve(true);
+                droppedBlock.addComponent(HorizontalRotationComponent.class);
                 collider.setPredicate(collidable -> {
                     if (collidable instanceof VoxelCollider) return false;
-                    //TODO correct this
-                    //return !(collidable instanceof VoxelChunk);
                     return true;
                 });
-                //droppedBlock.setCollider(collider);
-                //droppedBlock.transform.setVelocityY(-9.18f);
                 droppedBlock.transform.setScale(0.3f);
                 droppedBlock.transform.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
                 droppedBlock.setTag("pickupable");
                 droppedBlock.getData().add(droppedItem.getItemStack().getItem().getControllerKey());
-                //droppedBlock.addFeature(new HorizontalRotationFeature());
                 droppedItem.setGameID(droppedBlock.getUUID());
                 add(droppedBlock);
             }
@@ -432,7 +432,7 @@ public class MainGameScene extends AbstractGameScene {
                     }
                     clientChunk.setUpdatedHappened(false);
 
-                    if(!nonAirFound) continue;
+                    if (!nonAirFound) continue;
                     if (!hasRun) {
                         getServer().getExecutorService().submit(() -> {
                             rc.regenerateChunk(getTextureAtlas(), MeshType.MULTITHREAD);

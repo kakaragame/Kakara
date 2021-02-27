@@ -8,7 +8,6 @@ import org.joml.Vector3f;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.engine.GameHandler;
 
-import org.kakara.engine.renderobjects.RenderBlock;
 import org.kakara.engine.scene.AbstractGameScene;
 import org.kakara.engine.scene.AbstractScene;
 import org.kakara.engine.scene.Scene;

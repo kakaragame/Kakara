@@ -12,8 +12,9 @@ import org.kakara.engine.input.mouse.MouseInput;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.physics.collision.ColliderComponent;
 import org.kakara.engine.physics.collision.PhysicsComponent;
-import org.kakara.engine.physics.collision.RenderBlockCollider;
-import org.kakara.engine.renderobjects.RenderBlock;
+import org.kakara.engine.physics.collision.VoxelCollider;
+import org.kakara.engine.voxels.Voxel;
+import org.kakara.engine.voxels.VoxelTexture;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -98,9 +99,9 @@ public class PlayerMovement {
             ColliderComponent objectFound = mainGameScene.selectGameItems(20, gameItemID.get());
             if (mainGameScene.blockSelector != null) {
 
-                if (objectFound instanceof RenderBlockCollider) {
-                    RenderBlockCollider objectFound1 = (RenderBlockCollider) objectFound;
-                    RenderBlock block = objectFound1.getRenderBlock();
+                if (objectFound instanceof VoxelCollider) {
+                    VoxelCollider objectFound1 = (VoxelCollider) objectFound;
+                    Voxel block = objectFound1.getVoxel();
                     // This does not mutate the Vector3.
                     mainGameScene.blockSelector.transform.setPosition(block.getPosition().add(block.getParentChunk().getTransform().getPosition()));
                 } else {

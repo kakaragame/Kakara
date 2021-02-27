@@ -17,9 +17,7 @@ import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
-import org.kakara.engine.renderobjects.RenderTexture;
-import org.kakara.engine.renderobjects.TextureAtlas;
-import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
+
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.components.Panel;
@@ -30,6 +28,9 @@ import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.ui.items.ObjectCanvas;
 import org.kakara.engine.ui.objectcanvas.UIObject;
 import org.kakara.engine.utils.RGBA;
+import org.kakara.engine.voxels.TextureAtlas;
+import org.kakara.engine.voxels.VoxelTexture;
+import org.kakara.engine.voxels.layouts.BlockLayout;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
@@ -130,7 +131,7 @@ public class HotBarCanvas extends ComponentCanvas {
                 if (item instanceof AirBlock) continue;
                 UIObject uiObject;
                 if (item instanceof Block) {
-                    RenderTexture txt = getTexture(itemStack);
+                    VoxelTexture txt = getTexture(itemStack);
                     AtlasMesh mesh = new AtlasMesh(txt, atlas, new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                     uiObject = new UIObject(mesh);
                     objectCanvas.add(uiObject);
@@ -158,11 +159,11 @@ public class HotBarCanvas extends ComponentCanvas {
         }
     }
 
-    private RenderTexture getTexture(ItemStack is) throws ExecutionException {
+    private VoxelTexture getTexture(ItemStack is) throws ExecutionException {
         return renderTextureCache.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 
-    public RenderTexture getCurrentItem() {
+    public VoxelTexture getCurrentItem() {
         if (contentInventory.getHotBarContents()[selectedIndex] instanceof AirBlock) {
             return null;
         }

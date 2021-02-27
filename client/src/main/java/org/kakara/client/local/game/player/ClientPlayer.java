@@ -1,9 +1,11 @@
 package org.kakara.client.local.game.player;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.kakara.client.MoreUtils;
 import org.kakara.client.local.game.IntegratedServer;
+import org.kakara.client.local.game.player.meter.LocalMeterController;
 import org.kakara.core.common.ControllerKey;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.Serverable;
@@ -15,11 +17,14 @@ import org.kakara.core.common.gui.Inventory;
 import org.kakara.core.common.gui.Menu;
 import org.kakara.core.common.permission.PermissionSet;
 import org.kakara.core.common.player.PlayerEntity;
+import org.kakara.core.common.player.meter.Meter;
+import org.kakara.core.common.player.meter.PlayerMeter;
 import org.kakara.core.common.player.meter.PlayerMeterController;
 import org.kakara.core.common.world.Location;
 import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
 import org.kakara.core.server.player.ServerPlayer;
+import org.kakara.core.server.player.meter.ServerPlayerMeter;
 import org.kakara.engine.math.Vector3;
 import org.kakara.game.GameUtils;
 
@@ -39,6 +44,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
     private UUID gameItemID;
     private final PlayerContentInventory contentInventory;
     private final GameMode gameMode;
+    private LocalMeterController localMeterController;
 
     public ClientPlayer(JsonObject jsonObject, @NotNull Location location, IntegratedServer integratedServer) {
         super(jsonObject, integratedServer);
@@ -51,6 +57,16 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
             gameMode = GameUtils.getGameMode(jsonObject.get("gamemode").getAsString());
         contentInventory = new PlayerContentInventory();
         ((ServerBoxedInventoryContainer) contentInventory.getContainer()).addItemStack(((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemRegistry().getItem(new ControllerKey("KVANILLA", "DIRT"))));
+        localMeterController = new LocalMeterController();
+        if (jsonObject.has("meters")) {
+            for (JsonElement meters : jsonObject.get("meters").getAsJsonArray()) {
+                JsonObject object = meters.getAsJsonObject();
+                JsonElement name = object.get("name");
+                Meter meter = GameUtils.getMeter(name.getAsString());
+                ServerPlayerMeter playerMeter = (ServerPlayerMeter) localMeterController.getPlayerMeter(meter);
+                playerMeter.setLevel(object.get("value").getAsDouble());
+            }
+        }
     }
 
     @Override
@@ -103,7 +119,6 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
     }
 
 
-
     @Override
     public @NotNull String getDisplayName() {
         return displayName;
@@ -133,7 +148,7 @@ public class ClientPlayer extends ClientOfflinePlayer implements ServerPlayer {
 
     @Override
     public PlayerMeterController getMeterController() {
-        return null;
+        return localMeterController;
     }
 
 

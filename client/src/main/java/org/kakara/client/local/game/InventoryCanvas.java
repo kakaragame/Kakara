@@ -18,10 +18,10 @@ import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.math.Vector2;
-import org.kakara.engine.renderobjects.RenderTexture;
-import org.kakara.engine.renderobjects.renderlayouts.BlockLayout;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
+import org.kakara.engine.ui.canvases.ComponentCanvas;
+import org.kakara.engine.ui.canvases.ObjectCanvas;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
@@ -29,9 +29,10 @@ import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.events.UIClickEvent;
 import org.kakara.engine.ui.events.UIReleaseEvent;
 import org.kakara.engine.ui.font.Font;
-import org.kakara.engine.ui.items.ComponentCanvas;
-import org.kakara.engine.ui.items.ObjectCanvas;
+
 import org.kakara.engine.ui.objectcanvas.UIObject;
+import org.kakara.engine.voxels.VoxelTexture;
+import org.kakara.engine.voxels.layouts.BlockLayout;
 import org.kakara.game.items.blocks.AirBlock;
 import org.kakara.game.resources.GameResourceManager;
 
@@ -56,7 +57,7 @@ public class InventoryCanvas extends ComponentCanvas {
     public InventoryCanvas(Scene scene, Texture inventoryBackground, Set<MenuElement> elementList, Inventory inventory, Font font) {
         super(scene);
         if (!(scene instanceof MainGameScene)) throw new IllegalArgumentException("Must be a MainGameScene");
-
+        setTag("inventory_canvas");
         this.inventoryBackground = inventoryBackground;
         this.elements = elementList;
         this.inventory = inventory;
@@ -65,7 +66,7 @@ public class InventoryCanvas extends ComponentCanvas {
         panel = new Panel();
         panel.addConstraint(new HorizontalCenterConstraint());
         panel.addConstraint(new VerticalCenterConstraint());
-        panel.setScale(GameHandler.getInstance().getWindow().initalWidth, GameHandler.getInstance().getWindow().initalHeight);
+        panel.setScale(GameHandler.getInstance().getWindow().getWidth(), GameHandler.getInstance().getWindow().getHeight());
         org.kakara.engine.gameitems.Texture texture = MoreUtils.coreTextureToEngineTexture(inventoryBackground);
         Sprite sprite = new Sprite(texture);
         sprite.addConstraint(new HorizontalCenterConstraint());
@@ -80,7 +81,7 @@ public class InventoryCanvas extends ComponentCanvas {
         panel.setVisible(true);
         sprite.setVisible(true);
         add(panel);
-
+        setAutoScale(false);
     }
 
     public void renderItems() {
@@ -91,6 +92,10 @@ public class InventoryCanvas extends ComponentCanvas {
         if (objectCanvas == null) {
             objectCanvas = new ObjectCanvas(scene);
             numberCanvas = new ComponentCanvas(scene);
+            objectCanvas.setAutoScale(false);
+            numberCanvas.setAutoScale(false);
+            objectCanvas.setTag("inventory_object_canvas");
+            numberCanvas.setTag("inventory_number_canvas");
 
         }
         //TODO handle positioning
@@ -112,7 +117,7 @@ public class InventoryCanvas extends ComponentCanvas {
                 if (item instanceof AirBlock) continue;
                 UIObject uiObject;
                 if (item instanceof Block) {
-                    RenderTexture txt = getTexture(itemStack);
+                    VoxelTexture txt = getTexture(itemStack);
                     AtlasMesh mesh = new AtlasMesh(txt, scene.getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
                     uiObject = new UIObject(mesh);
                     objectCanvas.add(uiObject);
@@ -153,7 +158,7 @@ public class InventoryCanvas extends ComponentCanvas {
 
     }
 
-    private RenderTexture getTexture(ItemStack is) {
+    private VoxelTexture getTexture(ItemStack is) {
         return scene.getRenderResourceManager().get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 

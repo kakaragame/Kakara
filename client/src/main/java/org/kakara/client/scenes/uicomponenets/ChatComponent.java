@@ -233,6 +233,7 @@ public class ChatComponent extends GeneralUIComponent {
         float prevPos = 500;
         while (li.hasPrevious()) {
             BoundedColoredText ex = new BoundedColoredText(li.previous(), font);
+            ex.setParentCanvas(getParentCanvas());
             ex.setMaximumBound(new Vector2(350, 55));
             ex.init(hud, handler);
             ex.calculateLineNumbers(hud, handler);

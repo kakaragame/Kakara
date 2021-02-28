@@ -191,7 +191,7 @@ public class MainMenuScene extends AbstractMenuScene {
             WorldSelectMenu selectMenu = new WorldSelectMenu(gameHandler, kakaraGame);
             gameHandler.getSceneManager().setScene(selectMenu);
         } catch (Exception ex) {
-            setCurserStatus(true);
+            setCursorStatus(true);
             KakaraGame.LOGGER.error("unable to start game", ex);
         }
     }

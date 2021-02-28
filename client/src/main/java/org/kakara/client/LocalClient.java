@@ -7,6 +7,8 @@ import org.kakara.client.local.game.IntegratedServer;
 import org.kakara.client.local.game.commands.ClientCommandManager;
 import org.kakara.core.common.EnvType;
 import org.kakara.core.common.Serverable;
+import org.kakara.core.common.calculator.Calculator;
+import org.kakara.core.common.calculator.CalculatorRegistry;
 import org.kakara.core.common.command.CommandManager;
 import org.kakara.core.common.events.EventManager;
 import org.kakara.core.common.events.game.GameEventManager;
@@ -27,6 +29,7 @@ import org.kakara.core.server.game.ServerItemStack;
 import org.kakara.core.server.world.WorldManager;
 import org.kakara.game.GameServiceManager;
 import org.kakara.game.ServerLoadException;
+import org.kakara.game.calculator.GameCalculatorRegistry;
 import org.kakara.game.item.GameItemRegistry;
 import org.kakara.game.items.GameItemStack;
 import org.kakara.game.mod.KakaraMod;
@@ -51,6 +54,7 @@ public class LocalClient extends Client implements ServerGameInstance {
     private final SettingRegistry settingManager;
     private final LocalJoin localJoin;
     private final ContainerUtils containerUtils;
+    private CalculatorRegistry calculatorRegistry;
 
     public LocalClient(LocalJoin joinDetails, KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
@@ -64,6 +68,7 @@ public class LocalClient extends Client implements ServerGameInstance {
         worldGenerationManager = new GameWorldGenerationRegistry();
         containerUtils = new ServerContainerUtils();
         serviceManager = new GameServiceManager();
+        calculatorRegistry = new GameCalculatorRegistry();
         registerDefaultServices();
         File settings = new File(workingDirectory, "settings");
         settings.mkdir();
@@ -161,6 +166,11 @@ public class LocalClient extends Client implements ServerGameInstance {
     @Override
     public EnvType getType() {
         return EnvType.SERVER;
+    }
+
+    @Override
+    public CalculatorRegistry getCalculatorRegistry() {
+        return calculatorRegistry;
     }
 
     public SettingRegistry getGameSettingRegistry() {

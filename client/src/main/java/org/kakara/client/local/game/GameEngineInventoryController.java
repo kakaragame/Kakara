@@ -25,7 +25,7 @@ public class GameEngineInventoryController implements EngineController {
         ((MainGameScene) scene).add(inventoryCanvas);
 
         //TODO render Inventory
-        scene.setCurserStatus(true);
+        scene.setCursorStatus(true);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class GameEngineInventoryController implements EngineController {
     public void close() {
         Scene scene = GameHandler.getInstance().getSceneManager().getCurrentScene();
         if (!(scene instanceof MainGameScene)) return;
-        scene.setCurserStatus(false);
+        scene.setCursorStatus(false);
 
         //This will logically remove all UICanvas's by GameEngineInventoryController
         //DONT BE STUPID!

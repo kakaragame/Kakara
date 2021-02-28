@@ -7,10 +7,12 @@ import org.kakara.engine.GameHandler;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.CharacterPressEvent;
 import org.kakara.engine.events.event.KeyPressEvent;
+import org.kakara.engine.input.Input;
+import org.kakara.engine.input.key.KeyCode;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
-import org.kakara.engine.ui.components.GeneralComponent;
+import org.kakara.engine.ui.components.GeneralUIComponent;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.BoundedColoredText;
@@ -25,12 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import static org.lwjgl.glfw.GLFW.*;
+/**
+ * This handles the primary chat for the Game.
+ */
+public class ChatComponent extends GeneralUIComponent {
 
-public class ChatComponent extends GeneralComponent {
-
-    final float xSize = 700;
-    String tempStorage = "";
+    private final float xSize = 700;
+    // Temporary stores what the user has typed when they push the up or down arrows.
+    private String tempStorage = "";
     private final Font font;
     private boolean alwaysShowHistory;
     private final Text textAreaText;
@@ -38,8 +42,11 @@ public class ChatComponent extends GeneralComponent {
     private String actualText;
     private final Panel historyPanel;
     private final Rectangle historyRectangle;
+    // This boolean is set to true when the chat is first opened so that the Key system does not
+    // put the letter T in the chat box.
     private boolean wait;
     private final List<String> history;
+    // The list of sent history. (This is use for the up and down arrow functionality).
     private final List<String> sentHistory = new ArrayList<>();
     private int historyIndex = -1;
     private float timer = 0;
@@ -54,13 +61,13 @@ public class ChatComponent extends GeneralComponent {
 
         this.setScale(xSize, 550);
 
-        Panel textArea = new Panel();
-        textArea.setScale(xSize, 50);
-        textArea.add(new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 0.4f)));
+        Rectangle textArea = new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 0.4f));
+        textArea.setVisible(true);
 
         Panel histroyArea = new Panel();
         histroyArea.setScale(xSize, 500);
         histroyArea.setPosition(0, 0);
+        histroyArea.setAllowOverflow(true);
         this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(xSize, 500), new RGBA(168, 168, 168, 0.6f));
         this.add(historyRectangle);
         textArea.setPosition(0, 500);
@@ -83,6 +90,7 @@ public class ChatComponent extends GeneralComponent {
 
 
         scene.getEventManager().registerHandler(this);
+        setTag("chatcomponent");
     }
 
     /**
@@ -117,12 +125,22 @@ public class ChatComponent extends GeneralComponent {
         return alwaysShowHistory;
     }
 
+    /**
+     * Set if the history should always be shown.
+     *
+     * @param alwaysShown If the history should always be shown.
+     */
     public void setAlwaysShown(boolean alwaysShown) {
         this.alwaysShowHistory = alwaysShown;
         if (alwaysShown) swapHistory(true);
         else if (!focus) swapHistory(false);
     }
 
+    /**
+     * Swap the history between shown and hidden.
+     *
+     * @param value If the history should be shown or hidden.
+     */
     private void swapHistory(boolean value) {
         historyPanel.setVisible(value);
         historyRectangle.setVisible(value);
@@ -130,18 +148,22 @@ public class ChatComponent extends GeneralComponent {
 
     @EventHandler
     public void onCharacterPress(CharacterPressEvent evt) {
+        // If T was just pressed or the chat is not in focus.
         if (!focus || wait) return;
+        // If the text is too long.
         if (actualText.length() > 100) return;
+        // Enter the text into the text box.
         byte[] ch = {(byte) evt.getCodePoint()};
         String toadd = new String(ch, StandardCharsets.UTF_8).toLowerCase();
-        if (GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_LEFT_SHIFT) || GameHandler.getInstance().getKeyInput().isKeyPressed(GLFW_KEY_RIGHT_SHIFT))
+        if (Input.isKeyDown(KeyCode.LEFT_SHIFT) || Input.isKeyDown(KeyCode.RIGHT_SHIFT))
             toadd = toadd.toUpperCase();
         actualText += toadd;
     }
 
     @EventHandler
     public void onKeyPress(KeyPressEvent evt) {
-        if (evt.isKeyPressed(GLFW_KEY_T) && !focus) {
+        // Open the chat menu.
+        if (evt.isKeyPressed(KeyCode.T) && !focus) {
             focus = true;
             wait = true;
             textAreaText.setText("_");
@@ -151,19 +173,21 @@ public class ChatComponent extends GeneralComponent {
             historyIndex = -1;
             return;
         }
-        if (evt.isKeyPressed(GLFW_KEY_LEFT_SHIFT) || evt.isKeyPressed(GLFW_KEY_RIGHT_SHIFT)) return;
+        if (evt.isKeyPressed(KeyCode.LEFT_SHIFT) || evt.isKeyPressed(KeyCode.RIGHT_SHIFT)) return;
         if (!focus) return;
 
         GameHandler handler = GameHandler.getInstance();
-        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_LEFT_CONTROL) && handler.getKeyInput().isKeyPressed(GLFW_KEY_V)) {
-            actualText += GameHandler.getInstance().getClipboard().getClipboard();
+        // Allow the copying and pasting of data.
+        if (Input.isKeyDown(KeyCode.LEFT_CONTROL) && Input.isKeyDown(KeyCode.V)) {
+            actualText += handler.getClipboard().getClipboard();
             if (actualText.length() > 100)
                 actualText = actualText.substring(0, 100);
         }
 
         //TODO add text copying and highlighting.
 
-        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_UP)) {
+        // Show previous history.
+        if (Input.isKeyDown(KeyCode.UP_ARROW)) {
             if (historyIndex + 1 < sentHistory.size()) {
                 if (historyIndex == -1)
                     tempStorage = actualText;
@@ -171,7 +195,8 @@ public class ChatComponent extends GeneralComponent {
                 actualText = sentHistory.get(sentHistory.size() - 1 - historyIndex);
             }
         }
-        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_DOWN)) {
+        // go back down history.
+        if (Input.isKeyDown(KeyCode.DOWN_ARROW)) {
             if (historyIndex - 1 > -2) {
                 historyIndex--;
                 if (historyIndex == -1) {
@@ -182,14 +207,16 @@ public class ChatComponent extends GeneralComponent {
             }
         }
 
-        if (evt.isKeyPressed(GLFW_KEY_ENTER)) {
+        // Send the text.
+        if (evt.isKeyPressed(KeyCode.ENTER)) {
             String t = actualText;
             //history.add(actualText);
-            //sentHistory.add(actualText);
+            sentHistory.add(actualText);
             actualText = "";
             triggerEvent(ChatSendEvent.class, t);
         }
-        if (evt.isKeyPressed(GLFW_KEY_ESCAPE)) {
+        // Close the menu.
+        if (evt.isKeyPressed(KeyCode.ESCAPE)) {
             focus = false;
             actualText = "";
             textAreaText.setText("Press T to type...");
@@ -208,7 +235,7 @@ public class ChatComponent extends GeneralComponent {
 
     @Override
     public void render(Vector2 relative, UserInterface hud, GameHandler handler) {
-        pollRender(relative, hud, handler);
+        super.render(relative, hud, handler);
         timer += Time.getDeltaTime();
         if (wait) wait = false;
 
@@ -228,10 +255,11 @@ public class ChatComponent extends GeneralComponent {
         historyPanel.clearChildren();
         List<String> stringToRender = history.size() > 19 ? history.subList(history.size() - 19, history.size()) : new ArrayList<>(history);
         ListIterator<String> li = stringToRender.listIterator(Math.min(history.size(), 19));
-//        19;
+        // Display the text in ascending order.
         float prevPos = 500;
         while (li.hasPrevious()) {
             BoundedColoredText ex = new BoundedColoredText(li.previous(), font);
+            ex.setParentCanvas(getParentCanvas());
             ex.setMaximumBound(new Vector2(350, 55));
             ex.init(hud, handler);
             ex.calculateLineNumbers(hud, handler);
@@ -242,7 +270,7 @@ public class ChatComponent extends GeneralComponent {
             ex.setSize(23);
             historyPanel.add(ex);
         }
-        if (handler.getKeyInput().isKeyPressed(GLFW_KEY_BACKSPACE) && actualText.length() > 0 && System.currentTimeMillis() - backspaceLag > 100) {
+        if (Input.isKeyDown(KeyCode.BACKSPACE) && actualText.length() > 0 && System.currentTimeMillis() - backspaceLag > 100) {
             backspaceLag = System.currentTimeMillis();
             actualText = actualText.substring(0, actualText.length() - 1);
         }

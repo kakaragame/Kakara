@@ -17,7 +17,7 @@ public class ClientChunk implements Chunk {
     private List<GameBlock> gameBlockList;
     private boolean updatedHappened = true;
     @Nullable
-    private UUID renderChunkID;
+    private UUID voxel;
     private Status status = Status.UNLOADED;
 
     public ClientChunk(ChunkLocation location) {
@@ -63,12 +63,12 @@ public class ClientChunk implements Chunk {
         return getGameBlock(location);
     }
 
-    public Optional<UUID> getRenderChunkID() {
-        return Optional.ofNullable(renderChunkID);
+    public Optional<UUID> getVoxelID() {
+        return Optional.ofNullable(voxel);
     }
 
-    public void setRenderChunkID(UUID renderChunkID) {
-        this.renderChunkID = renderChunkID;
+    public void setVoxelID(UUID renderChunkID) {
+        this.voxel = renderChunkID;
     }
 
     @Override

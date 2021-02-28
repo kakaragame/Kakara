@@ -28,7 +28,7 @@ public class DebugModeCanvas extends ActivateableCanvas {
         super(scene);
         gameScene = scene;
         this.kakaraGame = kakaraGame;
-
+        setTag("debugmode_canvas");
         ResourceManager resourceManager = GameHandler.getInstance().getResourceManager();
 
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), scene);
@@ -47,12 +47,12 @@ public class DebugModeCanvas extends ActivateableCanvas {
         engineVersion = new Text("Engine: " + GameEngine.getEngineVersion(), roboto);
         engineVersion.position = new Vector2(0, 75);
         engineVersion.setTextAlign(TextAlign.LEFT);
-        engineVersion.setLineWidth(300);
+        engineVersion.setLineWidth(400);
 
         kakaraVersion = new Text("Kakara: " + KakaraGame.getGameVersion().getProperty("version"), roboto);
         kakaraVersion.position = new Vector2(0, 100);
         kakaraVersion.setTextAlign(TextAlign.LEFT);
-        kakaraVersion.setLineWidth(300);
+        kakaraVersion.setLineWidth(400);
 
 
     }

@@ -29,7 +29,7 @@ public class PauseMenuCanvas extends ActivateableCanvas {
         super(scene);
         this.scene = scene;
         Font roboto = new Font("Roboto", GameHandler.getInstance().getResourceManager().getResource("Roboto-Regular.ttf"), scene);
-
+        setTag("pausemenu_canvas");
         resume = new Rectangle(new Vector2(0, 270), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
         resume.addConstraint(new HorizontalCenterConstraint());
 
@@ -90,14 +90,14 @@ public class PauseMenuCanvas extends ActivateableCanvas {
     void add() {
         add(quit);
         add(resume);
-        scene.setCurserStatus(true);
+        scene.setCursorStatus(true);
     }
 
     @Override
     void remove() {
         removeComponent(quit);
         removeComponent(resume);
-        scene.setCurserStatus(false);
+        scene.setCursorStatus(false);
 
     }
 

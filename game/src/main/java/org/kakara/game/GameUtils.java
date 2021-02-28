@@ -3,6 +3,8 @@ package org.kakara.game;
 
 import org.kakara.core.common.game.*;
 import org.kakara.core.common.player.Player;
+import org.kakara.core.common.player.meter.GameMeters;
+import org.kakara.core.common.player.meter.Meter;
 import org.kakara.core.common.world.ChunkLocation;
 import org.kakara.core.common.world.GameBlock;
 import org.kakara.core.common.world.Location;
@@ -107,6 +109,13 @@ public class GameUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Meter getMeter(String string) {
+        if (!string.contains("#")) {
+            return GameMeters.valueOf(string);
+        }
+        return null;//TODO custom meter support
     }
 }
 

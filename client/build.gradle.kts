@@ -5,7 +5,7 @@ plugins {
     id("org.kakara.versionfile") version "1.0.0"
 
 }
-val engineVersion = "1.0-Pre5-SNAPSHOT"
+val engineVersion = "1.0-SNAPSHOT"
 group = "org.kakara"
 var branch = "";
 if (hasProperty("branch")) {

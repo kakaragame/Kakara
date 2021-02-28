@@ -9,15 +9,12 @@ import org.kakara.core.common.game.Block;
 import org.kakara.core.common.game.Item;
 import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.resources.TextureResolution;
-import org.kakara.core.server.ServerGameInstance;
-import org.kakara.core.server.gui.ServerBoxedInventoryContainer;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.engine.CubeData;
 import org.kakara.engine.events.EventHandler;
 import org.kakara.engine.events.event.KeyPressEvent;
 import org.kakara.engine.gameitems.mesh.AtlasMesh;
 import org.kakara.engine.gameitems.mesh.Mesh;
-
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
 import org.kakara.engine.ui.canvases.ComponentCanvas;
@@ -26,7 +23,6 @@ import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.font.Font;
-
 import org.kakara.engine.ui.objectcanvas.UIObject;
 import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.voxels.TextureAtlas;
@@ -62,6 +58,7 @@ public class HotBarCanvas extends ComponentCanvas {
         this.renderTextureCache = renderTextureCache;
 
         mainPanel = new Panel();
+        mainPanel.setAllowOverflow(true);
 
         for (int i = 0; i < 5; i++) {
             Rectangle rect = new Rectangle();
@@ -166,9 +163,16 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     private VoxelTexture getTexture(ItemStack is) throws ExecutionException {
-        return renderTextureCache.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
+        return renderTextureCache.get(GameResourceManager.correctPath(
+                Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(),
+                        TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }
 
+    /**
+     * Get the Voxel Texture for the current item.
+     *
+     * @return The voxel texture.
+     */
     public VoxelTexture getCurrentItem() {
         if (contentInventory.getHotBarContents()[selectedIndex] instanceof AirBlock) {
             return null;

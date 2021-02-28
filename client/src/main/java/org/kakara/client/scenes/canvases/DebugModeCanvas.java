@@ -28,7 +28,7 @@ public class DebugModeCanvas extends ActivateableCanvas {
         super(scene);
         gameScene = scene;
         this.kakaraGame = kakaraGame;
-
+        setTag("debugmode_canvas");
         ResourceManager resourceManager = GameHandler.getInstance().getResourceManager();
 
         Font roboto = new Font("Roboto-Regular", resourceManager.getResource("Roboto-Regular.ttf"), scene);

@@ -12,6 +12,7 @@ import org.kakara.engine.gameitems.Texture;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractMenuScene;
+import org.kakara.engine.ui.canvases.ComponentCanvas;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
@@ -23,7 +24,6 @@ import org.kakara.engine.ui.events.UIHoverEnterEvent;
 import org.kakara.engine.ui.events.UIHoverLeaveEvent;
 import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.font.TextAlign;
-import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.window.WindowIcon;
 

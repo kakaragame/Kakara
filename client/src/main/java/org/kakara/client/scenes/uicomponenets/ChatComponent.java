@@ -83,6 +83,7 @@ public class ChatComponent extends GeneralUIComponent {
 
 
         scene.getEventManager().registerHandler(this);
+        setTag("chatcomponent");
     }
 
     /**

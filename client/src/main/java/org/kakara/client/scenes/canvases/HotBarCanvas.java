@@ -20,12 +20,13 @@ import org.kakara.engine.gameitems.mesh.Mesh;
 
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
+import org.kakara.engine.ui.canvases.ComponentCanvas;
+import org.kakara.engine.ui.canvases.ObjectCanvas;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
 import org.kakara.engine.ui.font.Font;
-import org.kakara.engine.ui.items.ComponentCanvas;
-import org.kakara.engine.ui.items.ObjectCanvas;
+
 import org.kakara.engine.ui.objectcanvas.UIObject;
 import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.voxels.TextureAtlas;
@@ -74,10 +75,13 @@ public class HotBarCanvas extends ComponentCanvas {
         rects[0].setColor(selected);
 
         numberCanvas = new ComponentCanvas(scene);
-
+        numberCanvas.setAutoScale(false);
+        numberCanvas.setTag("hot_bar_number_canvas");
         add(mainPanel);
         this.roboto = roboto;
         renderItems();
+        setAutoScale(false);
+        setTag("hotbar_canvas");
     }
 
     public void update() {
@@ -123,6 +127,8 @@ public class HotBarCanvas extends ComponentCanvas {
         try {
             if (objectCanvas == null) {
                 objectCanvas = new ObjectCanvas(scene);
+                objectCanvas.setAutoScale(false);
+                objectCanvas.setTag("hotbar_object_canvas");
             }
             for (int i = 0; i < 5; i++) {
                 ItemStack itemStack = contentInventory.getHotBarContents()[i];

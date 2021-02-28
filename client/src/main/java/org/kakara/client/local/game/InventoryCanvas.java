@@ -20,6 +20,8 @@ import org.kakara.engine.gameitems.mesh.Mesh;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.scene.Scene;
 import org.kakara.engine.ui.UserInterface;
+import org.kakara.engine.ui.canvases.ComponentCanvas;
+import org.kakara.engine.ui.canvases.ObjectCanvas;
 import org.kakara.engine.ui.components.Panel;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
@@ -27,8 +29,7 @@ import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.events.UIClickEvent;
 import org.kakara.engine.ui.events.UIReleaseEvent;
 import org.kakara.engine.ui.font.Font;
-import org.kakara.engine.ui.items.ComponentCanvas;
-import org.kakara.engine.ui.items.ObjectCanvas;
+
 import org.kakara.engine.ui.objectcanvas.UIObject;
 import org.kakara.engine.voxels.VoxelTexture;
 import org.kakara.engine.voxels.layouts.BlockLayout;
@@ -56,7 +57,7 @@ public class InventoryCanvas extends ComponentCanvas {
     public InventoryCanvas(Scene scene, Texture inventoryBackground, Set<MenuElement> elementList, Inventory inventory, Font font) {
         super(scene);
         if (!(scene instanceof MainGameScene)) throw new IllegalArgumentException("Must be a MainGameScene");
-
+        setTag("inventory_canvas");
         this.inventoryBackground = inventoryBackground;
         this.elements = elementList;
         this.inventory = inventory;
@@ -80,7 +81,7 @@ public class InventoryCanvas extends ComponentCanvas {
         panel.setVisible(true);
         sprite.setVisible(true);
         add(panel);
-
+        setAutoScale(false);
     }
 
     public void renderItems() {
@@ -91,6 +92,10 @@ public class InventoryCanvas extends ComponentCanvas {
         if (objectCanvas == null) {
             objectCanvas = new ObjectCanvas(scene);
             numberCanvas = new ComponentCanvas(scene);
+            objectCanvas.setAutoScale(false);
+            numberCanvas.setAutoScale(false);
+            objectCanvas.setTag("inventory_object_canvas");
+            numberCanvas.setTag("inventory_number_canvas");
 
         }
         //TODO handle positioning

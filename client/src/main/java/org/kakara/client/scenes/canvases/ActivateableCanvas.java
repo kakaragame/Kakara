@@ -1,7 +1,7 @@
 package org.kakara.client.scenes.canvases;
 
 import org.kakara.engine.scene.Scene;
-import org.kakara.engine.ui.items.ComponentCanvas;
+import org.kakara.engine.ui.canvases.ComponentCanvas;
 
 public abstract class ActivateableCanvas extends ComponentCanvas {
     private boolean activated = false;

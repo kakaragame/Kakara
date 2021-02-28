@@ -50,11 +50,11 @@ import org.kakara.engine.physics.collision.VoxelCollider;
 import org.kakara.engine.resources.Resource;
 import org.kakara.engine.resources.ResourceManager;
 import org.kakara.engine.scene.AbstractGameScene;
+import org.kakara.engine.ui.canvases.ComponentCanvas;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.font.Font;
-import org.kakara.engine.ui.items.ComponentCanvas;
 import org.kakara.engine.utils.RGBA;
 import org.kakara.engine.utils.Time;
 import org.kakara.engine.voxels.TextureAtlas;
@@ -150,6 +150,8 @@ public class MainGameScene extends AbstractGameScene {
         hotBarCanvas.show();
 
         ComponentCanvas main = new ComponentCanvas(this);
+        main.setTag("main_canvas");
+        main.setAutoScale(false);
         chatComponent = new ChatComponent(roboto, false, this);
         chatComponent.setPosition(0, 170);
         chatComponent.addUActionEvent(ChatSendEvent.class, (ChatSendEvent) message -> {
@@ -163,9 +165,11 @@ public class MainGameScene extends AbstractGameScene {
         main.add(chatComponent);
 
         Rectangle indicator = new Rectangle(new Vector2(0, 0), new Vector2(5, 5), new RGBA(0, 255, 0, 1));
+        indicator.setTag("main_canvas_indicator");
+        main.add(indicator);
+        indicator.setParentCanvas(main);
         indicator.addConstraint(new HorizontalCenterConstraint());
         indicator.addConstraint(new VerticalCenterConstraint());
-        main.add(indicator);
 
         add(main);
         add(hotBarCanvas);

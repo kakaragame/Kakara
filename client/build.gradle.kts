@@ -69,7 +69,7 @@ dependencies {
     implementation("log4j:apache-log4j-extras:1.2.17")
     implementation("com.jcabi:jcabi-log:0.19.0")
 
-    implementation("org.apache.commons:commons-lang3:3.11")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("commons-cli:commons-cli:1.4")
     implementation("com.google.code.gson:gson:2.8.6")

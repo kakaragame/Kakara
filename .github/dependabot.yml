@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "10:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.kakara:engine
+    versions:
+    - 1.0-Pre5-SNAPSHOT
+  - dependency-name: org.kakara.core:common
+    versions:
+    - 1.0-test-SNAPSHOT
+  - dependency-name: org.kakara.core:client
+    versions:
+    - 1.0-test-SNAPSHOT
+  - dependency-name: org.kakara.core:server
+    versions:
+    - 1.0-test-SNAPSHOT

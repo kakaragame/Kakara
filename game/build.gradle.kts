@@ -41,7 +41,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.google.guava:guava:30.1-jre")
     //ODS - Game Storage
-    implementation(group = "me.ryandw11", name = "ods", version = "1.0.4")
+    implementation(group = "me.ryandw11", name = "ods", version = "1.0.5")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
     //Engine
     compileOnly(group = "org.kakara", name = "engine", version = "1.0-SNAPSHOT");

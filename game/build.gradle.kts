@@ -39,7 +39,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("com.google.code.gson:gson:2.8.6")
-    implementation("com.google.guava:guava:30.1-jre")
+    implementation("com.google.guava:guava:30.1.1-jre")
     //ODS - Game Storage
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.5")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")

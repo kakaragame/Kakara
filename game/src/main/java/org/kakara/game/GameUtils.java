@@ -12,12 +12,23 @@ import org.kakara.core.server.game.ServerItemStack;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * A utility class containing useful methods for game logic.
+ */
 public class GameUtils {
     public static ChunkLocation getChunkLocation(Location l) {
         return new ChunkLocation(l.getNullableWorld(), (int) (l.getX() - l.getX() % 16), (int) (l.getY() - l.getY() % 16), (int) (l.getZ() - l.getZ() % 16));
     }
 
-    public static boolean isLocationInsideCurrentLocationRadius(ChunkLocation centerPoint, ChunkLocation location, int radius) {
+    /**
+     * Check if a chunk location is within a radius.
+     *
+     * @param centerPoint The center point.
+     * @param location    The location.
+     * @param radius      The radius.
+     * @return If the specified location is within a radius from the center.
+     */
+    public static boolean isLocationInsideCurrentLocationRadius(ChunkLocation centerPoint, ChunkLocation location, double radius) {
         //(x-cx)^2 + (y-cy)^2 + (z-cz)^2 < r^2
         //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?
         return (Math.pow((centerPoint.getX() - location.getX()), 2) +
@@ -25,7 +36,15 @@ public class GameUtils {
                 Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius * 16), 2);
     }
 
-    public static boolean isLocationInsideCurrentLocationRadius(Location centerPoint, Location location, int radius) {
+    /**
+     * Check if a location is within a radius.
+     *
+     * @param centerPoint The center point.
+     * @param location    The location to check.
+     * @param radius      The radius.
+     * @return If the specified location is within a radius from the center.
+     */
+    public static boolean isLocationInsideCurrentLocationRadius(Location centerPoint, Location location, double radius) {
         //(x-cx)^2 + (y-cy)^2 + (z-cz)^2 < r^2
         //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?
         return (Math.pow((centerPoint.getX() - location.getX()), 2) +
@@ -33,7 +52,19 @@ public class GameUtils {
                 Math.pow((centerPoint.getZ() - location.getZ()), 2)) <= Math.pow((radius), 2);
     }
 
-    public static boolean isLocationInsideCurrentLocationRadius(int cX, int cY, int cZ, int lX, int lY, int lZ, int radius) {
+    /**
+     * Check if a location is within a radius.
+     *
+     * @param cX     Center X.
+     * @param cY     Center Y.
+     * @param cZ     Center Z.
+     * @param lX     Location X.
+     * @param lY     Location Y.
+     * @param lZ     Location Z.
+     * @param radius The radius.
+     * @return If the specified location is within a radius from the center.
+     */
+    public static boolean isLocationInsideCurrentLocationRadius(int cX, int cY, int cZ, int lX, int lY, int lZ, double radius) {
         //(x-cx)^2 + (y-cy)^2 + (z-cz)^2 < r^2
         //so x-chunkX squared + x-chunkY squared + z- chunkZ squared is less than radius squared?
         return (Math.pow((cX - lX), 2)) +

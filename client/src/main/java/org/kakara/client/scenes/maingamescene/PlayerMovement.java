@@ -6,8 +6,8 @@ import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.core.common.world.Location;
 import org.kakara.engine.Camera;
 import org.kakara.engine.gameitems.GameItem;
-
-import org.kakara.engine.input.key.KeyInput;
+import org.kakara.engine.input.Input;
+import org.kakara.engine.input.key.KeyCode;
 import org.kakara.engine.input.mouse.MouseInput;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.physics.collision.ColliderComponent;
@@ -15,23 +15,20 @@ import org.kakara.engine.physics.collision.PhysicsComponent;
 import org.kakara.engine.physics.collision.VoxelCollider;
 import org.kakara.engine.voxels.Voxel;
 
-
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.lwjgl.glfw.GLFW.*;
-
+// TODO:: Make this class a component and add it to the player GameItem.
 public class PlayerMovement {
     boolean playerInJump = false;
-    boolean hasJumped = false;
     float lastYPos = 0;
     private final MainGameScene mainGameScene;
     private GameItem item;
     private PhysicsComponent physicsComponent;
+
     public PlayerMovement(MainGameScene mainGameScene) {
         this.mainGameScene = mainGameScene;
     }
-
 
     protected void playerMovement() {
         if (mainGameScene.chatComponent != null) {
@@ -50,31 +47,32 @@ public class PlayerMovement {
             item = itemByID.get();
             physicsComponent = item.getComponent(PhysicsComponent.class);
         }
+
         physicsComponent.setVelocityX(0);
         physicsComponent.setVelocityZ(0);
 
         Camera gameCamera = mainGameScene.getCamera();
-        KeyInput ki = mainGameScene.kakaraGame.getGameHandler().getKeyInput();
-        if (ki.isKeyPressed(GLFW_KEY_W)) {
+        if (Input.isKeyDown(KeyCode.W)) {
             physicsComponent.setVelocityByCamera(new Vector3(0, physicsComponent.getVelocity().y, -7), gameCamera);
         }
-        if (ki.isKeyPressed(GLFW_KEY_S)) {
+        if (Input.isKeyDown(KeyCode.S)) {
             physicsComponent.setVelocityByCamera(new Vector3(0, physicsComponent.getVelocity().y, 7), gameCamera);
         }
-        if (ki.isKeyPressed(GLFW_KEY_A)) {
+        if (Input.isKeyDown(KeyCode.A)) {
             physicsComponent.setVelocityByCamera(new Vector3(-7, physicsComponent.getVelocity().y, 0), gameCamera);
         }
-        if (ki.isKeyPressed(GLFW_KEY_D)) {
+        if (Input.isKeyDown(KeyCode.D)) {
             physicsComponent.setVelocityByCamera(new Vector3(7, physicsComponent.getVelocity().y, 0), gameCamera);
         }
-        if (ki.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+        if (Input.isKeyDown(KeyCode.LEFT_SHIFT)) {
             item.transform.movePositionByCamera(0, -0.3f, 0, gameCamera);
         }
-        if (ki.isKeyPressed(GLFW_KEY_SPACE) && !playerInJump && !hasJumped) {
+        if (Input.isKeyDown(KeyCode.SPACE) && !playerInJump) {
             playerInJump = true;
             lastYPos = item.transform.getPosition().y;
             physicsComponent.setVelocityY(4);
         }
+
         if (playerInJump) {
             physicsComponent.getTransform().movePositionByCamera(0, 0.3F, 0, gameCamera);
             if (physicsComponent.getTransform().getPosition().y > lastYPos + 3) {
@@ -83,7 +81,7 @@ public class PlayerMovement {
             }
         }
 
-        if (ki.isKeyPressed(GLFW_KEY_G))
+        if (Input.isKeyDown(KeyCode.G))
             physicsComponent.setVelocityY(-9.18f);
         MouseInput mi = mainGameScene.kakaraGame.getGameHandler().getMouseInput();
 
@@ -113,7 +111,4 @@ public class PlayerMovement {
         }
     }
 
-    public void resetJump() {
-        if (hasJumped) hasJumped = false;
-    }
 }

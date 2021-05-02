@@ -1,6 +1,5 @@
 package org.kakara.client.scenes.maingamescene;
 
-
 import org.kakara.client.Client;
 import org.kakara.client.ClientServerController;
 import org.kakara.client.KakaraGame;
@@ -44,7 +43,6 @@ import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 import org.kakara.engine.physics.collision.BoxCollider;
 import org.kakara.engine.physics.collision.ColliderComponent;
-
 import org.kakara.engine.physics.collision.PhysicsComponent;
 import org.kakara.engine.physics.collision.VoxelCollider;
 import org.kakara.engine.resources.Resource;
@@ -233,7 +231,9 @@ public class MainGameScene extends AbstractGameScene {
                 KakaraGame.LOGGER.warn("Player is not initialized.");
                 return;
             }
-            ColliderComponent col = this.selectGameItems(20, player.getGameItemID().get());
+
+            // Select items within a radius of 20, ignore the Player's UUID and dropped items.
+            ColliderComponent col = this.selectGameItems(20, Collections.singletonList(player.getGameItemID().get()), Collections.singletonList("pickupable"));
             if (col instanceof VoxelCollider) {
                 VoxelCollider voxelCollider = (VoxelCollider) col;
                 Voxel rb = voxelCollider.getVoxel();
@@ -275,8 +275,12 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
+    /**
+     * Create a GameItem for dropped items.
+     * <p>
+     * TODO:: Maybe create a better method for doing this?
+     */
     public void renderDroppedItems() {
-
         for (DroppedItem droppedItem : ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
             if (droppedItem.getGameID() == null) {
                 AtlasMesh mesh = new AtlasMesh(getTexture(droppedItem.getItemStack()), getTextureAtlas(), new BlockLayout(), CubeData.vertex, CubeData.normal, CubeData.indices);
@@ -286,10 +290,8 @@ public class MainGameScene extends AbstractGameScene {
                 physicsComponent.setVelocityY(-9.18f);
                 physicsComponent.setResolve(true);
                 droppedBlock.addComponent(HorizontalRotationComponent.class);
-                collider.setPredicate(collidable -> {
-                    if (collidable instanceof VoxelCollider) return false;
-                    return true;
-                });
+                // Only collide with Voxel Chunks.
+                collider.setPredicate(collidable -> !(collidable instanceof VoxelCollider));
                 droppedBlock.transform.setScale(0.3f);
                 droppedBlock.transform.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
                 droppedBlock.setTag("pickupable");

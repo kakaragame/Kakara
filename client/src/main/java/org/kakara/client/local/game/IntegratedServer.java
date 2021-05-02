@@ -200,12 +200,18 @@ public class IntegratedServer extends Thread implements Server {
     }
 
 
+    /**
+     * Check if a player is nearby dropped items.
+     *
+     * <p>This is a sever action.</p>
+     */
     public void checkForDroppedItems() {
         ClientWorld clientWorld = (ClientWorld) getPlayerEntity().getLocation().getNullableWorld();
         List<DroppedItem> droppedItems = new ArrayList<>(clientWorld.getDroppedItems());
         for (DroppedItem droppedItem : droppedItems) {
             if (droppedItem.getGameID() != null) {
-                if (GameUtils.isLocationInsideCurrentLocationRadius(getPlayerEntity().getLocation(), droppedItem.getLocation(), 1)) {
+                // Radius needs to be higher than 1 to work properly.
+                if (GameUtils.isLocationInsideCurrentLocationRadius(getPlayerEntity().getLocation(), droppedItem.getLocation(), 1.5d)) {
                     //TODO re add the inventory
                     getGameScene().remove(getGameScene().getItemHandler().getItemWithId(droppedItem.getGameID()).get());
                     clientWorld.getDroppedItems().remove(droppedItem);

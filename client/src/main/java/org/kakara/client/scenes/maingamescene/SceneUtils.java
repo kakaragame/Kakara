@@ -53,4 +53,5 @@ public class SceneUtils {
         Kakara.LOGGER.debug("Player created with the UUID of "+ object.getUUID().toString());
         return object.getUUID();
     }
+
 }

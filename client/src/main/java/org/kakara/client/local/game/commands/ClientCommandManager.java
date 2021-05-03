@@ -34,7 +34,7 @@ public class ClientCommandManager implements CommandManager {
             command1.get().execute(commandValueFinal, MoreUtils.removeFirst(split), command, sender);
         } else {
             //TODO pull from config
-            sender.sendMessage("Command Not Found");
+            sender.sendMessage("{#a1120a}Command Not Found");
         }
 
     }

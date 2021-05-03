@@ -177,7 +177,6 @@ public class KakaraGame implements Game, EnvironmentInstance {
         //Load MainMenuScene
         loadMusicManager();
         discordManager.start();
-
     }
 
     @Override
@@ -213,11 +212,15 @@ public class KakaraGame implements Game, EnvironmentInstance {
 
     @Override
     public void exit() {
-
+        KakaraGame.LOGGER.info("Terminating Game.");
         //TODO bring back mod unloading
         //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
         gameHandler.exit();
         discordManager.setRunning(false);
+        // Close the server.
+        if(client != null){
+            client.getServer().close();
+        }
     }
 
     public int getTPS() {

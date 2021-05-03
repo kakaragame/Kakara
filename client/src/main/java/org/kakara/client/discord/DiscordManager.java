@@ -9,8 +9,10 @@ import java.io.IOException;
 
 public class DiscordManager extends Thread {
     private File fileDiscordFile;
-    private boolean running = true;
-    private KakaraGame kakaraGame;
+    private volatile boolean running = true;
+    private final KakaraGame kakaraGame;
+
+    private String currentTask = "";
 
     public DiscordManager(KakaraGame kakaraGame) {
         this.kakaraGame = kakaraGame;
@@ -33,19 +35,16 @@ public class DiscordManager extends Thread {
     public void run() {
         //Probably do a better job
         while (running) {
-            YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(fileDiscordFile);
-            yamlConfiguration.set("current_task", getCurrentTask());
-            try {
-                yamlConfiguration.save(fileDiscordFile);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!checkTag()) {
+                YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(fileDiscordFile);
+                yamlConfiguration.set("current_task", getCurrentTask());
+                currentTask = getCurrentTask();
+                try {
+                    yamlConfiguration.save(fileDiscordFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            try {
-                sleep(45000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
         }
     }
 
@@ -57,10 +56,15 @@ public class DiscordManager extends Thread {
     private String getCurrentTask() {
         if (kakaraGame.getGameHandler().getSceneManager().getCurrentScene() instanceof AbstractMenuScene) {
             return "In the Menus";
-        } else if (kakaraGame.getClient().isIntegratedServer()) {
+        } else if (kakaraGame.getClient() != null && kakaraGame.getClient().isIntegratedServer()) {
+            // TODO NPE occurs here sometimes.
             return "Playing in Single Player";
         } else {
             return "Having a good ole time";
         }
+    }
+
+    private boolean checkTag() {
+        return getCurrentTask().equals(currentTask);
     }
 }

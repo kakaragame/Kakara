@@ -370,16 +370,18 @@ public class MainGameScene extends AbstractGameScene {
 
         if (getServer().getPlayerEntity().getLocation().getNullableWorld() == null) return;
 
-        for (Chunk loadedChunk : ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getChunksNow()) {
+        for (Chunk loadedChunk : new ArrayList<>(((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getChunksNow())) {
             if (loadedChunk.getStatus() != Status.LOADED) continue;
             ClientChunk clientChunk = (ClientChunk) loadedChunk;
             if (!GameUtils.isLocationInsideCurrentLocationRadius(GameUtils.getChunkLocation(getServer().getPlayerEntity().getLocation()), loadedChunk.getLocation(), IntegratedServer.RADIUS)) {
-                if (clientChunk.getVoxelID().isPresent())
+                if (clientChunk.getVoxelID().isPresent()) {
                     getChunkHandler().removeChunk(clientChunk.getVoxelID().get());
+                    // TODO :: Make chunk unloading work.
+//                    getServer().getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
+                }
 //                System.out.println("Chunk Unloaded.");
 
-                // Maybe: TODO The operation should be done below instead of in the ChunkCleaner
-//                getServer().getPlayerEntity().getLocation().getNullableWorld().unloadChunk(clientChunk);
+
                 continue;
             }
 

@@ -19,23 +19,26 @@ public class GameModeCommand extends BuiltinCommand {
     @Override
     public void execute(String command, String[] arguments, String fullCommand, CommandSender executor) {
         if (!(executor instanceof Player)) {
-            executor.sendMessage("You must be a player");
+            executor.sendMessage("You must be a player to execute this command!");
             return;
         }
         GameMode gameMode;
         if (arguments.length == 0) {
-            executor.sendMessage("No gamemode provided");
+            executor.sendMessage("{#a1120a}No gamemode provided!");
             return;
         }
-        if (arguments[0].contains("#")) {
-            gameMode = GameUtils.getGameMode(arguments[0]);
-        } else {
-            gameMode = DefaultGameMode.valueOf(arguments[0].toUpperCase());
-        }
-        if (gameMode == null) {
-            executor.sendMessage(arguments[0] + " Does not exist");
+        try{
+            if (arguments[0].contains("#")) {
+                gameMode = GameUtils.getGameMode(arguments[0]);
+            } else {
+                gameMode = DefaultGameMode.valueOf(arguments[0].toUpperCase());
+            }
+        }catch (IllegalArgumentException ex){
+            executor.sendMessage(String.format("{#a1120a}The gamemode %s does not exist!", arguments[0]));
             return;
         }
+
+        executor.sendMessage("The functionality of this command is not implemented yet! Please try again on a different version!");
        // Player player = (S) executor;
         //player.setGameMode(gameMode);
        // player.sendMessage("Gamemode changed to " + player.getGameMode().getName());

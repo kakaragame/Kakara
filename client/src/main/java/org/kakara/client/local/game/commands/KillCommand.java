@@ -19,7 +19,7 @@ public class KillCommand extends BuiltinCommand {
 
     @Override
     public void execute(String command, String[] arguments, String fullCommand, CommandSender executor) {
-        executor.sendMessage("Stopping");
+        executor.sendMessage("{#a1120a}Killing all processes. The game will terminate in shortly.");
         new Thread(() -> {
             try {
                 Thread.sleep(1000);

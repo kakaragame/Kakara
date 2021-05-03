@@ -20,10 +20,9 @@ public class StatusCommand extends BuiltinCommand {
 
     @Override
     public void execute(String command, String[] arguments, String fullCommand, CommandSender executor) {
-        executor.sendMessage("Status");
-        executor.sendMessage("Number of Chunks Loaded: " + server.getPlayerEntity().getLocation().getNullableWorld().getChunks().stream().filter(chunk -> {
-            return chunk.getStatus() == Status.LOADED;
-        }).collect(Collectors.toList()).size());
-        executor.sendMessage("Loc: " + server.getPlayerEntity().getLocation().toString());
+        executor.sendMessage("Game Status:");
+        executor.sendMessage("Number of Chunks Loaded: " + server.getPlayerEntity().getLocation().getNullableWorld().getChunks()
+                .stream().filter(chunk -> chunk.getStatus() == Status.LOADED).collect(Collectors.toList()).size());
+        executor.sendMessage("Location: " + server.getPlayerEntity().getLocation().toString());
     }
 }

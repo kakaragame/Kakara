@@ -7,7 +7,9 @@ import org.kakara.core.common.Kakara;
 import org.kakara.core.common.game.ItemStack;
 import org.kakara.core.common.world.GameBlock;
 import org.kakara.core.common.world.Location;
+import org.kakara.core.server.ServerGameInstance;
 import org.kakara.core.server.game.ServerItemStack;
+import org.kakara.core.server.gui.ServerInventoryContainer;
 
 import java.util.Optional;
 
@@ -59,11 +61,21 @@ public class LocalServerController implements ClientServerController {
 
     @Override
     public void placeBlock(Location location, ItemStack itemStack) {
-        for (ItemStack stack : server.getPlayerEntity().getInventory().getContainer()) {
+        for (int i = 0; i < server.getPlayerEntity().getInventory().getContainer().getContents().length; i++) {
+            ItemStack stack = server.getPlayerEntity().getInventory().getContainer().getContents()[i];
             if (stack.equals(itemStack)) {
                 ((ServerItemStack) stack).setCount(stack.getCount() - 1);
+                // TODO :: This needs to be made more official. Something this long is kinda unacceptable.
+                if(stack.getCount() < 1) {
+                    ItemStack air = ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemRegistry().getItem(0));
+                    ((ServerInventoryContainer) server.getPlayerEntity().getInventory().getContainer()).setItemStack(i, air);
+                }
             }
         }
+
+        // Redraw the Player's inventory.
+        server.getPlayerEntity().getInventory().redraw();
+
         ((ClientWorld) location.getNullableWorld()).placeBlock(LocalUtils.copyItemStackButOnlyOneCount(itemStack), location);
 
     }

@@ -41,9 +41,12 @@ public class PauseMenuCanvas extends ActivateableCanvas {
         resumeGameText.addConstraint(new VerticalCenterConstraint());
         resumeGameText.addConstraint(new HorizontalCenterConstraint());
         resume.add(resumeGameText);
-        resume.addUActionEvent((UIHoverEnterEvent) vector2 -> resume.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
-        resume.addUActionEvent((UIHoverLeaveEvent) vector2 -> resume.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
-        resume.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> switchStatus(), UIClickEvent.class);
+        resume.addUActionEvent(UIHoverEnterEvent.class, (UIHoverEnterEvent) vector2 -> resume.setColor(new RGBA(204, 202, 202, 0.5f)));
+        resume.addUActionEvent(UIHoverLeaveEvent.class, (UIHoverLeaveEvent) vector2 -> resume.setColor(new RGBA(255, 255, 255, 0.5f)));
+        resume.addUActionEvent(UIClickEvent.class, (UIClickEvent) (vector2, mouseClickType) -> {
+            if (!isActivated()) return;
+            switchStatus();
+        });
 
         //Quit Button
         quit = new Rectangle(new Vector2(0, 370), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
@@ -57,9 +60,10 @@ public class PauseMenuCanvas extends ActivateableCanvas {
         quitGameText.addConstraint(new VerticalCenterConstraint());
         quitGameText.addConstraint(new HorizontalCenterConstraint());
 
-        quit.addUActionEvent((UIHoverEnterEvent) vector2 -> quit.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
-        quit.addUActionEvent((UIHoverLeaveEvent) vector2 -> quit.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
-        quit.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> {
+        quit.addUActionEvent(UIHoverEnterEvent.class, (UIHoverEnterEvent) vector2 -> quit.setColor(new RGBA(204, 202, 202, 0.5f)));
+        quit.addUActionEvent(UIHoverLeaveEvent.class, (UIHoverLeaveEvent) vector2 -> quit.setColor(new RGBA(255, 255, 255, 0.5f)));
+        quit.addUActionEvent(UIClickEvent.class, (UIClickEvent) (vector2, mouseClickType) -> {
+            if (!isActivated()) return;
             MainGameScene mainGameScene = (MainGameScene) scene;
             LoadingScene loadingScene = new LoadingScene(GameHandler.getInstance(), mainGameScene.getServer(), Status.UNLOADED, new Runnable() {
                 @Override
@@ -75,7 +79,7 @@ public class PauseMenuCanvas extends ActivateableCanvas {
             mainGameScene.close();
 
             mainGameScene.getServer().close();
-        }, UIClickEvent.class);
+        });
         quit.add(quitGameText);
     }
 

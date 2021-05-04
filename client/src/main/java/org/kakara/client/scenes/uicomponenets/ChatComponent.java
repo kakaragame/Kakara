@@ -64,10 +64,10 @@ public class ChatComponent extends GeneralUIComponent {
         Rectangle textArea = new Rectangle(new Vector2(0, 0), new Vector2(500, 50), new RGBA(140, 140, 140, 0.4f));
         textArea.setVisible(true);
 
-        Panel histroyArea = new Panel();
-        histroyArea.setScale(xSize, 500);
-        histroyArea.setPosition(0, 0);
-        histroyArea.setAllowOverflow(true);
+        Panel historyArea = new Panel();
+        historyArea.setScale(xSize, 500);
+        historyArea.setPosition(0, 0);
+        historyArea.setAllowOverflow(true);
         this.historyRectangle = new Rectangle(new Vector2(0, 0), new Vector2(xSize, 500), new RGBA(168, 168, 168, 0.6f));
         this.add(historyRectangle);
         textArea.setPosition(0, 500);
@@ -80,10 +80,10 @@ public class ChatComponent extends GeneralUIComponent {
         textArea.add(textAreaText);
 
 
-        this.add(histroyArea);
+        this.add(historyArea);
         this.add(textArea);
 
-        this.historyPanel = histroyArea;
+        this.historyPanel = historyArea;
 
         this.historyPanel.setVisible(alwaysShowHistory);
         this.historyRectangle.setVisible(alwaysShowHistory);
@@ -121,6 +121,11 @@ public class ChatComponent extends GeneralUIComponent {
         return focus;
     }
 
+    /**
+     * Check if the chat is always shown.
+     *
+     * @return If the chat is always shown.
+     */
     public boolean isAlwaysShown() {
         return alwaysShowHistory;
     }
@@ -210,8 +215,10 @@ public class ChatComponent extends GeneralUIComponent {
         // Send the text.
         if (evt.isKeyPressed(KeyCode.ENTER)) {
             String t = actualText;
-            //history.add(actualText);
+            // Prevent duplicates in the history.
+            sentHistory.remove(actualText);
             sentHistory.add(actualText);
+
             actualText = "";
             triggerEvent(ChatSendEvent.class, t);
         }
@@ -239,13 +246,13 @@ public class ChatComponent extends GeneralUIComponent {
         timer += Time.getDeltaTime();
         if (wait) wait = false;
 
-        if (focus && timer < 1) {
+        if (focus && timer < 0.75) {
             textAreaText.setText(actualText);
         } else if (focus) {
             textAreaText.setText(actualText + "_");
         }
 
-        if (timer > 2) {
+        if (timer > 1.5) {
             timer = 0;
         }
 
@@ -270,7 +277,7 @@ public class ChatComponent extends GeneralUIComponent {
             ex.setSize(23);
             historyPanel.add(ex);
         }
-        if (Input.isKeyDown(KeyCode.BACKSPACE) && actualText.length() > 0 && System.currentTimeMillis() - backspaceLag > 100) {
+        if (Input.isKeyDown(KeyCode.BACKSPACE) && actualText.length() > 0 && System.currentTimeMillis() - backspaceLag > 80) {
             backspaceLag = System.currentTimeMillis();
             actualText = actualText.substring(0, actualText.length() - 1);
         }

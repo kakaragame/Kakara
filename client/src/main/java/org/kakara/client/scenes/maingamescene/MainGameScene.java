@@ -232,6 +232,9 @@ public class MainGameScene extends AbstractGameScene {
                 return;
             }
 
+            // If the pause menu is open, do nothing on click.
+            if (PauseMenuCanvas.getInstance(kakaraGame, this).isActivated()) return;
+
             // Select items within a radius of 20, ignore the Player's UUID and dropped items.
             ColliderComponent col = this.selectGameItems(20, Collections.singletonList(player.getGameItemID().get()), Collections.singletonList("pickupable"));
             if (col instanceof VoxelCollider) {
@@ -315,6 +318,8 @@ public class MainGameScene extends AbstractGameScene {
 
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
+        // If the pause menu is open, do nothing on click.
+        if (PauseMenuCanvas.getInstance(kakaraGame, this).isActivated()) return;
 
         UUID playerID = ((ClientPlayer) getServer().getPlayerEntity()).getGameItemID().orElseThrow(() -> new IllegalStateException("No Player Entity Found"));
         if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {

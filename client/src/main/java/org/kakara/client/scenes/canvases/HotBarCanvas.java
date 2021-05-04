@@ -3,6 +3,7 @@ package org.kakara.client.scenes.canvases;
 import org.kakara.client.KakaraGame;
 import org.kakara.client.local.game.ClientResourceManager;
 import org.kakara.client.local.game.player.PlayerContentInventory;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.client.scenes.maingamescene.RenderResourceManager;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.game.Block;
@@ -37,7 +38,7 @@ public class HotBarCanvas extends ComponentCanvas {
     private final RGBA selected = new RGBA(255, 255, 255, 0.4f);
     private final RGBA normal = new RGBA(0, 0, 0, 0.4f);
     private final RenderResourceManager renderTextureCache;
-    private final Scene scene;
+    private final MainGameScene scene;
     private final TextureAtlas atlas;
     private final Panel mainPanel;
     private final Rectangle[] rects = new Rectangle[5];
@@ -48,9 +49,17 @@ public class HotBarCanvas extends ComponentCanvas {
     private final Font roboto;
     private boolean enabled = true;
 
+    /**
+     * Construct the HotBar Canvas.
+     * @param scene The scene. (This must be the MainGameScene).
+     * @param atlas The texture atlas.
+     * @param renderTextureCache The render texture cache.
+     * @param contentInventory The content of the inventory.
+     * @param roboto The font.
+     */
     public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory, Font roboto) {
         super(scene);
-        this.scene = scene;
+        this.scene = (MainGameScene) scene;
         this.atlas = atlas;
         this.contentInventory = contentInventory;
         scene.getEventManager().registerHandler(this);
@@ -191,6 +200,8 @@ public class HotBarCanvas extends ComponentCanvas {
 
     @EventHandler
     public void onKeyHit(KeyPressEvent evt) {
+        if(scene.getChatComponent().isFocused())
+            return;
         int number;
         try {
             number = Integer.parseInt(evt.getKeyName());

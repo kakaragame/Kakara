@@ -41,7 +41,7 @@ public class HotBarCanvas extends ComponentCanvas {
     private final MainGameScene scene;
     private final TextureAtlas atlas;
     private final Panel mainPanel;
-    private final Rectangle[] rects = new Rectangle[5];
+    private final Rectangle[] hotbarRectangles = new Rectangle[5];
     private int selectedIndex = 0;
     private final PlayerContentInventory contentInventory;
     private ObjectCanvas objectCanvas;
@@ -49,13 +49,17 @@ public class HotBarCanvas extends ComponentCanvas {
     private final Font roboto;
     private boolean enabled = true;
 
+    // Used for the delay with the scroll.
+    private long previousScrollTime = 0;
+
     /**
      * Construct the HotBar Canvas.
-     * @param scene The scene. (This must be the MainGameScene).
-     * @param atlas The texture atlas.
+     *
+     * @param scene              The scene. (This must be the MainGameScene).
+     * @param atlas              The texture atlas.
      * @param renderTextureCache The render texture cache.
-     * @param contentInventory The content of the inventory.
-     * @param roboto The font.
+     * @param contentInventory   The content of the inventory.
+     * @param roboto             The font.
      */
     public HotBarCanvas(Scene scene, TextureAtlas atlas, RenderResourceManager renderTextureCache, PlayerContentInventory contentInventory, Font roboto) {
         super(scene);
@@ -74,11 +78,11 @@ public class HotBarCanvas extends ComponentCanvas {
             rect.setScale(50, 50);
             rect.setColor(normal);
             rect.setPosition(400 + (55 * i), 670);
-            rects[i] = rect;
-            mainPanel.add(rects[i]);
+            hotbarRectangles[i] = rect;
+            mainPanel.add(hotbarRectangles[i]);
         }
 
-        rects[0].setColor(selected);
+        hotbarRectangles[0].setColor(selected);
 
         numberCanvas = new ComponentCanvas(scene);
         numberCanvas.setAutoScale(false);
@@ -88,6 +92,32 @@ public class HotBarCanvas extends ComponentCanvas {
         renderItems();
         setAutoScale(false);
         setTag("hotbar_canvas");
+
+        GameHandler.getInstance().getMouseInput().addScrollCallback((xChange, yChange) -> {
+            if (this.scene.getChatComponent().isFocused())
+                return;
+
+            // A delay of 30 ms.
+            if (System.currentTimeMillis() - previousScrollTime < 30)
+                return;
+            previousScrollTime = System.currentTimeMillis();
+
+            int number = selectedIndex;
+            if (yChange < 0) {
+                number++;
+            } else if (yChange > 0) {
+                number--;
+            }
+
+            if (number < 0)
+                number = 4;
+            if (number > 4)
+                number = 0;
+
+            hotbarRectangles[selectedIndex].setColor(normal);
+            selectedIndex = number;
+            hotbarRectangles[number].setColor(selected);
+        });
     }
 
     public void update() {
@@ -150,8 +180,7 @@ public class HotBarCanvas extends ComponentCanvas {
                 } else {
                     ClientResourceManager resourceManager = (ClientResourceManager) Kakara.getGameInstance().getResourceManager();
                     Mesh[] mesh = resourceManager.getModel(item.getModel(), item.getTexture(), item.getMod());
-                    //TODO @Ryandw11 - We need to be able the pass all the meshes
-                    uiObject = new UIObject(mesh[0]);
+                    uiObject = new UIObject(mesh);
                 }
                 uiObject.setPosition(400 + 25 + (55 * i), 670 + 25);
 
@@ -200,7 +229,7 @@ public class HotBarCanvas extends ComponentCanvas {
 
     @EventHandler
     public void onKeyHit(KeyPressEvent evt) {
-        if(scene.getChatComponent().isFocused())
+        if (scene.getChatComponent().isFocused())
             return;
         int number;
         try {
@@ -213,9 +242,9 @@ public class HotBarCanvas extends ComponentCanvas {
 
         number--;
 
-        rects[selectedIndex].setColor(normal);
+        hotbarRectangles[selectedIndex].setColor(normal);
         selectedIndex = number;
-        rects[number].setColor(selected);
+        hotbarRectangles[number].setColor(selected);
     }
 
     public void show() {

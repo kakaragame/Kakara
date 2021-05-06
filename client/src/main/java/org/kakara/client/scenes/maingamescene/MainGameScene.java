@@ -15,6 +15,7 @@ import org.kakara.client.scenes.BreakingBlock;
 import org.kakara.client.scenes.canvases.DebugModeCanvas;
 import org.kakara.client.scenes.canvases.HotBarCanvas;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
+import org.kakara.client.scenes.maingamescene.components.DroppedItemComponent;
 import org.kakara.client.scenes.uicomponenets.ChatComponent;
 import org.kakara.client.scenes.uicomponenets.events.ChatBlurEvent;
 import org.kakara.client.scenes.uicomponenets.events.ChatFocusEvent;
@@ -299,6 +300,7 @@ public class MainGameScene extends AbstractGameScene {
                 droppedBlock.transform.setPosition((float) droppedItem.getLocation().getX(), (float) droppedItem.getLocation().getY(), (float) droppedItem.getLocation().getZ());
                 droppedBlock.setTag("pickupable");
                 droppedBlock.getData().add(droppedItem.getItemStack().getItem().getControllerKey());
+                droppedBlock.addComponent(DroppedItemComponent.class).setDroppedItem(droppedItem);
                 droppedItem.setGameID(droppedBlock.getUUID());
                 add(droppedBlock);
             }

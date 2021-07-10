@@ -21,10 +21,12 @@ import java.util.UUID;
 // TODO:: Make this class a component and add it to the player GameItem.
 public class PlayerMovement {
     boolean playerInJump = false;
+    boolean hasJumped = false;
     float lastYPos = 0;
     private final MainGameScene mainGameScene;
     private GameItem item;
     private PhysicsComponent physicsComponent;
+
 
     public PlayerMovement(MainGameScene mainGameScene) {
         this.mainGameScene = mainGameScene;
@@ -67,7 +69,7 @@ public class PlayerMovement {
         if (Input.isKeyDown(KeyCode.LEFT_SHIFT)) {
             item.transform.movePositionByCamera(0, -0.3f, 0, gameCamera);
         }
-        if (Input.isKeyDown(KeyCode.SPACE) && !playerInJump) {
+        if (Input.isKeyDown(KeyCode.SPACE) && !playerInJump&& !hasJumped) {
             playerInJump = true;
             lastYPos = item.transform.getPosition().y;
             physicsComponent.setVelocityY(4);
@@ -110,5 +112,7 @@ public class PlayerMovement {
         } catch (NullPointerException ignored) {
         }
     }
-
+    public void resetJump() {
+        if (hasJumped) hasJumped = false;
+    }
 }

@@ -23,6 +23,7 @@ public class SceneUtils {
         return gameScene.getItemHandler().getItemWithId(uuid);
     }
 
+
     protected UUID createPlayerObject() {
         Mesh[] mainPlayer = null;
         try {
@@ -38,15 +39,19 @@ public class SceneUtils {
         boxCollider.setPoint1(new Vector3(0, 0, 0));
         boxCollider.setPoint2(new Vector3(0.99f, 1.99f, 0.99f));
         boxCollider.setPredicate(collidable -> {
+            gameScene.movement.resetJump();
+
             if (collidable.getGameItem() == null) return false; //How?
             if (collidable.getGameItem().getTag() == null) return false;
             if (collidable.getGameItem().getTag().equals("pickupable")) {
                 return true;
             }
+
             return false;
         });
         gameScene.add(object);
         Kakara.LOGGER.debug("Player created with the UUID of "+ object.getUUID().toString());
         return object.getUUID();
     }
+
 }

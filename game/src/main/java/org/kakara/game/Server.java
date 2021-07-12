@@ -1,14 +1,14 @@
 package org.kakara.game;
 
 
-import org.kakara.core.common.LoadableObject;
+import org.kakara.core.common.Loadable;
 import org.kakara.core.common.player.Player;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-public interface Server extends LoadableObject {
+public interface Server extends Loadable {
 
 
     void loadPlayer(UUID uuid);

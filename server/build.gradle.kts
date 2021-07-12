@@ -24,7 +24,6 @@ java {
 repositories {
     maven("https://repo.maven.apache.org/maven2/")
     mavenLocal()
-    jcenter()
     maven("https://repo.kingtux.me/storages/maven/kingtux-repo")
     maven("https://repo.kingtux.me/storages/maven/ryandw11")
     maven("https://repo.kingtux.me/storages/maven/kakara")

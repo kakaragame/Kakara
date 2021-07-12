@@ -2,5 +2,5 @@ plugins {
     java
 }
 repositories {
-    jcenter()
+
 }

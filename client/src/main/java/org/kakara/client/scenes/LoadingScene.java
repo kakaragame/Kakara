@@ -2,7 +2,7 @@ package org.kakara.client.scenes;
 
 
 import org.kakara.client.scenes.uicomponenets.loadingbar.LoadingBar;
-import org.kakara.core.common.LoadableObject;
+import org.kakara.core.common.Loadable;
 import org.kakara.core.common.Status;
 import org.kakara.engine.GameHandler;
 import org.kakara.engine.scene.AbstractMenuScene;
@@ -18,7 +18,7 @@ import org.kakara.engine.ui.font.Font;
  * The loading scene for the game.
  */
 public class LoadingScene extends AbstractMenuScene {
-    private final LoadableObject loadable;
+    private final Loadable loadable;
     private final Status targetStatus;
     private final Runnable onCompletion;
 
@@ -28,12 +28,12 @@ public class LoadingScene extends AbstractMenuScene {
      * Construct the LoadingScene.
      *
      * @param handler      The instance of the GameHandler.
-     * @param loadable     A loadable object that this loading scene relies on.
-     *                     <p>A loadable object is an object that has a load/unload status and a percent attached. See {@link LoadableObject}.</p>
+     * @param loadable     The loadable object that this loading scene relies on.
+     *                     <p>A loadable object is an object that has a load/unload status and a percent attached. See {@link Loadable}.</p>
      * @param targetStatus The target status.
      * @param onCompletion The Runnable to run when the loading is complete.
      */
-    public LoadingScene(GameHandler handler, LoadableObject loadable, Status targetStatus, Runnable onCompletion) {
+    public LoadingScene(GameHandler handler, Loadable loadable, Status targetStatus, Runnable onCompletion) {
         super(handler);
         this.loadable = loadable;
         this.targetStatus = targetStatus;

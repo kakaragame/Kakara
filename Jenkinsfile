@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ('Build') {
             steps {
-              sh 'gradle clean shadowJar -PbuildNumber=${BUILD_NUMBER} -Pbranch=${GIT_BRANCH}'
+              sh './gradlew clean shadowJar -PbuildNumber=${BUILD_NUMBER} -Pbranch=${GIT_BRANCH}'
             }
             post {
                 success {

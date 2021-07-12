@@ -81,4 +81,13 @@ public class DefaultChunkIO extends ChunkIO {
     public void close() {
 
     }
+
+    /**
+     * Get the loading percent.
+     * @return The loading percent. (Always 100% on this object).
+     */
+    @Override
+    public int getPercent() {
+        return 100;
+    }
 }

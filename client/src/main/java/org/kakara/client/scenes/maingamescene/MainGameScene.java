@@ -345,6 +345,14 @@ public class MainGameScene extends AbstractGameScene {
                     }
                     return false;
                 }).collect(Collectors.toList());
+
+                // If the height limit is reached.
+                if (rcc.isEmpty()) {
+                    KakaraGame.LOGGER.debug("Height limit reached.");
+                    return;
+                }
+
+
                 VoxelChunk desiredChunk = rcc.get(0);
                 Vector3 newBlockLoc = closestValue.subtract(desiredChunk.transform.getPosition());
                 if (desiredChunk.getVoxelArray()[(int) newBlockLoc.x][(int) newBlockLoc.y][(int) newBlockLoc.z] == null) {

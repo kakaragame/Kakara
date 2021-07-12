@@ -8,7 +8,7 @@ public interface ClientServerController extends ServerController {
     /**
      * Called by the MainGameScene to mean tell the server to move the player
      *
-     * @param location
+     * @param location The location to move.
      */
     void playerMove(Location location);
 

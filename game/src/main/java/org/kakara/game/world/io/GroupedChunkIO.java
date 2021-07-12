@@ -161,4 +161,13 @@ public class GroupedChunkIO extends ChunkIO {
         saveAll();
         status = Status.UNLOADED;
     }
+
+    /**
+     * Get the loading percent.
+     * @return The loading percent. (Always 100% on this object).
+     */
+    @Override
+    public int getPercent() {
+        return 100;
+    }
 }

@@ -86,6 +86,11 @@ public class ClientChunk implements Chunk {
         return status;
     }
 
+    @Override
+    public int getPercent() {
+        return 1000;
+    }
+
     public void setStatus(Status status) {
         this.status = status;
     }

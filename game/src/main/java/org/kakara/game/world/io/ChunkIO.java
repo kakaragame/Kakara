@@ -1,7 +1,7 @@
 package org.kakara.game.world.io;
 
 
-import org.kakara.core.common.ManagedObject;
+import org.kakara.core.common.LoadableObject;
 import org.kakara.core.common.Status;
 import org.kakara.core.common.world.*;
 import org.kakara.game.world.GameWorld;
@@ -9,7 +9,7 @@ import org.kakara.game.world.GameWorld;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class ChunkIO extends Thread implements ManagedObject {
+public abstract class ChunkIO extends Thread implements LoadableObject {
     protected GameWorld gameWorld;
     protected ChunkWriter chunkWriter;
     protected Status status = Status.LOADED;

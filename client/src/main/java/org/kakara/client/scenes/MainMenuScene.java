@@ -16,7 +16,8 @@ import org.kakara.engine.ui.canvases.ComponentCanvas;
 import org.kakara.engine.ui.components.Sprite;
 import org.kakara.engine.ui.components.shapes.Rectangle;
 import org.kakara.engine.ui.components.text.Text;
-import org.kakara.engine.ui.constraints.GridConstraint;
+import org.kakara.engine.ui.constraints.ComponentSide;
+import org.kakara.engine.ui.constraints.GeneralConstraint;
 import org.kakara.engine.ui.constraints.HorizontalCenterConstraint;
 import org.kakara.engine.ui.constraints.VerticalCenterConstraint;
 import org.kakara.engine.ui.events.UIClickEvent;
@@ -32,9 +33,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The Scene for the Main Menu of the game.
+ */
 public class MainMenuScene extends AbstractMenuScene {
     private final KakaraGame kakaraGame;
 
+    /**
+     * Create the Main Menu.
+     *
+     * @param gameHandler The instance of the GameHandler from the Engine.
+     * @param kakaraGame  The instance of KakaraGame.
+     */
     public MainMenuScene(GameHandler gameHandler, KakaraGame kakaraGame) {
         super(gameHandler);
         this.kakaraGame = kakaraGame;
@@ -47,6 +57,7 @@ public class MainMenuScene extends AbstractMenuScene {
 
     @Override
     public void loadGraphics(GameHandler handler) throws Exception {
+        // Set the icon of the game.
         gameHandler.getWindow().setIcon(new WindowIcon(gameHandler.getResourceManager().getResource("icon.png")));
 
         ResourceManager resourceManager = gameHandler.getResourceManager();
@@ -69,13 +80,13 @@ public class MainMenuScene extends AbstractMenuScene {
         title.addConstraint(new HorizontalCenterConstraint());
         componentCanvas.add(title);
 
-        //TODO Get actual version number.
-        Text versionNumber = new Text("0.0.00", pixelFont);
+        //TODO Get better version number.
+        Text versionNumber = new Text(KakaraGame.getGameVersion().getProperty("version"), pixelFont);
         versionNumber.setSize(19);
-        versionNumber.setLineWidth(19 * 6 + 5);
+        versionNumber.setLineWidth(300);
         versionNumber.setColor(new RGBA(255, 255, 255, 1));
-        versionNumber.setPosition(title.getPosition().x, 300);
-        versionNumber.addConstraint(new GridConstraint(12, 30, 3, 11));
+        versionNumber.addConstraint(new GeneralConstraint(ComponentSide.TOP, title, ComponentSide.BOTTOM, 15));
+        versionNumber.addConstraint(new GeneralConstraint(ComponentSide.LEFT, title, ComponentSide.LEFT, 0));
         componentCanvas.add(versionNumber);
 
         /*
@@ -110,9 +121,9 @@ public class MainMenuScene extends AbstractMenuScene {
         singlePlayerText.addConstraint(new HorizontalCenterConstraint());
         singlePlayer.add(singlePlayerText);
 
-        singlePlayer.addUActionEvent((UIHoverEnterEvent) vector2 -> singlePlayer.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
-        singlePlayer.addUActionEvent((UIHoverLeaveEvent) vector2 -> singlePlayer.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
-        singlePlayer.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> singlePlayerClick(singlePlayer), UIClickEvent.class);
+        singlePlayer.addUActionEvent(UIHoverEnterEvent.class, (UIHoverEnterEvent) vector2 -> singlePlayer.setColor(new RGBA(204, 202, 202, 0.5f)));
+        singlePlayer.addUActionEvent(UIHoverLeaveEvent.class, (UIHoverLeaveEvent) vector2 -> singlePlayer.setColor(new RGBA(255, 255, 255, 0.5f)));
+        singlePlayer.addUActionEvent(UIClickEvent.class, (UIClickEvent) (vector2, mouseClickType) -> singlePlayerClick(singlePlayer));
 
         componentCanvas.add(singlePlayer);
 
@@ -130,9 +141,9 @@ public class MainMenuScene extends AbstractMenuScene {
         multiPlayerText.addConstraint(new HorizontalCenterConstraint());
         multiPlayer.add(multiPlayerText);
 
-        multiPlayer.addUActionEvent((UIHoverEnterEvent) vector2 -> multiPlayer.setColor(new RGBA(204, 202, 202, 0.5f)), UIHoverEnterEvent.class);
-        multiPlayer.addUActionEvent((UIHoverLeaveEvent) vector2 -> multiPlayer.setColor(new RGBA(255, 255, 255, 0.5f)), UIHoverLeaveEvent.class);
-        multiPlayer.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"), UIClickEvent.class);
+        multiPlayer.addUActionEvent(UIHoverEnterEvent.class, (UIHoverEnterEvent) vector2 -> multiPlayer.setColor(new RGBA(204, 202, 202, 0.5f)));
+        multiPlayer.addUActionEvent(UIHoverLeaveEvent.class, (UIHoverLeaveEvent) vector2 -> multiPlayer.setColor(new RGBA(255, 255, 255, 0.5f)));
+        multiPlayer.addUActionEvent(UIClickEvent.class, (UIClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"));
 
         componentCanvas.add(multiPlayer);
 
@@ -141,10 +152,10 @@ public class MainMenuScene extends AbstractMenuScene {
          */
         Texture settings = new Texture(resourceManager.getResource("kakara_settings_gear.png"), this);
         Sprite settingsGear = new Sprite(settings, new Vector2(1030, 670), new Vector2(60, 60));
-        settingsGear.addUActionEvent((UIClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"), UIClickEvent.class);
+        settingsGear.addUActionEvent(UIClickEvent.class, (UIClickEvent) (vector2, mouseClickType) -> KakaraGame.LOGGER.warn("Coming Soon TM"));
         Rectangle settingsHolder = new Rectangle(new Vector2(1040, 680), new Vector2(60, 60), new RGBA(255, 255, 255, 0));
-        settingsHolder.addUActionEvent((UIHoverEnterEvent) vector2 -> settingsHolder.getColor().a = 0.3f, UIHoverEnterEvent.class);
-        settingsHolder.addUActionEvent((UIHoverLeaveEvent) vector2 -> settingsHolder.getColor().a = 0, UIHoverLeaveEvent.class);
+        settingsHolder.addUActionEvent(UIHoverEnterEvent.class, (UIHoverEnterEvent) vector2 -> settingsHolder.getColor().a = 0.3f);
+        settingsHolder.addUActionEvent(UIHoverLeaveEvent.class, (UIHoverLeaveEvent) vector2 -> settingsHolder.getColor().a = 0);
         componentCanvas.add(settingsGear);
         componentCanvas.add(settingsHolder);
 
@@ -168,7 +179,7 @@ public class MainMenuScene extends AbstractMenuScene {
             }
             saveCreator.add(new WorldCreator().setWorldName("test").setGenerator(new ControllerKey("KVANILLA:DEFAULT")));
 
-            gameHandler.getSceneManager().setScene(kakaraGame.join(new LocalJoin(saveCreator.createSave(),UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5") )));
+            gameHandler.getSceneManager().setScene(kakaraGame.join(new LocalJoin(saveCreator.createSave(), UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"))));
 
         } catch (Exception ex) {
             setCursorStatus(true);
@@ -177,6 +188,13 @@ public class MainMenuScene extends AbstractMenuScene {
         }
     }
 
+    /**
+     * Get the mods to load.
+     *
+     * <p>This loads mods from the test/mods directory.</p>
+     *
+     * @return The list of mods to load.
+     */
     public List<File> getModsToLoad() {
         File dir = new File("test" + File.separator + "mods");
 

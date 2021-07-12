@@ -37,8 +37,10 @@ public class ClientWorld extends GameWorld {
     private final Server server;
     private Location worldSpawn;
     private ChunkIO chunkIO = null;
-    private Status status = Status.LOADING;
     private final List<DroppedItem> droppedItems = new ArrayList<>();
+
+    private int statusPercent = 0;
+    private Status status = Status.LOADING;
 
     public ClientWorld(@NotNull File worldFolder, @NotNull Server server) throws WorldLoadException {
         this.worldFolder = worldFolder;
@@ -259,15 +261,13 @@ public class ClientWorld extends GameWorld {
 
     public void initLoad(Set<ChunkLocation> chunkLocations) {
         chunkLocations.forEach(this::getChunkAt);
-        while (true) {
-            int loadedChunks = 1;
+        int loadedChunks = 1;
+        while (chunkLocations.size() > loadedChunks) {
             for (Chunk chunk : getChunks()) {
                 if (chunk.getStatus() == Status.LOADED) {
                     loadedChunks = loadedChunks + 1;
+                    this.statusPercent = (int) (((float) loadedChunks / chunkLocations.size()) * 100);
                 }
-            }
-            if (chunkLocations.size() <= loadedChunks) {
-                break;
             }
         }
 
@@ -285,6 +285,11 @@ public class ClientWorld extends GameWorld {
     @Override
     public Status getStatus() {
         return status;
+    }
+
+    @Override
+    public int getPercent() {
+        return statusPercent;
     }
 
 

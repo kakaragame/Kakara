@@ -1,13 +1,13 @@
 package org.kakara.client;
 
 
+import org.kakara.client.join.JoinDetails;
 import org.kakara.client.join.LocalJoin;
 import org.kakara.client.local.game.ClientResourceManager;
 import org.kakara.client.local.game.IntegratedServer;
 import org.kakara.client.local.game.commands.ClientCommandManager;
 import org.kakara.core.common.EnvType;
 import org.kakara.core.common.Serverable;
-import org.kakara.core.common.calculator.Calculator;
 import org.kakara.core.common.calculator.CalculatorRegistry;
 import org.kakara.core.common.command.CommandManager;
 import org.kakara.core.common.events.EventManager;
@@ -39,6 +39,9 @@ import org.kakara.game.world.GameWorldGenerationRegistry;
 
 import java.io.File;
 
+/**
+ * The complete Implementation of the ServerGameInstance.
+ */
 public class LocalClient extends Client implements ServerGameInstance {
     private final GameSettings settings;
     private final KakaraGame kakaraGame;
@@ -54,8 +57,17 @@ public class LocalClient extends Client implements ServerGameInstance {
     private final SettingRegistry settingManager;
     private final LocalJoin localJoin;
     private final ContainerUtils containerUtils;
-    private CalculatorRegistry calculatorRegistry;
+    private final CalculatorRegistry calculatorRegistry;
 
+    /**
+     * Construct the Local Client.
+     *
+     * <p>This is constructed by default in {@link KakaraGame#join(JoinDetails)}.</p>
+     *
+     * @param joinDetails  The information about how the user joined.
+     * @param kakaraGame   The instance of KakaraGame.
+     * @param gameSettings The game settings.
+     */
     public LocalClient(LocalJoin joinDetails, KakaraGame kakaraGame, GameSettings gameSettings) {
         this.settings = gameSettings;
         this.kakaraGame = kakaraGame;
@@ -76,10 +88,20 @@ public class LocalClient extends Client implements ServerGameInstance {
         this.localJoin = joinDetails;
     }
 
+    /**
+     * Register the default services for the client.
+     */
     private void registerDefaultServices() {
         serviceManager.registerService(new JsonSettingController());
     }
 
+    /**
+     * Setup the LocalClient for use.
+     *
+     * <p>This must be called.</p>
+     *
+     * @throws ServerLoadException If an error occurs while loading.
+     */
     public void setup() throws ServerLoadException {
         if (settings.isTestMode()) {
             server = new IntegratedServer(localJoin.getSave(), localJoin.getSelf(), null);
@@ -90,104 +112,162 @@ public class LocalClient extends Client implements ServerGameInstance {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public GameSettings getGameSettings() {
         return settings;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServerItemStack createItemStack(Item item) {
         return new GameItemStack(1, item);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ResourceManager getResourceManager() {
         return resourceManager;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemRegistry getItemRegistry() {
         return itemManager;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public WorldManager getWorldManager() {
         return worldManager;
     }
 
+    /**
+     * Set the world manager.
+     *
+     * @param worldManager The world manager to set.
+     */
     public void setWorldManager(WorldManager worldManager) {
         this.worldManager = worldManager;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ModManager getModManager() {
         return modManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ContainerUtils getContainerUtils() {
         return containerUtils;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServiceManager getServiceManager() {
         return serviceManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public File getWorkingDirectory() {
         return workingDirectory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventManager getEventManager() {
         return eventManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public WorldGenerationRegistry getWorldGenerationRegistry() {
         return worldGenerationManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isIntegratedServer() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CommandManager getCommandManager() {
         return commandManager;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnvType getType() {
         return EnvType.SERVER;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CalculatorRegistry getCalculatorRegistry() {
         return calculatorRegistry;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public SettingRegistry getGameSettingRegistry() {
         return settingManager;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isServerVersionAvailable() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends Serverable> T getServerVersion() {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void requiresServerVersion() throws NoServerVersionAvailableException {
 

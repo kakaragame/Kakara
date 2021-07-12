@@ -279,6 +279,15 @@ public class IntegratedServer extends Thread implements Server {
         return status;
     }
 
+    /**
+     * Get the loading percent.
+     * @return The loading percent. (Always 100% on this object).
+     */
+    @Override
+    public int getPercent() {
+        return 100;
+    }
+
     @Override
     public void close() {
         running = false;

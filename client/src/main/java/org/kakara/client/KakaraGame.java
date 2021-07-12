@@ -44,8 +44,19 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
+/**
+ * The main class for the actual Game.
+ *
+ * <p>This acts as the primary class for the Engine to interact with.</p>
+ *
+ * <p>This also acts as an EnvironmentInstance for the Core.</p>
+ */
 public class KakaraGame implements Game, EnvironmentInstance {
+    /**
+     * The primary client logger.
+     */
     public static final Logger LOGGER = LoggerFactory.getLogger(KakaraGame.class);
+
     private static KakaraGame kakaraGame;
     private GameInstance kakaraCore;
     private GameHandler gameHandler;
@@ -56,10 +67,11 @@ public class KakaraGame implements Game, EnvironmentInstance {
     private final ResourceManager resourceManager;
     private final ServiceManager serviceManager;
     private final SettingRegistry settingManager;
-    private DiscordManager discordManager;
-    private static Properties gameVersion = new Properties();
+    private final DiscordManager discordManager;
+    private static final Properties gameVersion = new Properties();
 
     static {
+        // Get the version of the Game Engine.
         try {
             if (GameEngine.class.getResource("/kakara/version.properties") != null)
                 gameVersion.load(GameEngine.class.getResourceAsStream("/kakara/version.properties"));
@@ -68,15 +80,22 @@ public class KakaraGame implements Game, EnvironmentInstance {
         }
     }
 
+    /**
+     * Construct the KakaraGame class.
+     *
+     * @param gameSettings The game settings to construct KakaraGame with.
+     */
     public KakaraGame(GameSettings gameSettings) {
         kakaraGame = this;
         this.settings = gameSettings;
         if (gameSettings.isTestMode()) System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
 
+        // If in testing mode, create a mods folder in the local test directory.
         if (gameSettings.isTestMode()) {
             File file = new File("test" + File.separator + "mods");
             file.mkdirs();
         }
+
         workingDirectory = Utils.getCurrentDirectory();
         modManager = new EnvironmentModManager(new KakaraEnvMod(this));
         modManager.load(this);
@@ -85,26 +104,39 @@ public class KakaraGame implements Game, EnvironmentInstance {
         Kakara.setEnvironmentInstance(this);
         serviceManager = new GameServiceManager();
         registerDefaultServices();
+
+        // Create the settings directory.
         File settings = new File(getWorkingDirectory(), "settings");
         settings.mkdir();
         settingManager = new SimpleSettingManager(settings);
         ((SimpleSettingManager) settingManager).init(ModRules.ModTarget.ENVIRONMENT);
+
         //Set Shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(this::exit));
         discordManager = new DiscordManager(this);
     }
 
+    /**
+     * Join a Game with the specified JoinDetails.
+     *
+     * <p>This is class in the {@link MainMenuScene} by default.</p>
+     *
+     * @param joinDetails The Join Details.
+     * @return The LoadingScene that is created while the game is loading.
+     * @throws ServerLoadException If a load error occurs.
+     */
     public LoadingScene join(JoinDetails joinDetails) throws ServerLoadException {
         if (joinDetails.getEnvType() == JoinDetails.JoinType.LOCAL) {
             LocalJoin join = (LocalJoin) joinDetails;
+            // Create the client.
             client = new LocalClient(join, this, settings);
             loadKakaraCore();
             client.setup();
-            LoadingScene loadingScene = new LoadingScene(gameHandler, join.getSave().getDefaultWorld(), Status.LOADED, () -> {
+            // Create and return the loading scene.
+            return new LoadingScene(gameHandler, join.getSave().getDefaultWorld(), Status.LOADED, () -> {
                 MainGameScene gameScene = new MainGameScene(gameHandler, client, kakaraGame);
                 gameHandler.getSceneManager().setScene(gameScene);
             });
-            return loadingScene;
         } else {
             //client = new ServerClient(joinDetails, this, settings);
             loadKakaraCore();
@@ -114,14 +146,28 @@ public class KakaraGame implements Game, EnvironmentInstance {
         }
     }
 
+    /**
+     * Get the instance of KakaraGame.
+     *
+     * <p>Note: This will be null if the game is not running. Only one instance of KakaraGame
+     * can exist at a time.</p>
+     *
+     * @return The current instance of KakaraGame.
+     */
     public static KakaraGame getInstance() {
         return kakaraGame;
     }
 
+    /**
+     * Register the default services.
+     */
     private void registerDefaultServices() {
         serviceManager.registerService(new JsonSettingController());
     }
 
+    /**
+     * Load the Kakara Core.
+     */
     private void loadKakaraCore() {
         LOGGER.info("Loading Core");
         Kakara.setGameInstance(client);
@@ -152,6 +198,11 @@ public class KakaraGame implements Game, EnvironmentInstance {
 
     }
 
+    /**
+     * Setup the inventory.
+     *
+     * @param size The size of the inventory to setup.
+     */
     private void setupInventory(int size) {
         Optional<Texture> texture = Kakara.getGameInstance().getResourceManager().getTexture("inventories/bnbi_" + size + ".png", KakaraMod.getInstance());
         if (texture.isEmpty()) {
@@ -172,6 +223,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
 
     @Override
     public void start(GameHandler gameHandler) throws Exception {
+        // When the game actually starts.
         LOGGER.info("Starting Client");
         this.gameHandler = gameHandler;
         //Load MainMenuScene
@@ -181,6 +233,7 @@ public class KakaraGame implements Game, EnvironmentInstance {
 
     @Override
     public Scene firstScene(GameHandler gameHandler) throws Exception {
+        // The first scene to load when the engine starts up.
         return new MainMenuScene(gameHandler, this);
     }
 
@@ -198,14 +251,31 @@ public class KakaraGame implements Game, EnvironmentInstance {
 
     }
 
+    /**
+     * Get the GameInstance from the Kakra Core.
+     *
+     * @return The GameInstance.
+     */
     public GameInstance getKakaraCore() {
         return kakaraCore;
     }
 
+    /**
+     * Get the instance of the GameHandler for the Engine.
+     *
+     * @return The instance of GameHandler.
+     */
     public GameHandler getGameHandler() {
         return gameHandler;
     }
 
+    /**
+     * Get the client of the user.
+     *
+     * <p>This can be a {@link LocalClient} or ...</p>
+     *
+     * @return The client of the user.
+     */
     public Client getClient() {
         return client;
     }
@@ -215,58 +285,95 @@ public class KakaraGame implements Game, EnvironmentInstance {
         KakaraGame.LOGGER.info("Terminating Game.");
         //TODO bring back mod unloading
         //kakaraCore.getModManager().unloadMods(kakaraCore.getModManager().getLoadedMods());
-        gameHandler.exit();
         discordManager.setRunning(false);
         // Close the server.
-        if(client != null){
+        if (client != null) {
             client.getServer().close();
         }
     }
 
+    /**
+     * Get the current TPS.
+     *
+     * @return The current TPS (always 20).
+     */
     public int getTPS() {
         return 20;
     }
 
+    /**
+     * Get the settings of the game.
+     *
+     * @return The settings of the game.
+     */
     public GameSettings getSettings() {
         return settings;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ModManager getModManager() {
         return modManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public File getWorkingDirectory() {
         return workingDirectory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnvType getType() {
         return Kakara.getGameInstance() == null ? EnvType.CLIENT : Kakara.getGameInstance().getType();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ResourceManager getResourceManager() {
         return resourceManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SettingRegistry getEnvironmentSettingsRegistry() {
         return settingManager;
     }
 
-
+    /**
+     * Create a Controller Key with the controller name of KAKARA.
+     *
+     * @param key The key.
+     * @return The Controller Key.
+     */
     @Override
-    public ControllerKey createSystemKey(String s) {
-        return ControllerKey.create("KAKARA", s);
+    public ControllerKey createSystemKey(String key) {
+        return ControllerKey.create("KAKARA", key);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServiceManager getServiceManager() {
         return serviceManager;
     }
 
+    /**
+     * Get the version of the game.
+     *
+     * @return The version of the game.
+     */
     public static Properties getGameVersion() {
         return gameVersion;
     }

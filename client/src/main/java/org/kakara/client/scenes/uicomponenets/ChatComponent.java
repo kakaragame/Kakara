@@ -98,8 +98,6 @@ public class ChatComponent extends GeneralUIComponent {
         this.historyPanel.setVisible(alwaysShowHistory);
         this.historyRectangle.setVisible(alwaysShowHistory);
 
-
-        scene.getEventManager().registerHandler(this);
         setTag("chatcomponent");
     }
 

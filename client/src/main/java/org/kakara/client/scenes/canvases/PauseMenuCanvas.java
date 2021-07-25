@@ -18,18 +18,30 @@ import org.kakara.engine.ui.font.Font;
 import org.kakara.engine.ui.font.TextAlign;
 import org.kakara.engine.utils.RGBA;
 
-
+/**
+ * The Canvas responsible for the pause menu.
+ *
+ * <p>Only one instance is permitted per scene. Get the pause menu through {@link PauseMenuCanvas#getInstance(Scene)}.</p>
+ */
 public class PauseMenuCanvas extends ActivateableCanvas {
+    // The instance of the pause menu.
     private static PauseMenuCanvas instance;
     private final Rectangle quit;
     private final Rectangle resume;
     private final Scene scene;
 
+    /**
+     * Construct the Pause Menu.
+     *
+     * @param scene The scene
+     */
     private PauseMenuCanvas(Scene scene) {
         super(scene);
         this.scene = scene;
         Font roboto = new Font("Roboto", GameHandler.getInstance().getResourceManager().getResource("Roboto-Regular.ttf"), scene);
+
         setTag("pausemenu_canvas");
+
         resume = new Rectangle(new Vector2(0, 270), new Vector2(300, 60), new RGBA(255, 255, 255, 0.5f));
         resume.addConstraint(new HorizontalCenterConstraint());
 
@@ -65,25 +77,32 @@ public class PauseMenuCanvas extends ActivateableCanvas {
         quit.addUActionEvent(UIClickEvent.class, (UIClickEvent) (vector2, mouseClickType) -> {
             if (!isActivated()) return;
             MainGameScene mainGameScene = (MainGameScene) scene;
-            LoadingScene loadingScene = new LoadingScene(GameHandler.getInstance(), mainGameScene.getServer(), Status.UNLOADED, new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        GameHandler.getInstance().getSceneManager().setScene(KakaraGame.getInstance().firstScene(GameHandler.getInstance()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            // Unload the game.
+            LoadingScene loadingScene = new LoadingScene(GameHandler.getInstance(), mainGameScene.getServer(), Status.UNLOADED, () -> {
+                try {
+                    GameHandler.getInstance().getSceneManager().setScene(KakaraGame.getInstance().firstScene(GameHandler.getInstance()));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
             GameHandler.getInstance().getSceneManager().setScene(loadingScene);
             mainGameScene.close();
 
+            // Close the server.
             mainGameScene.getServer().close();
         });
         quit.add(quitGameText);
     }
 
-    public static PauseMenuCanvas getInstance(KakaraGame kakaraGame, Scene scene) {
+    /**
+     * Get the instance of the pause menu.
+     *
+     * <p>If an instance does not exist for the provided scene, one is constructed and returned.</p>
+     *
+     * @param scene The scene to get the instance for.
+     * @return The instance of the PauseMenu.
+     */
+    public static PauseMenuCanvas getInstance(Scene scene) {
         if (instance == null) {
             instance = new PauseMenuCanvas(scene);
         }
@@ -112,6 +131,12 @@ public class PauseMenuCanvas extends ActivateableCanvas {
 
     @Override
     public void close() {
+        instance = null;
+    }
+
+    @Override
+    public void cleanup(GameHandler handler) {
+        super.cleanup(handler);
         instance = null;
     }
 }

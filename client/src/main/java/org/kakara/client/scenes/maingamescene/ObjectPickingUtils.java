@@ -5,7 +5,22 @@ import org.kakara.engine.math.Intersection;
 import org.kakara.engine.math.Vector2;
 import org.kakara.engine.math.Vector3;
 
-public class ObjectPickingUtils {
+/**
+ * A utility class for ObjectPicking.
+ */
+public final class ObjectPickingUtils {
+    private ObjectPickingUtils() {}
+
+    /**
+     * Send a raycast in the direction the camera is facing from the provided position to get the
+     * closest object that it intersects with.
+     *
+     * <p>This is mainly used for Voxels.</p>
+     *
+     * @param absoluteBlockPos The absolute position to check from.
+     * @param camera           The camera to use.
+     * @return The closest value. (Will be whole numbers as it is designed for Voxels).
+     */
     public static Vector3 closestValue(Vector3 absoluteBlockPos, Camera camera) {
         Vector2 result = new Vector2(0, 0);
 

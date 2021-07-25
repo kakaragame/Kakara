@@ -34,9 +34,14 @@ import org.kakara.game.resources.GameResourceManager;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * The canvas responsible for the hot bar.
+ */
 public class HotBarCanvas extends ComponentCanvas {
+    // RGBA Color values for the hot bar.
     private final RGBA selected = new RGBA(255, 255, 255, 0.4f);
     private final RGBA normal = new RGBA(0, 0, 0, 0.4f);
+
     private final RenderResourceManager renderTextureCache;
     private final MainGameScene scene;
     private final TextureAtlas atlas;
@@ -93,6 +98,7 @@ public class HotBarCanvas extends ComponentCanvas {
         setAutoScale(false);
         setTag("hotbar_canvas");
 
+        // handle scrolling.
         GameHandler.getInstance().getMouseInput().addScrollCallback((xChange, yChange) -> {
             if (this.scene.getChatComponent().isFocused())
                 return;
@@ -121,17 +127,6 @@ public class HotBarCanvas extends ComponentCanvas {
     }
 
     public void update() {
-        if (!enabled) return;
-
-        boolean update = false;
-/*        for (int i = 0; i < contentInventory.getHotBarContents().length; i++) {
-            if (contentInventory.getContainer().getItemStack(i).getCount() <= 0) {
-                //TODO rewrite this code to have Server and Client support
-                ((ServerBoxedInventoryContainer) contentInventory.getContainer()).setItemStack(i, ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemManager().getItem(0)));
-                update = true;
-            }
-        }*/
-        if (update) renderItems();
     }
 
     @Override
@@ -150,6 +145,11 @@ public class HotBarCanvas extends ComponentCanvas {
         numberCanvas.render(hud, handler);
     }
 
+    /**
+     * Update the items in the HotBar for rendering.
+     *
+     * <p>This is called by {@link PlayerContentInventory#redraw()}.</p>
+     */
     public void renderItems() {
         if (objectCanvas != null) {
             objectCanvas.clearObjects();
@@ -200,6 +200,13 @@ public class HotBarCanvas extends ComponentCanvas {
         }
     }
 
+    /**
+     * Get a VoxelTexture from an ItemStack.
+     *
+     * @param is The ItemStack to get the VoxelTexture from.
+     * @return The Voxel Texture.
+     * @throws ExecutionException If the texture could not be resolved.
+     */
     private VoxelTexture getTexture(ItemStack is) throws ExecutionException {
         return renderTextureCache.get(GameResourceManager.correctPath(
                 Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(),
@@ -223,6 +230,11 @@ public class HotBarCanvas extends ComponentCanvas {
         }
     }
 
+    /**
+     * Get the current selected itemstack.
+     *
+     * @return The current selected itemstack.
+     */
     public ItemStack getCurrentItemStack() {
         return contentInventory.getHotBarContents()[selectedIndex];
     }
@@ -247,10 +259,16 @@ public class HotBarCanvas extends ComponentCanvas {
         hotbarRectangles[number].setColor(selected);
     }
 
+    /**
+     * Show the hotbar.
+     */
     public void show() {
         mainPanel.setVisible(true);
     }
 
+    /**
+     * Hide the hotbar.
+     */
     public void hide() {
         mainPanel.setVisible(false);
     }
@@ -259,6 +277,11 @@ public class HotBarCanvas extends ComponentCanvas {
 //        return objectCanvas;
 //    }
 
+    /**
+     * Get the player content inventory.
+     *
+     * @return The player content inventory.
+     */
     public PlayerContentInventory getContentInventory() {
         return contentInventory;
     }

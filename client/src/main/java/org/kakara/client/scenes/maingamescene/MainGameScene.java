@@ -79,7 +79,7 @@ public class MainGameScene extends AbstractGameScene {
     protected final KakaraGame kakaraGame;
     private final Client client;
     protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
-    protected final PlayerMovement movement = new PlayerMovement(this);
+//    protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
     private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue<>();
     protected ChatComponent chatComponent;
@@ -114,7 +114,7 @@ public class MainGameScene extends AbstractGameScene {
     @Override
     public void loadGraphics(GameHandler handler) {
         getUserInterface().addItem(DebugModeCanvas.getInstance(kakaraGame, this));
-        getUserInterface().addItem(PauseMenuCanvas.getInstance(kakaraGame, this));
+        getUserInterface().addItem(PauseMenuCanvas.getInstance(this));
 
         var resourceManager = gameHandler.getResourceManager();
         List<VoxelTexture> textures = new ArrayList<>();
@@ -203,14 +203,13 @@ public class MainGameScene extends AbstractGameScene {
             //I am so tired of the game freezing up and locking the mouse every time the game fails
             //This should catch it and print it out in a way that I can read the error.
             //TODO handle more serious exceptions with game closes.
-            PauseMenuCanvas.getInstance(kakaraGame, this).switchStatus();
+            PauseMenuCanvas.getInstance(this).switchStatus();
             KakaraGame.LOGGER.error("Game update exception thrown", e);
         }
     }
 
     private void internalUpdate() {
         DebugModeCanvas.getInstance(kakaraGame, this).update();
-        movement.playerMovement();
         hotBarCanvas.update();
 
         renderDroppedItems();
@@ -234,7 +233,7 @@ public class MainGameScene extends AbstractGameScene {
             }
 
             // If the pause menu is open, do nothing on click.
-            if (PauseMenuCanvas.getInstance(kakaraGame, this).isActivated()) return;
+            if (PauseMenuCanvas.getInstance(this).isActivated()) return;
 
             // Select items within a radius of 20, ignore the Player's UUID and dropped items.
             ColliderComponent col = this.selectGameItems(20, Collections.singletonList(player.getGameItemID().get()), Collections.singletonList("pickupable"));
@@ -314,14 +313,14 @@ public class MainGameScene extends AbstractGameScene {
             DebugModeCanvas.getInstance(kakaraGame, this).switchStatus();
         }
         if (e.isKeyPressed(GLFW_KEY_ESCAPE) && !chatComponent.isFocused()) {
-            PauseMenuCanvas.getInstance(kakaraGame, this).switchStatus();
+            PauseMenuCanvas.getInstance(this).switchStatus();
         }
     }
 
     @EventHandler
     public void onMousePress(MouseClickEvent evt) {
         // If the pause menu is open, do nothing on click.
-        if (PauseMenuCanvas.getInstance(kakaraGame, this).isActivated()) return;
+        if (PauseMenuCanvas.getInstance(this).isActivated()) return;
 
         UUID playerID = ((ClientPlayer) getServer().getPlayerEntity()).getGameItemID().orElseThrow(() -> new IllegalStateException("No Player Entity Found"));
         if (evt.getMouseClickType() == MouseClickType.RIGHT_CLICK && !chatComponent.isFocused()) {
@@ -493,7 +492,7 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     public void close() {
-        PauseMenuCanvas.getInstance(kakaraGame, this).close();
+        PauseMenuCanvas.getInstance(this).close();
         DebugModeCanvas.getInstance(kakaraGame, this).close();
 
     }

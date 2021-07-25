@@ -5,6 +5,7 @@ import org.kakara.client.local.game.player.ClientPlayer;
 import org.kakara.client.scenes.canvases.PauseMenuCanvas;
 import org.kakara.core.common.world.Location;
 import org.kakara.engine.Camera;
+import org.kakara.engine.components.Component;
 import org.kakara.engine.gameitems.GameItem;
 import org.kakara.engine.input.Input;
 import org.kakara.engine.input.key.KeyCode;
@@ -18,26 +19,50 @@ import org.kakara.engine.voxels.Voxel;
 import java.util.Optional;
 import java.util.UUID;
 
-// TODO:: Make this class a component and add it to the player GameItem.
-public class PlayerMovement {
+/**
+ * A component that handles everything to do with PlayerMovement, including
+ * updating the Camera.
+ * <p>
+ * This is added to the player in the {@link SceneUtils#createPlayerObject()} method.
+ */
+public class PlayerMovement extends Component {
     boolean playerInJump = false;
     float lastYPos = 0;
-    private final MainGameScene mainGameScene;
+    private MainGameScene mainGameScene;
     private GameItem item;
     private PhysicsComponent physicsComponent;
 
-    public PlayerMovement(MainGameScene mainGameScene) {
+    /**
+     * Set the Main Game Scene for this component.
+     *
+     * <p>This is done by {@link SceneUtils#createPlayerObject()}.</p>
+     *
+     * @param mainGameScene The main game scene.
+     */
+    public void setMainGameScene(MainGameScene mainGameScene) {
         this.mainGameScene = mainGameScene;
     }
 
-    protected void playerMovement() {
-        if (mainGameScene.chatComponent != null) {
-            if (mainGameScene.chatComponent.isFocused()) return;
-        }
-        if (PauseMenuCanvas.getInstance(mainGameScene.kakaraGame, mainGameScene).isActivated()) return;
+    @Override
+    public void start() {
 
+    }
+
+    @Override
+    public void update() {
+        if (mainGameScene == null) return;
 
         ClientPlayer player = (ClientPlayer) mainGameScene.getServer().getPlayerEntity();
+
+        if (mainGameScene.chatComponent != null) {
+            if (mainGameScene.chatComponent.isFocused()) {
+                // Update the player position with gravity and stuff.
+                updatePlayerPositionOnly(player);
+                return;
+            }
+        }
+        if (PauseMenuCanvas.getInstance(mainGameScene).isActivated()) return;
+
 
         Optional<UUID> gameItemID = player.getGameItemID();
         if (item == null) {
@@ -111,4 +136,27 @@ public class PlayerMovement {
         }
     }
 
+    /**
+     * This serves to only update the position of the player. (In reality it is updating the position of the camera.)
+     *
+     * <p>This is done when the chat is open but the player still needs to fall due to gravity.</p>
+     *
+     * @param player The Client Player.
+     */
+    private void updatePlayerPositionOnly(ClientPlayer player) {
+        Camera gameCamera = mainGameScene.getCamera();
+        if (playerInJump) {
+            physicsComponent.getTransform().movePositionByCamera(0, 0.3F, 0, gameCamera);
+            if (physicsComponent.getTransform().getPosition().y > lastYPos + 3) {
+                playerInJump = false;
+                physicsComponent.setVelocityY(-9.18f);
+            }
+        }
+
+        Location location;
+        location = new Location(player.getLocation().getNullableWorld(), item.transform.getPosition().x, item.transform.getPosition().y, item.transform.getPosition().z, player.getLocation().getPitch(), player.getLocation().getYaw());
+        ((ClientServerController) mainGameScene.getServer().getServerController()).playerMove(location);
+        Location l = player.getLocation();
+        mainGameScene.getCamera().setPosition((float) l.getX(), (float) l.getY() + 1, (float) l.getZ());
+    }
 }

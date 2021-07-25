@@ -22,7 +22,11 @@ import org.kakara.engine.voxels.VoxelChunk;
 import java.util.Optional;
 import java.util.UUID;
 
-
+/**
+ * The canvas for the built-in debug mode. (Hit F5).
+ *
+ * <p>There can only be one DebugModeCanvas per scene. Get through {@link #getInstance(KakaraGame, MainGameScene)}.</p>
+ */
 public class DebugModeCanvas extends ActivateableCanvas {
     private static DebugModeCanvas instance;
     private final KakaraGame kakaraGame;
@@ -37,6 +41,12 @@ public class DebugModeCanvas extends ActivateableCanvas {
 
     private UUID playerID;
 
+    /**
+     * Construct the Debug Cavnas.
+     *
+     * @param kakaraGame The Kakara Game instance.
+     * @param scene      The main scene.
+     */
     private DebugModeCanvas(KakaraGame kakaraGame, MainGameScene scene) {
         super(scene);
         gameScene = scene;
@@ -75,6 +85,15 @@ public class DebugModeCanvas extends ActivateableCanvas {
     }
 
 
+    /**
+     * Get the instance of the debug canvas.
+     *
+     * <p>If an instance does not exist for the specified scene, one is created.</p>
+     *
+     * @param kakaraGame The instance of KakaraGame.
+     * @param scene      The instance of the MainGameScene.
+     * @return The instance of the DebugModeCanvas.
+     */
     public static DebugModeCanvas getInstance(KakaraGame kakaraGame, MainGameScene scene) {
         if (instance == null) {
             instance = new DebugModeCanvas(kakaraGame, scene);
@@ -82,10 +101,13 @@ public class DebugModeCanvas extends ActivateableCanvas {
         return instance;
     }
 
+    /**
+     * Update the debug canvas.
+     */
     public void update() {
         if (!isActivated()) return;
 
-        if(playerID == null){
+        if (playerID == null) {
             playerID = ((ClientPlayer) gameScene.getServer().getPlayerEntity()).getGameItemID()
                     .orElseThrow(() -> new IllegalStateException("No Player Entity Found"));
         }
@@ -103,14 +125,13 @@ public class DebugModeCanvas extends ActivateableCanvas {
                     parentChunk.transform.getPosition().y + rb.getPosition().y,
                     parentChunk.transform.getPosition().z + rb.getPosition().z);
             Optional<GameBlock> blockAt = gameScene.getServer().getPlayerEntity().getLocation().getNullableWorld().getBlockAt(location);
-            if(blockAt.isPresent())
+            if (blockAt.isPresent())
                 lookingAt.setText("Looking At: " + blockAt.get().getItemStack().getName());
             else
                 lookingAt.setText("Looking At: {Unknown Voxel Block}");
-        }
-        else if(selectedItem != null){
+        } else if (selectedItem != null) {
             lookingAt.setText("Looking At: " + selectedItem.getGameItem().getTag());
-        }else{
+        } else {
             lookingAt.setText("Looking At: (Nothing)");
         }
     }
@@ -125,6 +146,12 @@ public class DebugModeCanvas extends ActivateableCanvas {
 
     @Override
     public void close() {
+        instance = null;
+    }
+
+    @Override
+    public void cleanup(GameHandler handler) {
+        super.cleanup(handler);
         instance = null;
     }
 

@@ -28,11 +28,14 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * This handles the primary chat for the Game.
+ * The component for the chat within the game.
  */
 public class ChatComponent extends GeneralUIComponent {
 
+    // The of the xSize.
     private final float xSize = 700;
+
+
     // Temporary stores what the user has typed when they push the up or down arrows.
     private String tempStorage = "";
     private final Font font;
@@ -52,6 +55,13 @@ public class ChatComponent extends GeneralUIComponent {
     private float timer = 0;
     private long backspaceLag = System.currentTimeMillis();
 
+    /**
+     * Create the Chat Component.
+     *
+     * @param fontToUse         The font to use for the chat.
+     * @param alwaysShowHistory If chat history should always be shown.
+     * @param scene             The scene that this chat component belongs to.
+     */
     public ChatComponent(Font fontToUse, boolean alwaysShowHistory, Scene scene) {
         font = fontToUse;
         this.alwaysShowHistory = alwaysShowHistory;
@@ -235,11 +245,28 @@ public class ChatComponent extends GeneralUIComponent {
 
     }
 
+    /**
+     * Initalizes the ChatComponent.
+     *
+     * <p>Called internally by the engine.</p>
+     *
+     * @param hud         The instance of the UserInterface.
+     * @param gameHandler The instance of the GameHandler.
+     */
     @Override
     public void init(UserInterface hud, GameHandler gameHandler) {
         pollInit(hud, gameHandler);
     }
 
+    /**
+     * Renders the actual chat component.
+     *
+     * <p>This is called internally by the engine.</p>
+     *
+     * @param relative The relative position of the component.
+     * @param hud      The instance of the UserInterface.
+     * @param handler  The instance of the GameHandler.
+     */
     @Override
     public void render(Vector2 relative, UserInterface hud, GameHandler handler) {
         super.render(relative, hud, handler);

@@ -7,12 +7,16 @@ import org.kakara.core.common.world.exceptions.ChunkWriteException;
 import org.kakara.game.world.GameWorld;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class DefaultChunkIO extends ChunkIO {
     private final BlockingQueue<ChunkRequest> requests;
+
+    private volatile int percent = 0;
 
     public DefaultChunkIO(GameWorld gameWorld, ChunkWriter chunkWriter) {
         super(gameWorld, chunkWriter);
@@ -24,12 +28,13 @@ public class DefaultChunkIO extends ChunkIO {
     public void run() {
         while (gameWorld.getStatus() == Status.LOADED || gameWorld.getStatus() == Status.LOADING) {
             // Synchronize the status on this thread.
-            synchronized (gameWorld.getStatus()){
+            synchronized (gameWorld.getStatus()) {
                 ChunkRequest request = null;
                 try {
                     request = requests.take();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    return;
                 }
                 if (request instanceof ReadChunkRequest) {
                     ChunkLocation chunkLocation = ((ReadChunkRequest) request).getChunkLocations().get(0);
@@ -79,15 +84,45 @@ public class DefaultChunkIO extends ChunkIO {
 
     @Override
     public void close() {
+        this.interrupt();
+        Queue<ChunkRequest> newRequests = new LinkedBlockingQueue<>();
+        // Drain the entire requests queue into one that is not multithreaded.
+        synchronized (requests) {
+            requests.drainTo(newRequests);
+        }
+
+        int startingSize = newRequests.size();
+        int i = 0;
+        while (!newRequests.isEmpty()) {
+            // Synchronize the status on this thread.
+            synchronized (gameWorld.getStatus()) {
+                ChunkRequest request = null;
+                request = newRequests.poll();
+                if (request instanceof ReadChunkRequest) {
+                    System.out.println("TRIED TO READ");
+                } else if (request instanceof WriteChunkRequest) {
+                    try {
+                        chunkWriter.writeChunks(((WriteChunkRequest) request).getChunks());
+                    } catch (ChunkWriteException e) {
+                        e.printStackTrace();
+                    }
+                    ((WriteChunkRequest) request).respond(((WriteChunkRequest) request).getChunks().get(0).getLocation());
+                    ((WriteChunkRequest) request).respond();
+                }
+                percent = (int) (((float) i / startingSize) * 100);
+                i++;
+            }
+        }
 
     }
 
     /**
      * Get the loading percent.
+     *
      * @return The loading percent. (Always 100% on this object).
      */
     @Override
-    public int getPercent() {
-        return 100;
+    public synchronized int getPercent() {
+        return percent;
     }
 }

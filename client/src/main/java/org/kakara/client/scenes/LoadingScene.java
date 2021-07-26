@@ -21,6 +21,7 @@ public class LoadingScene extends AbstractMenuScene {
     private final Loadable loadable;
     private final Status targetStatus;
     private final Runnable onCompletion;
+    private Text text;
 
     private LoadingBar loadingBar;
 
@@ -48,7 +49,7 @@ public class LoadingScene extends AbstractMenuScene {
     @Override
     public void loadGraphics(GameHandler gameHandler) throws Exception {
         Font roboto = new Font("Roboto", gameHandler.getResourceManager().getResource("Roboto-Regular.ttf"), this);
-        Text text = new Text("Loading please wait...", roboto);
+        text = new Text("Loading, please wait...", roboto);
         text.setLineWidth(300);
         text.addConstraint(new VerticalCenterConstraint());
         text.addConstraint(new HorizontalCenterConstraint());
@@ -70,8 +71,28 @@ public class LoadingScene extends AbstractMenuScene {
         System.out.println("getStatus() = " + loadable.getStatus());
         loadingBar.setPercent(loadable.getPercent() / 100f);
         System.out.println("getPercent() = " + loadable.getPercent());
-        if (loadable.getStatus() == targetStatus) {
-            onCompletion.run();
+        synchronized (loadable) {
+            if (loadable.getStatus() == targetStatus) {
+                onCompletion.run();
+            }
         }
+    }
+
+    /**
+     * Set the message for the loading scene.
+     *
+     * @param text The message for the loading scene.
+     */
+    public void setText(String text) {
+        this.text.setText(text);
+    }
+
+    /**
+     * Get the message for the loading scene.
+     *
+     * @return The message for the loading scene.
+     */
+    public String getText() {
+        return this.text.getText();
     }
 }

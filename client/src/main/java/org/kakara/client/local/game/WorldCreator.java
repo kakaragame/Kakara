@@ -111,6 +111,8 @@ public class WorldCreator {
     /**
      * Create the world in the file system and save the world properties in the world.json file.
      *
+     * <p>If the world already exists, then nothing is done.</p>
+     *
      * @param parentFolder The parent folder of the worlds.
      * @return The name of the world.
      * @throws WorldLoadException If an exception occurs while building the world in the file system.
@@ -119,6 +121,10 @@ public class WorldCreator {
         File worldFolder = new File(parentFolder, worldName);
         worldFolder.mkdir();
         File worldConfig = new File(worldFolder, "world.json");
+
+        // If the world config already exists, do nothing.
+        if(worldConfig.exists()) return worldName;
+
         try {
             worldConfig.createNewFile();
         } catch (IOException e) {

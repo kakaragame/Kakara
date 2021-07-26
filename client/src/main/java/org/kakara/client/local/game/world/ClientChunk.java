@@ -1,6 +1,7 @@
 package org.kakara.client.local.game.world;
 
 import org.jetbrains.annotations.Nullable;
+import org.kakara.client.KakaraGame;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.Status;
 import org.kakara.core.common.world.*;
@@ -54,9 +55,9 @@ public class ClientChunk implements Chunk {
 
     public Optional<GameBlock> getGameBlock(Location location) {
         List<GameBlock> loop = new ArrayList<>(gameBlockList);
-        for (int i = 0; i < loop.size(); i++) {
-            if (loop.get(i).getLocation().equals(location)) {
-                return Optional.ofNullable(loop.get(i));
+        for (GameBlock gameBlock : loop) {
+            if (gameBlock.getLocation().equals(location)) {
+                return Optional.of(gameBlock);
             }
         }
         gameBlockList.add(new GameBlock(location, ((ServerGameInstance) Kakara.getGameInstance()).createItemStack(Kakara.getGameInstance().getItemRegistry().getItem(0))));
@@ -88,7 +89,7 @@ public class ClientChunk implements Chunk {
 
     @Override
     public int getPercent() {
-        return 1000;
+        return 100;
     }
 
     public void setStatus(Status status) {

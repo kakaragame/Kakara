@@ -75,20 +75,30 @@ import java.util.stream.Collectors;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F3;
 
+/**
+ * The main scene for the Kakara Video Game.
+ */
 public class MainGameScene extends AbstractGameScene {
     protected final KakaraGame kakaraGame;
-    private final Client client;
     protected final RenderResourceManager renderResourceManager = new RenderResourceManager(this);
-//    protected final PlayerMovement movement = new PlayerMovement(this);
     protected final SceneUtils sceneUtils = new SceneUtils(this);
-    private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue<>();
     protected ChatComponent chatComponent;
     protected BreakingBlock breakingBlock = null;
     protected HotBarCanvas hotBarCanvas;
     protected GameItem blockSelector;
     protected VoxelTexture breakingTexture;
+
+    private final Client client;
+    private final Queue<Runnable> updateOnMainThread = new LinkedBlockingQueue<>();
     private boolean hasRun = false;
 
+    /**
+     * Construct the Main Game Scene.
+     *
+     * @param gameHandler The game handler instance.
+     * @param client      The instance of the client.
+     * @param kakaraGame  The instance to the main KakaraGame class.
+     */
     public MainGameScene(GameHandler gameHandler, Client client, KakaraGame kakaraGame) {
         super(gameHandler);
         setCursorStatus(false);
@@ -98,6 +108,7 @@ public class MainGameScene extends AbstractGameScene {
         if (getServer() instanceof IntegratedServer) {
             ((IntegratedServer) getServer()).setSceneTickUpdate(this::gameSceneUpdate);
         }
+
         if (Kakara.getGameInstance() == null) {
             throw new IllegalStateException("A Kakara game has not been initialized. ");
         }
@@ -186,6 +197,11 @@ public class MainGameScene extends AbstractGameScene {
         add(this.blockSelector);
     }
 
+    /**
+     * Load the skybox texture.
+     *
+     * @return The Skybox texture.
+     */
     private Texture loadSkyBoxTexture() {
         System.out.println("gameHandler.getResourceManager().getResource(\"skybox.obj\").getURL().toString() = " + gameHandler.getResourceManager().getResource("skybox.obj").getURL().toString());
         Resource resource = gameHandler.getResourceManager().getResource("skybox/daytime2.png");
@@ -208,21 +224,32 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
+    /**
+     * What should be updated on every frame by the client.
+     */
     private void internalUpdate() {
         DebugModeCanvas.getInstance(kakaraGame, this).update();
         hotBarCanvas.update();
 
+        // Render the dropped items.
         renderDroppedItems();
+
+        // Exectue things that need to be done on the main thread.
         synchronized (updateOnMainThread) {
             while (!updateOnMainThread.isEmpty()) {
                 updateOnMainThread.poll().run();
             }
         }
+
+        // If left click, break block.
         if (kakaraGame.getGameHandler().getMouseInput().isLeftButtonPressed()) {
             blockBreakHandler();
         }
     }
 
+    /**
+     * Handles the breaking of blocks.
+     */
     private void blockBreakHandler() {
         ClientPlayer player = (ClientPlayer) getServer().getPlayerEntity();
         if (player.getGameItemID().isEmpty()) return;
@@ -271,7 +298,7 @@ public class MainGameScene extends AbstractGameScene {
                         }
                     });
                     if (blockAt.isEmpty()) {
-                        System.out.println("OUCH");
+                        KakaraGame.LOGGER.error("Attempting to break an empty block.");
                     }
                 }
             }
@@ -279,9 +306,11 @@ public class MainGameScene extends AbstractGameScene {
     }
 
     /**
-     * Create a GameItem for dropped items.
+     * This method will create GameItems for dropped items.
+     *
+     * <p>Every update it loops through and checks to see if all dropped items on the server are mapped to a game item.</p>
      * <p>
-     * TODO:: Maybe create a better method for doing this?
+     * TODO:: Do something better here.
      */
     public void renderDroppedItems() {
         for (DroppedItem droppedItem : ((ClientWorld) getServer().getPlayerEntity().getLocation().getNullableWorld()).getDroppedItems()) {
@@ -471,40 +500,84 @@ public class MainGameScene extends AbstractGameScene {
         }
     }
 
+    /**
+     * Get the RenderResourceManager.
+     *
+     * @return The RenderResourceManager.
+     */
     public RenderResourceManager getRenderResourceManager() {
         return renderResourceManager;
     }
 
+    /**
+     * The Server responsible for game logic.
+     * <p>This is usually {@link IntegratedServer}.</p>
+     *
+     * @return The server responsible for game logic.
+     */
     public Server getServer() {
         return client.getServer();
     }
 
+    /**
+     * Get the Engine's ResourceManager.
+     *
+     * @return The Engine's ResourceManager.
+     */
     public ResourceManager getResourceManager() {
         return gameHandler.getResourceManager();
     }
 
+    /**
+     * Get the HotBar Canvas.
+     *
+     * @return The HotBar Canvas.
+     */
     public HotBarCanvas getHotBar() {
         return hotBarCanvas;
     }
 
+    /**
+     * Add a runnable to be executed on the main game thread.
+     *
+     * @param run The runnable to add.
+     */
     public void addQueueRunnable(Runnable run) {
         this.updateOnMainThread.add(run);
     }
 
+    /**
+     * Close the Pause and Debug canvases.
+     */
     public void close() {
         PauseMenuCanvas.getInstance(this).close();
         DebugModeCanvas.getInstance(kakaraGame, this).close();
-
     }
 
+    /**
+     * Get the chat component.
+     *
+     * @return The chat component.
+     */
     public ChatComponent getChatComponent() {
         return chatComponent;
     }
 
+    /**
+     * Get the Client Server Controller.
+     *
+     * @return The Client Server Controller.
+     */
     private ClientServerController getController() {
         return (ClientServerController) getServer().getServerController();
     }
 
+    /**
+     * Get the Voxel Texture from and ItemStack.
+     *
+     * @param is The item stack.
+     * @return The Voxel Texture.
+     */
     private VoxelTexture getTexture(ItemStack is) {
         return renderResourceManager.get(GameResourceManager.correctPath(Kakara.getGameInstance().getResourceManager().getTexture(is.getItem().getTexture(), TextureResolution._16, is.getItem().getMod()).getLocalPath()));
     }

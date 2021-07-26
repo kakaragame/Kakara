@@ -63,6 +63,8 @@ public class SaveCreator {
      *
      * <p>This will build all provided worlds.</p>
      *
+     * <p>Note: If the Save already exists, the existing save is returned.</p>
+     *
      * @return The build Save class.
      * @throws SaveLoadException If an error occurs while creating the save.
      */
@@ -71,6 +73,10 @@ public class SaveCreator {
         saveFolder.mkdirs();
 
         File saveFile = new File(saveFolder, "save.json");
+
+        // If the save file exists, don't create a default one.
+        if (saveFile.exists()) return new ClientSave(saveFolder);
+
         try {
             saveFile.createNewFile();
         } catch (IOException e) {

@@ -15,6 +15,10 @@ import java.util.Optional;
 
 //Call from server is {action}{What}
 //Call from client is {what}{Action}
+
+/**
+ * This class controls the
+ */
 public class LocalServerController implements ClientServerController {
     private final IntegratedServer server;
 

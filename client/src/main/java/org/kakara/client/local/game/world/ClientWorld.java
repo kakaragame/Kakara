@@ -3,7 +3,10 @@ package org.kakara.client.local.game.world;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kakara.client.KakaraGame;
 import org.kakara.client.local.game.DroppedItem;
+import org.kakara.client.local.game.IntegratedServer;
+import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.core.common.Kakara;
 import org.kakara.core.common.Status;
 import org.kakara.core.common.Utils;
@@ -280,6 +283,10 @@ public class ClientWorld extends GameWorld {
 
     public void dropItem(Location location, ItemStack itemStack) {
         droppedItems.add(new DroppedItem(location, itemStack));
+    }
+
+    public ChunkIO getChunkIO() {
+        return this.chunkIO;
     }
 
     @Override

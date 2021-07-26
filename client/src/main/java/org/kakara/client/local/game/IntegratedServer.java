@@ -13,6 +13,7 @@ import org.kakara.client.local.game.player.ClientPlayer;
 import org.kakara.client.local.game.player.PlayerContentInventory;
 import org.kakara.client.local.game.world.ClientWorld;
 import org.kakara.client.local.game.world.ClientWorldManager;
+import org.kakara.client.scenes.LoadingScene;
 import org.kakara.client.scenes.maingamescene.MainGameScene;
 import org.kakara.client.utils.IntegratedTime;
 import org.kakara.core.client.client.Save;
@@ -57,14 +58,19 @@ public class IntegratedServer extends Thread implements Server {
     private final Player player;
     private Runnable sceneTickUpdate;
     private Location lastLocation;
-    private Status status = Status.LOADED;
+    private volatile Status status = Status.LOADED;
     private final LocalServerController localServerController = new LocalServerController(this);
     private MainGameScene gameScene;
+
+    // The percent for the unloading bar.
+    private int unloadedPercent;
 
     public IntegratedServer(@NotNull Save save, @NotNull UUID playerUUID, Runnable sceneTickUpdate) throws ServerLoadException {
         super("Kakara-IntegratedServer");
         this.save = save;
         this.sceneTickUpdate = sceneTickUpdate;
+        this.unloadedPercent = 0;
+
         if (save instanceof ClientSave) {
             ((ClientSave) save).setServer(this);
         }
@@ -190,14 +196,29 @@ public class IntegratedServer extends Thread implements Server {
             }
 
         }
+        this.status = Status.UNLOADING;
         KakaraGame.LOGGER.info("Unloading Integrated Server.");
-        executorService.shutdown();
-        save.getWorlds().forEach(world -> ((ClientWorld) world).close());
-        Kakara.getGameInstance().getModManager().getLoadedMods().forEach(Kakara.getGameInstance().getModManager()::unloadMod);
-
-        status = Status.UNLOADED;
-        Kakara.coreClose();
-
+        try {
+            ((LoadingScene) GameHandler.getInstance().getCurrentScene()).setText("Stopping Threads... ");
+            KakaraGame.LOGGER.debug("Stopping server executor service...");
+            // Shut down now as no load operations should be done when the server is unloading.
+            executorService.shutdownNow();
+            this.unloadedPercent = 0;
+            KakaraGame.LOGGER.debug("Unloading worlds...");
+            save.getWorlds().forEach(world -> {
+                ((LoadingScene) GameHandler.getInstance().getCurrentScene()).setText(String.format("Saving World %s... ", world.getName()));
+                ((ClientWorld) world).close();
+            });
+            this.unloadedPercent = 100;
+            ((LoadingScene) GameHandler.getInstance().getCurrentScene()).setText("Unloading mods...");
+            KakaraGame.LOGGER.debug("Unloading mods...");
+            Kakara.getGameInstance().getModManager().getLoadedMods().forEach(Kakara.getGameInstance().getModManager()::unloadMod);
+        } catch (Exception ex) {
+            KakaraGame.LOGGER.error("An error has occurred while stopping the server.", ex);
+        } finally {
+            status = Status.UNLOADED;
+            Kakara.coreClose();
+        }
     }
 
 
@@ -231,7 +252,7 @@ public class IntegratedServer extends Thread implements Server {
 
         if (getPlayerEntity().getLocation().getNullableWorld().getStatus() != Status.LOADED) return;
 
-        if (sceneTickUpdate != null){
+        if (sceneTickUpdate != null) {
             sceneTickUpdate.run();
         }
         if (lastLocation.equals(start)) return;
@@ -281,11 +302,21 @@ public class IntegratedServer extends Thread implements Server {
 
     /**
      * Get the loading percent.
-     * @return The loading percent. (Always 100% on this object).
+     *
+     * @return The loading percent.
      */
     @Override
     public int getPercent() {
-        return 100;
+        return ((ClientWorld) getSave().getDefaultWorld()).getChunkIO().getPercent();
+    }
+
+    /**
+     * Set the unloaded percentage for the visual loading bar.
+     *
+     * @param unloadedPercent The unload percent to set.
+     */
+    public void setUnloadedPercent(int unloadedPercent) {
+        this.unloadedPercent = unloadedPercent;
     }
 
     @Override

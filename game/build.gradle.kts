@@ -43,7 +43,7 @@ dependencies {
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.5")
     implementation(group = "me.ryandw11", name = "ODSCompressionPlus", version = "1.0.1")
     //Engine
-    compileOnly(group = "org.kakara", name = "engine", version = "1.0-SNAPSHOT");
+    compileOnly(group = "org.kakara", name = "engine", version = "1.0-origin-Pre5_Nvidia_Fix-SNAPSHOT");
 
     //Core
     implementation("org.kakara.core:common:1.0-SNAPSHOT")

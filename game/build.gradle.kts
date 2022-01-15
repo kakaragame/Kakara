@@ -16,8 +16,8 @@ if (hasProperty("buildNumber")) {
     version = org.kakara.engine.Version.getGameVersion("", branch);
 }
 java {
-    targetCompatibility = org.gradle.api.JavaVersion.VERSION_11
-    sourceCompatibility = org.gradle.api.JavaVersion.VERSION_11
+    targetCompatibility = org.gradle.api.JavaVersion.VERSION_17
+    sourceCompatibility = org.gradle.api.JavaVersion.VERSION_17
 
 }
 

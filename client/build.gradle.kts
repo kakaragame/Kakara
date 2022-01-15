@@ -76,7 +76,7 @@ dependencies {
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("commons-cli:commons-cli:1.5.0")
     implementation("com.google.code.gson:gson:2.8.9")
-    implementation("com.google.guava:guava:30.1.1-jre")
+    implementation("com.google.guava:guava:31.0.1-jre")
     implementation("com.github.Carleslc:Simple-YAML:1.7.2")
     //ODS - Game Storage
     implementation(group = "me.ryandw11", name = "ods", version = "1.0.5")
